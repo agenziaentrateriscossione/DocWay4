@@ -18,16 +18,16 @@ Librerie di sistema richieste
 
 Le librerie di sistema necessarie al corretto funzionamento dei componenti che compongono ExtraWay. Solitamente collocate in /lib e /usr/lib:
 
-libdl.so.2
-libz.so.1
-libstdc++.so.6
-libm.so.6
-libgcc_s.so.1
-libpthread.so.0
-libc.so.6 (minimo glibc 2.5)
-libxml2.so.2
-libxslt.so.1
-libzip.so.1
+- libdl.so.2
+- libz.so.1
+- libstdc++.so.6
+- libm.so.6
+- libgcc_s.so.1
+- libpthread.so.0
+- libc.so.6 (minimo glibc 2.5)
+- libxml2.so.2
+- libxslt.so.1
+- libzip.so.1
 
 **ATTENZIONE**: **Gli eseguibili del motore eXtraWay non hanno ancora una versione dispobibile a 64bit**. E' necessario pertanto installare le librerie di compatibilita ia32 sulle macchine a 64 bit della maggior parte delle distribuzioni. Inoltre esistono alcuni casi riportati 1) sul quale è necessario installare manualmente le librerie elencate in versione 32bit. Se non è possibile effettuare questi passaggi o le librerie indicate non sono presenti, la specifica distribuzione non è supportata da Docway 3.10.2.
 
