@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" 
+	  xmlns:h="http://java.sun.com/jsf/html" 
+	  xmlns:ui="http://java.sun.com/jsf/facelets" 
+	  xmlns:f="http://java.sun.com/jsf/core">
+<ui:composition>
+
+	<h:panelGroup layout="block" id="atto">
+		<h:panelGroup id="decratto" rendered="#{pageBean.visibleAtto}">
+			<!-- Modal -->
+			<div id="postitModal" class="modal fade in" aria-hidden="false" aria-labelledby="postitModalLabel" role="dialog" tabindex="-1" style="display: block;">
+			<!--div class="modal fade" id="postitModal" tabindex="-1" role="dialog" aria-labelledby="postitModalLabel" aria-hidden="true"-->
+				<div class="modal-dialog">
+					<div class="modal-content jsf-modal">
+						<div class="modal-header">
+							<h:commandLink class="close" action="#{pageBean.hideAtto}" value="&#215;">
+		                    	<f:ajax render="atto"/>
+		                   	</h:commandLink>
+							
+							<h4 class="modal-title" id="postitModalLabel">#{i18n['apv.contenuto_atto']}</h4>
+						</div>
+						<div class="modal-body">
+						
+							<h:panelGroup rendered="#{not empty facesContext.messageList}" layout="block" styleClass="alert alert-danger">
+								<h:messages styleClass="" id="validationMessegesPostit" />
+							</h:panelGroup>
+						
+							<fieldset>
+								<div class="form-group">
+									<div class="col-sm-12">
+										<h:outputText value="#{pageBean.current.contenutoAtto}"></h:outputText>
+									</div>
+								</div>
+							</fieldset>
+							
+						</div>
+						<div class="modal-footer">
+							<h:commandLink styleClass="btn btn-default" action="#{pageBean.hideAtto}"  value="#{i18n['acl.close']}">
+		                    	<f:ajax render="atto"/>
+		                   	</h:commandLink>
+						</div>
+					</div>
+				</div>
+			</div>
+			<!--h:outputScript>
+				$('#postitModal').modal('show');
+			</h:outputScript-->
+		</h:panelGroup>
+	</h:panelGroup>
+
+</ui:composition>   
+</html>

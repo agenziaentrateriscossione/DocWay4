@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+    template="#{docEditStrutturaEsterna.pageTemplate}"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:f="http://java.sun.com/jsf/core">
+
+<ui:define name="content">
+	<div class="strutest docedit">
+	
+		<!-- toolbar: inizio -->
+		<div class="btn-toolbar margin-bottom" role="toolbar">
+			<div class="btn-group">
+				<h:commandLink id="saveBtn" action="#{docEditStrutturaEsterna.saveDocument}" styleClass="btn btn-primary openwaitmsg">#{i18n['acl.save']}</h:commandLink>
+				<h:commandLink action="#{docEditStrutturaEsterna.clearDocument}" styleClass="btn btn-default">#{i18n['acl.clear']}</h:commandLink>
+				<h:commandLink rendered="#{docEditStrutturaEsterna.popupPage}" onclick="self.close();" styleClass="btn btn-default">#{i18n['acl.close']}</h:commandLink>
+			</div>
+		</div>
+		<!-- toolbar: fine -->
+		
+		<h5 class="sub-header">
+            <span class="strutture-esterne glyphicons-pro"></span>&#160;
+            <h:outputText value="#{i18n['acl.ins_struest']}" escape="false" />
+        </h5>
+		
+		<!-- messages: inizio -->
+		<h:panelGroup rendered="#{not empty facesContext.messageList}" layout="block" styleClass="docedit-messages alert alert-danger">
+			<h:messages styleClass="" id="validationMesseges" />
+		</h:panelGroup>
+		<!-- messages: fine -->
+	
+		<!-- scheda edit: inizio -->
+		<div class="row-fluid" style="margin-top:10px;">
+			<div id="fixedshowdoc" class="box span12 fixed-showdoc">
+				<div class="box-content">
+				
+					<div class="fieldset">
+						<div class="legend">#{i18n['acl.informazioni_di_base']}
+						    <div class="pull-right">
+                                <span class="glyphicons-pro factory" title="#{i18n['acl.informazioni_di_base']}"></span>
+                            </div>
+						</div>
+						
+						<div class="form-group">
+							<label for="templateForm:struest_nome" class="col-sm-2 control-label requiredField">* #{i18n['acl.description']}</label>
+							<div class="col-sm-9">
+								<h:inputText id="struest_nome" value="#{docEditStrutturaEsterna.struttura_esterna.nome}" styleClass="#{ component.valid ? '' : 'invalidinput' } form-control" />
+							</div>
+						</div>
+						<h:panelGroup rendered="#{docEditStrutturaEsterna.formsAdapter.funzionalitaDisponibili['abilitaGestioneSAP']}" layout="block" styleClass="form-group">
+							<label for="templateForm:strutest_codsap" class="col-sm-2 control-label">#{i18n['acl.sapcod']}</label>
+							<div class="col-sm-2">
+								<h:inputText id="strutest_codsap" value="#{docEditStrutturaEsterna.struttura_esterna.cod_SAP}" styleClass="form-control" />
+							</div>
+						</h:panelGroup>
+						<div class="form-group">
+							<label for="templateForm:strutest_cf" class="col-sm-2 control-label">#{i18n['acl.cf']}</label>
+							<div class="col-sm-4">
+								<h:inputText id="strutest_cf" value="#{docEditStrutturaEsterna.struttura_esterna.codice_fiscale}" styleClass="form-control" maxlength="16" />
+							</div>
+							<label for="templateForm:strutest_piva" class="col-sm-1 control-label">#{i18n['acl.piva']}</label>
+							<div class="col-sm-4">
+								<h:inputText id="strutest_piva" value="#{docEditStrutturaEsterna.struttura_esterna.partita_iva}" styleClass="form-control" />
+							</div>
+						</div>
+						<div class="form-group">
+							<label for="templateForm:struest_codamm" class="col-sm-2 control-label requiredField">* #{i18n['acl.cod_amm']}</label>
+							<div class="col-sm-2">
+								<h:inputText rendered="#{ !docEditStrutturaEsterna.formsAdapter.funzionalitaDisponibili['acl_ext_aoo_restriction']  }" id="struest_codamm" value="#{docEditStrutturaEsterna.struttura_esterna.cod_amm}" valueChangeListener="#{docEditStrutturaEsterna.codAmmValueChange}" styleClass="#{ component.valid ? '' : 'invalidinput' } form-control" maxlength="4">
+			                		<f:ajax execute="@this" render="templateForm:demsi_nome_responsabile_input templateForm:demsi_cod_responsabile_input" />
+			                	</h:inputText>
+			                	<h:panelGroup rendered="#{ docEditStrutturaEsterna.formsAdapter.funzionalitaDisponibili['acl_ext_aoo_restriction'] }">
+			                		<p class="form-control-static"><h:outputText value="#{docEditStrutturaEsterna.struttura_esterna.cod_amm}" /></p>
+			                	</h:panelGroup>
+							</div>
+							<label for="templateForm:struest_codaoo" class="col-sm-offset-1 col-sm-2 control-label requiredField">* #{i18n['acl.cod_aoo']}</label>
+							<div class="col-sm-2">
+								<h:inputText rendered="#{ !docEditStrutturaEsterna.formsAdapter.funzionalitaDisponibili['acl_ext_aoo_restriction'] }" id="struest_codaoo" value="#{docEditStrutturaEsterna.struttura_esterna.cod_aoo}" valueChangeListener="#{docEditStrutturaEsterna.codAooValueChange}" styleClass="#{ component.valid ? '' : 'invalidinput' } form-control" maxlength="3">
+			       					<f:ajax execute="@this" render="templateForm:demsi_nome_responsabile_input templateForm:demsi_cod_responsabile_input" />
+			       				</h:inputText>
+			       				<h:panelGroup rendered="#{ docEditStrutturaEsterna.formsAdapter.funzionalitaDisponibili['acl_ext_aoo_restriction'] }">
+			       					<p class="form-control-static"><h:outputText value="#{docEditStrutturaEsterna.struttura_esterna.cod_aoo}" /></p>
+			       				</h:panelGroup>
+							</div>
+						</div>
+					</div> <!-- /fieldset -->
+					
+					<div class="fieldset">
+						<div class="legend">#{i18n['acl.recapito']}
+						    <div class="pull-right">
+                                <span class="glyphicons-pro address_book" title="#{i18n['acl.informazioni_di_base']}"></span>
+                            </div>
+						</div>
+						
+						<div class="form-group">
+							<label for="templateForm:strutest_rec_indirizzo" class="col-sm-2 control-label">#{i18n['acl.street']}</label>
+							<div class="col-sm-9">
+								<h:inputText id="strutest_rec_indirizzo" value="#{docEditStrutturaEsterna.struttura_esterna.indirizzo.indirizzo}" styleClass="form-control" />
+							</div>
+						</div>
+						<div class="form-group">
+							<label for="templateForm:demsi_indirizzocomune_input" class="col-sm-2 control-label">#{i18n['acl.town']}</label>
+							<div class="col-sm-5">
+								<ui:include src="./lookupField.xhtml">
+					        		<ui:param name="id" value="demsi_indirizzocomune" />
+					        		<ui:param name="field" value="#{docEditStrutturaEsterna.struttura_esterna.indirizzo.comune}" />
+					        		<ui:param name="bean" value="#{docEditStrutturaEsterna}" />
+					        		<ui:param name="action" value="lookupComune"/>
+					        		<ui:param name="clearaction" value="clearLookupComune"/>
+					        		<ui:param name="title" value="#{i18n['acl.lookup_comune']}"/>
+					        		<ui:param name="styleclass" value="form-control"/>
+					        		<ui:param name="refresh" value="templateForm:demsi_indirizzocomune_input templateForm:demsi_indirizzocap_input templateForm:demsi_indirizzoprov templateForm:demsi_indirizzonazione templateForm:lookup templateForm:lookup templateForm:errormsg"/>
+					        	</ui:include>
+							</div>
+							<label for="templateForm:demsi_indirizzocap_input" class="col-sm-2 control-label">#{i18n['acl.zip']}</label>
+							<div class="col-sm-2">
+								<ui:include src="./lookupField.xhtml">
+					        		<ui:param name="id" value="demsi_indirizzocap" />
+					        		<ui:param name="field" value="#{docEditStrutturaEsterna.struttura_esterna.indirizzo.cap}" />
+					        		<ui:param name="bean" value="#{docEditStrutturaEsterna}" />
+					        		<ui:param name="action" value="lookupCap"/>
+					        		<ui:param name="clearaction" value="clearLookupCap"/>
+					        		<ui:param name="title" value="#{i18n['acl.lookup_cap']}"/>
+					        		<ui:param name="styleclass" value="form-control"/>
+					        		<ui:param name="refresh" value="templateForm:demsi_indirizzocomune_input templateForm:demsi_indirizzocap_input templateForm:demsi_indirizzoprov templateForm:demsi_indirizzonazione templateForm:lookup templateForm:lookup templateForm:errormsg"/>
+					        	</ui:include>
+							</div>
+						</div>
+						<div class="form-group">
+							<label for="templateForm:demsi_indirizzoprov" class="col-sm-2 control-label">#{i18n['acl.province']}</label>
+							<div class="col-sm-2">
+								<h:inputText value="#{docEditStrutturaEsterna.struttura_esterna.indirizzo.prov}" styleClass="form-control" id="demsi_indirizzoprov"/>
+							</div>
+							<label for="templateForm:demsi_indirizzonazione" class="col-sm-2 control-label">#{i18n['acl.state']}</label>
+							<div class="col-sm-5">
+								<h:inputText value="#{docEditStrutturaEsterna.struttura_esterna.indirizzo.nazione}" styleClass="form-control" id="demsi_indirizzonazione"/>
+							</div>
+						</div>
+						
+						<ui:include src="./phones.xhtml"> <ui:param name="pageBean" value="#{docEditStrutturaEsterna.struttura_esterna}"/></ui:include>
+        				<ui:include src="./emails.xhtml"> <ui:param name="pageBean" value="#{docEditStrutturaEsterna.struttura_esterna}"/></ui:include>
+        				
+        				<div class="form-group">
+							<label for="templateForm:strutest_pec" class="col-sm-2 control-label">#{i18n['acl.emailcertified']}</label>
+							<div class="col-sm-7">
+								<h:inputText id="strutest_pec" value="#{docEditStrutturaEsterna.struttura_esterna.email_certificata.addr}" styleClass="form-control" />
+							</div>
+						</div>
+						
+						<ui:include src="./websites.xhtml"> <ui:param name="pageBean" value="#{docEditStrutturaEsterna.struttura_esterna}"/></ui:include>
+					</div> <!-- /fieldset -->
+					
+					<h:panelGroup rendered="#{ docEditStrutturaEsterna.formsAdapter.funzionalitaDisponibili['interop_webservice'] }" layout="block" styleClass="fieldset">
+						<div class="legend">
+							#{i18n['acl.interoperabilita_via_web_services']}
+							<div class="pull-right">
+                                <span class="glyphicons-pro new_window" title="#{i18n['acl.interoperabilita_via_web_services']}"></span>
+                            </div>
+						</div>
+						
+						<div class="form-group">
+							<label for="templateForm:strutest_remote_codammaoo" class="col-sm-2 control-label">#{i18n['acl.codice_ammaoo']}</label>
+							<div class="col-sm-3">
+								<h:inputText id="strutest_remote_codammaoo" value="#{docEditStrutturaEsterna.struttura_esterna.interop_webservice.remote_administration.cod_amm_aoo}" styleClass="form-control" />
+							</div>
+						</div>
+					</h:panelGroup> <!-- /fieldset -->
+					
+					<div class="fieldset">
+						<div class="legend">#{i18n['dw4.other']}
+						    <div class="pull-right">
+                                <span class="glyphicon glyphicon-list-alt" title="#{i18n['acl.informazioni_di_base']}"></span>
+                            </div>
+						</div>
+						
+						<div class="form-group">
+							<label for="templateForm:strutest_competenze" class="col-sm-2 control-label">#{i18n['acl.skill']}</label>
+							<div class="col-sm-9">
+								<h:inputTextarea id="strutest_competenze" value="#{docEditStrutturaEsterna.struttura_esterna.competenze.text}" rows="4" cols="120" styleClass="#{ component.valid ? '' : 'invalidinput' } form-control" />
+							</div>
+						</div>
+						<div class="form-group">
+							<label for="templateForm:demsi_nome_responsabile_input" class="col-sm-2 control-label">#{i18n['acl.director']}</label>
+							<div class="col-sm-5">
+								<h:inputHidden value="#{docEditStrutturaEsterna.struttura_esterna.cod_responsabile}" id="demsi_cod_responsabile_input"/>
+								<ui:include src="./lookupField.xhtml">
+					        		<ui:param name="id" value="demsi_nome_responsabile" />
+					        		<ui:param name="field" value="#{docEditStrutturaEsterna.struttura_esterna.nomeresponsabile}" />
+					        		<ui:param name="bean" value="#{docEditStrutturaEsterna}" />
+					        		<ui:param name="action" value="lookupResponsabile"/>
+					        		<ui:param name="clearaction" value="clearLookupResponsabile"/>
+					        		<ui:param name="title" value="#{i18n['acl.directorlookup']}"/>
+					        		<ui:param name="styleclass" value="form-control"/>
+					        		<ui:param name="refresh" value="templateForm:demsi_nome_responsabile_input templateForm:demsi_cod_responsabile_input templateForm:struest_codamm templateForm:struest_codaoo templateForm:validationMesseges templateForm:lookup templateForm:lookup templateForm:errormsg"/>
+					        	</ui:include>
+							</div>
+						</div>
+						<div class="form-group">
+							<label for="templateForm:strutest_note" class="col-sm-2 control-label">#{i18n['acl.notes']}</label>
+							<div class="col-sm-9">
+								<h:inputTextarea id="strutest_note" value="#{docEditStrutturaEsterna.struttura_esterna.note.text}" rows="4" cols="120" styleClass="#{ component.valid ? '' : 'invalidinput' } form-control" />
+							</div>
+						</div>
+						<div class="form-group">
+							<label for="templateForm:demsi_nome_responsabile_input" class="col-sm-2 control-label">#{i18n['acl.tipologia']}</label>
+							<div class="col-sm-5">
+								<ui:include src="./thField.xhtml">
+					        		<ui:param name="id" value="demsi_tipologia" />
+					        		<ui:param name="field" value="#{docEditStrutturaEsterna.struttura_esterna.tipologia}" />
+					        		<ui:param name="bean" value="#{docEditStrutturaEsterna}" />
+					        		<ui:param name="action" value="thVincolatoTipologia"/>
+					        		<ui:param name="title" value="#{i18n['acl.thtipologia']}"/>
+					        		<ui:param name="styleclass" value="form-control"/>
+					        		<ui:param name="refresh" value="templateForm:demsi_tipologia_input"/>
+					        	</ui:include>
+							</div>
+						</div>
+					</div> <!-- /fieldset -->
+				</div>
+			</div>
+		</div>
+		<!-- scheda edit: fine -->
+	</div>
+		
+	<ui:fragment rendered="#{docEditStrutturaEsterna.formsAdapter.fromLookup != null and docEditStrutturaEsterna.formsAdapter.fromLookup == 'close'}">
+		<script type="text/javascript">
+		window.opener.$('#templateForm\\:lookupNewPhysDoc').val('#{docEditStrutturaEsterna.formsAdapter.lookupNew}');
+		window.opener.$('#templateForm\\:redoLookupAfterInsert').trigger("click");
+		
+		self.close();
+		</script>
+	</ui:fragment>
+	
+	<ui:include src="./lookup.xhtml"> <ui:param name="pageBean" value="#{docEditStrutturaEsterna}"/></ui:include>
+	<ui:include src="./thvincolato.xhtml"> <ui:param name="pageBean" value="#{docEditStrutturaEsterna}"/></ui:include>
+
+	<h:inputTextarea value="#{docEditStrutturaEsterna.xml}" rendered="#{docEditStrutturaEsterna.debugMode}" styleClass="form-control" rows="10" />
+</ui:define>
+
+</ui:composition>    

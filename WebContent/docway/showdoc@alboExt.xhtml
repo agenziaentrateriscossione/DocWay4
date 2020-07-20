@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" 
+	  xmlns:h="http://java.sun.com/jsf/html" 
+	  xmlns:ui="http://java.sun.com/jsf/facelets" 
+	  xmlns:f="http://java.sun.com/jsf/core">
+<ui:composition>
+
+	<h:panelGroup rendered="#{!empty bean.doc.extra.alboExt_dataPubblicazione}">
+		<div class="showdoc-section">
+			<div class="title">
+				#{i18n['dw4.albo_online']}
+				
+				<div class="pull-right">
+					<span class="glyphicons-pro log-book" title="#{i18n['dw4.albo_online']}"></span>
+				</div>
+			</div>
+			<div class="stati-doc-holder">
+				<dl class="dl-horizontal">
+					<h:panelGroup rendered="#{bean.doc.extra.alboExt_stato eq 'da_pubblicare'}">
+						<dt>
+							<span class="glyphicons-pro log-book doc-alboExt-attesa-pubblicazione popoveritem"
+								 	data-toggle="popover" data-placement="bottom" data-trigger="hover"
+									data-content="#{i18n['dw4.documento_inviato']}">
+							</span>
+						</dt>
+						<dd>#{i18n['dw4.documento_in_attesa_di_essere_pubblicato_su_albo_online']}</dd>
+					</h:panelGroup>
+					<h:panelGroup rendered="#{bean.doc.extra.alboExt_stato ne 'da_pubblicare'}">
+						<dt>
+							<span class="glyphicons-pro log-book doc-alboExt-pubblicato popoveritem"
+								 	data-toggle="popover" data-placement="bottom" data-trigger="hover"
+									data-content="#{i18n['dw4.documento_pubblicato']}">
+							</span>
+						</dt>
+						<dd>#{i18n['dw4.documento_pubblicato_su_albo_online']}</dd>
+					</h:panelGroup>
+					<dt>#{i18n['dw4.data_pubblicazione']}</dt>
+					<dd>#{bean.doc.extra.alboExt_dataPubblicazione}</dd>
+					
+					<h:panelGroup rendered="#{!empty bean.doc.extra.alboExt_dataDefissione}">
+						<dt>#{i18n['dw4.data_defissione']}</dt>
+						<dd>#{bean.doc.extra.alboExt_dataDefissione}</dd>
+					</h:panelGroup>
+				</dl>
+			</div>
+		</div>
+	</h:panelGroup>
+
+</ui:composition>
+</html>

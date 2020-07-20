@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" 
+	  xmlns:h="http://java.sun.com/jsf/html" 
+	  xmlns:ui="http://java.sun.com/jsf/facelets" 
+	  xmlns:f="http://java.sun.com/jsf/core">
+<ui:composition>
+	
+	<h:panelGroup rendered="#{fn:length(beanDoc.allegati) > 0}" layout="block" id="allegatiHolder">
+		<ui:repeat id="docEditAllegati" var="allegato" value="#{beanDoc.allegati}" offset="0" varStatus="indice">
+			<div class="form-group">
+				<h:panelGroup rendered="#{readOnly}">
+					<label class="col-sm-2 control-label"><span>#{i18n['dw4.allegato']}</span></label>
+					<div class="col-sm-9">
+						<p class="form-control-static">
+							<h:outputText value="#{allegato.text}" styleClass="outputField" />
+							<h:panelGroup rendered="#{allegato.pagine ne ''}">
+								<h:outputText value="(" styleClass="outputField" />
+								<h:outputText value="#{allegato.pagine}" styleClass="outputField" />
+								<h:outputText value="pag.)" styleClass="outputField" />
+							</h:panelGroup>
+						</p>
+					</div>
+				</h:panelGroup>
+				
+				<h:panelGroup rendered="#{!readOnly}">
+					<label class="col-sm-2 control-label requiredField"><span>* #{i18n['dw4.allegato']}</span></label>
+					<div class="col-sm-4">
+						<div class="input-group">
+							<h:inputText id="allegatoText" value="#{allegato.text}" styleClass="form-control" onblur="checkNumAllegato(this);" />
+							
+							<div class="input-group-btn">
+								<h:commandLink action="#{beanDoc.deleteAllegato}" title="#{i18n['dw4.elimina_istanza']}" styleClass="btn btn-default">
+						 			<f:ajax execute="@form" render=":templateForm:allegatiHolder :templateForm:errormsg"/>
+						 			<span class="glyphicon glyphicon-minus"></span>
+								</h:commandLink>
+								
+								<h:commandLink action="#{beanDoc.addAllegato}" title="#{i18n['dw4.aggiungi_istanza']}" styleClass="btn btn-default">
+						 			<f:ajax execute="@form" render=":templateForm:allegatiHolder :templateForm:errormsg"/>
+						 			<span class="glyphicon glyphicon-plus"></span>
+								</h:commandLink>
+							</div>
+						</div>
+					</div>
+					<h:panelGroup rendered="#{bean.formsAdapter.funzionalitaDisponibili['mostraNumPaggPerAllegati']}">
+						<label class="col-sm-3 control-label feLabel"><span>#{i18n['dw4.pagine']}</span></label>
+						<div class="col-sm-2">
+							<h:inputText value="#{allegato.pagine}" styleClass="form-control" />
+						</div>
+					</h:panelGroup>
+				</h:panelGroup>
+			</div>
+		</ui:repeat>
+	</h:panelGroup>
+
+</ui:composition>
+</html>

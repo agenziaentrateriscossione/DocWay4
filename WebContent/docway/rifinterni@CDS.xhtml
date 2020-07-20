@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" 
+	  xmlns:h="http://java.sun.com/jsf/html" 
+	  xmlns:ui="http://java.sun.com/jsf/facelets" 
+	  xmlns:f="http://java.sun.com/jsf/core"
+	  xmlns:p="http://xmlns.jcp.org/jsf/passthrough">
+<ui:composition>
+
+	<h:panelGroup id="rifinterniCDS" layout="block">
+		<h:panelGroup rendered="#{bean.viewAddCDS}">
+			<!-- Modal -->
+			<div id="rifinterniCdsModal" class="modal fade in" aria-hidden="false" aria-labelledby="rifinterniCdsModalLabel" role="dialog" tabindex="-1" style="display: block;">
+			<!--div class="modal fade" id="rifinterniCdsModal" role="dialog" aria-labelledby="rifinterniCdsModalLabel" aria-hidden="true"-->
+				<div class="modal-dialog modal-lg">
+					<div class="modal-content jsf-modal">
+						<div class="modal-header">
+							<h:commandButton styleClass="close" title="#{i18n['acl.close']}" action="#{bean.closeAddCDS}" p:data-dismiss="modal"  value="&#215;" >
+			        			<f:ajax render="rifinterniCDS"/>
+			        		</h:commandButton>
+			        		
+			        		<h4 class="modal-title" id="rifinterniCdsModalLabel">#{(!empty customLabel) ? customLabel : i18n['dw4.conferenza_di_servizi']}</h4>
+						</div>
+						<div class="modal-body">
+							
+							<div id="cds_Fields">
+								<div class="form-group">
+									<label for="templateForm:cds_sendMailRifInterniCheck" class="col-sm-2 control-label">#{i18n['dw4.invia_email_di_notifica']}</label>
+									<div class="col-sm-1">
+										<h:selectBooleanCheckbox value="#{bean.doc.sendMailRifInterni}" id="cds_sendMailRifInterniCheck" styleClass="#{ component.valid ? '' : 'invalidinput' }" />
+									</div>
+								</div>
+								<ui:repeat id="rifint_cds_list" var="rif" value="#{bean.doc.assegnazioneCDS}" varStatus="indice">
+									<ui:include src="./rifinterni.xhtml">
+							        	<ui:param name="rifintType" value="cds" />
+							        	<ui:param name="customLabel" value="#{customLabel}" />
+							        	<ui:param name="indice" value="#{indice.index}" />
+						        		<ui:param name="editable" value="true" />
+						        		<ui:param name="pageBean" value="#{bean}" />
+						        		<ui:param name="rifintBean" value="#{rif}" />
+						        		<ui:param name="refresh" value="@form"/>
+						        		<ui:param name="multiple" value="true"/>
+						        	</ui:include>
+						        </ui:repeat>
+							</div>
+							
+						</div>
+						<div class="modal-footer">
+							<h:commandButton styleClass="btn btn-primary openwaitmsg" action="#{bean.confirmAddCDS}" value="#{i18n['acl.save']}" />
+							
+							<h:commandButton styleClass="btn btn-default" title="#{i18n['acl.close']}" action="#{bean.closeAddCDS}" p:data-dismiss="modal"  value="#{i18n['acl.close']}" >
+			        			<f:ajax render="rifinterniCDS"/>
+			        		</h:commandButton>
+						</div>
+					</div>
+				</div>
+			</div>
+			<!--script type="text/javascript">
+			$('#rifinterniCdsModal').modal('show');
+			</script-->
+		</h:panelGroup>
+	</h:panelGroup>
+
+</ui:composition>   
+</html>

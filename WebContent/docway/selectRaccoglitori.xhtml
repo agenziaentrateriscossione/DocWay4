@@ -1,0 +1,52 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" 
+	  xmlns:h="http://java.sun.com/jsf/html" 
+	  xmlns:ui="http://java.sun.com/jsf/facelets" 
+	  xmlns:f="http://java.sun.com/jsf/core">
+	
+	<ui:composition>
+		<h:panelGroup layout="block" rendered="#{bean.viewSelectRaccoglitori}" styleClass="QTPopup">	
+			<div class="popupGrayBg"></div>
+	    	<div class="QTPopupCntnr">
+	        	<div class="gpBdrLeftTop"></div>
+	            <div class="gpBdrRightTop"></div>
+	            <div class="gpBdrTop"></div>
+	            <div class="gpBdrLeft">
+	            	<div class="gpBdrRight">
+	                	<div class="caption">#{i18n['dw4.selezionare_i_raccoglitori']}</div>
+	                	
+	                    <h:commandLink class="closeBtn" title="#{i18n['acl.close']}" action="#{bean.closeViewSelectRaccoglitori}" >
+	                    	<f:ajax render="@form"/>
+	                   	</h:commandLink>
+	                   	
+                   		<div class="contentPopup">
+	                   		<div class="actionButtonHolder">
+								<h:commandLink action="#{bean.confirmInsRaccoglitori}" styleClass="context-menu-one box menu-1 iconButton" ><span class="iconedit">#{i18n['dw4.procedi']}</span></h:commandLink>
+							</div>
+							
+							<div class="pageContent">
+								<div class="fieldset">
+			                    	<ui:repeat id="list_racc" var="contenuto" value="#{current.contenuto_in}" varStatus="indice">
+			                    		<div class="formRow Floats_holder">
+											<div class="feHolder">
+												<h:selectBooleanCheckbox id="raccoglitoriCheck" value="#{contenuto.check}" />
+			                    				<label for="templateForm:list_racc:#{indice.index}:raccoglitoriCheck">
+			                    					<h:graphicImage url="/docway/css/images/raccoglitore.png" alt="#{i18n['dw4.raccoglitore']}" styleClass="infoicon" />
+			                    					#{contenuto.text}
+			                    				</label>
+											</div>
+										</div>
+									</ui:repeat>
+								</div>
+							</div>
+						</div>
+	                </div>
+	            </div>
+	            <div class="gpBdrLeftBottom"></div>
+	            <div class="gpBdrRightBottom"></div>
+	            <div class="gpBdrBottom"></div>
+	    	</div>
+	    </h:panelGroup>
+	</ui:composition>	
+
+</html>

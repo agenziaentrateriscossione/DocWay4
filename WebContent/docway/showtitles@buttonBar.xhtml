@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" 
+	  xmlns:h="http://java.sun.com/jsf/html" 
+	  xmlns:ui="http://java.sun.com/jsf/facelets" 
+	  xmlns:f="http://java.sun.com/jsf/core">
+<ui:composition>
+
+	<!-- toolbar: inizio -->
+	<div class="btn-toolbar" role="toolbar">
+		<div class="btn-group pull-right">
+			<ui:include src="./ajaxNavigationBar.xhtml"><ui:param name="bean" value="#{beanTitles}"/><ui:param name="customPage" value="true"/><ui:param name="customPageId" value="titlesId"/></ui:include>
+		</div>
+		<div class="btn-group">
+			<h:panelGroup rendered="#{!beanTitles.popupPage or beanTitles.view ne 'verificaDuplicati'}">
+				<div class="btn-group">
+					<button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+						#{i18n['dw4.sort']} <span class="caret"></span>
+					</button>
+					<ul class="dropdown-menu">
+						<ui:repeat var="option" value="#{beanTitles.ordinamentoSelect}" varStatus="indice">
+							<li>
+								<h:commandLink action="#{beanTitles.sort}" actionListener="#{beanTitles.attrListenerSortTitles}" styleClass="openwaitmsg">
+									<f:ajax execute="@form" render="@form"/>
+									<f:attribute name="xwOrdIndex" value="#{indice.index}" />
+									
+									<h:panelGroup rendered="#{beanTitles.xwOrd eq '' or fn:toLowerCase(option.value) ne fn:toLowerCase(beanTitles.xwOrd)}">
+										<span class="glyphicons-pro unchecked normal-size-icon"></span>
+									</h:panelGroup>
+									<h:panelGroup rendered="#{beanTitles.xwOrd ne '' and fn:toLowerCase(option.value) eq fn:toLowerCase(beanTitles.xwOrd)}">
+                                    	<span class="glyphicons-pro check normal-size-icon"></span>
+                                    </h:panelGroup>
+									#{option.label}
+									<h:panelGroup rendered="#{beanTitles.xwOrd ne '' and option.value ne ';' and fn:toLowerCase(option.value) eq fn:toLowerCase(beanTitles.xwOrd)}">
+										&#160;<span class="#{ beanTitles.ascSort ? 'glyphicon glyphicon-chevron-up' : 'glyphicon glyphicon-chevron-down' }" title="#{ beanTitles.ascSort ? i18n['dw4.ordine_crescente'] : i18n['dw4.ordine_decrescente'] }"></span>
+									</h:panelGroup> 
+								</h:commandLink>
+							</li>
+						</ui:repeat>
+					</ul>
+				</div>
+				<h:panelGroup rendered="#{beanTitles.formsAdapter.funzionalitaDisponibili['menuMode']}">
+					<button type="button" class="btn btn-default" data-toggle="modal" data-target="#refineDocsModal">
+  						#{i18n['dw4.refine']}
+					</button>
+				</h:panelGroup>
+				<h:panelGroup rendered="#{beanTitles.embeddedApp ne 'dwrep' and !beanTitles.cestino}">
+					<h:commandLink rendered="#{beanTitles.formsAdapter.funzionalitaDisponibili['queryInSearchHierarchy'] and beanTitles.formsAdapter.funzionalitaDisponibili['enableVaschettePersonalizzate']}" action="#{beanTitles.openAddVaschetta}" styleClass="btn btn-default">
+						<f:ajax execute="@form" render="@form" />#{i18n['dw4.nuova_vaschetta']}
+					</h:commandLink>
+				</h:panelGroup>
+			</h:panelGroup>
+		</div>
+	</div>
+	
+	<ui:include src="./refineDocsModal.xhtml"><ui:param name="beanTitles" value="#{beanTitles}"/></ui:include>
+	
+	<h:panelGroup rendered="#{!beanTitles.cestino}">
+		<h:panelGroup rendered="#{!beanTitles.popupPage or beanTitles.view ne 'verificaDuplicati'}">
+			<div class="btn-toolbar" role="toolbar">
+				<div class="btn-group">
+					
+					<h:panelGroup rendered="#{beanTitles.formsAdapter.funzionalitaDisponibili['menuMode']}">
+						<div class="btn-group">
+							<button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+								#{i18n['dw4.assegna']} <span class="caret"></span>
+							</button>
+							<ul class="dropdown-menu">
+								<li><h:commandLink value="#{beanTitles.formsAdapter.funzionalitaDisponibili['nascondiprotocollo'] ? i18n['dw4.proprietarioadd'] : i18n['dw4.rpaadd']}" action="#{beanTitles.addRPA}" onclick="return confirmTrasferimento(#{beanTitles.countSelection});" /></li>                    
+								<li><h:commandLink value="#{i18n['dw4.nuovocc']}" action="#{beanTitles.addCC}" onclick="return confirmAssegnaCC(#{beanTitles.countSelection});" /></li>
+							</ul>
+						</div>
+					
+						<div class="btn-group">
+							<button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+								#{i18n['dw4.classificazione']} <span class="caret"></span>
+							</button>
+							<ul class="dropdown-menu">
+								<li><h:commandLink action="#{beanTitles.openClassifSpec}" onclick="return confirmCambiaClassifDoc(#{beanTitles.countSelection});">#{i18n['dw4.cambiaclassif']}</h:commandLink></li>
+								<h:panelGroup rendered="#{!docwayHome.formsAdapter.funzionalitaDisponibili['nascondiprotocollo']}">
+									<li><h:commandLink action="#{beanTitles.openClassifSpecMinuta}" onclick="return confirmCambiaClassifDocMinuta(#{beanTitles.countSelection});">#{i18n['dw4.cambiaclassifminuta']}</h:commandLink></li>
+								</h:panelGroup>
+							</ul>
+						</div>
+					</h:panelGroup>
+					
+					<h:panelGroup rendered="#{beanTitles.embeddedApp ne 'dwrep' and !docwayHome.formsAdapter.funzionalitaDisponibili['nascondifascicoli'] and beanTitles.formsAdapter.funzionalitaDisponibili['menuMode']}">
+						<div class="btn-group">
+							<button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+								#{i18n['dw4.archivio']} <span class="caret"></span>
+							</button>
+							<ul class="dropdown-menu">
+								<li><h:commandLink action="#{beanTitles.insertInFascRPA}" value="#{i18n['dw4.inserinfasc']}" /></li>
+								<li><h:commandLink action="#{beanTitles.removeSelFromFasc}" value="#{i18n['dw4.rimuovidalfascicolo']}" onclick="return removeSelFromFasc(#{beanTitles.countSelection});" /></li>
+								<li class="divider"></li>
+								<li><h:commandLink action="#{beanTitles.insertInFascRPAM}" value="#{i18n['dw4.insermininfasc']}" /></li>
+								<li><h:commandLink action="#{beanTitles.removeSelFromFascM}" value="#{i18n['dw4.rimuoviminutadalfascicolo']}" onclick="return removeSelFromFascM(#{beanTitles.countSelection});" /></li>
+								<li class="divider"></li>
+								<li><h:commandLink action="#{beanTitles.raccogli}" value="#{i18n['dw4.raccogli']}" onclick="return raccogli(#{beanTitles.countSelection});" /></li>
+							</ul>
+						</div>
+					</h:panelGroup>
+					
+					<h:panelGroup rendered="#{beanTitles.formsAdapter.funzionalitaDisponibili['abilitaEsportazioneCSVBase'] and beanTitles.formsAdapter.funzionalitaDisponibili['abilitaEsportazioneCSVAvanzata']}">
+						<div class="btn-group">
+							<button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+								#{i18n['dw4.esportazione_csv']} <span class="caret"></span>
+							</button>
+							<ul class="dropdown-menu">
+								<li><h:commandLink action="#{beanTitles.exportCSV}" value="#{i18n['dw4.base']}" onclick="return exportCSV(#{beanTitles.countSelection});" /></li>
+								<li><h:commandLink action="#{beanTitles.startExportCSVAdvanced}" value="#{i18n['dw4.avanzata']}" onclick="return exportCSV(#{beanTitles.countSelection});" /></li>
+							</ul>
+						</div>
+					</h:panelGroup>
+					<h:commandLink rendered="#{!beanTitles.formsAdapter.funzionalitaDisponibili['abilitaEsportazioneCSVBase'] and beanTitles.formsAdapter.funzionalitaDisponibili['abilitaEsportazioneCSVAvanzata']}" action="#{beanTitles.startExportCSVAdvanced}" styleClass="btn btn-default" onclick="return exportCSV(#{beanTitles.countSelection});">#{i18n['dw4.esportazione_csv']}</h:commandLink>
+					<h:commandLink rendered="#{beanTitles.formsAdapter.funzionalitaDisponibili['abilitaEsportazioneCSVBase'] and !beanTitles.formsAdapter.funzionalitaDisponibili['abilitaEsportazioneCSVAvanzata']}" action="#{beanTitles.exportCSV}" styleClass="btn btn-default" onclick="return exportCSV(#{beanTitles.countSelection});">#{i18n['dw4.esportazione_csv']}</h:commandLink>
+	                
+					<h:commandLink rendered="#{beanTitles.formsAdapter.funzionalitaDisponibili['abilitaEliminazioneMassivaDocs']}" action="#{beanTitles.removeDocs}" styleClass="btn btn-default" onclick="return deleteDocs(#{beanTitles.countSelection});">#{i18n['acl.delete']}</h:commandLink>
+					
+					<h:panelGroup rendered="#{beanTitles.embeddedApp ne 'dwrep'}">
+						<h:panelGroup rendered="#{!docwayHome.formsAdapter.funzionalitaDisponibili['nascondiprotocollo'] and (beanTitles.formsAdapter.funzionalitaDisponibili['menuMode'] or beanTitles.formsAdapter.funzionalitaDisponibili['showPrintButton'] or beanTitles.dbTable eq '@globale' or beanTitles.dbTable eq '')}">
+							<div class="btn-group">
+								<button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+									#{i18n['dw4.print']} <span class="caret"></span>
+								</button>
+								<ul class="dropdown-menu">
+									<ui:remove> <!-- richiesta eliminazione del pulsante -->
+										<h:panelGroup rendered="#{beanTitles.formsAdapter.funzionalitaDisponibili['stampaElenco'] }">
+											<li><h:commandLink action="#{beanTitles.stampaElenco}" value="#{i18n['dw4.stampaelenco']}" /></li>
+										</h:panelGroup>
+									</ui:remove>
+									<h:panelGroup rendered="#{beanTitles.formsAdapter.funzionalitaDisponibili['menuMode'] }">
+										<li><h:commandLink action="#{beanTitles.stampaRegistro}" value="#{i18n['dw4.stamparegistro']}" /></li>
+									</h:panelGroup>
+									<h:panelGroup rendered="#{beanTitles.dbTable eq '@globale' or beanTitles.dbTable eq ''}">
+										<li><h:commandLink action="#{beanTitles.stampaCtrlGestione}" value="#{i18n['dw4.controllogestione']}" /></li>
+									</h:panelGroup>
+									<h:panelGroup rendered="#{beanTitles.formsAdapter.funzionalitaDisponibili['showPrintButton'] }">
+										<li><h:commandLink action="#{beanTitles.printProfiles}" value="#{i18n['dw4.profilistampa']}" /></li>
+									</h:panelGroup>
+								</ul>
+							</div>
+						</h:panelGroup>
+						
+						<ui:remove> <!-- da testare, sembra non funzionare -->
+							<h:commandLink action="#{beanTitles.store}" styleClass="btn btn-default">#{i18n['dw4.conservazione']}</h:commandLink>
+						</ui:remove>
+						<ui:remove> <!-- richiesta eliminazione del pulsante -->
+							<h:panelGroup rendered="#{!docwayHome.formsAdapter.funzionalitaDisponibili['nascondiprotocollo']}">
+								<h:commandLink rendered="#{beanTitles.formsAdapter.funzionalitaDisponibili['showRitiraBando']}" action="#{beanTitles.ritiraBandoSelezione}" styleClass="btn btn-default" onclick="return confirmRitiraBandoSelezione(#{beanTitles.countSelection});">#{i18n['dw4.ritiraBando']}</h:commandLink>
+							</h:panelGroup>
+						</ui:remove>
+					</h:panelGroup>
+					
+					<ui:remove>
+						<!-- TODO: Da completare controllo su IWX -->
+						<tr id="hxp-test_tuple-str_eq-@enableIW-true">
+							<td align="right">
+								<a href="javascript:void(0);" onclick="return printDocsAttachments();" tabindex="0" onMouseOver="window.status='Stampa tutti gli allegati dei documenti della selezione';return true;" onMouseOut="window.status='';return true"><div style="font-size:80%" class="uniform_emula_bottone"><span id="hxp-resource-Stampa Allegati"/></div></a>
+							</td>
+						</tr>
+					</ui:remove>
+				</div>
+			</div>
+		</h:panelGroup>
+		<h:panelGroup rendered="#{beanTitles.popupPage and beanTitles.view eq 'verificaDuplicati'}">
+			<div class="alert alert-info" style="margin-top:15px;">
+				<p><h:outputText style="font-size:1.1em;" value="#{i18n['dw4.rilevata_la_presenza_di_documenti_con_gli_stessi_estremi']}" /></p>
+		  		
+		  		<div class="btn-toolbar" role="toolbar">
+			  		<h:commandLink onclick="confermaDuplicato();" styleClass="btn btn-success">#{i18n['dw4.continua']}</h:commandLink>
+					<h:commandLink onclick="annullaDuplicato();" styleClass="btn btn-danger">#{i18n['dw4.abbandona']}</h:commandLink>
+				</div>
+			</div>
+		</h:panelGroup>
+	</h:panelGroup>
+	<!-- toolbar: fine -->
+
+</ui:composition>   
+</html>

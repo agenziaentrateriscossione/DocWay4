@@ -1,0 +1,134 @@
+<pretty-config xmlns="http://ocpsoft.org/prettyfaces/3.3.3"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://ocpsoft.org/xml/ns/prettyfaces/ocpsoft-pretty-faces-3.3.3.xsd">
+
+	<!--url-mapping id="view-user"> <pattern value="/user/{username}" /> <view-id 
+		value="/user/view.xhtml" /> </url-mapping -->
+	<!-- Maps "/user/{username}" to the URL "/user/view.xhtml?username=value" -->
+	
+	<url-mapping id="rifesterno-acl">
+		<pattern value="/acl/#{valueRif: aclHome.valueRif}/rifesterno.pf" />
+		<query-param name="codammaoo">#{aclHome.codAmmAooRestriction}</query-param>
+		<query-param name="db">#{aclHome.aclDb}</query-param>
+		<view-id value="/acl/home.jsf" />
+		<action>#{aclHome.loadRifEst}</action>
+	</url-mapping>
+	
+	<url-mapping id="rif-acl">
+		<pattern value="/acl/loadrif.pf"/>
+		<query-param name="searchKey">#{aclHome.searchKeyRif}</query-param>
+		<query-param name="value">#{aclHome.valueRif}</query-param>
+		<query-param name="codammaoo">#{aclHome.codAmmAooRestriction}</query-param>
+		<query-param name="db">#{aclHome.aclDb}</query-param>
+		<view-id value="/acl/home.jsf" />
+		<action onPostback="false">#{aclHome.loadRif}</action>
+	</url-mapping>
+	
+	<url-mapping id="docedit-persona-esterna-acl">
+		<pattern value="/acl/docEdit@persona_esterna.pf" />
+		<query-param name="lookupFieldVal">#{aclHome.lookupFieldVal}</query-param>
+		<query-param name="db">#{aclHome.aclDb}</query-param>
+		<query-param name="xverb">#{aclHome.xverbInsPersona}</query-param>  
+		<view-id value="/acl/home.jsf" />
+		<action>#{aclHome.insPersonaEsternaPopup}</action>
+	</url-mapping>
+	
+	<url-mapping id="docedit-struttura-esterna-acl">
+		<pattern value="/acl/docEdit@struttura_esterna.pf" />
+		<query-param name="lookupFieldVal">#{aclHome.lookupFieldVal}</query-param> 
+		<query-param name="db">#{aclHome.aclDb}</query-param>
+		<view-id value="/acl/home.jsf" />
+		<action>#{aclHome.insStrutturaEsternaPopup}</action>
+	</url-mapping>
+	
+	<url-mapping id="docedit-comune-acl">
+		<pattern value="/acl/docEdit@comune.pf" />
+		<query-param name="lookupFieldVal">#{aclHome.lookupFieldVal}</query-param>
+		<query-param name="db">#{aclHome.aclDb}</query-param> 
+		<view-id value="/acl/home.jsf" />
+		<action>#{aclHome.insComunePopup}</action>
+	</url-mapping>
+	
+	<url-mapping id="change-password-acl">
+		<pattern value="/acl/changePassword.pf" />
+		<view-id value="/acl/home.jsf" />
+		<query-param name="db">#{aclHome.aclDb}</query-param>
+		<action>#{aclHome.changeUserPwd}</action>
+	</url-mapping>
+	
+	<url-mapping id="showdoc-organo">
+		<pattern value="/acl/showdocOrgano.pf" />
+		<view-id value="/acl/home.jsf" />
+		<query-param name="organoPosizione">#{aclHome.organoPosizione}</query-param>
+		<query-param name="organoSel">#{aclHome.organoSel}</query-param>
+		<query-param name="organoDb">#{aclHome.organoDb}</query-param>
+		<action>#{aclHome.mostraDocumentoQ}</action>
+	</url-mapping>
+	
+	<url-mapping id="docedit-organo">
+		<pattern value="/acl/doceditOrgano.pf" />
+		<view-id value="/acl/home.jsf" />
+		<query-param name="table">#{aclHome.table}</query-param>
+		<action>#{aclHome.inserisciDocInACL}</action>
+	</url-mapping>
+	
+	<url-mapping id="load-doc">
+		<pattern value="/docway/loaddoc.pf"/>
+		<query-param name="alias">#{docwayHome.docAlias}</query-param>
+		<query-param name="value">#{docwayHome.docValue}</query-param>
+		<query-param name="db">#{docwayHome.docDb}</query-param>
+		<view-id value="/docway/home.jsf" />
+		<action onPostback="false">#{docwayHome.loadDoc}</action>
+	</url-mapping>
+	
+	<url-mapping id="load-titles">
+		<pattern value="/docway/loadtitles.pf"/>
+		<query-param name="verbo">#{docwayHome.titlesVerbo}</query-param>
+		<query-param name="db">#{docwayHome.titlesDb}</query-param>
+		<query-param name="query">#{docwayHome.titlesQuery}</query-param>
+		<query-param name="qord">#{docwayHome.titlesOrd}</query-param> 
+		<view-id value="/docway/home.jsf" />
+		<action onPostback="false">#{docwayHome.loadTitles}</action>
+	</url-mapping>
+	
+	<url-mapping id="show-queryToAdmTools">
+		<pattern value="/docway/show-queryToAdmTools.pf"/>
+		<view-id value="/docway/queryTo.jsf" />
+		<action onPostback="false">#{queryTo.gotoTableQToAdmTools}</action>
+	</url-mapping>
+	
+	<!-- soginSAP -->
+	<url-mapping id="SAPRIC">
+        <pattern value="/soginSAP/SAPRIC.pf"/>
+        <query-param name="KEYSAP">#{soginSAPConnector.keySap}</query-param>
+        <view-id value="/soginSAP/home.jsf" />
+    </url-mapping>
+    
+    <url-mapping id="SAPVIS">
+        <pattern value="/soginSAP/SAPVIS.pf"/>
+        <query-param name="DOCSAP">#{soginSAPConnector.docSap}</query-param>
+        <query-param name="IDDOC">#{soginSAPConnector.idDoc}</query-param>
+        <view-id value="/soginSAP/home.jsf" />
+        <action onPostback="false">#{soginSAPQuery.mostraDocumentoFromSAP}</action>
+    </url-mapping>
+    
+    <url-mapping id="SAPINS">
+        <pattern value="/soginSAP/SAPINS.pf"/>
+        <query-param name="IDDOC">#{soginSAPConnector.idDoc}</query-param>
+        <query-param name="KEYSAP">#{soginSAPConnector.keySap}</query-param>
+        <view-id value="/soginSAP/home.jsf" />
+        <action onPostback="false">#{soginSAPQuery.ricercaDocumentoFromSAP}</action>
+    </url-mapping>
+    
+    <url-mapping id="SAPASSOC">
+        <pattern value="/soginSAP/SAPASSOC.pf"/>
+        <query-param name="DOCSAP">#{soginSAPConnector.docSap}</query-param>
+        <query-param name="IDDOC">#{soginSAPConnector.idDoc}</query-param>
+        <query-param name="CAUSALE">#{soginSAPConnector.causale}</query-param>
+        <query-param name="DATAR">#{soginSAPConnector.dataRegistrazione}</query-param>
+        <query-param name="UTENTE">#{soginSAPConnector.utente}</query-param>
+        <view-id value="/soginSAP/home.jsf" />
+        <action onPostback="false">#{soginSAPQuery.terminaAssociazioneFattura}</action>
+    </url-mapping>
+	
+</pretty-config>

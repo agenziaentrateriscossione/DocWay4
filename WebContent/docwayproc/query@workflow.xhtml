@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	template="template.xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core">
+
+<ui:define name="content">
+	<div id="advancedSearch" class="submitEnterKey">
+		<div class="sub-header">#{i18n['dw4.workflow']}</div>
+
+		<!-- toolbar: inizio -->
+		<div class="btn-toolbar margin-bottom" role="toolbar">
+			<div class="btn-group">
+				<h:commandLink id="advancedSearchBtn" action="#{docwayprocQueryWorkflow.queryPlain}" styleClass="btn btn-primary openwaitmsg">#{i18n['acl.search']}</h:commandLink>
+				<h:commandLink action="#{docwayprocQueryWorkflow.clearForm}" styleClass="btn btn-default">#{i18n['acl.clear']}</h:commandLink>
+			</div>
+			<h:panelGroup rendered="#{docwayprocQueryWorkflow.formsAdapter.funzionalitaDisponibili['insertWF']}" layout="block" styleClass="btn-group">
+				 <h:commandLink action="#{docwayprocMenu.insTableDocWorkflow}" styleClass="btn btn-default">#{i18n['nuovo']}</h:commandLink>
+			</h:panelGroup>
+		</div>
+		<!-- toolbar: fine -->
+		
+		<!-- messages: inizio -->
+		<h:panelGroup rendered="#{not empty facesContext.messageList}" layout="block" styleClass="docedit-messages alert alert-danger">
+			<h:messages styleClass="" id="validationMesseges" />
+		</h:panelGroup>
+		<!-- messages: fine -->
+
+		<!-- scheda query: inizio -->
+		<div class="row-fluid">
+			<div class="box span12">
+				<div class="box-content">
+					<div class="fieldset">
+						<div class="legend">#{i18n['dw4.workflow_search']}</div>
+						
+						<div class="form-group">
+							<label for="templateForm:id_bonita" class="col-sm-2 control-label">#{i18n['dw4.id_bonita']}</label>
+							<div class="col-sm-5">
+								<div class="input-group">
+									<h:inputText id="id_bonita" value="#{docwayprocQueryWorkflow.bwf_name}" styleClass="form-control" />
+									<div class="input-group-btn">
+										<h:commandLink title="#{i18n['acl.vocabulary']}" action="#{docwayprocQueryWorkflow.openIndexNameWorkflow}" styleClass="btn btn-default">
+											<f:ajax execute="@form" render="@form"/>
+											<span class="glyphicon glyphicon-search"></span>
+								        </h:commandLink>
+							        </div>
+						        </div>
+							</div>
+						</div>
+						<div class="form-group">
+							<label for="templateForm:versione_bonita" class="col-sm-2 control-label">#{i18n['dw4.workflowdefinition_version']}</label>
+							<div class="col-sm-3">
+								<div class="input-group">
+									<h:inputText id="versione_bonita" value="#{docwayprocQueryWorkflow.bwf_version}" styleClass="form-control" />
+									<div class="input-group-btn">
+										<h:commandLink title="#{i18n['acl.vocabulary']}" action="#{docwayprocQueryWorkflow.openIndexVersionWorkflow}" styleClass="btn btn-default">
+											<f:ajax execute="@form" render="@form"/>
+											<span class="glyphicon glyphicon-search"></span>
+								        </h:commandLink>
+							        </div>
+						        </div>
+							</div>
+						</div>
+						<div class="form-group">
+							<label class="col-sm-2 control-label">#{i18n['dw4.abilitato']}</label>
+							<div class="col-sm-2">
+								<span class="margin-right-10" style="white-space:nowrap;">
+									<h:selectBooleanCheckbox value="#{docwayprocQueryWorkflow.abilitati}" id="abilitati_si"/>
+									<label for="templateForm:abilitati_si" class="normal-weight-text">#{i18n['dw4.yes']}</label>
+								</span>
+								<span style="white-space:nowrap;">
+									<h:selectBooleanCheckbox value="#{docwayprocQueryWorkflow.non_abilitati}" id="abilitati_no"/>
+									<label for="templateForm:abilitati_no" class="normal-weight-text">#{i18n['dw4.no']}</label>
+								</span>
+							</div>
+						</div>
+						<div class="form-group">
+						  <label class="col-sm-2 control-label">#{i18n['dw4.sotto_flusso']}</label>
+						  <div class="col-sm-2">
+						      <span class="margin-right-10" style="white-space:nowrap;">
+							      <h:selectBooleanCheckbox value="#{docwayprocQueryWorkflow.subprocess}" id="sottoprocesso_flag"/>
+							      <label for="templateForm:sottoprocesso_flag" class="normal-weight-text">#{i18n['dw4.yes']}</label>
+						      </span>
+						      <span style="white-space:nowrap;">
+                                   <h:selectBooleanCheckbox value="#{docwayprocQueryWorkflow.subprocess_no}" id="sottoprocesso_flag_no"/>
+                                   <label for="templateForm:sottoprocesso_flag_no" class="normal-weight-text">#{i18n['dw4.no']}</label>
+                               </span>
+						  </div>
+						</div>
+						<div class="form-group">
+							<label for="templateForm:label_bonita" class="col-sm-2 control-label">#{i18n['dw4.workflowdefinition_name']}</label>
+							<div class="col-sm-9">
+								<div class="input-group">
+									<h:inputText id="label_bonita" value="#{docwayprocQueryWorkflow.bwf_label}" styleClass="form-control" />
+									<div class="input-group-btn">
+										<h:commandLink title="#{i18n['acl.vocabulary']}" action="#{docwayprocQueryWorkflow.openIndexLabelWorkflow}" styleClass="btn btn-default">
+											<f:ajax execute="@form" render="@form"/>
+											<span class="glyphicon glyphicon-search"></span>
+								        </h:commandLink>
+							        </div>
+						        </div>
+							</div>
+						</div>
+						<div class="form-group">
+							<label for="templateForm:descr_bonita" class="col-sm-2 control-label">#{i18n['acl.description']}</label>
+							<div class="col-sm-9">
+								<div class="input-group">
+									<h:inputText id="descr_bonita" value="#{docwayprocQueryWorkflow.bwf_description}" styleClass="form-control" />
+									<div class="input-group-btn">
+										<h:commandLink title="#{i18n['acl.vocabulary']}" action="#{docwayprocQueryWorkflow.openIndexDescriptionWorkflow}" styleClass="btn btn-default">
+											<f:ajax execute="@form" render="@form"/>
+											<span class="glyphicon glyphicon-search"></span>
+								        </h:commandLink>
+							        </div>
+						        </div>
+							</div>
+						</div>
+					</div> <!-- /fieldset -->
+				</div>
+			</div>
+		</div>
+		<!-- scheda query: fine -->
+		
+		<script type="text/javascript">
+		$(document).ready(function() {
+			// focus su campo globale
+			$('#templateForm\\:label_bonita').focus();
+		});
+		</script>
+		
+		<ui:include src="./showindex.xhtml"><ui:param name="pageBean" value="#{docwayprocQueryWorkflow}"/></ui:include>
+		
+		<h:inputTextarea value="#{docwayprocQueryWorkflow.xml}" rendered="#{docwayprocQueryWorkflow.debugMode}" styleClass="form-control" rows="10" />
+	</div>
+</ui:define>
+
+</ui:composition>

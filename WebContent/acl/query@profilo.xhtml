@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+    template="template.xhtml"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:f="http://java.sun.com/jsf/core">
+
+<ui:define name="content">
+	<div id="advancedSearch" class="struint submitEnterKey">
+	
+		<!-- toolbar: inizio -->
+		<div class="btn-toolbar docway-toolbar margin-bottom" role="toolbar">
+			<div class="btn-group">
+				<h:commandLink id="advancedSearchBtn" action="#{queryProfilo.queryPlain}" styleClass="btn btn-primary openwaitmsg" value="#{i18n['acl.search']}" />
+				<h:commandLink action="#{queryProfilo.resetQuery}" styleClass="btn btn-default" value="#{i18n['acl.clear']}"></h:commandLink>
+			</div>
+		</div>
+		<!-- toolbar: fine -->
+		
+		<!-- messages: inizio -->
+		<h:panelGroup rendered="#{not empty facesContext.messageList}" layout="block" styleClass="docedit-messages alert alert-info">
+			<h:messages styleClass="" id="validationMesseges" />
+		</h:panelGroup>
+		<h:panelGroup rendered="#{queryProfilo.warningSuRestrizioniPartizialiEnabled and queryProfilo.formsAdapter.funzionalitaDisponibili['acl_int_aoo_restriction'] and !queryProfilo.formsAdapter.funzionalitaDisponibili['acl_ext_aoo_restriction']}" layout="block" styleClass="docedit-messages alert alert-warning">
+			<h:outputText value="#{i18n['acl.la_ricerca_corrente_verra_filtrata_in_base_alla_propria_aoo_di_appartenenza_e_non_sara_presa_in_considerazione_la_selezione_dell_aoo_dal_menu_a_sinistra']}" />
+			(<strong><h:outputText value="#{i18n['acl.l_utente_ha_restrizioni_su_anagrafica_interna']}" /></strong>)
+		</h:panelGroup>
+		<!-- messages: fine -->
+		
+		<!-- scheda query: inizio -->
+		<div class="row-fluid" style="margin-top:10px;">
+			<div id="fixedshowdoc" class="box span12 fixed-showdoc">
+				<div class="box-content">
+					<div class="fieldset">
+						<div class="legend">#{i18n['acl.search_profile']}</div>
+						
+						<div class="form-group">
+							<label for="templateForm:query_profilo_cod" class="col-sm-2 control-label">#{i18n['acl.cod_profile']}</label>
+							<div class="col-sm-3">
+								<div class="input-group">
+									<h:inputText id="query_profilo_cod" value="#{queryProfilo.profilo_matricola}" styleClass="form-control" />
+									<div class="input-group-btn">
+										<h:commandLink title="#{i18n['acl.vocabulary']}" action="#{queryProfilo.openIndexProfileCod}" styleClass="btn btn-default">
+											<f:ajax execute="@form" render="@form"/>
+											<span class="glyphicon glyphicon-search"></span>
+								        </h:commandLink>
+							        </div>
+						        </div>
+							</div>
+						</div>
+						<div class="form-group">
+							<label for="templateForm:query_profilo_name" class="col-sm-2 control-label">#{i18n['acl.name_profile']}</label>
+							<div class="col-sm-9">
+								<div class="input-group">
+									<h:inputText id="query_profilo_name" value="#{queryProfilo.profilo_nome}" styleClass="form-control" />
+									<div class="input-group-btn">
+										<h:commandLink title="#{i18n['acl.vocabulary']}" action="#{queryProfilo.openIndexProfileName}" styleClass="btn btn-default">
+											<f:ajax execute="@form" render="@form"/>
+											<span class="glyphicon glyphicon-search"></span>
+								        </h:commandLink>
+							        </div>
+						        </div>
+							</div>
+						</div>
+					</div> <!-- /fieldset -->
+				</div>
+			</div>
+		</div>
+		<script type="text/javascript">
+		$(document).ready(function() {
+			// focus su campo globale
+			$('#templateForm\\:query_profilo_name').focus();
+		});
+		</script>
+		<!-- scheda query: fine -->
+	</div>
+
+	<ui:include src="./showindex.xhtml"> <ui:param name="pageBean" value="#{queryProfilo}"/></ui:include>
+</ui:define>
+    
+</ui:composition>    

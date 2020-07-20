@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" 
+	  xmlns:h="http://java.sun.com/jsf/html" 
+	  xmlns:ui="http://java.sun.com/jsf/facelets" 
+	  xmlns:f="http://java.sun.com/jsf/core">
+<ui:composition>
+
+	<div class="doc-tipo-#{doc.tipo} showdoc-title clearfix">
+		<div class="row">
+			<div class="col-xs-1">
+				<h:panelGroup rendered="#{empty icon}">
+					<span class="doc-tipo-#{doc.tipo} glyphicons-pro #{(doc.annullato =='si') ? 'annullato' : ''}"></span>
+				</h:panelGroup>
+				<h:panelGroup rendered="#{!empty icon}">
+					<span class="showdoc-custom-title-icon">
+						<span class="doc-tipo-custom #{icon} #{(doc.annullato =='si') ? 'annullato' : ''}" title="#{(!empty doc.repertorio.text) ? doc.repertorio.text : doc.tipo}"></span>
+						<ui:remove>
+							<h:graphicImage url="#{icon}" alt="#{(!empty doc.repertorio.text) ? doc.repertorio.text : doc.tipo}" title="#{(!empty doc.repertorio.text) ? doc.repertorio.text : doc.tipo}" />
+						</ui:remove>
+					</span>
+				</h:panelGroup>
+			</div>
+			<div class="col-xs-10">
+				<h:panelGroup rendered="#{empty doc.non_disponibile.estremi}">
+					<div class="showdoc-first-row-title">
+						
+						<span class="showdoc-title-prot">
+							<h:panelGroup rendered="#{doc.tipo eq 'varie'}">
+								#{doc.proposta.organo} - #{doc.proposta.text} - #{bean.comunicazioneLabel}
+							</h:panelGroup>
+							#{i18n['dw4.del']}
+							<h:panelGroup rendered="#{doc.tipo eq 'varie'}">
+								<h:outputText rendered="#{doc.data_prot ne ''}" value="#{doc.data_prot}"><f:converter converterId="DateConverter"/></h:outputText>
+								<h:outputText rendered="#{doc.data_prot eq ''}" value="#{doc.creazione.dateLong}" />
+							</h:panelGroup>
+						</span>
+						
+						<h:panelGroup rendered="#{!empty doc.repertorio.cod}">
+							<h:outputText value=" - " />
+							<span class="showdoc-title-repertorio">
+								#{i18n['dw4.rep']} <h:outputText value="#{doc.repertorio.text}" escape="false" />
+								<h:panelGroup rendered="#{!empty doc.repertorio.numero and doc.repertorio.numero ne '.'}">
+									(n. <h:outputText value="#{doc.repertorio.numero}"><f:converter converterId="NumRepConverter"/></h:outputText>)
+								</h:panelGroup>
+							</span>
+						</h:panelGroup>
+					</div>
+					<div class="showdoc-second-row-title" title="#{doc.oggetto}">
+						#{doc.oggetto}
+					</div>
+				</h:panelGroup>
+				<h:panelGroup rendered="#{!empty doc.non_disponibile.estremi}">
+					<span class="showdoc-title-nondisponibile">#{doc.non_disponibile.estremi}<br/></span>
+				</h:panelGroup>
+			</div>
+			<div class="col-xs-1">
+			</div>
+		</div>
+	</div>
+					
+</ui:composition>
+</html>

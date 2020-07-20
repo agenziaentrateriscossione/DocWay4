@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" 
+	  xmlns:h="http://java.sun.com/jsf/html" 
+	  xmlns:ui="http://java.sun.com/jsf/facelets" 
+	  xmlns:f="http://java.sun.com/jsf/core">
+<ui:composition>
+
+	<div class="showdoc-section">
+		<div class="title">
+			<h:panelGroup rendered="#{bean.doc.stato eq 'sospesa'}">
+				#{i18n['dw4.proposte_sospese_del']} #{bean.doc.organo}
+			</h:panelGroup>
+			<h:panelGroup rendered="#{! (bean.doc.stato eq 'sospesa')}">
+				#{i18n['dw4.seduta_del']} #{bean.doc.organo} #{i18n['dw4.del']} #{bean.doc.data_convocazione}
+				<h:panelGroup rendered="#{bean.doc.straordinaria}">(#{i18n['dw4.straordinaria']})</h:panelGroup>
+			</h:panelGroup>
+			<div class="pull-right">
+				<span class="glyphicon glyphicon-calendar" title="#{i18n['dw4.seduta']}"></span>
+			</div>
+		</div>
+		<dl class="dl-horizontal">
+			<ui:include src="./showdoc@seduta@datidoc@common.xhtml"></ui:include>
+			<h:panelGroup rendered="#{bean.formsAdapter.funzionalitaDisponibili['defaultMasch']}">
+				<ui:include src="./showdoc@seduta@datidoc@defaultMasch.xhtml"></ui:include>
+			</h:panelGroup>
+		</dl>
+	</div>
+
+</ui:composition>
+</html>

@@ -1,0 +1,24 @@
+
+/*############################### STILI PER IDENTIFICAZIONE ARCHIVIO - INIZIO ###############################*/
+
+a.archive-xdocwayproc-nuclecodoc, a.archive-xdocwayproc-nuclecodoc:hover {
+	background: url('images/logo/nuclecoproc-small.png') no-repeat center;
+	background-size: 85%; 
+	background-color: #fff !important;
+	margin-top: 2px;
+	border-radius: 4px;
+}
+
+a.archive-xdocwayproc-nuclecodoc img {
+	visibility: hidden;
+}
+
+.login-archive-xdocwayproc-nuclecodoc {
+	background: url('images/logo/nuclecoproc-big.png') no-repeat center;
+}
+
+.login-archive-xdocwayproc-nuclecodoc img {
+	visibility: hidden;
+}
+
+/*############################### STILI PER IDENTIFICAZIONE ARCHIVIO - FINE ###############################*/

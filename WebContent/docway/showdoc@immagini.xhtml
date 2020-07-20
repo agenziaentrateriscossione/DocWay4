@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+    template="#{showdocImmagini.pageTemplate}"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:f="http://java.sun.com/jsf/core">
+
+<ui:define name="content">
+	<div class="popup-immagini #{showdocImmagini.doc.tipo}">
+		<div class="showdoc-legend showdoc-titolo-sezione">#{i18n['dw4.view_immagini']}</div>
+		
+		<ui:include src="./showdoc@images@iwx.xhtml">
+			<ui:param name="bean" value="#{showdocImmagini}"/>
+		</ui:include>
+			
+		<h:inputTextarea value="#{showdocImmagini.xml}" rendered="#{showdocImmagini.debugMode}" styleClass="form-control" rows="10" />
+	</div>
+</ui:define>
+
+</ui:composition>

@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:p="http://xmlns.jcp.org/jsf/passthrough">
+<ui:composition>
+
+	<div class="paginate-results" rendered="#{beanPaginator.totalPages > 0}">
+		<div class="btn-group inline pull-right">
+			<h:commandLink title="#{i18n['nextPage']}" action="#{beanPaginator.paginaSuccessiva}" styleClass="btn btn-default #{!(beanPaginator.paginaSuccessivaEnabled) ? 'disabled' : ''} auto-width openwaitmsg">
+				<f:ajax event="action" render="@form"/>
+				<span class="glyphicon glyphicon-play"></span>
+			</h:commandLink>
+			<h:commandLink title="#{i18n['lastPage']}" action="#{beanPaginator.ultimaPagina}" styleClass="btn btn-default #{!(beanPaginator.ultimaPaginaEnabled) ? 'disabled' : ''} auto-width openwaitmsg">
+				<f:ajax event="action" render="@form"/>
+				<span class="glyphicon glyphicon-fast-forward"></span>
+			</h:commandLink>
+		</div>
+		<div class="titles-navigation inline pull-right">
+			<h:panelGroup rendered="#{beanPaginator.totalPages > 0}" layout="block" styleClass="right page-selector">
+				<h:panelGroup rendered="#{customPage eq 'true' and !empty customPageId}">
+					<h:inputText id="#{customPageId}Pag" value="#{beanPaginator.currentPage}" styleClass="form-control submitsingleinput popoveritem" p:data-toggle="popover" p:data-placement="bottom" p:data-trigger="hover" p:data-content="#{i18n['dw4.elenco_risultati']} #{i18n['dw4.from']} #{beanPaginator.firstRecordInPage} #{i18n['dw4.to']} #{beanPaginator.lastRecordInPage} (#{i18n['dw4.on']} #{beanPaginator.totalRecords})" />
+					<h:commandLink id="#{customPageId}PagBtn" action="#{beanPaginator.paginaSpecifica}"><f:ajax execute="@form" render="@form" /></h:commandLink>
+				</h:panelGroup>
+				<h:panelGroup rendered="#{customPage ne 'true'}">
+					#{beanPaginator.currentPage}
+				</h:panelGroup>
+				#{i18n['dw4.of']} #{beanPaginator.totalPages}
+			</h:panelGroup>
+		</div>
+		<div class="btn-group inline pull-right">
+			<h:commandLink action="#{beanPaginator.primaPagina}" title="#{i18n['firstPage']}" styleClass="btn btn-default #{!(beanPaginator.primaPaginaEnabled) ? 'disabled' : ''} auto-width openwaitmsg">
+				<f:ajax event="action" render="@form"/>
+				<span class="glyphicon glyphicon-fast-backward"></span>
+			</h:commandLink> 
+			
+			<h:commandLink title="#{i18n['prevPage']}" action="#{beanPaginator.paginaPrecedente}" styleClass="btn btn-default #{!(beanPaginator.paginaPrecedenteEnabled) ? 'disabled' : ''} auto-width openwaitmsg">
+				<f:ajax event="action" render="@form"/>
+				<span class="glyphicon glyphicon-play icon-flipped"></span>
+			</h:commandLink>
+		</div>
+	</div>
+
+</ui:composition>
+</html>

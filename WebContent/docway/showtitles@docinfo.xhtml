@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" 
+	  xmlns:h="http://java.sun.com/jsf/html" 
+	  xmlns:ui="http://java.sun.com/jsf/facelets" 
+	  xmlns:f="http://java.sun.com/jsf/core">
+<ui:composition>
+
+	<a id="titleinfo#{indice}" class="popoveritem" data-placement="#{(!empty direction) ? direction : 'right'}" title="#{(!empty title.diritto) ? ((title.diritto eq 'RPA') ? i18n['dw4.proprietario'] : ((title.diritto eq 'RPAM') ? i18n['dw4.proprietariom'] : title.diritto)) : i18n['dw4.info']}" href='#'>
+		<h:panelGroup rendered="#{title.split[12]!='annullato=si'}">
+			<i class="glyphicon glyphicon-info-sign"></i>
+		</h:panelGroup>
+		<h:panelGroup rendered="#{title.split[12]=='annullato=si'}">
+			<i class="glyphicon glyphicon-exclamation-sign"></i>
+		</h:panelGroup>
+	</a>
+	<div id="titleinfo#{varstatus.index}Content" style="display:none;">
+		<table class="table table-condensed docinfo-table">
+			<tbody>
+				<h:panelGroup rendered="#{title.visto == 'true'}">
+					<tr>
+						<td><span class="visto-icon glyphicon glyphicon-ok normal-size-icon" title="#{i18n['dw4.viewMessage']}"></span></td>
+						<td>#{i18n['dw4.viewMessage']}</td>
+					</tr>
+				</h:panelGroup>
+				<h:panelGroup rendered="#{fn:toUpperCase(title.dbTable) eq 'DIFFERITO'}">
+					<tr>
+						<td><span class="differito-icon glyphicons-pro file_import normal-size-icon" title="#{i18n['dw4.differito']}"></span></td>
+						<td>#{i18n['dw4.differito']}</td>
+					</tr>
+				</h:panelGroup>
+				<h:panelGroup rendered="#{title.files == 'true'}">
+					<tr>
+						<td><span class="attach-icon glyphicon glyphicon-paperclip normal-size-icon" title="#{i18n['dw4.attachmentMessage']}"></span></td>
+						<td>#{i18n['dw4.attachmentMessage']}</td>
+					</tr>
+				</h:panelGroup>
+				<h:panelGroup rendered="#{title.immagini == 'true'}">
+					<tr>
+						<td><span class="image-icon glyphicon glyphicon-picture normal-size-icon" title="#{i18n['dw4.imageMessage']}"></span></td>
+						<td>#{i18n['dw4.imageMessage']}</td>
+					</tr>
+				</h:panelGroup>
+				<h:panelGroup rendered="#{!empty title.fascicolato}">
+					<tr>
+						<td><span class="fascicolo-icon glyphicon glyphicon-folder-open normal-size-icon" title="#{i18n['dw4.folderedMessage']} #{title.fascicolato}"></span></td>
+						<td>#{i18n['dw4.folderedMessage']} #{title.fascicolato}</td>
+					</tr>
+				</h:panelGroup>
+				<h:panelGroup rendered="#{!empty title.fascicolato_minuta}">
+					<tr>
+						<td><span class="fascicolo-minuta-icon glyphicon glyphicon-folder-open normal-size-icon" title="#{i18n['dw4.folderedMessageMinuta']} #{title.fascicolato_minuta}"></span></td>
+						<td>#{i18n['dw4.folderedMessageMinuta']} #{title.fascicolato_minuta}</td>
+					</tr>
+				</h:panelGroup>
+				<h:panelGroup rendered="#{title.is_linked == 'true'}">
+					<tr>
+						<td><span class="link-icon glyphicon glyphicon-link normal-size-icon" title="#{i18n['dw4.is_linked']}"></span></td>
+						<td>#{i18n['dw4.is_linked']}</td>
+					</tr>
+				</h:panelGroup>
+				<h:panelGroup rendered="#{title.split[12]=='annullato=si'}">
+					<tr>
+						<td><span class="annullato-icon glyphicon glyphicon-exclamation-sign normal-size-icon" title="#{i18n['dw4.il_documento_e_annullato']}"></span></td>
+						<td>#{i18n['dw4.il_documento_e_annullato']}</td>
+					</tr>
+				</h:panelGroup>
+				<h:panelGroup rendered="#{title.hashSplit['TRASH'] eq 'si'}">
+					<tr>
+						<td><span class="cestino-icon glyphicons-pro bin normal-size-icon" title="#{i18n['dw4.documento_spostato_nel_cestino']}"></span></td>
+						<td>#{i18n['dw4.documento_spostato_nel_cestino']}</td>
+					</tr>
+				</h:panelGroup>
+				<h:panelGroup rendered="#{!empty title.hashSplit['V']}">
+					<tr>
+						<td>
+							<h:panelGroup rendered="#{title.hashSplit['V'] =='Riservato'}">
+								<span class="visibilita-icon glyphicons-pro lock doc-riservato normal-size-icon" title="#{bean.labelsVisibilita['Riservato']}"></span>
+							</h:panelGroup>
+							<h:panelGroup rendered="#{title.hashSplit['V'] =='Altamente confidenziale'}">
+								<span class="visibilita-icon glyphicons-pro lock doc-segreto normal-size-icon" title="#{bean.labelsVisibilita['Altamente confidenziale']}"></span>
+							</h:panelGroup>
+							<h:panelGroup rendered="#{title.hashSplit['V'] =='Segretissimo'}">
+								<span class="visibilita-icon glyphicons-pro lock doc-segretissimo normal-size-icon" title="#{bean.labelsVisibilita['Segretissimo']}"></span>
+							</h:panelGroup>
+							<h:panelGroup rendered="#{fn:toLowerCase(title.hashSplit['V']) ne 'pubblico' and fn:toLowerCase(title.hashSplit['V']) ne 'riservato' and fn:toLowerCase(title.hashSplit['V']) ne 'altamente confidenziale' and fn:toLowerCase(title.hashSplit['V']) ne 'segretissimo'}">
+								
+								<span class="visibilita-icon glyphicons-pro lock doc-visibilita-custom visibilita-cod-#{title.hashSplit['V']} normal-size-icon" title="#{(!empty bean.labelsVisibilita[title.hashSplit['V']]) ? bean.labelsVisibilita[title.hashSplit['V']] : title.hashSplit['V']}"></span>
+							</h:panelGroup>
+						</td>
+						<td>
+							<h:panelGroup rendered="#{title.hashSplit['V'] =='Riservato'}">
+								#{bean.labelsVisibilita['Riservato']}
+							</h:panelGroup>
+							<h:panelGroup rendered="#{title.hashSplit['V'] =='Altamente confidenziale'}">
+								#{bean.labelsVisibilita['Altamente confidenziale']}
+							</h:panelGroup>
+							<h:panelGroup rendered="#{title.hashSplit['V'] =='Segretissimo'}">
+								#{bean.labelsVisibilita['Segretissimo']}
+							</h:panelGroup>
+							<h:panelGroup rendered="#{fn:toLowerCase(title.hashSplit['V']) ne 'pubblico' and fn:toLowerCase(title.hashSplit['V']) ne 'riservato' and fn:toLowerCase(title.hashSplit['V']) ne 'altamente confidenziale' and fn:toLowerCase(title.hashSplit['V']) ne 'segretissimo'}">
+								#{(!empty bean.labelsVisibilita[title.hashSplit['V']]) ? bean.labelsVisibilita[title.hashSplit['V']] : title.hashSplit['V']}
+							</h:panelGroup>
+							<h:panelGroup rendered="#{!empty title.hashSplit['VA']}">
+								#{i18n['dw4.fino_al']}
+								<h:outputText value="#{title.hashSplit['VA']}"><f:converter converterId="DateConverter"/></h:outputText>
+							</h:panelGroup>
+						</td>
+					</tr>
+				</h:panelGroup>
+				<h:panelGroup rendered="#{!empty title.hashSplit['DEP'] and title.hashSplit['DEP'] == 'deposito'}">
+					<tr>
+						<td><span class="archivio-deposito-icon glyphicons-pro package normal-size-icon" title="#{i18n['dw4.archivio_di_deposito']}"></span></td>
+						<td>#{i18n['dw4.archivio_di_deposito']}</td>
+					</tr>
+				</h:panelGroup>
+				<h:panelGroup rendered="#{title.hashSplit['CONSID'] != null and title.hashSplit['CONSID'] ne ''}">
+					<tr>
+						<td><span class="doc-conservato-icon glyphicon glyphicon-export normal-size-icon" title="#{i18n['dw4.documento_inviato_in_conservazione']}"></span></td>
+						<td>#{i18n['dw4.documento_inviato_in_conservazione']}</td>
+					</tr>
+				</h:panelGroup>
+			</tbody>
+		</table>
+	</div>
+
+</ui:composition>   
+</html>

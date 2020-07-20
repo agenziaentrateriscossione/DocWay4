@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" 
+	  xmlns:h="http://java.sun.com/jsf/html" 
+	  xmlns:ui="http://java.sun.com/jsf/facelets" 
+	  xmlns:f="http://java.sun.com/jsf/core">
+<ui:composition>
+
+	<label for="templateForm:#{id}_from" class="#{(!empty offset) ? 'col-sm-offset-' : '' }#{(!empty offset) ? offset : '' } col-sm-#{(!empty labelsize) ? labelsize : '2' } control-label">#{label}</label>
+	<div class="col-sm-3">
+		<div class="input-group #{(is_date eq 'true') ? 'input-daterange date' : ''}" data-date-format="#{(is_date eq 'true') ? 'dd/mm/yyyy' : ''}">
+			<h:inputText styleClass="#{ component.valid ? '' : 'invalidinput' } form-control" value="#{from_value}" id="#{id}_from"/>
+			<span class="input-group-addon">#{i18n['dw4.a']}</span>
+			<h:inputText styleClass="#{ component.valid ? '' : 'invalidinput' } form-control" value="#{to_value}" id="#{id}_to"/>
+		</div>
+	</div>
+
+</ui:composition>
+</html>

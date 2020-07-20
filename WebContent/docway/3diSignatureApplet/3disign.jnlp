@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jnlp spec="1.0+" version="1.1" href="3disign.jnlp">
+<!--jnlp spec="1.0+" version="1.1" codebase="http://HOST[:PORT]/DocWay4/docway/3diSignatureApplet/" href="3disign.jnlp"-->
+	<information>
+		<title>3diSignApplet</title>
+		<vendor>3D Informatica</vendor>
+		<offline-allowed />
+	</information>
+	<security>
+		<all-permissions />
+	</security>
+  
+	<!--<update check="always" policy="always"/>-->
+	<update check="background" />
+	
+	<resources>
+		<java href="http://java.sun.com/products/autodl/j2se" version="1.5+" />	
+		<jar href="3disignapplet.jar" main="true" />
+		<jar href="jars/bctsp-jdk15-146.jar" main="false" />
+		<jar href="jars/bcprov-jdk15-146.jar" main="false" />
+		<jar href="jars/bcmail-jdk15-146.jar" main="false" />
+		<jar href="jars/commons-io-2.4.jar" main="false" />
+		<jar href="jars/commons-logging-1.1.1.jar" main="false" />
+		<jar href="jars/httpclient-4.3.2.jar" main="false" />
+		<jar href="jars/httpcore-4.3.1.jar" main="false" />
+		<jar href="jars/httpmime-4.3.2.jar" main="false" />
+		<jar href="jars/iaikPkcs11Wrapper.jar" main="false" />
+		<jar href="jars/icepdf-core-4.3.3.jar" main="false" />
+		<jar href="jars/icepdf-viewer-4.3.3.jar" main="false" />
+		<jar href="jars/itextpdf-5.1.3.jar" main="false" />
+		<jar href="jars/jaws.jar" main="false" />
+		<jar href="jars/commons-codec-1.6.jar" main="false" />
+	</resources>
+
+	<applet-desc name="3diSignApplet" main-class="it.tredi.applet.signature.SignatureApplet.class" width="400" height="100" /> <!-- width , height are overridden by applet tag -->
+</jnlp>

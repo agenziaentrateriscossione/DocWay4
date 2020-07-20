@@ -1,0 +1,571 @@
+<!DOCTYPE html>
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+    template="template.xhtml"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:f="http://java.sun.com/jsf/core">
+
+	<ui:define name="content">
+	   <div class="aoo docedit">
+            <!-- toolbar: inizio -->
+            <div class="btn-toolbar margin-bottom" role="toolbar">
+                <div class="btn-group">
+                    <h:commandLink id="saveBtn" action="#{docEditModifyAoo.saveDocument}" styleClass="btn btn-primary openwaitmsg">#{i18n['acl.save']}</h:commandLink>
+                    <h:commandLink action="#{docEditModifyAoo.clearDocument}" styleClass="btn btn-default">#{i18n['acl.back']}</h:commandLink>
+                </div>
+            </div>
+            <!-- toolbar: fine -->
+
+            <h5 class="sub-header">
+                <span class="aoo glyphicons-pro"></span>&#160;
+                <h:outputText value="#{i18n['acl.mod_pec']}" escape="false" />
+            </h5>
+
+            <!-- messages: inizio -->
+            <h:panelGroup rendered="#{not empty facesContext.messageList}" layout="block" styleClass="docedit-messages alert alert-danger">
+                <h:messages styleClass="" id="validationMesseges" />
+            </h:panelGroup>
+            <!-- messages: fine -->
+            
+            <script type="text/javascript">
+			$(document).ready(function() {
+				// disabilita link esterni al form per rilascio del lock sul documento
+				disableNoTemplateFormLinks("#{i18n['dw4.abbandona_alert_msg']}");
+			});
+			</script>
+			
+            <!-- scheda edit: inizio -->
+            <div class="row-fluid" style="margin-top:10px;">
+                <div id="fixedshowdoc" class="box span12 fixed-showdoc">
+                    <div class="box-content">
+
+                        <div class="fieldset">
+                            <div class="legend">
+                                #{i18n['acl.informazioni_di_base']}
+                                <div class="pull-right">
+                                    <span class="glyphicons-pro message_flag" title="#{i18n['acl.informazioni_di_base']}"></span>
+                                </div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label class="col-sm-2 control-label requiredField"><span>* #{i18n['acl.name']}</span></label>
+                                <div class="col-sm-9">
+                                	<h:inputText rendered="#{docEditModifyAoo.adminAcl}" id="aoo_nome" value="#{docEditModifyAoo.aoo.nome}" styleClass="#{ component.valid ? '' : 'invalidinput' } form-control"/>
+                                	<h:panelGroup rendered="#{!docEditModifyAoo.adminAcl}">
+                                		<p class="form-control-static"><h:outputText value="#{docEditModifyAoo.aoo.nome}" /></p>
+                                	</h:panelGroup>
+                                </div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label class="col-sm-2 control-label requiredField">#{i18n['acl.cod_amm']}</label>
+                                <div class="col-sm-2">
+                                    <p class="form-control-static"><h:outputText  value="#{docEditModifyAoo.aoo.cod_amm}" /></p>
+                                </div>
+                                <label class="col-sm-offset-3 col-sm-2 control-label requiredField">#{i18n['acl.cod_aoo']}</label>
+                                <div class="col-sm-2">
+                                   	<p class="form-control-static"><h:outputText  value="#{docEditModifyAoo.aoo.cod_aoo}" /></p>
+                                </div>
+                            </div>
+                            
+                        </div> <!-- fieldset -->
+                        
+						<ui:repeat id="mailbox" var="mailbox" value="#{docEditModifyAoo.aoo.mailbox_archiviazione}" varStatus="indice">
+                        	<h:panelGroup rendered="#{mailbox.updateMailbox or mailbox.changePassword}">
+	                            <div class="fieldset">
+	                                <div class="legend">
+	                                    #{i18n['acl.archiviazione']} #{indice.index+1}
+	                                    
+	                                    <h:panelGroup rendered="#{docEditModifyAoo.adminAcl}">
+		                                    <div class="btn-group btn-group-xs">
+		                                        <h:commandLink action="#{docEditModifyAoo.aoo.deleteMailbox_archiviazione}" title="#{i18n['dw4.elimina_istanza']}" styleClass="btn btn-default">
+		                                            <f:param name="mailbox" value="#{mailbox}" />
+		                                            <f:ajax execute="@form" render="@form" />
+		                                            <span class="glyphicon glyphicon-minus"></span>
+		                                        </h:commandLink>
+		                                        <h:commandLink action="#{docEditModifyAoo.aoo.addMailbox_archiviazione}" title="#{i18n['dw4.aggiungi_istanza']}" styleClass="btn btn-default">
+		                                            <f:param name="mailbox" value="#{mailbox}" />
+		                                            <f:ajax execute="@form" render="@form" />
+		                                            <span class="glyphicon glyphicon-plus"></span>
+		                                        </h:commandLink>
+		                                        <h:commandLink action="#{docEditModifyAoo.aoo.moveUpMailbox_archiviazione}" title="#{i18n['dw4.sposta_su']}" rendered="#{indice.index > 0}" styleClass="btn btn-default">
+		                                            <f:param name="mailbox" value="#{mailbox}" />
+		                                            <f:ajax execute="@form" render="@form" />
+		                                            <span class="glyphicon glyphicon-chevron-up"></span>
+		                                        </h:commandLink>
+		                                        <h:commandLink action="#{docEditModifyAoo.aoo.moveDownMailbox_archiviazione}" title="#{i18n['dw4.sposta_giu']}" rendered="#{fn:length(docEditModifyAoo.aoo.mailbox_archiviazione) > (indice.index+1)}" styleClass="btn btn-default">
+		                                            <f:param name="mailbox" value="#{mailbox}" />
+		                                            <f:ajax execute="@form" render="@form" />
+		                                            <span class="glyphicon glyphicon-chevron-down"></span>
+		                                        </h:commandLink>
+		                                    </div>
+		                                </h:panelGroup>
+	                                    
+	                                    <div class="pull-right">
+	                                        <span class="glyphicons-pro envelope"
+	                                            title="#{i18n['acl.archiviazione']} #{indice.index+1}"></span>
+	                                    </div>
+	                                </div>
+	                                
+	                                <h:panelGroup rendered="#{mailbox.updateMailbox}">
+		                                <div class="form-group">
+		                                    <label class="col-sm-2 control-label"><span>#{i18n['acl.name']}</span></label>
+		                                    <div class="col-sm-9">
+		                                        <h:inputText value="#{mailbox.nome}" styleClass="form-control"/>
+		                                    </div>
+		                                </div>
+		                                
+		                                <div class="form-group">
+		                                    <label class="col-sm-2 control-label"><span>#{i18n['acl.documentModel']}</span></label>
+		                                    <div class="col-sm-4">
+		                                        <ui:include src="./lookupRepeatField.xhtml">
+		                                            <ui:param name="id" value="deaoo_documentModel" />
+		                                            <ui:param name="field" value="#{mailbox.documentModel}" />
+		                                            <ui:param name="element" value="#{mailbox}" />
+		                                            <ui:param name="bean" value="#{docEditModifyAoo}" />
+		                                            <ui:param name="action" value="lookupMailboxDocumentModel"/>
+		                                            <ui:param name="clearaction" value="clearMailboxDocumentModel"/>
+		                                            <ui:param name="title" value="#{i18n['acl.documentModel']}"/>
+		                                            <ui:param name="styleclass" value="form-control"/>
+		                                            <ui:param name="refresh" value="@form"/>
+		                                        </ui:include>
+		                                    </div>
+		                                </div>
+		                                
+		                                <div class="form-group">
+		                                    <label class="col-sm-2 control-label"><span>#{i18n['acl.operator']}</span></label>
+		                                    <div class="col-sm-4">
+		                                        <h:inputText value="#{mailbox.oper}" styleClass="form-control" />
+		                                    </div>
+		                                    <label class="col-sm-2 control-label"><span>#{i18n['acl.uff_operator']}</span></label>
+		                                    <div class="col-sm-3">
+		                                        <h:inputText value="#{mailbox.uff_oper}" styleClass="form-control" />
+		                                    </div>
+		                                </div>
+		                                
+		                                <h:panelGroup rendered="#{docEditModifyAoo.abilitaSplitAttachmentsSuMailStorage}" layout="block" styleClass="form-group">
+			                            	<label class="col-sm-2 control-label">
+			                            		#{i18n['dw4.addon_di_archiviazione']}
+			                            	</label>
+			                            	<div class="col-sm-9">
+			                            		<h:panelGroup rendered="#{docEditModifyAoo.abilitaSplitAttachmentsSuMailStorage}">
+				                            		<span class="margin-right-20" style="white-space:nowrap;">
+					                            		<h:selectBooleanCheckbox id="splitByAttachments" value="#{mailbox.splitByAttachments}" />
+				                            			<label class="form-control-static normal-weight-text" for="templateForm:mailbox:#{indice.index}:splitByAttachments">
+				                            				<span class="popoveritem" data-content="#{i18n['acl.creazione_di_un_documento_per_ogni_allegato_contenuto_nella_mail_scaricata_dall_archiviatore']}" data-trigger="hover" data-placement="top" data-toggle="popover">
+								                        		#{i18n['acl.salvataggio_allegati_su_documenti_differenti']} <span class="glyphicon glyphicon-info-sign popoveritem"></span>
+								                        	</span>
+							                        	</label>
+						                        	</span>
+			                            		</h:panelGroup>
+			                            	</div>
+										</h:panelGroup>
+		                                
+		                                <div class="form-group">
+		                                    <label class="col-sm-2 control-label emphasis-title"><span>#{i18n['acl.director']}</span></label>
+		                                </div>
+		                                
+		                                <div class="form-group">
+		                                    <label class="col-sm-2 control-label">#{i18n['acl.oper']}</label>
+		                                    <div class="col-sm-4">
+		                                        <h:inputText value="#{mailbox.responsabile.nome_pers}" styleClass="form-control"/>
+		                                    </div>
+		                                    <label class="col-sm-2 control-label">#{i18n['acl.code']}</label>
+		                                    <div class="col-sm-3">
+		                                        <h:inputText value="#{mailbox.responsabile.matricola}" styleClass="form-control"/>
+		                                    </div>
+		                                </div>
+		                                
+		                                <div class="form-group">
+		                                    <label class="col-sm-2 control-label">#{i18n['acl.uff']}</label>
+		                                    <div class="col-sm-4">
+		                                        <h:inputText value="#{mailbox.responsabile.nome_uff}" styleClass="form-control"/>
+		                                    </div>
+		                                    <label class="col-sm-2 control-label">#{i18n['acl.cod_uff']}</label>
+		                                    <div class="col-sm-3">
+		                                        <h:inputText value="#{mailbox.responsabile.cod_uff}" styleClass="form-control"/>
+		                                    </div>
+		                                </div>
+		                                
+		                                <h:panelGroup rendered="#{docEditModifyAoo.formsAdapter.funzionalitaDisponibili['rolesManagement']}" layout="block">
+		                                <div class="form-group">
+		                                    <label class="col-sm-2 control-label">#{i18n['acl.role']}</label>
+		                                    <div class="col-sm-4">
+		                                        <h:inputText value="#{mailbox.responsabile.nome_ruolo}" styleClass="form-control"/>
+		                                    </div>
+		                                    <label class="col-sm-2 control-label">#{i18n['acl.cod_ruolo']}</label>
+		                                    <div class="col-sm-3">
+		                                        <h:inputText value="#{mailbox.responsabile.cod_ruolo}" styleClass="form-control"/>
+		                                    </div>
+		                                </div>
+		                                </h:panelGroup>
+		                                
+		                                <div class="form-group">
+		                                    <label class="col-sm-2 control-label">#{i18n['acl.da_copiaconoscenza']}</label>
+		                                    <div class="col-sm-1">
+		                                    <h:selectOneMenu value="#{mailbox.responsabile.daCopiaConoscenza}" styleClass="form-control">
+		                                        <f:selectItem itemValue="si" itemLabel="#{i18n['dw4.yes']}" />
+		                                        <f:selectItem itemValue="no" itemLabel="#{i18n['dw4.no']}" />
+		                                    </h:selectOneMenu>
+		                                    </div>
+		                                    <label class="col-sm-2 control-label">#{i18n['acl.da_mittente']}</label>
+		                                    <div class="col-sm-1">
+		                                    <h:selectOneMenu value="#{mailbox.responsabile.daMittente}" styleClass="form-control">
+		                                        <f:selectItem itemValue="si" itemLabel="#{i18n['dw4.yes']}" />
+		                                        <f:selectItem itemValue="no" itemLabel="#{i18n['dw4.no']}" />
+		                                    </h:selectOneMenu>
+		                                    </div>
+		                                    <label class="col-sm-2 control-label">#{i18n['acl.da_destinatario']}</label>
+		                                    <div class="col-sm-1">
+		                                    <h:selectOneMenu value="#{mailbox.responsabile.daDestinatario}" styleClass="form-control">
+		                                        <f:selectItem itemValue="si" itemLabel="#{i18n['dw4.yes']}" />
+		                                        <f:selectItem itemValue="no" itemLabel="#{i18n['dw4.no']}" />
+		                                    </h:selectOneMenu>
+		                                    </div>
+		                                </div>
+		                                
+		                                <div class="form-group">
+		                                    <label class="col-sm-2 control-label emphasis-title"><span>#{i18n['acl.gestori_casella']}</span></label>
+		                                </div>
+		                                
+		                                <h:panelGroup layout="block" id="gestori">
+			                                <ui:include src="./editGestoreCasella.xhtml">
+			                                	<ui:param name="page" value="#{docEditModifyAoo}" />
+			                                	<ui:param name="mailbox" value="#{mailbox}" />
+			                                	<ui:param name="holderName" value="mailbox" />
+			                                	<ui:param name="holderIndex" value="#{indice.index}" />
+			                                </ui:include>
+										</h:panelGroup>
+		                                
+		                                <div class="form-group">
+		                                    <label class="col-sm-2 control-label emphasis-title"><span>#{i18n['acl.mailbox']}</span></label>
+		                                </div>
+									</h:panelGroup>
+	                                
+	                                <div class="form-group">
+	                                    <label class="col-sm-2 control-label">#{i18n['acl.email']}</label>
+	                                    <div class="col-sm-5">
+	                                    	<h:inputText rendered="#{mailbox.updateMailbox}" value="#{mailbox.mailbox.email}" styleClass="form-control" />
+		                                    <h:panelGroup rendered="#{!mailbox.updateMailbox}">
+		                                		<p class="form-control-static"><h:outputText value="#{mailbox.mailbox.email}" /></p>
+		                                	</h:panelGroup>
+	                                    </div>
+	                                </div>
+	                                
+	                                <div class="form-group">
+	                                    <label class="col-sm-2 control-label">#{i18n['acl.login']}</label>
+	                                    <div class="col-sm-5">
+	                                    <h:inputText value="#{mailbox.mailbox.login}" styleClass="form-control"/>
+	                                    </div>
+	                                    <label class="col-sm-1 control-label">#{i18n['acl.password']}</label>
+	                                    <div class="col-sm-3">
+	                                        <h:inputSecret value="#{mailbox.mailbox.password}" redisplay="true" styleClass="form-control"/>
+	                                    </div>
+	                                </div>
+	                                
+	                                <h:panelGroup rendered="#{mailbox.updateMailbox}">
+		                                <div class="form-group">
+		                                    <label class="col-sm-2 control-label">#{i18n['acl.protocol']}</label>
+		                                    <div class="col-sm-2">
+		                                    <h:selectOneMenu id="mailbox_protocol" value="#{mailbox.mailbox.protocol}" styleClass="form-control" onchange="changeHostPort('templateForm\\:mailbox\\:#{indice.index}\\:mailbox_protocol', 'templateForm\\:mailbox\\:#{indice.index}\\:mailbox_port');">
+		                                        <f:selectItem itemValue="" itemLabel="" />
+		                                        <f:selectItem itemValue="pop3" itemLabel="#{i18n['acl.pop3']}" />
+		                                        <f:selectItem itemValue="pop3s" itemLabel="#{i18n['acl.pop3_ssl']}" />
+		                                    </h:selectOneMenu>
+		                                    </div>
+		                                    <label class="col-sm-1 control-label">#{i18n['acl.host']}</label>
+		                                    <div class="col-sm-2">
+		                                        <h:inputText value="#{mailbox.mailbox.host}" styleClass="form-control"/>
+		                                    </div>
+		                                    <label class="col-sm-1 control-label">#{i18n['acl.port']}</label>
+		                                    <div class="col-sm-1">
+		                                        <h:inputText id="mailbox_port" value="#{mailbox.mailbox.port}" styleClass="form-control"/>
+		                                    </div>
+		                                </div>
+	                                </h:panelGroup>
+	                                
+	                            </div> <!-- fieldset -->
+							</h:panelGroup>
+                        </ui:repeat>
+                        
+                        <ui:repeat id="interop" var="interop" value="#{docEditModifyAoo.aoo.interoperabilita}" varStatus="indice">
+                        	<h:panelGroup rendered="#{interop.updateMailbox or interop.changePassword}">
+		                        <div class="fieldset">
+		                            <div class="legend">
+										#{i18n['acl.interoperabilita']} #{indice.index+1}
+		                                
+										<h:panelGroup rendered="#{docEditModifyAoo.adminAcl}">  
+			                                <div class="btn-group btn-group-xs">
+			                                   <h:commandLink action="#{docEditModifyAoo.aoo.deleteInteroperabilita}" title="#{i18n['dw4.elimina_istanza']}" styleClass="btn btn-default">
+			                                        <f:param name="interop" value="#{interop}"/>
+			                                        <f:ajax execute="@form" render="@form"/>
+			                                       <span class="glyphicon glyphicon-minus"></span>
+			                                    </h:commandLink>
+			                                    <h:commandLink action="#{docEditModifyAoo.aoo.addInteroperabilita}" title="#{i18n['dw4.aggiungi_istanza']}" styleClass="btn btn-default">
+			                                        <f:param name="interop" value="#{interop}"/>
+			                                        <f:ajax execute="@form" render="@form"/>
+			                                        <span class="glyphicon glyphicon-plus"></span>
+			                                    </h:commandLink>
+			                                    <h:commandLink action="#{docEditModifyAoo.aoo.moveUpInteroperabilita}" title="#{i18n['dw4.sposta_su']}" rendered="#{indice.index > 0}" styleClass="btn btn-default">
+			                                        <f:param name="interop" value="#{interop}"/>
+			                                        <f:ajax execute="@form" render="@form"/>
+			                                        <span class="glyphicon glyphicon-chevron-up"></span>
+			                                    </h:commandLink>
+			                                    <h:commandLink action="#{docEditModifyAoo.aoo.moveDownInteroperabilita}" title="#{i18n['dw4.sposta_giu']}" rendered="#{fn:length(docEditModifyAoo.aoo.interoperabilita) > (indice.index+1)}" styleClass="btn btn-default">
+			                                        <f:param name="interop" value="#{interop}"/>
+			                                        <f:ajax execute="@form" render="@form"/>
+			                                        <span class="glyphicon glyphicon-chevron-down"></span>
+			                                    </h:commandLink>
+			                                </div>
+		                                </h:panelGroup>
+		                                
+		                                <div class="pull-right">
+		                                    <span class="glyphicons-pro certificate"
+		                                        title="#{i18n['acl.archiviazione']} #{indice.index+1}"></span>
+		                                </div>
+		                            </div>
+		                            
+		                            <h:panelGroup rendered="#{interop.updateMailbox}">
+			                            <div class="form-group">
+			                                <label class="col-sm-2 control-label">#{i18n['acl.cod_amm']}</label>
+			                                <div class="col-sm-1">
+			                                    <h:inputText value="#{interop.cod_amm}" styleClass="form-control"/>
+			                                </div>
+			                                <label class="col-sm-2 control-label">#{i18n['acl.cod_aoo']}</label>
+			                                <div class="col-sm-1">
+			                                    <h:inputText value="#{interop.cod_aoo}" styleClass="form-control"/>
+			                                </div>
+			                                <label class="col-sm-2 control-label">#{i18n['acl.db']}</label>
+			                                <div class="col-sm-2">
+			                                    <h:inputText value="#{interop.db}" styleClass="form-control"/>
+			                                </div>
+			                            </div>
+			                            
+			                            <div class="form-group">
+			                                <label class="col-sm-2 control-label"><span>#{i18n['acl.documentModel']}</span></label>
+			                                <div class="col-sm-4">
+			                                    <ui:include src="./lookupRepeatField.xhtml">
+			                                        <ui:param name="id" value="deaoo_documentModel" />
+			                                        <ui:param name="field" value="#{interop.documentModel}" />
+			                                        <ui:param name="element" value="#{interop}" />
+			                                        <ui:param name="bean" value="#{docEditModifyAoo}" />
+			                                        <ui:param name="action" value="lookupInteroperabilitaDocumentModel"/>
+			                                        <ui:param name="clearaction" value="clearInteroperabilitaDocumentModel"/>
+			                                        <ui:param name="title" value="#{i18n['acl.documentModel']}"/>
+			                                        <ui:param name="styleclass" value="form-control"/>
+			                                        <ui:param name="refresh" value="@form"/>
+			                                    </ui:include>
+			                                </div>
+			                            </div>
+			                            
+			                            <div class="form-group">
+			                                <label class="col-sm-2 control-label"><span>#{i18n['acl.operator']}</span></label>
+			                                <div class="col-sm-4">
+			                                    <h:inputText value="#{interop.oper}" styleClass="form-control"/>
+			                                </div>
+			                                <label class="col-sm-2 control-label"><span>#{i18n['acl.uff_operator']}</span></label>
+			                                <div class="col-sm-3">
+			                                    <h:inputText value="#{interop.uff_oper}" styleClass="form-control"/>
+			                                </div>
+			                            </div>
+			                            
+			                            <h:panelGroup rendered="#{docEditModifyAoo.abilitaFatturePA or docEditModifyAoo.abilitaSplitAttachmentsSuMailStorage}" layout="block" styleClass="form-group">
+			                            	<label class="col-sm-2 control-label">
+			                            		#{i18n['dw4.addon_di_archiviazione']}
+			                            	</label>
+			                            	<div class="col-sm-9">
+			                            		<h:panelGroup rendered="#{docEditModifyAoo.abilitaFatturePA}">
+				                            		<span class="margin-right-20" style="white-space:nowrap;">
+				                            			<h:selectBooleanCheckbox id="protocollaFattura" value="#{interop.protocollaFattura}" />
+				                            			<label class="form-control-static normal-weight-text" for="templateForm:interop:#{indice.index}:protocollaFattura">
+				                            				<span class="popoveritem" data-content="#{i18n['acl.forza_la_protocollazione_del_documento_se_la_pec_contiene_una_fatturaPA_passiva']}" data-trigger="hover" data-placement="top" data-toggle="popover">
+								                        		#{i18n['acl.protocolla_se_fattura']} <span class="glyphicon glyphicon-info-sign popoveritem"></span>
+								                        	</span>
+							                        	</label>
+						                        	</span>
+			                            		</h:panelGroup>
+			                            		<h:panelGroup rendered="#{docEditModifyAoo.abilitaSplitAttachmentsSuMailStorage}">
+				                            		<span class="margin-right-20" style="white-space:nowrap;">
+					                            		<h:selectBooleanCheckbox id="splitByAttachments" value="#{interop.splitByAttachments}" />
+				                            			<label class="form-control-static normal-weight-text" for="templateForm:interop:#{indice.index}:splitByAttachments">
+				                            				<span class="popoveritem" data-content="#{i18n['acl.creazione_di_un_documento_per_ogni_allegato_contenuto_nella_mail_scaricata_dall_archiviatore']}" data-trigger="hover" data-placement="top" data-toggle="popover">
+								                        		#{i18n['acl.salvataggio_allegati_su_documenti_differenti']} <span class="glyphicon glyphicon-info-sign popoveritem"></span>
+								                        	</span>
+							                        	</label>
+						                        	</span>
+			                            		</h:panelGroup>
+			                            	</div>
+										</h:panelGroup>
+			                            
+			                            <div class="form-group">
+			                                <label class="col-sm-2 control-label emphasis-title"><span>#{i18n['acl.director']}</span></label>
+			                            </div>
+			                            
+			                            <div class="form-group">
+			                                <label class="col-sm-2 control-label">#{i18n['acl.oper']}</label>
+			                                <div class="col-sm-4">
+			                                    <h:inputText value="#{interop.responsabile.nome_pers}" styleClass="form-control"/>
+			                                </div>
+			                                <label class="col-sm-2 control-label">#{i18n['acl.code']}</label>
+			                                <div class="col-sm-2">
+			                                    <h:inputText value="#{interop.responsabile.matricola}" styleClass="form-control"/>
+			                                </div>
+			                            </div>
+			                            
+			                            <div class="form-group">
+			                                <label class="col-sm-2 control-label">#{i18n['acl.uff']}</label>
+			                                <div class="col-sm-4">
+			                                    <h:inputText value="#{interop.responsabile.nome_uff}" styleClass="form-control"/>
+			                                </div>
+			                                <label class="col-sm-2 control-label">#{i18n['acl.cod_uff']}</label>
+			                                <div class="col-sm-2">
+			                                    <h:inputText value="#{interop.responsabile.cod_uff}" styleClass="form-control"/>
+			                                </div>
+			                            </div>
+			                            
+			                            <div class="form-group">
+		                                    <label class="col-sm-2 control-label emphasis-title"><span>#{i18n['acl.gestori_casella']}</span></label>
+		                                </div>
+		                                
+		                                <h:panelGroup layout="block" id="gestori">
+			                                <ui:include src="./editGestoreCasella.xhtml">
+			                                	<ui:param name="page" value="#{docEditModifyAoo}" />
+			                                	<ui:param name="mailbox" value="#{interop}" />
+			                                	<ui:param name="holderName" value="interop" />
+			                                	<ui:param name="holderIndex" value="#{indice.index}" />
+			                                </ui:include>
+										</h:panelGroup>
+									</h:panelGroup>
+		                            
+		                            <div class="form-group">
+		                                <label class="col-sm-2 control-label emphasis-title"><span>#{i18n['acl.mailbox_in']}</span></label>
+		                            </div>
+		                            
+		                            <div class="form-group">
+		                                <label class="col-sm-2 control-label">#{i18n['acl.email']}</label>
+		                                <div class="col-sm-5">
+		                                	<h:inputText rendered="#{interop.updateMailbox}" value="#{interop.mailbox_in.email}" styleClass="form-control" />
+		                                    <h:panelGroup rendered="#{!interop.updateMailbox}">
+		                                		<p class="form-control-static"><h:outputText value="#{interop.mailbox_in.email}" /></p>
+		                                	</h:panelGroup>
+		                                </div>
+		                            </div>
+		                            
+		                            <div class="form-group">
+		                                <label class="col-sm-2 control-label">#{i18n['acl.login']}</label>
+		                                <div class="col-sm-5">
+		                                <h:inputText value="#{interop.mailbox_in.login}" styleClass="form-control"/>
+		                                </div>
+		                                <label class="col-sm-1 control-label">#{i18n['acl.password']}</label>
+		                                <div class="col-sm-3">
+		                                    <h:inputSecret value="#{interop.mailbox_in.password}" redisplay="true" styleClass="form-control"/>
+		                                </div>
+		                            </div>
+		                            
+		                            <h:panelGroup rendered="#{interop.updateMailbox}" layout="block" styleClass="form-group">
+		                                <label class="col-sm-2 control-label">#{i18n['acl.protocol']}</label>
+		                                <div class="col-sm-2">
+		                                <h:selectOneMenu id="mailbox_in_protocol" value="#{interop.mailbox_in.protocol}" styleClass="form-control" onchange="changeHostPort('templateForm\\:interop\\:#{indice.index}\\:mailbox_in_protocol', 'templateForm\\:interop\\:#{indice.index}\\:mailbox_in_port');">
+		                                    <f:selectItem itemValue="" itemLabel="" />
+		                                    <f:selectItem itemValue="pop3" itemLabel="#{i18n['acl.pop3']}" />
+		                                    <f:selectItem itemValue="pop3s" itemLabel="#{i18n['acl.pop3_ssl']}" />
+		                                </h:selectOneMenu>
+		                                </div>
+		                                <label class="col-sm-1 control-label">#{i18n['acl.host']}</label>
+		                                <div class="col-sm-2">
+		                                    <h:inputText value="#{interop.mailbox_in.host}" styleClass="form-control"/>
+		                                </div>
+		                                <label class="col-sm-1 control-label">#{i18n['acl.port']}</label>
+		                                <div class="col-sm-1">
+		                                    <h:inputText id="mailbox_in_port" value="#{interop.mailbox_in.port}" styleClass="form-control"/>
+		                                </div>
+		                            </h:panelGroup>
+		                            
+		                            <div class="form-group">
+		                                <label class="col-sm-2 control-label emphasis-title"><span>#{i18n['acl.mailbox_out']}</span></label>
+		                            </div>
+		                            
+		                            <div class="form-group">
+		                                <label class="col-sm-2 control-label">#{i18n['acl.email']}</label>
+		                                <div class="col-sm-5">
+		                                    <h:inputText rendered="#{interop.updateMailbox}" value="#{interop.mailbox_out.email}" styleClass="form-control" />
+		                                    <h:panelGroup rendered="#{!interop.updateMailbox}">
+		                                		<p class="form-control-static"><h:outputText value="#{interop.mailbox_out.email}" /></p>
+		                                	</h:panelGroup>
+		                                </div>
+		                            </div>
+		                            
+		                            <div class="form-group">
+		                                <label class="col-sm-2 control-label">#{i18n['acl.login']}</label>
+		                                <div class="col-sm-5">
+		                                <h:inputText value="#{interop.mailbox_out.login}" styleClass="form-control"/>
+		                                </div>
+		                                <label class="col-sm-1 control-label">#{i18n['acl.password']}</label>
+		                                <div class="col-sm-3">
+		                                    <h:inputSecret value="#{interop.mailbox_out.password}" redisplay="true" styleClass="form-control"/>
+		                                </div>
+		                            </div>
+		                            
+		                            <h:panelGroup rendered="#{interop.updateMailbox}" layout="block" styleClass="form-group">
+		                                <label class="col-sm-2 control-label">#{i18n['acl.protocol']}</label>
+		                                <div class="col-sm-2">
+		                                <h:selectOneMenu id="mailbox_out_protocol" value="#{interop.mailbox_out.protocol}" styleClass="form-control" onchange="changeHostPort('templateForm\\:interop\\:#{indice.index}\\:mailbox_out_protocol', 'templateForm\\:interop\\:#{indice.index}\\:mailbox_out_port');">
+		                                    <f:selectItem itemValue="" itemLabel="" />
+											<f:selectItem itemValue="smtp" itemLabel="#{i18n['acl.smtp']}" />
+											<f:selectItem itemValue="smtps" itemLabel="#{i18n['acl.smtp_ssl']}" />
+											<f:selectItem itemValue="smtp-tls" itemLabel="#{i18n['acl.smtp_tls']}" />
+		                                </h:selectOneMenu>
+		                                </div>
+		                                <label class="col-sm-1 control-label">#{i18n['acl.host']}</label>
+		                                <div class="col-sm-2">
+		                                    <h:inputText value="#{interop.mailbox_out.host}" styleClass="form-control"/>
+		                                </div>
+		                                <label class="col-sm-1 control-label">#{i18n['acl.port']}</label>
+		                                <div class="col-sm-1">
+		                                    <h:inputText id="mailbox_out_port" value="#{interop.mailbox_out.port}" styleClass="form-control"/>
+		                                </div>
+		                            </h:panelGroup>
+
+									<h:panelGroup rendered="#{interop.updateMailbox}">
+										<div class="form-group">
+											<label class="col-sm-2 control-label emphasis-title"><span>#{i18n['acl.notify']}</span></label>
+										</div>
+
+										<div class="form-group">
+											<label class="col-sm-2 control-label">#{i18n['acl.httpHost']}</label>
+											<div class="col-sm-2">
+												<h:inputText value="#{interop.notify.httpHost}" styleClass="form-control" />
+											</div>
+											<label class="col-sm-1 control-label"> 
+												<span class="popoveritem" data-content="#{i18n['acl.l_uri_deve_iniziare_con_il_carattere_slash']}" data-trigger="hover" data-placement="top" data-toggle="popover"> 
+													#{i18n['acl.uri']} <span class="glyphicon glyphicon-info-sign popoveritem"></span>
+												</span>
+											</label>
+											<div class="col-sm-6">
+												<h:inputText value="#{interop.notify.uri}" styleClass="form-control" />
+											</div>
+										</div>
+
+										<div class="form-group">
+											<label class="col-sm-2 control-label"><span>#{i18n['acl.rpa']}</span></label>
+											<div class="col-sm-1">
+												<h:selectBooleanCheckbox value="#{interop.notify.rpa}" />
+											</div>
+										</div>
+									</h:panelGroup>
+
+								</div> <!-- fieldset -->
+							</h:panelGroup>
+                        </ui:repeat>
+                        
+                    </div>
+                </div>
+            </div>
+        </div>
+	
+		<ui:include src="./lookup.xhtml"> <ui:param name="pageBean" value="#{docEditModifyAoo}"/></ui:include>
+		
+		<h:inputTextarea value="#{docEditModifyAoo.xml}" rendered="#{docEditModifyAoo.debugMode}" styleClass="form-control" rows="10" />
+	</ui:define>
+</ui:composition>

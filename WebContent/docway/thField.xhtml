@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" 
+	  xmlns:h="http://java.sun.com/jsf/html" 
+	  xmlns:ui="http://java.sun.com/jsf/facelets" 
+	  xmlns:f="http://java.sun.com/jsf/core"
+	  xmlns:c="http://java.sun.com/jsp/jstl/core"
+	  xmlns:p="http://xmlns.jcp.org/jsf/passthrough">
+<ui:composition>
+
+	<div class="input-group">
+		<c:if test="#{!empty placeholder}">
+			<h:inputText id="#{id}_input" p:placeholder="#{placeholder}" value="#{field}" onblur="executeAction(this);" onfocus="setDefaultValue(this);" styleClass="#{ component.valid ? '' : 'invalidinput' } th-field #{styleclass}">
+				<f:ajax execute="@form" render="@form"/>
+			</h:inputText>
+		</c:if>
+		<c:if test="#{empty placeholder}">
+			<h:inputText id="#{id}_input" value="#{field}" onblur="executeAction(this);" onfocus="setDefaultValue(this);" styleClass="#{ component.valid ? '' : 'invalidinput' } th-field #{styleclass}">
+				<f:ajax execute="@form" render="@form"/>
+			</h:inputText>
+		</c:if>
+		
+		<div class="input-group-btn">
+			<h:commandLink title="#{title}" action="#{bean[action]}" id="#{id}_button" onclick="setFocusTh(this);" styleClass="btn btn-default">
+	   			<f:ajax execute="@form" render="@form"/>
+	   			<span class="glyphicon glyphicon-search"></span>
+	   		</h:commandLink>
+  		</div>
+	</div>
+
+</ui:composition>
+</html>

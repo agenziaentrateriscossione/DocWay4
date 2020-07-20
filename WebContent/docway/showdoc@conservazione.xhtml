@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" 
+	  xmlns:h="http://java.sun.com/jsf/html" 
+	  xmlns:ui="http://java.sun.com/jsf/facelets" 
+	  xmlns:f="http://java.sun.com/jsf/core">
+<ui:composition>
+
+	<h:panelGroup rendered="#{fn:length(bean.doc.extra.conservazione) > 0}" layout="block" id="conservato">
+		<div class="modal conservato-modal" id="conservatoModal" tabindex="-1" role="dialog" aria-labelledby="conservatoModalLabel" aria-hidden="true">
+			<div class="modal-dialog">
+				<div class="modal-content">
+					<div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&#215;</button>
+						
+						<h4 class="modal-title" id="conservatoModalLabel">#{i18n['dw4.documento_conservato_esportato']}</h4>
+					</div>
+					<div class="modal-body">
+
+						<ui:repeat var="conservazione" value="#{bean.doc.extra.conservazione}">				
+							<div class="alert alert-info">
+								<h5 class="alert-conservazione-title">#{(!empty conservazione.tipoServizio and (fn:toLowerCase(conservazione.tipoServizio) eq 'export' or fn:toLowerCase(conservazione.tipoServizio) eq 'docway')) ? i18n['dw4.esportazione'] : i18n['dw4.conservazione']}</h5>
+								<p><strong>#{i18n['dw4.id']}:</strong> #{conservazione.id}</p>
+								<p><strong>#{i18n['dw4.service']}:</strong> #{conservazione.servizio}</p>
+							</div>
+						</ui:repeat>
+						
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-default" data-dismiss="modal" aria-hidden="true">#{i18n['acl.close']}</button>
+					</div>
+				</div>
+			</div>
+		</div>
+	</h:panelGroup>
+
+</ui:composition>   
+</html>

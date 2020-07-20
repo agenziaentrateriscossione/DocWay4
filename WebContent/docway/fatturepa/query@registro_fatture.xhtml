@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+    template="../#{queryRegistroFatture.pageTemplate}"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:c="http://java.sun.com/jsp/jstl/core">
+
+<ui:define name="content">
+	<div class="report">
+		
+		<!-- toolbar: inizio -->
+		<div class="btn-toolbar margin-bottom" role="toolbar">
+			<div class="btn-group">
+				<h:commandLink id="printBtn" action="#{queryRegistroFatture.findAndPrint}" styleClass="btn btn-primary openwaitmsg">#{i18n['dw4.print']}</h:commandLink>
+				<h:commandLink action="#{docwaymenu.gotoTableQRegistroFatture}" styleClass="btn btn-default">#{i18n['acl.clear']}</h:commandLink>
+			</div>
+		</div>
+		<!-- toolbar: fine -->
+		
+		<div class="sub-header">
+			<span class="glyphicon glyphicon-print"></span>&#160;
+			#{i18n['dw4.registro_delle_fatture']}
+		</div>
+		
+		<!-- messages: inizio -->
+		<div class="docedit-messages alert alert-info">#{i18n['dw4.selezionare_una_modalita_di_stampa_quindi_premere_il_pulsante_stampa']}</div>
+		
+		<h:panelGroup rendered="#{not empty facesContext.messageList}" layout="block" styleClass="docedit-messages alert alert-danger">
+			<h:messages styleClass="" id="validationMesseges" />
+		</h:panelGroup>
+		<!-- messages: fine -->
+		
+		<h:commandLink id="checkItemBtn" action="#{queryRegistroFatture.checkItem}" style="display:none;"><f:ajax execute="@form" render="@form" /></h:commandLink>
+		
+		<!-- scheda query: inizio -->
+		<div class="row-fluid" style="margin-top:10px;">
+			<div id="fixedshowdoc" class="box span12 fixed-showdoc">
+				<div class="box-content">
+				
+					<div id="printTypeHolder" class="fieldset">
+						<div class="legend">#{i18n['dw4.filtri_di_stampa']}</div>
+						
+						<div class="form-group">
+							<label for="templateForm:ciclofatture" class="col-sm-2 control-label">#{i18n['dw4.ciclo']}</label>
+							<div class="col-sm-9">
+								<h:selectOneRadio id="ciclofatture" value="#{queryRegistroFatture.cicloFatture}" styleClass="radio-selection">
+									<f:selectItem itemValue="attivo" itemLabel="#{i18n['dw4.attivo']}" />
+									<f:selectItem itemValue="passivo" itemLabel="#{i18n['dw4.passivo']}" />
+								</h:selectOneRadio>
+							</div>
+						</div>
+						
+						<div class="form-group">
+							<label for="templateForm:tipostampa" class="col-sm-2 control-label">#{i18n['dw4.tipo_filtro']}</label>
+							<div class="col-sm-5">
+								<h:selectOneMenu id="tipostampa" value="#{queryRegistroFatture.printType}" styleClass="form-control" onchange="$('#templateForm\\:checkItemBtn').trigger('click');">
+									<ui:remove>
+										<f:selectItem itemValue="selezione" itemLabel="#{i18n['dw4.selezione_corrente']}" itemDisabled="#{queryRegistroFatture.selid eq ''}" />
+									</ui:remove>
+									<f:selectItem itemValue="annuale" itemLabel="#{i18n['dw4.per_un_intero_anno']}" />
+									<f:selectItem itemValue="daterange" itemLabel="#{i18n['dw4.per_intervallo_di_date_di_fattura']}" />
+									<f:selectItem itemValue="numrange" itemLabel="#{i18n['dw4.per_intervallo_di_numeri_protocollo']}" />
+									<f:selectItem itemValue="fulltext" itemLabel="#{i18n['dw4.ricerca_full_text']}" />
+									<f:selectItem itemValue="idrange" itemLabel="#{i18n['dw4.per_intervallo_di_id']}" />
+								</h:selectOneMenu>
+							</div>
+						</div>
+						
+						<h:panelGroup rendered="#{queryRegistroFatture.printType eq 'selezione' and queryRegistroFatture.selid ne ''}" layout="block" styleClass="form-group">
+							<label class="col-sm-2 control-label">#{i18n['dw4.selezione_corrente']}</label>
+							<div class="col-sm-9">
+								<p class="form-control-static"><strong>#{queryRegistroFatture.count} #{i18n['dw4.documents']}</strong></p>
+							</div>
+						</h:panelGroup>
+						
+						<h:panelGroup rendered="#{queryRegistroFatture.printType eq 'annuale'}" layout="block" styleClass="form-group">
+							<label for="templateForm:docAnno" class="col-sm-2 control-label">#{i18n['dw4.anno']}</label>
+							<div class="col-sm-2">
+								<h:inputText id="docAnno" value="#{queryRegistroFatture.doc_anno}" styleClass="#{ component.valid ? '' : 'invalidinput' } form-control" />
+							</div>
+						</h:panelGroup>
+						
+						<h:panelGroup rendered="#{queryRegistroFatture.printType eq 'daterange'}" layout="block" styleClass="form-group">
+							<ui:include src="../rangeField.xhtml">
+								<ui:param name="label" value="#{i18n['dw4.dates']}" />
+								<ui:param name="id" value="dataFattura" />
+								<ui:param name="from_value" value="#{queryRegistroFatture.range_docdatafattura_from}" />
+								<ui:param name="to_value" value="#{queryRegistroFatture.range_docdatafattura_to}" />
+								<ui:param name="is_date" value="true" />
+							</ui:include>
+						</h:panelGroup>
+						
+						<h:panelGroup rendered="#{queryRegistroFatture.printType eq 'numrange'}" layout="block" styleClass="form-group">
+							<ui:include src="../rangeField.xhtml">
+								<ui:param name="label" value="#{i18n['dw4.numeri_di_protocollo']}" />
+								<ui:param name="id" value="numProt" />
+								<ui:param name="from_value" value="#{queryRegistroFatture.custom_da_num_prot}" />
+								<ui:param name="to_value" value="#{queryRegistroFatture.custom_a_num_prot}" />
+								<ui:param name="is_date" value="false" />
+							</ui:include>
+						</h:panelGroup>
+						
+						<h:panelGroup rendered="#{queryRegistroFatture.printType eq 'fulltext'}" layout="block" styleClass="form-group">
+							<label for="templateForm:fullTextField" class="col-sm-2 control-label">#{i18n['dw4.ricerca_full_text']}</label>
+							<div class="col-sm-9">
+								<h:inputText id="fullTextField" value="#{queryRegistroFatture.custom_globale}" styleClass="#{ component.valid ? '' : 'invalidinput' } form-control" />
+							</div>
+						</h:panelGroup>
+						
+						<h:panelGroup rendered="#{queryRegistroFatture.printType eq 'idrange'}" layout="block" styleClass="form-group">
+							<ui:include src="../rangeField.xhtml">
+								<ui:param name="label" value="#{i18n['dw4.intervallo_di_id']}" />
+								<ui:param name="id" value="nrecord" />
+								<ui:param name="from_value" value="#{queryRegistroFatture.rangenum_docnrecord_from}" />
+								<ui:param name="to_value" value="#{queryRegistroFatture.rangenum_docnrecord_to}" />
+								<ui:param name="is_date" value="false" />
+							</ui:include>
+						</h:panelGroup>
+					</div> <!-- /fieldset -->
+					
+					<h:panelGroup rendered="#{fn:length(queryRegistroFatture.societaSelect) > 0}" layout="block" styleClass="fieldset">
+						<ui:include src="../multisocietaFields.xhtml">
+							<ui:param name="beanDoc" value="#{queryRegistroFatture}" />
+			        	</ui:include>
+					</h:panelGroup>
+					
+					<ui:remove>
+						<div class="fieldset">
+							<div class="legend">#{i18n['dw4.formato_di_stampa']}</div>
+							
+							<div class="form-group">
+								<div id="printFormatHolder" class="col-sm-offset-2 col-sm-9">
+									<h:selectOneRadio value="#{queryRegistroFatture.printFormat}" styleClass="radio-selection">
+										<f:selectItem itemLabel="HTML" itemValue="html" />
+										<f:selectItem itemLabel="CSV" itemValue="csv" />
+										<f:selectItem itemLabel="PDF" itemValue="pdf" />
+										<f:selectItem itemLabel="XLS" itemValue="xls" />
+										<f:selectItem itemLabel="ODT" itemValue="odt" />
+										<f:selectItem itemLabel="RTF" itemValue="rtf" />
+									</h:selectOneRadio>
+								</div>
+							</div>
+						</div> <!-- /fieldset -->
+					</ui:remove>
+					
+				</div> 
+			</div>
+		</div>
+		<!-- scheda query: fine -->
+	
+		<ui:include src="../loadingbar@ctrl_gestione.xhtml"><ui:param name="pageBean" value="#{queryRegistroFatture}"/></ui:include>
+		<ui:include src="../lookup.xhtml"><ui:param name="pageBean" value="#{queryRegistroFatture}"/></ui:include>
+		
+		<h:inputTextarea value="#{queryRegistroFatture.xml}" rendered="#{queryRegistroFatture.debugMode}" styleClass="form-control" rows="10" />
+	</div>
+</ui:define>
+    
+</ui:composition>    

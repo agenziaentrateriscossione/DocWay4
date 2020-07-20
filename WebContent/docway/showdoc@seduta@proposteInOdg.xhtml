@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" 
+	  xmlns:h="http://java.sun.com/jsf/html" 
+	  xmlns:ui="http://java.sun.com/jsf/facelets" 
+	  xmlns:f="http://java.sun.com/jsf/core"
+   	  xmlns:c="http://java.sun.com/jsp/jstl/core" >
+<ui:composition>
+	
+	<h:panelGroup rendered="#{fn:length(bean.doc.odg) > 0}">
+		<div class="showdoc-section">
+			<div class="title">
+				#{i18n['dw4.proposte_all_ordine_del_giorno']}
+				<div class="pull-right">
+					<span class="glyphicons-pro notes" title="#{i18n['dw4.proposte_in_odg']}"></span>
+				</div>
+			</div>
+			
+			<ui:remove>
+				<ui:repeat var="cat_container" value="#{bean.doc.odg}" varStatus="status"></ui:repeat>
+			</ui:remove>
+			<ui:remove>
+			<h:dataTable styleClass="show-odg-table width-100" var="cat_container" value="#{bean.doc.odg}">
+				<h:column>
+				<h:form>
+				<div id="#{cat_container.cat_container}" class="table-responsive">
+				  <table class="table table-bordered show-odg-table">
+					<thead>
+						<tr>
+							<th class="ndelib-col width-10">#{i18n['dw4.n_delib']}</th>
+							<h:panelGroup rendered="#{bean.formsAdapter.funzionalitaDisponibili['sedutaAperta']}">
+								<th class="ord-col width-5"></th>
+							</h:panelGroup>
+							<th class="text-col width-55">#{cat_container.cat_container}</th>
+							<th class="azioni-col width-10">#{i18n['dw4.azioni']}</th>
+							<th class="risultato-col width-20">#{i18n['dw4.risultato']}</th>
+						</tr>
+					</thead>
+					<tbody>
+						<ui:repeat var="proposta" value="#{cat_container.proposte}" varStatus="status">
+							<tr>
+								<td class="ndelib-col">
+									<h:panelGroup rendered="#{!empty proposta.numero_delibera}">
+										#{proposta.numero_delibera}
+									</h:panelGroup>
+									<h:panelGroup rendered="#{empty proposta.numero_delibera}">
+										<h:panelGroup rendered="#{!bean.formsAdapter.funzionalitaDisponibili['sedutaAperta']}">
+										-
+										</h:panelGroup>
+									</h:panelGroup>
+								</td>
+								<h:panelGroup rendered="#{bean.formsAdapter.funzionalitaDisponibili['sedutaAperta']}">
+									<td class="ord-col">
+										<h:panelGroup rendered="#{proposta.precedingSibling}">
+											<h:commandLink title="#{i18n['dw4.sposta_in_alto']}" ><span class="glyphicon glyphicon-chevron-up"></span>
+												<f:ajax  event="click" execute="@form" render="@form" listener="#{bean.spostaPropostaSu}"></f:ajax>
+											</h:commandLink>
+										</h:panelGroup>
+										<h:panelGroup rendered="#{proposta.followingSibling}">
+											<h:commandLink title="#{i18n['dw4.sposta_in_basso']}" ><span class="glyphicon glyphicon-chevron-down"></span>
+												<f:ajax  event="click" render="@form" listener="#{bean.spostaPropostaGiu}"></f:ajax>
+											</h:commandLink>
+										</h:panelGroup>
+									</td>
+								</h:panelGroup>
+								<td class="text-col">
+									<h:panelGroup styleClass="#{!empty proposta.warning ? 'vaschetta-error' : ''}">
+										<h:panelGroup rendered="#{!empty proposta.warning}">
+											(#{proposta.warning})
+										</h:panelGroup>
+										#{proposta.cod_categoria}. #{proposta.oggetto_prop}
+									</h:panelGroup>
+								</td>
+								<td class="azioni-col">
+									<span class="btn-group">
+										<h:panelGroup rendered="#{proposta.delib_seduta_stante or bean.formsAdapter.funzionalitaDisponibili['vPropInSed']}">
+											<h:commandButton title="#{i18n['dw4.vedi']}" value="#{i18n['dw4.vedi']}" action="#{bean.doProjectionProposta}" styleClass="btn btn-default btn-xs">
+												<ui:remove><span class="glyphicon glyphicon-eye-open"></span></ui:remove>
+											</h:commandButton>
+										</h:panelGroup>
+										
+										<h:panelGroup rendered="#{bean.formsAdapter.funzionalitaDisponibili['rinvia']}">
+											<h:commandButton title="#{i18n['dw4.rinvia']}" value="#{i18n['dw4.rinvia']}" action="#{bean.rinviaProposta}" styleClass="btn btn-default btn-xs">
+													<ui:remove><span class="glyphicon glyphicon-share-alt"></span></ui:remove>
+												<f:ajax execute="@form" render="@form"></f:ajax>
+											</h:commandButton>
+										</h:panelGroup>
+										
+										<h:panelGroup rendered="#{bean.formsAdapter.funzionalitaDisponibili['pdf_prop']}" styleClass="btn-group">
+											<h:commandButton target="_blank" title="#{i18n['dw4.genera_pdf']}" value="#{i18n['dw4.genera_pdf']}" action="#{bean.generaPDF}" styleClass="btn btn-default btn-xs">
+												<ui:remove><span class="glyphicon glyphicon-file"></span></ui:remove>
+											</h:commandButton>
+										</h:panelGroup>
+										
+										<h:panelGroup rendered="#{bean.formsAdapter.funzionalitaDisponibili['sedutaAllaFirma']}">
+											
+											<h:panelGroup rendered="#{bean.formsAdapter.funzionalitaDisponibili['produciDelibere'] and !empty proposta.numero_delibera and !proposta.delibera_prodotta}">
+												<h:commandButton title="#{i18n['dw4.delibera']}" value="#{i18n['dw4.delibera']}" onclick="if(!owmConfirm('#{i18n['dw4.msg_delibera_seduta_stante']}'))return false;" action="#{bean.produciDelibereDaProposta}" styleClass="btn btn-default btn-xs">
+													<ui:remove><span class="glyphicon glyphicon-comment"></span></ui:remove>
+												</h:commandButton>
+											</h:panelGroup>
+											
+											<h:panelGroup rendered="#{bean.formsAdapter.funzionalitaDisponibili['produciDelibereSedutaStante']}">
+												<h:panelGroup rendered="#{proposta.tipo eq 'delibera' and proposta.delibera_prodotta and !proposta.delib_seduta_stante}">	
+													<h:commandButton title="#{i18n['dw4.seduta_stante']}" onclick="if(!owmConfirm('#{i18n['dw4.msg_delibera_seduta_stante']}'))return false;" action="#{bean.produciDeliberaSedutaStante}" styleClass="btn btn-default btn-xs">
+														<ui:remove><span class="glyphicon glyphicon-flash"></span></ui:remove>
+													</h:commandButton>
+												</h:panelGroup>
+											</h:panelGroup>
+										
+										</h:panelGroup>
+									</span>
+								</td>
+								<td class="risultato-col">
+									#{proposta.risultato_seduta} <h:panelGroup rendered="#{proposta.delib_seduta_stante}">#{i18n['dw4.seduta_stante']}</h:panelGroup>
+								</td>
+							</tr>
+							<h:panelGroup rendered="#{!empty proposta.nota_risultato}">
+								<tr>
+									<td colspan ="5" class="text-center">#{proposta.nota_risultato}</td>
+								</tr>
+							</h:panelGroup>
+							<h:panelGroup rendered="#{!empty proposta.commento_comunicazioni}">
+								<tr>
+									<td colspan="#{bean.formsAdapter.funzionalitaDisponibili['sedutaAperta'] ? 5 : 4}" class="text-center">
+										<div><strong>#{i18n['dw4.commenti_alle']} #{bean.comunicazioneLabel}</strong></div>
+										<div>#{proposta.commento_comunicazioni}</div>
+									</td>
+								</tr>
+							</h:panelGroup>
+						</ui:repeat>
+					</tbody>
+				  </table>
+				</div>
+				</h:form>
+				</h:column>
+				</h:dataTable>
+				</ui:remove>
+				<ui:remove>
+			<ui:repeat></ui:repeat>
+				</ui:remove>
+				
+				<c:forEach items="#{bean.doc.odg}" var="cat_container" varStatus="indice">
+				<h:panelGroup id="container_#{indice.index}" class="table-responsive">
+				  <table id="table_#{indice.index}" class="table table-bordered show-odg-table">
+					<thead id="thead_#{indice.index}">
+						<tr>
+							<th class="ndelib-col width-10">#{i18n['dw4.n_delib']}</th>
+							<h:panelGroup rendered="#{bean.formsAdapter.funzionalitaDisponibili['sedutaAperta']}">
+								<th class="ord-col width-5"></th>
+							</h:panelGroup>
+							<th class="text-col width-55">#{cat_container.cat_container}</th>
+							<th class="azioni-col width-10">#{i18n['dw4.azioni']}</th>
+							<th class="risultato-col width-20">#{i18n['dw4.risultato']}</th>
+						</tr>
+					</thead>
+					<tbody id="tbody_#{indice.index}">
+						<ui:repeat id="innerlist_#{indice.index}" var="proposta" value="#{cat_container.proposte}" varStatus="status">
+							<tr>
+								<td class="ndelib-col">
+									<h:panelGroup rendered="#{!empty proposta.numero_delibera}">
+										#{proposta.numero_delibera}
+									</h:panelGroup>
+									<h:panelGroup rendered="#{empty proposta.numero_delibera}">
+										<h:panelGroup rendered="#{!bean.formsAdapter.funzionalitaDisponibili['sedutaAperta']}">
+										-
+										</h:panelGroup>
+									</h:panelGroup>
+								</td>
+								<h:panelGroup rendered="#{bean.formsAdapter.funzionalitaDisponibili['sedutaAperta']}">
+									<td class="ord-col">
+										<h:panelGroup rendered="#{proposta.precedingSibling}">
+											<h:commandLink title="#{i18n['dw4.sposta_in_alto']}" ><span class="glyphicon glyphicon-chevron-up openwaitmsg"></span>
+												<f:ajax event="click" execute="@form" render="templateForm:container_#{indice.index}" listener="#{bean.spostaPropostaSu}"></f:ajax>
+											</h:commandLink>
+										</h:panelGroup>
+										<h:panelGroup rendered="#{proposta.followingSibling}">
+											<h:commandLink title="#{i18n['dw4.sposta_in_basso']}" ><span class="glyphicon glyphicon-chevron-down openwaitmsg"></span>
+												<f:ajax event="click" execute="@form" render="templateForm:container_#{indice.index}" listener="#{bean.spostaPropostaGiu}"></f:ajax>
+											</h:commandLink>
+										</h:panelGroup>
+									</td>
+								</h:panelGroup>
+								<td class="text-col">
+									<h:panelGroup styleClass="#{!empty proposta.warning ? 'vaschetta-error' : ''}">
+										<h:panelGroup rendered="#{!empty proposta.warning}">
+											(#{proposta.warning})
+										</h:panelGroup>
+										#{proposta.cod_categoria}. #{proposta.oggetto_prop}
+									</h:panelGroup>
+								</td>
+								<td class="azioni-col">
+									<span class="btn-group">
+									<ui:remove>
+										<h:panelGroup rendered="#{proposta.delib_seduta_stante or bean.formsAdapter.funzionalitaDisponibili['vPropInSed']}">
+											<h:commandButton title="#{i18n['dw4.vedi']}" value="#{i18n['dw4.vedi']}" action="#{bean.doProjectionProposta}" styleClass="btn btn-default btn-xs">
+												<ui:remove><span class="glyphicon glyphicon-eye-open"></span></ui:remove>
+											</h:commandButton>
+										</h:panelGroup>
+										
+										<h:panelGroup rendered="#{bean.formsAdapter.funzionalitaDisponibili['rinvia']}">
+											<h:commandButton title="#{i18n['dw4.rinvia']}" value="#{i18n['dw4.rinvia']}" action="#{bean.rinviaProposta}" styleClass="btn btn-default btn-xs">
+													<ui:remove><span class="glyphicon glyphicon-share-alt"></span></ui:remove>
+												<f:ajax execute="@form" render="@form"></f:ajax>
+											</h:commandButton>
+										</h:panelGroup>
+										
+										<h:panelGroup rendered="#{bean.formsAdapter.funzionalitaDisponibili['pdf_prop']}" styleClass="btn-group">
+											<h:commandButton target="_blank" title="#{i18n['dw4.genera_pdf']}" value="#{i18n['dw4.genera_pdf']}" action="#{bean.generaPDF}" styleClass="btn btn-default btn-xs">
+												<ui:remove><span class="glyphicon glyphicon-file"></span></ui:remove>
+											</h:commandButton>
+										</h:panelGroup>
+										
+										<h:panelGroup rendered="#{bean.formsAdapter.funzionalitaDisponibili['sedutaAllaFirma']}">
+											<h:panelGroup rendered="#{bean.formsAdapter.funzionalitaDisponibili['produciDelibere'] and !empty proposta.numero_delibera and !proposta.delibera_prodotta}">
+												<h:commandButton title="#{i18n['dw4.delibera']}" value="#{i18n['dw4.delibera']}" onclick="if(!owmConfirm('#{i18n['dw4.msg_delibera_seduta_stante']}'))return false;" action="#{bean.produciDelibereDaProposta}" styleClass="btn btn-default btn-xs">
+													<ui:remove><span class="glyphicon glyphicon-comment"></span></ui:remove>
+												</h:commandButton>
+											</h:panelGroup>
+											
+											<h:panelGroup rendered="#{bean.formsAdapter.funzionalitaDisponibili['produciDelibereSedutaStante']}">
+												<h:panelGroup rendered="#{proposta.tipo eq 'delibera' and proposta.delibera_prodotta and !proposta.delib_seduta_stante}">	
+													<h:commandButton title="#{i18n['dw4.seduta_stante']}" onclick="if(!owmConfirm('#{i18n['dw4.msg_delibera_seduta_stante']}'))return false;" action="#{bean.produciDeliberaSedutaStante}" styleClass="btn btn-default btn-xs">
+														<ui:remove><span class="glyphicon glyphicon-flash"></span></ui:remove>
+													</h:commandButton>
+												</h:panelGroup>
+											</h:panelGroup>
+										</h:panelGroup>
+									</ui:remove>
+									
+										<h:panelGroup rendered="#{proposta.delib_seduta_stante or bean.formsAdapter.funzionalitaDisponibili['vPropInSed']}">
+											<h:commandLink title="#{i18n['dw4.vedi']}" action="#{bean.doProjectionProposta}" styleClass="btn btn-default btn-xs openwaitmsg">
+												<span class="glyphicon glyphicon-eye-open"></span>
+											</h:commandLink>
+										</h:panelGroup>
+										
+										<h:panelGroup rendered="#{bean.formsAdapter.funzionalitaDisponibili['rinvia']}">
+											<h:commandLink title="#{i18n['dw4.rinvia']}" action="#{bean.rinviaProposta}" styleClass="btn btn-default btn-xs openwaitmsg">
+													<span class="glyphicon glyphicon-share-alt"></span>
+												<f:ajax execute="@form" render="@form"></f:ajax>
+											</h:commandLink>
+										</h:panelGroup>
+										
+										<h:panelGroup rendered="#{bean.formsAdapter.funzionalitaDisponibili['pdf_prop']}" styleClass="btn-group">
+											<h:commandLink target="_blank" title="#{i18n['dw4.genera_pdf']}" action="#{bean.generaPDF}" styleClass="btn btn-default btn-xs">
+												<span class="glyphicon glyphicon-file"></span>
+											</h:commandLink>
+										</h:panelGroup>
+										
+										<h:panelGroup rendered="#{bean.formsAdapter.funzionalitaDisponibili['sedutaAllaFirma']}">
+											<h:panelGroup rendered="#{bean.formsAdapter.funzionalitaDisponibili['produciDelibere'] and !empty proposta.numero_delibera and !proposta.delibera_prodotta}">
+												<h:commandLink title="#{i18n['dw4.delibera']}" onclick="if(!owmConfirm('#{i18n['dw4.msg_delibera_seduta_stante']}'))return false;" action="#{bean.produciDelibereDaProposta}" styleClass="btn btn-default btn-xs openwaitmsg">
+													<span class="glyphicon glyphicon-comment"></span>
+												</h:commandLink>
+											</h:panelGroup>
+											
+											<h:panelGroup rendered="#{bean.formsAdapter.funzionalitaDisponibili['produciDelibereSedutaStante']}">
+												<h:panelGroup rendered="#{proposta.tipo eq 'delibera' and proposta.delibera_prodotta and !proposta.delib_seduta_stante}">	
+													<h:commandLink title="#{i18n['dw4.seduta_stante']}" onclick="if(!owmConfirm('#{i18n['dw4.msg_delibera_seduta_stante']}'))return false;" action="#{bean.produciDeliberaSedutaStante}" styleClass="btn btn-default btn-xs openwaitmsg">
+														<span class="glyphicon glyphicon-flash"></span>
+													</h:commandLink>
+												</h:panelGroup>
+											</h:panelGroup>
+										</h:panelGroup>
+									</span>
+								</td>
+								<td class="risultato-col">
+									#{proposta.risultato_seduta} <h:panelGroup rendered="#{proposta.delib_seduta_stante}">#{i18n['dw4.seduta_stante']}</h:panelGroup>
+								</td>
+							</tr>
+							<h:panelGroup rendered="#{!empty proposta.nota_risultato}">
+								<tr>
+									<td colspan ="5" class="text-center">#{proposta.nota_risultato}</td>
+								</tr>
+							</h:panelGroup>
+							<h:panelGroup rendered="#{!empty proposta.commento_comunicazioni}">
+								<tr>
+									<td colspan="#{bean.formsAdapter.funzionalitaDisponibili['sedutaAperta'] ? 5 : 4}" class="text-center">
+										<div><strong>#{i18n['dw4.commenti_alle']} #{bean.comunicazioneLabel}</strong></div>
+										<div>#{proposta.commento_comunicazioni}</div>
+									</td>
+								</tr>
+							</h:panelGroup>
+						</ui:repeat>
+					</tbody>
+				  </table>
+				</h:panelGroup>
+			</c:forEach>
+		</div>
+	</h:panelGroup>
+	
+</ui:composition>
+</html>

@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+    template="#{docwayPrintProfiles.pageTemplate}"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:f="http://java.sun.com/jsf/core">
+
+<ui:define name="content">
+	<div class="report">
+
+		<!-- toolbar: inizio -->
+		<div class="btn-toolbar margin-bottom" role="toolbar">
+			<div class="btn-group">
+				<h:commandLink rendered="#{fn:length(docwayPrintProfiles.error_msg) == 0}" id="printBtn" action="#{docwayPrintProfiles.startPrint}" styleClass="btn btn-primary openwaitmsg">#{i18n['dw4.print']}</h:commandLink>
+				<h:commandLink rendered="#{docwayPrintProfiles.formsAdapter.paginaTitoliEnabled}" action="#{docwayPrintProfiles.paginaTitoli}"  styleClass="btn btn-default openwaitmsg" >#{i18n['torna']}</h:commandLink>
+			</div>
+		</div>
+		<!-- toolbar: fine -->
+		
+		<div class="sub-header">
+			<span class="glyphicon glyphicon-print"></span>&#160;
+			#{i18n['dw4.profilistampa']}
+		</div>
+		
+		<!-- messages: inizio -->
+		<h:panelGroup rendered="#{not empty facesContext.messageList}" layout="block" styleClass="docedit-messages alert alert-danger">
+			<h:messages styleClass="" id="printProfilesValidationMesseges" />
+		</h:panelGroup>
+		<h:panelGroup rendered="#{fn:length(docwayPrintProfiles.error_msg) > 0}" layout="block" styleClass="docedit-messages alert alert-danger">
+			<ul>
+				<ui:repeat var="errorMsg" value="#{docwayPrintProfiles.error_msg}">
+					<li><h:outputText value="#{errorMsg.text}" /></li>
+				</ui:repeat>
+			</ul>
+		</h:panelGroup>
+		<!-- messages: fine -->
+
+		<h:inputHidden id="hiddenTypeSelection" value="#{docwayPrintProfiles.typeSelection}" />
+		<h:inputHidden id="hiddenProfileSelection" value="#{docwayPrintProfiles.profileSelectionIndex}" />
+		<h:commandLink id="setVerboBtn" action="#{docwayPrintProfiles.setVerbo}" style="display:none;" styleClass="openwaitmsg"><f:ajax execute="@form" render="@form" /></h:commandLink>
+		<script type="text/javascript">
+		$(document).ready(function() {
+			initPrintProfilesTypeSelection();
+			initPrintProfilesProfileSelection();
+		});
+		
+		$(window).load(function() {
+			jsf.ajax.addOnEvent(function(data) { 
+				if (data.status == 'success') {
+					initPrintProfilesTypeSelection();
+					initPrintProfilesProfileSelection();
+				}
+			});
+
+		});
+		</script>
+		
+		<!-- scheda query: inizio -->
+		<div class="row-fluid" style="margin-top:10px;">
+			<div class="box span12">
+				<div class="box-content">
+				
+					<h:panelGroup rendered="#{fn:length(docwayPrintProfiles.error_msg) == 0}" layout="block" styleClass="fieldset">
+						<div class="legend">#{i18n['dw4.print']}</div>
+						
+						<h:panelGroup rendered="#{docwayPrintProfiles.selid ne ''}" layout="block" styleClass="form-group">
+							<div class="col-sm-offset-2 col-sm-9">
+								<input class="typeSelectionRadio" type="radio" id="typeSelection_print_sel" name="typeSelection" value="print_sel" />
+								<label for="typeSelection_print_sel">#{i18n['dw4.selezione_corrente']}</label>
+							</div>
+						</h:panelGroup>
+						<h:panelGroup rendered="#{docwayPrintProfiles.physDoc ne ''}" layout="block" styleClass="form-group">
+							<div class="col-sm-offset-2 col-sm-9">
+								<input class="typeSelectionRadio" type="radio" id="typeSelection_print_doc" name="typeSelection" value="print_doc" />
+								<label for="typeSelection_print_doc">#{i18n['dw4.documento_corrente']}</label>
+							</div>
+						</h:panelGroup>
+					</h:panelGroup> <!-- /fieldset -->
+					
+					<div class="fieldset">
+						<!-- TODO arriva dell'HTML dal service, deve essere mostrato? -->
+						<!--span id="hxp-prints-show-header"/-->
+					
+						<div class="legend">#{i18n['dw4.profili']}</div>
+					
+						<h:panelGroup rendered="#{fn:length(docwayPrintProfiles.print_profiles) > 0}">
+							<ui:repeat var="print_profile" value="#{docwayPrintProfiles.print_profiles}" varStatus="indice">
+								<div class="form-group">
+									<div class="col-sm-offset-2 col-sm-9">
+										<input class="profileSelectionRadio" type="radio" id="profileSelection_#{indice.index}" name="profileSelection" value="#{indice.index}" checked="#{(print_profile.defaultProfile) ? 'checked' : ''}" />
+										<label for="profileSelection_#{indice.index}">#{print_profile.title}</label>
+									</div>
+								</div>
+							</ui:repeat>
+						</h:panelGroup>
+					
+						<!-- TODO arriva dell'HTML dal service, deve essere mostrato? -->
+						<!--span id="hxp-prints-show-footer"/-->
+					</div> <!-- /fieldset -->
+					
+				</div>
+			</div>
+		</div>
+		<!-- scheda query: fine -->
+		
+		<ui:include src="./loadingbar@stampe@profilo.xhtml"><ui:param name="pageBean" value="#{docwayPrintProfiles}"/></ui:include>
+		
+		<h:inputTextarea value="#{docwayPrintProfiles.xml}" rendered="#{docwayPrintProfiles.debugMode}" styleClass="form-control" rows="10" />
+	</div>
+</ui:define>
+    
+</ui:composition>    

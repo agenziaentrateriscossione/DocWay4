@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" 
+	  xmlns:h="http://java.sun.com/jsf/html" 
+	  xmlns:ui="http://java.sun.com/jsf/facelets" 
+	  xmlns:f="http://java.sun.com/jsf/core">
+<ui:composition>
+
+	<h:panelGroup layout="block" id="webmailFolders">
+		<h:panelGroup rendered="#{pageBean.showfolders}">
+			<!-- Modal -->
+			<div id="webmailModal" class="modal fade in" aria-hidden="false" aria-labelledby="webmailModalLabel" role="dialog" tabindex="-1" style="display: block;">
+			<!--div class="modal fade" id="loadingbarModal" tabindex="-1" role="dialog" aria-labelledby="loadingbarModalLabel" aria-hidden="true"-->
+				<div class="modal-dialog">
+					<div class="modal-content jsf-modal">
+						<div class="modal-header">
+							<h:commandButton styleClass="close" title="#{i18n['acl.close']}" action="#{pageBean.closeFolders}" data-dismiss="modal"  value="&#215;" />
+			        		
+			        		<h4 class="modal-title" id="webmailModalLabel">#{i18n['dw4.selezionare_la_cartella']}</h4>
+						</div>
+						<div class="modal-body">
+							
+							<!-- titles -->
+							<h:panelGroup rendered="#{fn:length(pageBean.folders) > 0}">
+								<table class="table table-striped">
+									<thead>
+										<tr>
+											<th class="essential" style="width:15%;">&#160;</th>
+											<th class="essential">
+												#{i18n['dw4.folder']}
+											</th>
+											<th class="optional" style="width:15%;">
+												#{i18n['dw4.num_email']}
+											</th>
+										</tr>
+									</thead>
+									<tbody>
+										<ui:repeat var="folder" value="#{pageBean.folders}" varStatus="status">
+											<tr>
+												<td class="essential">
+													<h:panelGroup rendered="#{empty folder.fullname and empty folder.name}">
+														<span class="glyphicon glyphicon-folder-open webmail-folder-default normal-size-icon" title="#{i18n['dw4.folder']} default"></span>
+													</h:panelGroup>
+													<h:panelGroup rendered="#{!empty folder.fullname or !empty folder.name}">
+														<span class="glyphicon glyphicon-folder-open normal-size-icon" title="#{i18n['dw4.folder']} #{(!empty folder.fullname) ? folder.fullname : folder.name}"></span>
+													</h:panelGroup>
+												</td>
+												<td class="essential">
+													<h:outputText rendered="#{empty folder.fullname and empty folder.name}" value="default" />
+													<h:commandLink rendered="#{!empty folder.fullname or !empty folder.name}" action="#{pageBean.loadFolder}">
+														<h:outputText value="#{(!empty folder.fullname) ? folder.fullname : folder.name}" />
+													</h:commandLink>
+												</td>
+												<td class="optional">
+													<h:commandLink rendered="#{!empty folder.fullname or !empty folder.name}" action="#{pageBean.loadFolder}">
+														#{folder.messagecount}
+													</h:commandLink>
+												</td>
+											</tr>
+										</ui:repeat>
+									</tbody>
+								</table>
+							</h:panelGroup>
+							<h:panelGroup rendered="#{fn:length(pageBean.folders) == 0}">
+								<div style="margin-top:15px;" class="alert alert-info">#{i18n['acl.emptysearch']}</div>
+							</h:panelGroup>
+				        	
+					       	<h:inputTextarea value="#{pageBean.xml}" rendered="#{pageBean.debugMode}" styleClass="form-control" rows="10"/>
+						</div>
+						<div class="modal-footer">
+							<h:commandButton styleClass="btn btn-default" title="#{i18n['acl.close']}" action="#{pageBean.closeFolders}" data-dismiss="modal"  value="#{i18n['acl.close']}" />
+						</div>
+					</div>
+				</div>
+			</div>
+		</h:panelGroup>
+	</h:panelGroup>
+		 
+</ui:composition>   
+</html>

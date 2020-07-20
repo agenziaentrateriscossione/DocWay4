@@ -1,0 +1,119 @@
+
+/*############################### STILI PER IDENTIFICAZIONE ARCHIVIO - INIZIO ###############################*/
+
+a.archive-xdocwayproc-centro, a.archive-xdocwayproc-centro:hover {
+	background: url('images/logo/xdocwayproc-centro.png') no-repeat center;
+	background-size: 85%; 
+	background-color: #fff !important;
+	margin-top: 2px;
+	border-radius: 4px;
+}
+
+a.archive-xdocwayproc-centro img {
+	visibility: hidden;
+}
+
+/* commentati perche' i loghi BIG in login non devono essere personalizzati, viene mostrato il logo classico di DocWay */
+/*
+.login-archive-xdocwayproc-centro {
+	background: url('images/logo/xdocwayproc-centro.png') no-repeat center;
+}
+
+.login-archive-xdocwayproc-centro img {
+	visibility: hidden;
+}
+*/
+
+a.archive-xdocwayproc-nord, a.archive-xdocwayproc-nord:hover {
+	background: url('images/logo/xdocwayproc-nord.png') no-repeat center;
+	background-size: 85%; 
+	background-color: #fff !important;
+	margin-top: 2px;
+	border-radius: 4px;
+}
+
+a.archive-xdocwayproc-nord img {
+	visibility: hidden;
+}
+
+/* commentati perche' i loghi BIG in login non devono essere personalizzati, viene mostrato il logo classico di DocWay */
+/*
+.login-archive-xdocwayproc-nord {
+	background: url('images/logo/xdocwayproc-nord.png') no-repeat center;
+}
+
+.login-archive-xdocwayproc-nord img {
+	visibility: hidden;
+}
+*/
+
+a.archive-xdocwayproc-sud, a.archive-xdocwayproc-sud:hover {
+	background: url('images/logo/xdocwayproc-sud.png') no-repeat center;
+	background-size: 85%; 
+	background-color: #fff !important;
+	margin-top: 2px;
+	border-radius: 4px;
+}
+
+a.archive-xdocwayproc-sud img {
+	visibility: hidden;
+}
+
+/* commentati perche' i loghi BIG in login non devono essere personalizzati, viene mostrato il logo classico di DocWay */
+/*
+.login-archive-xdocwayproc-sud {
+	background: url('images/logo/xdocwayproc-sud.png') no-repeat center;
+}
+
+.login-archive-xdocwayproc-sud img {
+	visibility: hidden;
+}
+*/
+
+a.archive-xdocwayproc-giustizia, a.archive-xdocwayproc-giustizia:hover {
+	background: url('images/logo/xdocwayproc-giustizia.png') no-repeat center;
+	background-size: 85%; 
+	background-color: #fff !important;
+	margin-top: 2px;
+	border-radius: 4px;
+}
+
+a.archive-xdocwayproc-giustizia img {
+	visibility: hidden;
+}
+
+/* commentati perche' i loghi BIG in login non devono essere personalizzati, viene mostrato il logo classico di DocWay */
+/*
+.login-archive-xdocwayproc-giustizia {
+	background: url('images/logo/xdocwayproc-giustizia.png') no-repeat center;
+}
+
+.login-archive-xdocwayproc-giustizia img {
+	visibility: hidden;
+}
+*/
+
+a.archive-xdocwayproc-spa, a.archive-xdocwayproc-spa:hover {
+	background: url('images/logo/xdocwayproc-spa.png') no-repeat center;
+	background-size: 85%; 
+	background-color: #fff !important;
+	margin-top: 2px;
+	border-radius: 4px;
+}
+
+a.archive-xdocwayproc-spa img {
+	visibility: hidden;
+}
+
+/* commentati perche' i loghi BIG in login non devono essere personalizzati, viene mostrato il logo classico di DocWay */
+/*
+.login-archive-xdocwayproc-spa {
+	background: url('images/logo/xdocwayproc-spa.png') no-repeat center;
+}
+
+.login-archive-xdocwayproc-spa img {
+	visibility: hidden;
+}
+*/
+
+/*############################### STILI PER IDENTIFICAZIONE ARCHIVIO - FINE ###############################*/

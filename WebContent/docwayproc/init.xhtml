@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" 
+		xmlns:h="http://java.sun.com/jsf/html" 
+		xmlns:ui="http://java.sun.com/jsf/facelets"
+		xmlns:f="http://java.sun.com/jsf/core"
+		xmlns:fn="http://java.sun.com/jsp/jstl/functions">
+<h:head>
+
+	<title>#{(docwayprocInit.currentLoginStep eq 'societa') ? i18n['acl.selectsocieta'] : i18n['acl.selectuser']}</title>
+
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+
+	<!-- javascript -->
+	<script type="text/javascript" src="../common/js/jquery.js"></script>
+	<script type="text/javascript" src="../common/js/jquery.formatCurrency-1.4.0.js"></script>
+	<script type="text/javascript" src="../bootstrap/js/bootstrap.js"></script>
+	<script type="text/javascript" src="../common/js/bootstrap-datepicker.js"></script>
+	<script type="text/javascript" src="../common/js/common.js"></script>
+
+	<!-- styles -->
+	<link href="../bootstrap/css/bootstrap.css" rel="stylesheet" type="text/css" />
+	<h:panelGroup rendered="#{docwayprocInit.languageOrientation eq 'rtl'}">
+		<link href="../bootstrap/css/bootstrap-rtl.css" rel="stylesheet" type="text/css" />
+	</h:panelGroup>
+	<link href="../bootstrap/css/bootstrap-theme.css" rel="stylesheet" type="text/css" />
+	<link href="../common/css/login.css" rel="stylesheet" type="text/css" />
+	
+	<h:panelGroup rendered="#{!empty docwayprocInit.customDirCss}">
+		<link href="#{facesContext.externalContext.requestContextPath}/docwayproc/css/#{docwayprocInit.customDirCss}/docwayproc.css" rel="stylesheet" type="text/css" />
+	</h:panelGroup>
+
+</h:head>
+<h:body styleClass="#{docwayprocInit.languageOrientation}">
+	
+	<div class="container">
+		<h:form id="initForm" class="form-signin #{(docwayprocInit.currentLoginStep eq 'societa' and fn:length(docwayprocInit.societaL) > 0) ? 'large' : ''}">    
+			<div class="row #{(!empty docwayprocInit.archivio) ? 'login-archive-' : ''}#{docwayprocInit.archivio}" style="text-align:center; margin-bottom:20px;">
+				<img src="#{facesContext.externalContext.requestContextPath}/common/css/#{(!empty docwayprocInit.customDirCss) ? docwayprocInit.customDirCss.concat('/') : ''}images/logo/docway-big.png" alt="DocWay" />
+			</div>
+    
+    		<h:panelGroup rendered="#{docwayprocInit.currentLoginStep eq 'login' and fn:length(docwayprocInit.matricoleL) > 0}">
+    			<fieldset>
+					<legend>#{i18n['acl.selectusertoaccess']}:</legend>
+					
+	 				<div class="row">
+	   					<ul class="nav nav-pills nav-stacked">
+							<ui:repeat var="item" value="#{docwayprocInit.matricoleL}">
+								<li>
+									<h:commandLink styleClass="matricolaItem acl openwaitmsg" action="#{docwayprocInit.loginWithMatricola}">
+										<span class="string control-label">#{item.descr}</span>
+									</h:commandLink>
+								</li>
+							</ui:repeat>
+						</ul>
+	   				</div>
+	   			</fieldset>
+			</h:panelGroup>
+			
+			<h:panelGroup rendered="#{docwayprocInit.currentLoginStep eq 'societa' and fn:length(docwayprocInit.societaL) > 0}">
+				<fieldset>
+					<legend>#{i18n['acl.selectsocietaaccess']}:</legend>
+					
+	 				<div class="form-group">
+						<div class="col-sm-10">
+							<h:selectOneMenu id="selectSocieta" value="#{docwayprocInit.societaSelezionata}" valueChangeListener="#{docwayprocInit.societaChangeListener}">
+								<f:ajax execute="@this" render="@form" />
+								<f:selectItems value="#{docwayprocInit.societaL}" var="societa" itemValue="#{societa.cod}" itemLabel="#{societa.text}"></f:selectItems>
+							</h:selectOneMenu>
+						</div>
+					</div>
+					<div class="form-group">
+						<div class="col-sm-10">
+							<div class="checkbox">
+								<h:selectBooleanCheckbox id="tutteSocieta" immediate="true" value="#{docwayprocInit.allSocieta}" />
+								<label for="initForm:tutteSocieta">#{i18n['acl.tutte']}</label>
+							</div>
+						</div>
+					</div>
+	   				<div class="form-group">
+						<div class="col-sm-10">
+							<h:commandLink id="societaBtn" action="#{docwayprocInit.loginWithSocieta}" styleClass="btn btn-primary openwaitmsg"><span>#{i18n['acl.entra']}</span></h:commandLink>
+						</div>
+					</div>
+	   			</fieldset>
+			</h:panelGroup>
+			
+			<ui:include src="./errormsg.xhtml" />
+    	</h:form>
+    </div>
+
+</h:body>	
+</html>

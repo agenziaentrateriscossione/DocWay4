@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core">
+<ui:composition>
+
+	<ui:include src="./showdocButtons@SAP.xhtml">
+        <ui:param name="bean" value="#{bean}" />
+        <ui:param name="buttons" value="#{buttons}" />
+    </ui:include>
+    
+</ui:composition>
+</html>

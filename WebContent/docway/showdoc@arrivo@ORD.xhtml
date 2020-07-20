@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+    template="#{showdocArrivoORD.pageTemplate}"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:f="http://java.sun.com/jsf/core">
+
+<ui:define name="content">
+	<div class="offerta">
+		
+		<ui:remove>
+			<h5 class="sub-header">#{i18n['dw4.view_ordine']}</h5>
+		</ui:remove>
+		
+		<!-- toolbar: inizio -->
+		<ui:include src="./buttonBar.xhtml">
+			<ui:param name="bean" value="#{showdocArrivoORD}"/>
+		</ui:include>
+		
+		<h:panelGroup rendered="#{!showdocArrivoORD.doc.cestino and showdocArrivoORD.formsAdapter.funzionalitaDisponibili['ripetinuovo']}">
+			<div class="btn-toolbar hidden-print" role="toolbar">
+				<div class="btn-group">
+					<h:commandLink action="#{showdocArrivoORD.generaFattura}" styleClass="btn btn-primary openwaitmsg">#{i18n['dw4.genera_fattura']}</h:commandLink>
+				</div>
+			</div>
+		</h:panelGroup>
+		<!-- toolbar: fine -->
+		
+		<!-- scheda show: inizio -->
+		<div class="contenuto-doc row clearfix">
+			<h:panelGroup rendered="#{!showdocArrivoORD.popupPage}">
+				<div class="col-xs-12 col-sm-2 col-md-2 col-lg-2 col-sm-push-10 col-md-push-10 col-lg-push-10 text-right">
+					<!-- azioni rapide: inizio -->
+					
+					<ui:include src="./smartActions.xhtml">
+						<ui:param name="bean" value="#{showdocArrivoORD}"/>
+					</ui:include>
+					
+					<!-- azioni rapide: fine -->
+				</div>
+			</h:panelGroup>
+			<div class="col-xs-12 #{(showdocArrivoORD.popupPage) ? 'col-sm-12 col-md-12 col-lg-12' : 'col-sm-10 col-md-10 col-lg-10 col-sm-pull-2 col-md-pull-2 col-lg-pull-2'}">
+				<!-- contenuto doc: inizio -->
+				
+				<h:panelGroup rendered="#{empty showdocArrivoORD.doc.non_disponibile.estremi}">
+					<ui:include src="./showdoc@title.xhtml">
+						<ui:param name="doc" value="#{showdocArrivoORD.doc}"/>
+						<ui:param name="icon" value="glyphicons-pro euro ordine" />
+					</ui:include>
+					
+					<ui:include src="./showdoc@annullato.xhtml"><ui:param name="bean" value="#{showdocArrivoORD}"/></ui:include>
+					<ui:include src="./showdoc@conservazione.xhtml"><ui:param name="bean" value="#{showdocArrivoORD}"/></ui:include>
+					
+					<div id="fixedshowdoc" class="fixed-showdoc">
+						<ui:include src="./showdoc@statidoc.xhtml">
+							<ui:param name="bean" value="#{showdocArrivoORD}"/>
+						</ui:include>
+						
+						<ui:include src="./showdoc@datidoc.xhtml">
+							<ui:param name="bean" value="#{showdocArrivoORD}"/>
+						</ui:include>
+						
+						<ui:include src="./showdoc@datiarchivio.xhtml">
+							<ui:param name="bean" value="#{showdocArrivoORD}"/>
+						</ui:include>
+						
+						<ui:include src="./aspects.xhtml">
+							<ui:param name="bean" value="#{showdocArrivoORD}"/>
+						</ui:include>
+						
+						<ui:include src="./showdoc@datiOrdine.xhtml">
+							<ui:param name="bean" value="#{showdocArrivoORD}" />
+							<ui:param name="titoloBlocco" value="#{i18n['dw4.informazioni_dell_ordine']}" />
+							<ui:param name="titoloTotale" value="#{i18n['dw4.totale_ordine']}" />
+			        	</ui:include>
+						
+						<ui:include src="./showdoc@responsabilita.xhtml">
+							<ui:param name="bean" value="#{showdocArrivoORD}"/>
+						</ui:include>
+						
+						<ui:include src="./showdoc@xwfiles.xhtml">
+							<ui:param name="bean" value="#{showdocArrivoORD}"/>
+						</ui:include>
+						
+						<ui:include src="./showdoc@workflow.xhtml">
+							<ui:param name="bean" value="#{showdocArrivoORD}"/>
+						</ui:include>
+						
+						<ui:include src="./showdoc@postit.xhtml">
+							<ui:param name="bean" value="#{showdocArrivoORD}"/>
+						</ui:include>
+						
+						<ui:include src="./showdoc@datialtro.xhtml">
+							<ui:param name="bean" value="#{showdocArrivoORD}"/>
+						</ui:include>					
+						
+						<ui:include src="./history.xhtml">
+							<ui:param name="bean" value="#{showdocArrivoORD.doc}"/>
+							<ui:param name="viewbean" value="#{showdocArrivoORD}"/>
+							<ui:param name="visible" value="#{showdocArrivoORD.formsAdapter.funzionalitaDisponibili['showHistory']}" />
+						</ui:include>
+					</div>
+					
+				</h:panelGroup>
+				<h:panelGroup rendered="#{!empty showdocArrivoORD.doc.non_disponibile.estremi}">
+				
+					<ui:include src="showdoc@docnondisponibile.xhtml">
+						<ui:param name="bean" value="#{showdocArrivoORD}"/>
+					</ui:include>
+					
+				</h:panelGroup>
+				
+				<h:inputTextarea value="#{showdocArrivoORD.xml}" rendered="#{showdocArrivoORD.debugMode}" styleClass="form-control" rows="10" />	
+				
+				<!-- contenuto doc: fine -->
+			</div>
+		</div>
+		<!-- scheda show: fine -->
+		
+		<ui:include src="./postit.xhtml"><ui:param name="pageBean" value="#{docwayPostit}"/></ui:include>
+		<ui:include src="./verificaFirma.xhtml"><ui:param name="pageBean" value="#{docwayVerificaFirma}"/></ui:include>
+		<ui:include src="./annullamentoDoc.xhtml"><ui:param name="pageBean" value="#{docwayAnnullamentoDoc}"/></ui:include>
+		<ui:include src="./doc_response@openChkinPage.xhtml"><ui:param name="pageBean" value="#{docwayCheckinAttach}"/></ui:include>
+		<ui:include src="./selectRaccoglitori.xhtml"><ui:param name="bean" value="#{showdocArrivoORD}"/><ui:param name="current" value="#{showdocArrivoORD.doc}"/></ui:include>
+		<ui:include src="./rifinterni@RPA.xhtml"><ui:param name="bean" value="#{rifInt}"/></ui:include>
+		<ui:include src="./rifinterni@OP.xhtml"><ui:param name="bean" value="#{rifInt}"/></ui:include>
+		<ui:include src="./rifinterni@CC.xhtml"><ui:param name="bean" value="#{rifInt}"/></ui:include>
+		<ui:include src="./rifinterni@CDS.xhtml"><ui:param name="bean" value="#{rifInt}"/></ui:include>
+		<ui:include src="./lookup.xhtml"> <ui:param name="pageBean" value="#{rifInt}"/></ui:include>
+		<ui:include src="./rifintLookup.xhtml"> <ui:param name="pageBean" value="#{rifInt}"/></ui:include>
+		<ui:include src="./show@task@vars.xhtml"><ui:param name="bean" value="#{docwayWfTaskVars}"/></ui:include>
+		<ui:include src="./showPersoneRuolo.xhtml"><ui:param name="bean" value="#{docwayShowPersoneRuolo}"/></ui:include>
+		
+	</div>
+</ui:define>
+
+</ui:composition>

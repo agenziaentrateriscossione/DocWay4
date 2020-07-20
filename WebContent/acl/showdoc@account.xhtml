@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	template="template.xhtml" xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core">
+
+	<ui:define name="content">
+		<div class="aoo showdoc">
+
+			<!-- secondo livello toolbar: inizio -->
+			<div class="btn-toolbar" role="toolbar">
+				<div class="btn-group">
+					<h:commandLink action="#{showdocAccount.modifyTableDoc}" styleClass="btn btn-primary openwaitmsg">
+						<span>#{i18n['acl.modify']}</span>
+					</h:commandLink>
+				</div>
+			</div>
+			<!-- secondo livello toolbar: fine -->
+
+			<h:panelGroup styleClass="messagesArea" layout="block">
+				<h:messages styleClass="info" id="validationMesseges" />
+			</h:panelGroup>
+
+			<h5 class="sub-header" title="#{showdocAccount.account.id}">
+				<span class="account glyphicons-pro"></span>&#160;
+				<h:outputText value="#{showdocAccount.account.descrAccount}" escape="false" />
+			</h5>
+
+			<!-- scheda show: inizio -->
+			<div id="fixedshowdoc" class="fixed-showdoc">
+				<h:panelGroup id="account">
+					<ui:include src="./account.xhtml">
+						<ui:param name="bean" value="#{showdocAccount}"></ui:param>
+						<ui:param name="readOnly" value="true"></ui:param>
+					</ui:include>
+				</h:panelGroup>
+				
+				<h:panelGroup id="archiveGroup">
+					<ui:include src="./archiveGroup.xhtml">
+						<ui:param name="bean" value="#{showdocAccount}"></ui:param>
+						<ui:param name="readOnly" value="true"></ui:param>
+					</ui:include>
+				</h:panelGroup>
+			</div>
+			<!-- scheda show: fine -->
+		</div>
+
+		<h:inputTextarea value="#{showdocAccount.xml}" rendered="#{showdocAccount.debugMode}" styleClass="form-control" rows="10" />
+	</ui:define>
+</ui:composition>

@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" 
+	  xmlns:h="http://java.sun.com/jsf/html" 
+	  xmlns:ui="http://java.sun.com/jsf/facelets" 
+	  xmlns:f="http://java.sun.com/jsf/core">
+<ui:composition>
+
+	<div class="input-group">
+		<h:inputText id="#{id}_input" value="#{field}" onblur="#{ (notConstraint) ? '' : 'executeAction(this);' }" onfocus="#{ (notConstraint) ? '' : 'setDefaultValue(this);' }" styleClass="lookup-field #{styleclass}" >
+			<f:ajax execute="@form" render="#{refresh}"/>
+ 		</h:inputText>
+ 		
+ 		<div class="input-group-btn">
+ 			<h:commandLink title="#{title}" action="#{bean[clearaction]}" id="#{id}_clear">
+	   			<f:param name="element" value="#{element}"/>
+	   			<f:ajax execute="@form" render="#{refresh}"/>
+			</h:commandLink>
+			
+	   		<h:commandLink title="#{title}" action="#{bean[action]}" id="#{id}_button" onclick="setFocusLookup(this);" styleClass="btn btn-default">
+	   			<f:param name="element" value="#{element}"/>
+	   			<f:ajax execute="@form" render="#{refresh}"/>
+	   			<span class="glyphicon glyphicon-search"></span>
+	   		</h:commandLink>
+		</div>
+	</div>
+
+</ui:composition>
+</html>

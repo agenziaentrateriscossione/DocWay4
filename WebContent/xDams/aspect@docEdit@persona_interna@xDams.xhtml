@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" 
+	  xmlns:h="http://java.sun.com/jsf/html" 
+	  xmlns:ui="http://java.sun.com/jsf/facelets" 
+	  xmlns:f="http://java.sun.com/jsf/core">
+<ui:composition>
+
+	<div class="fieldset">
+		<div class="legend">
+			#{i18n['acl.gestione_archivi']}
+	
+			<div class="pull-right">
+				<span class="glyphicons-pro server" title="#{i18n['acl.gestione_archivi']}"></span>
+			</div>
+		</div>
+		
+		<ui:remove>
+			<div class="form-group">
+				<label for="templateForm:extra_userid" class="col-sm-2 control-label">#{i18n['acl.userid']}</label>
+				<div class="col-sm-4">
+					<script type="text/javascript">
+	               	<!--
+				    $(document).ready(function () {
+				    	updateExtraUserId();
+				    });
+	               	
+	               	$(window).load(function() {
+	               		jsf.ajax.addOnEvent(function(data) { 
+	               			if (data.status == 'success') {
+	               				updateExtraUserId();
+	               			}
+	               		});
+	               	});
+	               	
+	               	function updateExtraUserId() {
+						$("#templateForm\\:logins\\:0\\:login").bind("blur", function () {
+					            $("#templateForm\\:extra_userid").val($("#templateForm\\:logins\\:0\\:login").val());
+					        });
+	               	}
+	               	//-->
+					</script>
+					<h:inputText id="extra_userid" value="#{aspect.archiveAuthorization.userid}" styleClass="form-control" />
+				</div>
+				<label for="templateForm:extra_userid_pwd" class="col-sm-1 control-label">#{i18n['acl.password']}</label>
+				<div class="col-sm-4">
+					<h:inputSecret id="extra_userid_pwd" redisplay="true" value="#{aspect.archiveAuthorization.password}" styleClass="form-control" />
+				</div>
+			</div>
+		</ui:remove>
+		
+		<div class="form-group">
+			<label for="templateForm:extra_arch_dominio" class="col-sm-2 control-label">#{i18n['acl.dominio']}</label>
+			<div class="col-sm-4">
+				<h:inputText value="#{aspect.archiveAuthorization.dominio}" styleClass="form-control" />
+			</div>
+		</div>
+		
+		<ui:include src="./docEdit@archivi.xhtml">
+			<ui:param name="pageBean" value="#{aspect.archiveAuthorization}"/>
+		</ui:include>
+	</div>
+
+	   
+</ui:composition>   
+</html>

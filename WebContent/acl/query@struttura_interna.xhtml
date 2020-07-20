@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+    template="template.xhtml"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:p="http://xmlns.jcp.org/jsf/passthrough">
+
+<ui:define name="content">
+	<div id="advancedSearch" class="struint submitEnterKey">
+		
+		<!-- toolbar: inizio -->
+		<div class="btn-toolbar docway-toolbar margin-bottom" role="toolbar">
+			<div class="btn-group">
+				<h:commandLink id="advancedSearchBtn" action="#{queryStrutturaInterna.queryPlain}" styleClass="btn btn-primary openwaitmsg" value="#{i18n['acl.search']}" />
+				<h:commandLink action="#{queryStrutturaInterna.resetQuery}" styleClass="btn btn-default" value="#{i18n['acl.clear']}"></h:commandLink>
+			</div>
+		</div>
+		<!-- toolbar: fine -->
+		
+		<!-- messages: inizio -->
+		<h:panelGroup rendered="#{not empty facesContext.messageList}" layout="block" styleClass="docedit-messages alert alert-info">
+			<h:messages styleClass="" id="validationMesseges" />
+		</h:panelGroup>
+		<h:panelGroup rendered="#{queryStrutturaInterna.warningSuRestrizioniPartizialiEnabled and queryStrutturaInterna.formsAdapter.funzionalitaDisponibili['acl_int_aoo_restriction'] and !queryStrutturaInterna.formsAdapter.funzionalitaDisponibili['acl_ext_aoo_restriction']}" layout="block" styleClass="docedit-messages alert alert-warning">
+			<h:outputText value="#{i18n['acl.la_ricerca_corrente_verra_filtrata_in_base_alla_propria_aoo_di_appartenenza_e_non_sara_presa_in_considerazione_la_selezione_dell_aoo_dal_menu_a_sinistra']}" />
+			(<strong><h:outputText value="#{i18n['acl.l_utente_ha_restrizioni_su_anagrafica_interna']}" /></strong>)
+		</h:panelGroup>
+		<!-- messages: fine -->
+		
+		<!-- scheda query: inizio -->
+		<div class="row-fluid" style="margin-top:10px;">
+			<div id="fixedshowdoc" class="box span12 fixed-showdoc">
+				<div class="box-content">
+					<div class="fieldset">
+						<div class="legend">#{i18n['acl.search_struint']}</div>
+						
+						<div class="form-group">
+							<label for="templateForm:query_struint_coduff" class="col-sm-2 control-label">#{i18n['acl.cod_structure']}</label>
+							<div class="col-sm-3">
+								<div class="input-group">
+									<h:inputText id="query_struint_coduff" value="#{queryStrutturaInterna.struint_coduff}" styleClass="form-control" />
+									<div class="input-group-btn">
+										<h:commandLink title="#{i18n['acl.vocabulary']}" action="#{queryStrutturaInterna.openIndexCodiceUnita}" styleClass="btn btn-default">
+											<f:ajax execute="@form" render="@form"/>
+											<span class="glyphicon glyphicon-search"></span>
+								        </h:commandLink>
+							        </div>
+						        </div>
+							</div>
+						</div>
+						<div class="form-group">
+							<label for="templateForm:query_struint_nome" class="col-sm-2 control-label">#{i18n['acl.description']}</label>
+							<div class="col-sm-9">
+								<div class="input-group">
+									<h:inputText id="query_struint_nome" value="#{queryStrutturaInterna.struint_nome}" styleClass="form-control" />
+									<div class="input-group-btn">
+										<h:commandLink title="#{i18n['acl.vocabulary']}" action="#{queryStrutturaInterna.openIndexNomeStruttura}" styleClass="btn btn-default">
+											<f:ajax execute="@form" render="@form"/>
+											<span class="glyphicon glyphicon-search"></span>
+								        </h:commandLink>
+							        </div>
+						        </div>
+							</div>
+						</div>
+						<div class="form-group">
+							<label for="templateForm:query_struint_tipologia" class="col-sm-2 control-label">#{i18n['acl.type']}</label>
+							<div class="col-sm-3">
+								<div class="input-group">
+									<h:inputText id="query_struint_tipologia" value="#{queryStrutturaInterna.struint_tipologia}" styleClass="form-control" />
+									<div class="input-group-btn">
+										<h:commandLink title="#{i18n['acl.vocabulary']}" action="#{queryStrutturaInterna.openIndexTipologia}" styleClass="btn btn-default">
+											<f:ajax execute="@form" render="@form"/>
+											<span class="glyphicon glyphicon-search"></span>
+								        </h:commandLink>
+							        </div>
+						        </div>
+							</div>
+						</div>
+						<div class="form-group">
+							<label for="templateForm:query_struint_indirizzocomune" class="col-sm-2 control-label">#{i18n['acl.town']}</label>
+							<div class="col-sm-5">
+								<div class="input-group">
+									<h:inputText id="query_struint_indirizzocomune" value="#{queryStrutturaInterna.struint_indirizzocomune}" styleClass="form-control" />
+									<div class="input-group-btn">
+										<h:commandLink title="#{i18n['acl.vocabulary']}" action="#{queryStrutturaInterna.openIndexIndirizzoComune}" styleClass="btn btn-default">
+											<f:ajax execute="@form" render="@form"/>
+											<span class="glyphicon glyphicon-search"></span>
+								        </h:commandLink>
+							        </div>
+						        </div>
+							</div>
+						</div>
+						<div class="form-group">
+							<label for="templateForm:query_struint_indirizzoprov" class="col-sm-2 control-label">#{i18n['acl.province']}</label>
+							<div class="col-sm-3">
+								<div class="input-group">
+									<h:inputText id="query_struint_indirizzoprov" value="#{queryStrutturaInterna.struint_indirizzoprov}" styleClass="form-control" />
+									<div class="input-group-btn">
+										<h:commandLink title="#{i18n['acl.vocabulary']}" action="#{queryStrutturaInterna.openIndexIndirizzoProv}" styleClass="btn btn-default">
+											<f:ajax execute="@form" render="@form"/>
+											<span class="glyphicon glyphicon-search"></span>
+								        </h:commandLink>
+							        </div>
+						        </div>
+							</div>
+						</div>
+						<div class="form-group">
+							<label for="templateForm:query_struint_competenze" class="col-sm-2 control-label">#{i18n['acl.skill']}</label>
+							<div class="col-sm-9">
+								<div class="input-group">
+									<h:inputText id="query_struint_competenze" value="#{queryStrutturaInterna.struint_competenze}" styleClass="form-control" />
+									<div class="input-group-btn">
+										<h:commandLink title="#{i18n['acl.vocabulary']}" action="#{queryStrutturaInterna.openIndexCompetenze}" styleClass="btn btn-default">
+											<f:ajax execute="@form" render="@form"/>
+											<span class="glyphicon glyphicon-search"></span>
+								        </h:commandLink>
+							        </div>
+						        </div>
+							</div>
+						</div>
+						<div class="form-group">
+							<label for="templateForm:query_struint_operatore" class="col-sm-2 control-label">#{i18n['acl.operator']}</label>
+							<div class="col-sm-5">
+								<div class="input-group">
+									<h:inputText id="query_struint_operatore" value="#{queryStrutturaInterna.struint_operatore}" styleClass="form-control" p:placeholder="#{i18n['acl.oper']}" title="#{i18n['acl.oper']}" />
+									<div class="input-group-btn">
+										<h:commandLink title="#{i18n['acl.vocabulary']}" action="#{queryStrutturaInterna.openIndexOperatore}" styleClass="btn btn-default">
+											<f:ajax execute="@form" render="@form"/>
+											<span class="glyphicon glyphicon-search"></span>
+								        </h:commandLink>
+							        </div>
+						        </div>
+							</div>
+							<div class="col-sm-4">
+								<div class="input-group">
+									<h:inputText id="query_struint_uffoperatore" value="#{queryStrutturaInterna.struint_uffoperatore}" styleClass="form-control" p:placeholder="#{i18n['acl.uff']}" title="#{i18n['acl.uff']}" />
+									<div class="input-group-btn">
+										<h:commandLink title="#{i18n['acl.vocabulary']}" action="#{queryStrutturaInterna.openIndexUffOperatore}" styleClass="btn btn-default">
+											<f:ajax execute="@form" render="@form"/>
+											<span class="glyphicon glyphicon-search"></span>
+								        </h:commandLink>
+							        </div>
+						        </div>
+							</div>
+						</div>
+					</div> <!-- /fieldset -->
+				</div>
+			</div>
+		</div>
+		<script type="text/javascript">
+		$(document).ready(function() {
+			// focus su campo globale
+			$('#templateForm\\:query_struint_nome').focus();
+		});
+		</script>
+		<!-- scheda query: fine -->
+	</div>
+	
+	<ui:include src="./showindex.xhtml"> <ui:param name="pageBean" value="#{queryStrutturaInterna}"/></ui:include>
+</ui:define>
+
+</ui:composition>    

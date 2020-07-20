@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+    template="#{queryAdmTools.pageTemplate}"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:f="http://java.sun.com/jsf/core">
+
+<ui:define name="content">
+	<div class="adm-tools">
+			
+		<div class="sub-header">
+			<span class="glyphicon glyphicon-wrench"></span>&#160;
+			#{i18n['dw4.strumenti_di_amministrazione']}
+		</div>
+		
+		<!-- scheda query: inizio -->
+		<div class="row-fluid" style="margin-top:10px;">
+			<div id="fixedshowdoc" class="box span12 fixed-showdoc">
+				<div class="box-content">
+					<div class="fieldset">
+						<div class="legend">#{i18n['dw4.download_upload_file_per_la_segnatura']}</div>
+						
+						<div class="form-group">
+							<label class="col-sm-2 control-label">#{i18n['dw4.tipologia_di_documento']}</label>
+							<div class="col-sm-9">
+								<h:selectOneRadio value="#{queryAdmTools.tipodoc}" styleClass="radio-selection">
+									<f:selectItem itemValue="arrivo" itemLabel="#{i18n['dw4.arrivocheck']}" />
+									<f:selectItem itemValue="partenza" itemLabel="#{i18n['dw4.partenzacheck']}"/>
+									<f:selectItem itemValue="interno" itemLabel="#{i18n['dw4.internocheck']}"/>
+								</h:selectOneRadio>
+							</div>
+						</div>
+						<div class="form-group">
+							<label class="col-sm-2 control-label">#{i18n['dw4.tipologia_di_stampa']}</label>
+							<div class="col-sm-9">
+								<h:selectOneRadio value="#{queryAdmTools.print}" styleClass="radio-selection">
+									<f:selectItem itemValue="txt" itemLabel="#{i18n['dw4.con_plugin']}" />
+									<f:selectItem itemValue="html" itemLabel="#{i18n['dw4.senza_plugin']}"/>
+								</h:selectOneRadio>
+							</div>
+						</div>
+						<div class="form-group">
+							<label class="col-sm-2 control-label">#{i18n['dw4.archivio']}</label>
+							<div class="col-sm-5">
+								<h:selectOneRadio immediate="true" value="#{queryAdmTools.tipoarc}" valueChangeListener="#{queryAdmTools.tipoarcValueChange}" styleClass="radio-selection">
+				               		<f:ajax execute="@form" render="@form" />
+				               		<f:selectItem itemValue="centrale" itemLabel="#{i18n['dw4.centrale']}" />
+				               		<f:selectItem itemValue="xdocwaydoc-per" itemLabel="#{i18n['dw4.periferico']}" />
+				               		<f:selectItem itemValue="custom" itemLabel="#{i18n['dw4.personalizzato']}" />
+				               	</h:selectOneRadio>
+							</div>
+							<label for="templateForm:tipoArcCustom" class="col-sm-1 control-label">#{i18n['dw4.nome_db']}</label>
+							<div class="col-sm-3">
+								<h:inputText id="tipoArcCustom" value="#{queryAdmTools.tipoarc_custom}" readonly="#{ (queryAdmTools.tipoarc eq 'custom') ? false : true }" styleClass="#{ component.valid ? '' : 'invalidinput' } form-control #{ (queryAdmTools.tipoarc eq 'custom') ? '' : 'readonlyinput' }" />
+							</div>
+						</div>
+						<div class="form-group">
+							<div class="col-sm-offset-2 col-sm-9">
+								<h:commandLink action="#{queryAdmTools.downloadFileSegnatura}" styleClass="btn btn-default">#{i18n['dw4.download_file']}</h:commandLink>
+							</div>
+						</div>
+						
+						<div class="form-group" style="margin-top:20px;">
+							<label class="col-sm-2 control-label">#{i18n['dw4.file']}</label>
+							<div class="col-sm-1">
+								<span id="swfupload-segnatura-control">
+									<span id="swfuploadSegnaturaHolder"></span>
+									<h:commandLink id="swfuploadSegnaturaBtn" onclick="return false;" styleClass="btn btn-default">#{i18n['dw4.sfoglia']}</h:commandLink>
+								</span>
+							</div>
+							<div class="col-sm-7">
+								<p class="form-control-static"><span id="swfuploadSegnatureFileText">#{queryAdmTools.fileNameSegnatura}</span></p>
+								<h:inputHidden id="swfuploadSegnatureFileHidden" value="#{queryAdmTools.fileNameSegnatura}" />
+							</div>
+							<div class="col-sm-1">
+								<h:commandLink action="#{queryAdmTools.uploadFileSegnatura}" styleClass="btn btn-default" onclick="if (!owmConfirm('#{i18n['dw4.procedere_con_l_upload_del_file_per_la_segnatura_dei_documenti_in_base_ai_parametri_impostati']}')) return false;">
+									<f:ajax execute="@form" render="@form" />
+									#{i18n['dw4.upload_file']}
+								</h:commandLink>
+							</div>
+						</div>
+					</div> <!-- /fieldset -->
+					
+					<div class="fieldset">
+						<div class="legend">#{i18n['dw4.download_upload_file_di_descrizione_dei_repertori']}</div>
+						
+						<div class="form-group">
+							<div class="col-sm-offset-2 col-sm-9">
+								<h:commandLink action="#{queryAdmTools.downloadFileDescrizioneRepertori}" styleClass="btn btn-default">#{i18n['dw4.download_file']}</h:commandLink>
+							</div>
+						</div>
+						
+						<div class="form-group" style="margin-top:20px;">
+							<label class="col-sm-2 control-label">#{i18n['dw4.file']}</label>
+							<div class="col-sm-1">
+								<span id="swfupload-repertori-control">
+									<span id="swfuploadRepertoriHolder"></span>
+									<h:commandLink id="swfuploadRepertoriBtn" onclick="return false;" styleClass="btn btn-default">#{i18n['dw4.sfoglia']}</h:commandLink>
+								</span>
+							</div>
+							<div class="col-sm-7">
+								<p class="form-control-static"><span id="swfuploadRepertoriFileText">#{queryAdmTools.fileNameRepertorio}</span></p>
+								<h:inputHidden id="swfuploadRepertoriFileHidden" value="#{queryAdmTools.fileNameRepertorio}" />
+							</div>
+							<div class="col-sm-1">
+								<h:commandLink action="#{queryAdmTools.uploadFileDescrizioneRepertori}" styleClass="btn btn-default" onclick="if (!owmConfirm('#{i18n['dw4.procedere_con_l_upload_del_file']}')) return false;">
+									<f:ajax execute="@form" render="@form" />
+									#{i18n['dw4.upload_file']}
+								</h:commandLink>
+							</div>
+						</div>
+					</div> <!-- /fieldset -->
+					
+					<h:panelGroup rendered="#{queryAdmTools.formsAdapter.funzionalitaDisponibili['import_docs']}" layout="block" styleClass="fieldset">
+						<div class="legend">#{i18n['dw4.import_da_registro_di_emergenza']}</div>
+						
+						<h:panelGroup rendered="#{queryAdmTools.formsAdapter.funzionalitaDisponibili['no_aoo_restriction']}" layout="block" styleClass="form-group">
+							<label for="templateForm:codsede_regem" class="col-sm-2 control-label">
+								<span class="glyphicon glyphicon-info-sign popoveritem" data-toggle="popover" data-placement="top" data-trigger="hover" data-content="#{i18n['dw4.cod_amm_piu_cod_aoo']}"></span>
+								&#160;
+								#{i18n['dw4.cod_sede']}
+							</label>
+							<div class="col-sm-2">
+								<h:inputText id="codsede_regem" value="#{queryAdmTools.cod_sede_import}" styleClass="#{ component.valid ? '' : 'invalidinput' } form-control" />
+							</div>
+						</h:panelGroup>
+						
+						<div class="form-group">
+							<label class="col-sm-2 control-label">#{i18n['dw4.file']}</label>
+							<div class="col-sm-1">
+								<span id="swfupload-registro-control">
+									<span id="swfuploadRegistroHolder"></span>
+									<h:commandLink id="swfuploadRegistroBtn" onclick="return false;" styleClass="btn btn-default">#{i18n['dw4.sfoglia']}</h:commandLink>
+								</span>
+							</div>
+							<div class="col-sm-7">
+								<p class="form-control-static"><span id="swfuploadRegistroFileText">#{queryAdmTools.fileNameRegistroEmergenza}</span></p>
+								<h:inputHidden id="swfuploadRegistroFileHidden" value="#{queryAdmTools.fileNameRegistroEmergenza}"/>
+							</div>
+							<div class="col-sm-1">
+								<h:commandLink action="#{queryAdmTools.importRegistroEmergenza}" styleClass="btn btn-default" onclick="if (!owmConfirm('#{i18n['dw4.procedere_con_l_importazione_del_registro_di_emergenza']}')) return false;">
+									<f:ajax execute="@form" render="@form" />
+									#{i18n['dw4.importa_file']}
+								</h:commandLink>
+							</div>
+						</div>
+						
+						<div class="form-group" style="margin-top:20px;">
+							<div class="col-sm-offset-2 col-sm-9">
+								<h:commandLink action="#{queryAdmTools.regDocsDaSmistare}">
+									<span class="glyphicon glyphicon-list normal-size-icon"></span> #{i18n['dw4.documenti_importati_da_sistemare']}
+								</h:commandLink>
+							</div>
+						</div>
+					</h:panelGroup>
+					
+					<ui:remove>
+						<h:panelGroup rendered="#{queryAdmTools.formsAdapter.funzionalitaDisponibili['import_docs']}" layout="block" styleClass="fieldset">
+							<div class="legend">#{i18n['dw4.importazione_di_documenti']}</div>
+							
+							<div class="form-group">
+								<label for="templateForm:chkImpAttach" class="col-sm-2 control-label">#{i18n['dw4.importa_allegati']}</label>
+								<div class="col-sm-1">
+									<h:selectBooleanCheckbox id="chkImpAttach" value="#{queryAdmTools.chkImpAttach}" />
+								</div>
+							</div>
+							
+							<div class="form-group">
+								<label class="col-sm-2 control-label">#{i18n['dw4.file']}</label>
+								<div class="col-sm-1">
+									<span id="swfupload-importdoc-control">
+										<span id="swfuploadImportdocHolder"></span>
+										<h:commandLink id="swfuploadImportdocBtn" onclick="return false;" styleClass="btn btn-default">#{i18n['dw4.sfoglia']}</h:commandLink>
+									</span>
+								</div>
+								<div class="col-sm-7">
+									<p class="form-control-static"><span id="swfuploadImportdocFileText">#{queryAdmTools.fileNameImportDocumenti}</span></p>
+									<h:inputHidden id="swfuploadImportdocFileHidden" value="#{queryAdmTools.fileNameImportDocumenti}" />
+								</div>
+								<div class="col-sm-1">
+									<h:commandLink action="#{queryAdmTools.importDocs}" styleClass="btn btn-default" onclick="if (!owmConfirm('#{i18n['dw4.procedere_con_l_importazione_dei_documenti']}')) return false;">
+										<f:ajax execute="@form" render="@form" />
+										#{i18n['dw4.importa_file']}
+									</h:commandLink>
+								</div>
+							</div>
+						</h:panelGroup>
+					</ui:remove>
+					
+					<div class="fieldset">
+						<div class="legend">#{i18n['dw4.altre_azioni']}</div>
+						
+						<div class="form-group">
+							<div class="col-sm-offset-2 col-sm-9">
+								<div class="adm-command">
+									<h:commandLink rendered="#{!queryAdmTools.administrationMode}" action="#{queryAdmTools.changeAdmMode}" onclick="if (!owmConfirm('#{i18n['dw4.confermare_il_cambio_di_modalita']}')) return false;" >
+										<f:ajax execute="@form" render="@form" />
+										<span class="glyphicon glyphicon-lock normal-size-icon"></span> #{i18n['dw4.abilita_accesso_solo_agli_amministratori']}
+									</h:commandLink>
+									<h:commandLink rendered="#{queryAdmTools.administrationMode}" action="#{queryAdmTools.changeAdmMode}" onclick="if (!owmConfirm('#{i18n['dw4.confermare_il_cambio_di_modalita']}')) return false;" >
+										<f:ajax execute="@form" render="@form" />
+										<span class="glyphicon glyphicon-globe normal-size-icon"></span> #{i18n['dw4.abilita_accesso_a_tutti_gli_utenti']}
+									</h:commandLink>
+								</div>
+								<div class="adm-command">
+									<h:commandLink action="#{queryAdmTools.gotoTableQTrasferimento}">
+										<span class="glyphicon glyphicon-transfer normal-size-icon"></span> #{i18n['dw4.trasferimenti_fascicoli_documenti']}
+									</h:commandLink>
+								</div>
+								<div class="adm-command">
+									<h:commandLink action="#{queryAdmTools.generaRelazioniFascicoli}">
+										<f:ajax execute="@form" render="@form" />
+										<span class="glyphicon glyphicon-cog normal-size-icon"></span> #{i18n['dw4.rigenera_relazioni_tra_i_fascicoli']}
+									</h:commandLink>
+								</div>
+								<div class="adm-command">
+									<h:commandLink rendered="#{queryAdmTools.formsAdapter.funzionalitaDisponibili['invioEmailNotifica']}" action="#{queryAdmTools.changeSendMailStatus}">
+										<f:ajax execute="@form" render="@form" />
+										<span class="glyphicon glyphicon-envelope normal-size-icon"></span> #{i18n['dw4.disabilita_invio_email_di_notifica']}
+									</h:commandLink>
+									<h:commandLink rendered="#{!queryAdmTools.formsAdapter.funzionalitaDisponibili['invioEmailNotifica']}" action="#{queryAdmTools.changeSendMailStatus}">
+										<f:ajax execute="@form" render="@form" />
+										<span class="glyphicon glyphicon-envelope normal-size-icon"></span> #{i18n['dw4.abilita_invio_email_di_notifica']}
+									</h:commandLink>
+								</div>
+								<div class="adm-command">
+									<h:commandLink action="#{queryAdmTools.openTitolario}">
+										<f:ajax execute="@form" render="templateForm:thEdit templateForm:errormsg" />
+										<span class="glyphicon glyphicon-list-alt normal-size-icon"></span> #{i18n['dw4.editing_di_tipologia_e_mezzo_di_trasmissione']}
+									</h:commandLink>
+								</div>
+							</div>
+						</div>
+					</div> <!-- /fieldset -->
+				</div>
+			</div>
+		</div>
+		<!-- scheda query: fine -->
+		
+		<script type="text/javascript">
+		window.loadSWFUpload = function() {
+			initAdmSWFU("swfupload-segnatura-control", "swfuploadSegnaturaHolder", "swfuploadSegnatureFile", "#{facesContext.externalContext.requestContextPath}/fileupload", "#{userBean.login}", "#{userBean.matricola}");
+			initAdmSWFU("swfupload-repertori-control", "swfuploadRepertoriHolder", "swfuploadRepertoriFile", "#{facesContext.externalContext.requestContextPath}/fileupload", "#{userBean.login}", "#{userBean.matricola}");
+			initAdmSWFU("swfupload-registro-control", "swfuploadRegistroHolder", "swfuploadRegistroFile", "#{facesContext.externalContext.requestContextPath}/fileupload", "#{userBean.login}", "#{userBean.matricola}");
+			initAdmSWFU("swfupload-importdoc-control", "swfuploadImportdocHolder", "swfuploadImportdocFile", "#{facesContext.externalContext.requestContextPath}/fileupload", "#{userBean.login}", "#{userBean.matricola}");
+		}
+		
+		$(window).load(function() {
+			jsf.ajax.addOnEvent(function(data) { 
+				if (data.status == 'success') {
+					initAdmSWFU("swfupload-segnatura-control", "swfuploadSegnaturaHolder", "swfuploadSegnatureFile", "#{facesContext.externalContext.requestContextPath}/fileupload", "#{userBean.login}", "#{userBean.matricola}");
+					initAdmSWFU("swfupload-repertori-control", "swfuploadRepertoriHolder", "swfuploadRepertoriFile", "#{facesContext.externalContext.requestContextPath}/fileupload", "#{userBean.login}", "#{userBean.matricola}");
+					initAdmSWFU("swfupload-registro-control", "swfuploadRegistroHolder", "swfuploadRegistroFile", "#{facesContext.externalContext.requestContextPath}/fileupload", "#{userBean.login}", "#{userBean.matricola}");
+					initAdmSWFU("swfupload-importdoc-control", "swfuploadImportdocHolder", "swfuploadImportdocFile", "#{facesContext.externalContext.requestContextPath}/fileupload", "#{userBean.login}", "#{userBean.matricola}");
+				}
+			});
+		});
+		</script>
+	</div>
+	
+	<ui:include src="./thEdit.xhtml"><ui:param name="pageBean" value="#{docwayThEdit}"/></ui:include>
+	<ui:include src="./loadingbar.xhtml"><ui:param name="pageBean" value="#{queryAdmTools}"/></ui:include>
+
+	<h:inputTextarea value="#{queryAdmTools.xml}" rendered="#{queryAdmTools.debugMode}" styleClass="form-control" rows="10" />	
+</ui:define>
+    
+</ui:composition>    

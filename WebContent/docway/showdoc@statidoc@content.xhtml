@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core">
+<ui:composition>
+
+	<h:panelGroup rendered="#{bean.doc.cestino}">
+		<dt>
+			<span class="glyphicons-pro bin doc-cestino popoveritem"
+				data-toggle="popover" data-placement="bottom" data-trigger="hover"
+				data-content="#{i18n['dw4.documento_spostato_nel_cestino']}"></span>
+		</dt>
+		<dd class="label-doc-cestino">
+			<h:outputFormat value="#{i18n['dw4.documento_spostato_nel_cestino_in_data']}" escape="false">
+				<f:param value="#{bean.doc.datacestino}" />
+			</h:outputFormat>
+			(#{i18n['dw4.si_veda_la_storia_del_documento_per_maggiori_dettagli']})
+		</dd>
+	</h:panelGroup>
+	<h:panelGroup rendered="#{!empty bean.doc.prot_differito.data_arrivo}">
+		<dt>
+			<span class="glyphicons-pro file_import doc-differito popoveritem"
+				data-toggle="popover" data-placement="bottom" data-trigger="hover"
+				data-content="#{i18n['dw4.corrispondenza_in_arrivo_protocollo_differito']}"></span>
+		</dt>
+		<dd>#{i18n['dw4.corrispondenza_in_arrivo_protocollo_differito']}</dd>
+	</h:panelGroup>
+	<h:panelGroup rendered="#{!empty bean.doc.segnatura.cod_uff_oper}">
+		<dt>
+			<span class="glyphicon glyphicon-saved doc-segnatura popoveritem"
+				data-toggle="popover" data-placement="bottom" data-trigger="hover"
+				data-content="#{i18n['dw4.segnatura_applicata']} il #{bean.doc.segnatura.dataFormatted} alle #{bean.doc.segnatura.ora} da #{bean.doc.segnatura.oper} (#{bean.doc.segnatura.uff_oper})"></span>
+		</dt>
+		<dd>#{i18n['dw4.segnatura_applicata']} il
+			#{bean.doc.segnatura.dataFormatted} alle #{bean.doc.segnatura.ora} da
+			#{bean.doc.segnatura.oper} (#{bean.doc.segnatura.uff_oper})</dd>
+	</h:panelGroup>
+	<h:panelGroup rendered="#{bean.doc.annullato =='si'}">
+		<dt>
+			<span class="glyphicon glyphicon-exclamation-sign doc-annullato"
+				data-toggle="popover" data-placement="bottom" data-trigger="hover"
+				data-content="#{i18n['dw4.documento_annullato']}"></span>
+		</dt>
+		<dd>
+			<a href="#" onclick="openModal('annullatoModal');"
+				onkeypress="openModal('annullatoModal');"
+				title="#{i18n['dw4.visualizza_estremi_dell_annullamento']}">
+				#{i18n['dw4.documento_annullato']},
+				#{i18n['dw4.clicca_per_maggiori_dettagli']} </a>
+		</dd>
+	</h:panelGroup>
+	<h:panelGroup rendered="#{fn:length(bean.doc.extra.conservazione) > 0}">
+		<dt>
+			<span class="glyphicon glyphicon-export doc-conservato popoveritem"
+				data-toggle="popover" data-placement="bottom" data-trigger="hover"
+				data-content="#{i18n['dw4.documento_conservato']}"></span>
+		</dt>
+		<dd>
+			<a href="#" onclick="openModal('conservatoModal');"
+				onkeypress="openModal('conservatoModal');"
+				title="#{i18n['dw4.visualizza_dettagli_della_conservazione']}">
+				#{i18n['dw4.documento_conservato_esportato']},
+				#{i18n['dw4.clicca_per_maggiori_dettagli']} </a>
+		</dd>
+	</h:panelGroup>
+	<h:panelGroup rendered="#{bean.doc.bozza}">
+		<dt>
+			<span class="glyphicons-pro settings doc-bozza popoveritem"
+				data-toggle="popover" data-placement="bottom" data-trigger="hover"
+				data-content="#{i18n['dw4.bozza']} #{i18n['dw4.del']} #{bean.doc.creazione.dateLong}"></span>
+		</dt>
+		<dd>#{i18n['dw4.bozza']} #{i18n['dw4.del']}
+			#{bean.doc.creazione.dateLong}</dd>
+	</h:panelGroup>
+	<h:panelGroup rendered="#{bean.doc.personale}">
+		<dt>
+			<span class="glyphicon glyphicon-user doc-personale popoveritem"
+				data-toggle="popover" data-placement="bottom" data-trigger="hover"
+				data-content="#{i18n['dw4.documento_visibile_solo_alle_persone_indicate_in_responsabilita_e_non_agli_uffici_di_appartenenza']}"></span>
+		</dt>
+		<dd>
+			#{i18n['dw4.documento_visibile_solo_alle_persone_indicate_in_responsabilita_e_non_agli_uffici_di_appartenenza']}
+		</dd>
+	</h:panelGroup>
+
+	<h:panelGroup rendered="#{bean.doc.visibilita.tipo eq 'Riservato'}">
+		<dt>
+			<span class="glyphicons-pro lock doc-riservato popoveritem"
+				data-toggle="popover" data-placement="bottom" data-trigger="hover"
+				data-content="#{bean.labelsVisibilita['Riservato']}"></span>
+		</dt>
+		<dd>
+			#{bean.labelsVisibilita['Riservato']}
+			<h:panelGroup rendered="#{!empty bean.doc.visibilita.fino_al}">
+				#{i18n['dw4.fino_al']} #{bean.doc.visibilita.fino_al}
+			</h:panelGroup>
+		</dd>
+	</h:panelGroup>
+	<h:panelGroup
+		rendered="#{bean.doc.visibilita.tipo eq 'Altamente confidenziale'}">
+		<dt>
+			<span class="glyphicons-pro lock doc-segreto popoveritem"
+				data-toggle="popover" data-placement="bottom" data-trigger="hover"
+				data-content="#{bean.labelsVisibilita['Altamente confidenziale']}"></span>
+		</dt>
+		<dd>#{bean.labelsVisibilita['Altamente confidenziale']}</dd>
+	</h:panelGroup>
+	<h:panelGroup rendered="#{bean.doc.visibilita.tipo eq 'Segretissimo'}">
+		<dt>
+			<span class="glyphicons-pro lock doc-segretissimo popoveritem"
+				data-toggle="popover" data-placement="bottom" data-trigger="hover"
+				data-content="#{bean.labelsVisibilita['Segretissimo']}"></span>
+		</dt>
+		<dd>#{bean.labelsVisibilita['Segretissimo']}</dd>
+	</h:panelGroup>
+	<h:panelGroup rendered="#{fn:toLowerCase(bean.doc.visibilita.tipo) ne 'pubblico' and fn:toLowerCase(bean.doc.visibilita.tipo) ne 'riservato' and fn:toLowerCase(bean.doc.visibilita.tipo) ne 'altamente confidenziale' and fn:toLowerCase(bean.doc.visibilita.tipo) ne 'segretissimo'}">
+		<dt>
+			<span class="glyphicons-pro lock doc-visibilita-custom visibilita-cod-#{bean.doc.visibilita.tipo} popoveritem"
+				data-toggle="popover" data-placement="bottom" data-trigger="hover"
+				data-content="#{(!empty bean.labelsVisibilita[bean.doc.visibilita.tipo]) ? bean.labelsVisibilita[bean.doc.visibilita.tipo] : bean.doc.visibilita.tipo}"></span>
+		</dt>
+		<dd>#{(!empty bean.labelsVisibilita[bean.doc.visibilita.tipo]) ? bean.labelsVisibilita[bean.doc.visibilita.tipo] : bean.doc.visibilita.tipo}</dd>
+	</h:panelGroup>
+
+	<h:panelGroup rendered="#{bean.doc.filesPrenotati}">
+		<dt>
+			<span class="glyphicons-pro pencil file-prenotato popoveritem"
+				data-toggle="popover" data-placement="bottom" data-trigger="hover"
+				data-content="#{i18n['dw4.il_documento_e_in_revisione_uno_dei_file_e_stato_prenotato']}"></span>
+		</dt>
+		<dd>
+			#{i18n['dw4.il_documento_e_in_revisione_uno_dei_file_e_stato_prenotato']}
+		</dd>
+	</h:panelGroup>
+	
+	<h:panelGroup rendered="#{!empty bean.doc.extra.stato_deposito and bean.doc.extra.stato_deposito eq 'deposito'}">
+		<dt>
+			<span class="glyphicons-pro package archivio-deposito popoveritem"
+				data-toggle="popover" data-placement="bottom" data-trigger="hover"
+				data-content="#{i18n['dw4.documento_versato_in_archivio_di_deposito']}"></span>
+		</dt>
+		<dd>
+			#{i18n['dw4.documento_versato_in_archivio_di_deposito']}
+		</dd>
+	</h:panelGroup>
+	<h:panelGroup rendered="#{!empty bean.doc.extra.stato_deposito_minuta and bean.doc.extra.stato_deposito_minuta eq 'deposito'}">
+		<dt>
+			<span class="glyphicons-pro package archivio-deposito-minuta popoveritem"
+				data-toggle="popover" data-placement="bottom" data-trigger="hover"
+				data-content="#{i18n['dw4.minuta_versata_in_archivio_di_deposito']}"></span>
+		</dt>
+		<dd>
+			#{i18n['dw4.minuta_versata_in_archivio_di_deposito']}
+		</dd>
+	</h:panelGroup>
+	
+	<h:panelGroup rendered="#{!empty bean.doc.messageId and !empty bean.doc.emailAttachmentIndex}">
+		<dt>
+			<span class="glyphicons-pro git_merge split-email-doc popoveritem"
+				data-toggle="popover" data-placement="bottom" data-trigger="hover"
+				data-content="#{i18n['dw4.derivante_da_suddivisione_email_in_piu_documenti_in_base_agli_allegati_contenuti']}"></span>
+		</dt>
+		<dd>
+			#{i18n['dw4.derivante_da_suddivisione_email_in_piu_documenti_in_base_agli_allegati_contenuti']}
+		</dd>
+	</h:panelGroup>
+	
+</ui:composition>
+</html>

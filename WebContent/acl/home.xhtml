@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	template="template.xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core">
+
+<ui:define name="content">
+	<div id="advancedSearch" class="globale submitEnterKey">
+	
+		<!-- toolbar: inizio -->
+		<div class="btn-toolbar docway-toolbar margin-bottom" role="toolbar">
+			<div class="btn-group">
+				<h:commandLink id="advancedSearchBtn" action="#{aclHome.search}" styleClass="btn btn-primary openwaitmsg" value="#{i18n['acl.search']}" />
+				<h:commandLink action="#{aclHome.clearForm}" styleClass="btn btn-default" value="#{i18n['acl.clear']}"><f:ajax execute="@form" render="@form" /></h:commandLink>
+			</div>
+		</div>
+		<!-- toolbar: fine -->
+		
+		<!-- messages: inizio -->
+		<h:panelGroup rendered="#{not empty facesContext.messageList}" layout="block" styleClass="docedit-messages alert alert-danger">
+			<h:messages styleClass="" id="validationMesseges" />
+		</h:panelGroup>
+		<h:panelGroup rendered="#{aclHome.warningSuRestrizioniPartizialiEnabled and aclHome.formsAdapter.funzionalitaDisponibili['acl_int_aoo_restriction'] and !aclHome.formsAdapter.funzionalitaDisponibili['acl_ext_aoo_restriction']}" layout="block" styleClass="docedit-messages alert alert-warning">
+			<h:outputText value="#{i18n['acl.la_selezione_di_anagrafica_interna_verra_filtrata_in_base_alla_propria_aoo_di_appartenenza_e_non_sara_presa_in_considerazione_la_selezione_dell_aoo_dal_menu_a_sinistra']}" />
+			(<strong><h:outputText value="#{i18n['acl.l_utente_ha_restrizioni_su_anagrafica_interna']}" /></strong>)
+		</h:panelGroup>
+		<h:panelGroup rendered="#{aclHome.warningSuRestrizioniPartizialiEnabled and !aclHome.formsAdapter.funzionalitaDisponibili['acl_int_aoo_restriction'] and aclHome.formsAdapter.funzionalitaDisponibili['acl_ext_aoo_restriction']}" layout="block" styleClass="docedit-messages alert alert-warning">
+			<h:outputText value="#{i18n['acl.la_selezione_di_anagrafica_esterna_verra_filtrata_in_base_alla_propria_aoo_di_appartenenza_e_non_sara_presa_in_considerazione_la_selezione_dell_aoo_dal_menu_a_sinistra']}" />
+			(<strong><h:outputText value="#{i18n['acl.l_utente_ha_restrizioni_su_anagrafica_esterna']}" /></strong>)
+		</h:panelGroup>
+		<!-- messages: fine -->
+
+		<!-- scheda query: inizio -->
+		<div class="row-fluid">
+			<div class="box span12">
+				<div class="box-content">
+					<div class="fieldset">
+						<div class="legend">#{i18n['acl.freesearch']}</div>
+						
+						<div class="form-group">
+							<label for="templateForm:acl_globale" class="col-sm-2 control-label">#{i18n['dw4.ricerca_full_text']}</label>
+							<div class="col-sm-9">
+								<h:inputText id="acl_globale" styleClass="form-control" value="#{aclHome.searchTerms}"/>
+							</div>
+						</div>
+						<div class="form-group">
+							<label class="col-sm-2 control-label">#{i18n['acl.type']}</label>
+							<div class="col-sm-9">
+								<span class="margin-right-20" style="white-space:nowrap;">
+									<h:selectBooleanCheckbox value="#{aclHome.struttura_interna}" id="qCheck_strutint" />
+									<label for="templateForm:qCheck_strutint" class="normal-weight-text">#{i18n['acl.struint']}</label>
+								</span>
+								<span class="margin-right-20" style="white-space:nowrap;">
+									<h:selectBooleanCheckbox value="#{aclHome.persona_interna}" id="qCheck_persint" />
+									<label for="templateForm:qCheck_persint" class="normal-weight-text">#{i18n['acl.persint']}</label>
+								</span>
+								<span class="margin-right-20" style="white-space:nowrap;">
+									<h:selectBooleanCheckbox value="#{aclHome.struttura_esterna}" id="qCheck_strutest" />
+									<label for="templateForm:qCheck_strutest" class="normal-weight-text">#{i18n['acl.struest']}</label>
+								</span>
+								<span class="margin-right-20" style="white-space:nowrap;">
+									<h:selectBooleanCheckbox value="#{aclHome.persona_esterna}" id="qCheck_persest" />
+									<label for="templateForm:qCheck_persest" class="normal-weight-text">#{i18n['acl.persest']}</label>
+								</span>
+								<span class="margin-right-20" style="white-space:nowrap;">
+									<h:selectBooleanCheckbox value="#{aclHome.gruppo}" id="qCheck_groups" />
+									<label for="templateForm:qCheck_groups" class="normal-weight-text">#{i18n['acl.groups']}</label>
+								</span>
+								<span class="margin-right-20" style="white-space:nowrap;">
+									<h:selectBooleanCheckbox value="#{aclHome.comune}" id="qCheck_towns" />
+									<label for="templateForm:qCheck_towns" class="normal-weight-text">#{i18n['acl.towns']}</label>
+								</span>
+								<span class="margin-right-20" style="white-space:nowrap;">
+									<h:selectBooleanCheckbox value="#{aclHome.profilo}" id="qCheck_profiles" />
+									<label for="templateForm:qCheck_profiles" class="normal-weight-text">#{i18n['acl.profiles']}</label>
+								</span>
+								<h:panelGroup rendered="#{aclHome.formsAdapter.funzionalitaDisponibili['rolesManagement']}">
+									<span class="margin-right-20" style="white-space:nowrap;">
+										<h:selectBooleanCheckbox value="#{aclHome.ruolo}" id="qCheck_roles" />
+										<label for="templateForm:qCheck_roles" class="normal-weight-text">#{i18n['acl.roles']}</label>
+									</span>
+								</h:panelGroup>
+							</div>
+						</div>
+						<div class="form-group">
+							<ui:include src="../docway/rangeField.xhtml">
+								<ui:param name="label" value="#{i18n['acl.create_date']}" />
+								<ui:param name="id" value="dataCreaz" />
+								<ui:param name="from_value" value="#{aclHome.createDateFrom}" />
+								<ui:param name="to_value" value="#{aclHome.createDateTo}" />
+								<ui:param name="is_date" value="true" />
+							</ui:include>
+						</div>
+						<div class="form-group">
+							<ui:include src="../docway/rangeField.xhtml">
+								<ui:param name="label" value="#{i18n['acl.update_date']}" />
+								<ui:param name="id" value="dataMod" />
+								<ui:param name="from_value" value="#{aclHome.updateDateFrom}" />
+								<ui:param name="to_value" value="#{aclHome.updateDateTo}" />
+								<ui:param name="is_date" value="true" />
+							</ui:include>
+						</div>
+					</div> <!-- /fieldset -->
+				</div>
+			</div>
+		</div>
+		<script type="text/javascript">
+		$(document).ready(function() {
+			// focus su campo globale
+			$('#templateForm\\:acl_globale').focus();
+		});
+		</script>
+		<!-- scheda query: fine -->
+		
+		<ui:include src="./aooSelectorPopup.xhtml"/>
+		
+		<h:inputTextarea value="#{aclHome.xml}" rendered="#{aclHome.debugMode}" styleClass="form-control" rows="10" />
+	</div>
+</ui:define>
+
+</ui:composition>

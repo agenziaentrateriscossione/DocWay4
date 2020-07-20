@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" 
+	  xmlns:h="http://java.sun.com/jsf/html" 
+	  xmlns:ui="http://java.sun.com/jsf/facelets" 
+	  xmlns:f="http://java.sun.com/jsf/core"
+	  xmlns:c="http://java.sun.com/jsp/jstl/core">
+<ui:composition>
+
+	<div class="fieldset">
+		<div class="legend">
+			#{i18n['dw4.registro_delle_fatture']}
+			
+			<div class="pull-right">
+				<span class="glyphicons-pro euro" title="#{i18n['dw4.registro_delle_fatture']}"></span>
+			</div>
+		</div>
+	
+		<h:panelGroup id="datiFatturaHolder" layout="block">
+			<ui:repeat id="fattura" var="fattura" value="#{bean.fatturaPA.datiFattura}" varStatus="indice">
+				<div class="#{((fatturasingola ne 'true' and !bean.docEditModify) or fn:length(bean.fatturaPA.datiFattura) > 1) ? 'docedit-customfield-group customfield-group-fields-multi' : ''}">
+					<h:panelGroup rendered="#{fatturasingola ne 'true' or bean.docEditModify}" layout="block" styleClass="form-group">
+						<label class="col-sm-2 control-label emphasis-title"><span>#{i18n['dw4.dati_fattura']} #{((fatturasingola ne 'true' and !bean.docEditModify) or fn:length(bean.fatturaPA.datiFattura) > 1) ? indice.index+1 : ''}</span></label>
+						<h:panelGroup rendered="#{!bean.docEditModify}">
+							<div class="col-sm-2">
+								<div class="input-group">
+									<div class="btn-group">
+										<h:commandLink action="#{bean.fatturaPA.deleteDatiFattura}" title="#{i18n['dw4.elimina_istanza']}" styleClass="btn btn-default">
+								 			<f:ajax execute="@form" render=":templateForm:datiFatturaHolder :templateForm:errormsg"/>
+								 			<span class="glyphicon glyphicon-minus"></span>
+										</h:commandLink>
+										<h:commandLink action="#{bean.fatturaPA.addDatiFattura}" title="#{i18n['dw4.aggiungi_istanza']}" styleClass="btn btn-default">
+								 			<f:ajax execute="@form" render=":templateForm:datiFatturaHolder :templateForm:errormsg"/>
+								 			<span class="glyphicon glyphicon-plus"></span>
+										</h:commandLink>
+										<h:commandLink action="#{bean.fatturaPA.moveUpDatiFattura}" title="#{i18n['acl.up']}" styleClass="btn btn-default #{(indice.index == 0) ? 'disabled' : ''}">
+								 			<f:ajax execute="@form" render=":templateForm:datiFatturaHolder :templateForm:errormsg"/>
+								 			<span class="glyphicon glyphicon-chevron-up"></span>
+										</h:commandLink>
+										<h:commandLink action="#{bean.fatturaPA.moveDownDatiFattura}" title="#{i18n['acl.down']}" styleClass="btn btn-default #{(indice.index == fn:length(bean.fatturaPA.datiFattura)-1) ? 'disabled' : ''}">
+								 			<f:ajax execute="@form" render=":templateForm:datiFatturaHolder :templateForm:errormsg"/>
+								 			<span class="glyphicon glyphicon-chevron-down"></span>
+										</h:commandLink>
+									</div>
+								</div>
+							</div>
+						</h:panelGroup>
+					</h:panelGroup>
+					
+					<ui:remove>
+						<h:panelGroup rendered="#{fatturapassiva eq 'true' and !bean.docEditModify}" layout="block" styleClass="form-group">
+							<div class="col-sm-offset-2 col-sm-9">
+								<span class="label label-info">#{i18n['dw4.inserimento_di_fatture_passive_cartacee_Le_fatturePA_vengono_scaricate_tramite_l_apposito_modulo_dall_indirizzo_pec_tramite_l_archiviatore']}</span>
+							</div>
+						</h:panelGroup>
+					</ui:remove>
+					
+					<div class="form-group">
+						<label for="templateForm:fattura:#{indice.index}:numFattura" class="col-sm-2 control-label requiredField"><span>* #{i18n['dw4.numero_fattura']}</span></label>
+						<div class="col-sm-2">
+							<h:inputText id="numFattura" value="#{fattura.datiRegistroFatture.numFattura}" styleClass="#{ component.valid ? '' : 'invalidinput' } form-control" />
+				        </div>
+				        <ui:include src="../dateField.xhtml">
+							<ui:param name="label" value="#{i18n['dw4.data_fattura']}" />
+							<ui:param name="id" value="dataFattura" />
+							<ui:param name="value" value="#{fattura.datiRegistroFatture.dataEmissioneFattura}" />
+							<ui:param name="required" value="true" />
+						</ui:include>
+						<label for="templateForm:fattura:#{indice.index}:finiIVA" class="col-sm-2 control-label">
+							<span class="popoveritem" data-toggle="popover" data-placement="top" data-trigger="hover" data-content="#{i18n['dw4.rilevante_ai_fini_iva']}">
+								#{i18n['dw4.iva']} <span class="glyphicon glyphicon-info-sign popoveritem"></span>
+							</span>
+						</label>
+						<div class="col-sm-1">
+							<h:selectOneMenu id="finiIVA" value="#{fattura.datiRegistroFatture.finiIVA}" styleClass="#{ component.valid ? '' : 'invalidinput' } form-control">
+								<f:selectItem itemValue="si" itemLabel="#{i18n['dw4.yes']}" />
+								<f:selectItem itemValue="no" itemLabel="#{i18n['dw4.no']}" />
+							</h:selectOneMenu>
+				        </div>
+					</div>
+					<div class="form-group">
+						<label for="templateForm:fattura:#{indice.index}:oggettoFornitura" class="col-sm-2 control-label requiredField">
+							<span class="popoveritem" data-toggle="popover" data-placement="top" data-trigger="hover" data-content="#{i18n['dw4.oggetto_della_fornitura_relativa_alla_fattura']}">
+								* #{i18n['dw4.oggetto_fattura']} <span class="glyphicon glyphicon-info-sign popoveritem"></span>
+							</span>
+						</label>
+						<div class="col-sm-9">
+							<h:inputTextarea id="oggettoFornitura" value="#{fattura.datiRegistroFatture.oggettoFornitura}" rows="4" cols="120" styleClass="#{ component.valid ? '' : 'invalidinput' } form-control" />
+						</div>
+					</div>
+					<div class="form-group">
+						<label for="templateForm:fattura:#{indice.index}:importoTotale" class="col-sm-2 control-label requiredField"><span>* #{i18n['dw4.importo']}</span></label>
+						<div class="col-sm-5">
+							<h:inputText id="importoTotale" value="#{fattura.datiRegistroFatture.importoTotale}" styleClass="#{ component.valid ? '' : 'invalidinput' } form-control currencyField" />
+				        </div>
+				        <ui:include src="../dateField.xhtml">
+							<ui:param name="label" value="#{i18n['dw4.data_scadenza']}" />
+							<ui:param name="id" value="dataScadenza" />
+							<ui:param name="value" value="#{fattura.datiRegistroFatture.dataScadenzaFattura}" />
+							<ui:param name="required" value="#{(bean.formsAdapter.funzionalitaDisponibili['enableRegistroFatture']) ? 'true' : 'false'}" />
+						</ui:include>
+					</div>
+					<div class="form-group">
+						<label for="templateForm:fattura:#{indice.index}:estremiImpegno" class="col-sm-2 control-label #{(bean.formsAdapter.funzionalitaDisponibili['enableRegistroFatture']) ? 'requiredField' : ''}">
+							<span class="popoveritem" data-toggle="popover" data-placement="top" data-trigger="hover" data-content="#{i18n['dw4.estremi_impegno_descr']}">
+								#{(bean.formsAdapter.funzionalitaDisponibili['enableRegistroFatture']) ? '*' : ''} #{i18n['dw4.estremi_impegno']} <span class="glyphicon glyphicon-info-sign popoveritem"></span>
+							</span>
+						</label>
+						<div class="col-sm-9">
+							<h:inputText id="estremiImpegno" value="#{fattura.datiRegistroFatture.estremiImpegno}" styleClass="#{ component.valid ? '' : 'invalidinput' } form-control" />
+						</div>
+					</div>
+					<div class="form-group">
+						<label for="templateForm:fattura:#{indice.index}:cig" class="col-sm-2 control-label"><span>#{i18n['dw4.codice_cig']}</span></label>
+						<div class="col-sm-3">
+							<h:inputText id="cig" value="#{fattura.datiRegistroFatture.cig}" styleClass="#{ component.valid ? '' : 'invalidinput' } form-control" />
+				        </div>
+				        <label for="templateForm:fattura:#{indice.index}:cup" class="col-sm-2 col-sm-offset-1 control-label"><span>#{i18n['dw4.codice_cup']}</span></label>
+						<div class="col-sm-3">
+							<h:inputText id="cup" value="#{fattura.datiRegistroFatture.cup}" styleClass="#{ component.valid ? '' : 'invalidinput' } form-control" />
+				        </div>
+					</div>
+				</div>
+			</ui:repeat>
+		</h:panelGroup>
+	</div>
+	
+</ui:composition>
+</html>

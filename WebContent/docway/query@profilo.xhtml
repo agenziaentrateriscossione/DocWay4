@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+    template="#{queryProfiloPersonale.pageTemplate}"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:f="http://java.sun.com/jsf/core">
+
+<ui:define name="content">
+	<div class="profilo-personale">
+	
+		<ui:remove>
+			<h5 class="sub-header">#{i18n['dw4.profilo_personale']}</h5>
+		</ui:remove>
+	
+		<!-- toolbar: inizio -->
+		<div class="btn-toolbar" role="toolbar">
+			<div class="btn-group">
+				<h:commandLink id="saveBtn" action="#{queryProfiloPersonale.saveProfilo}" styleClass="btn btn-primary openwaitmsg">#{i18n['acl.save']}</h:commandLink>
+				<h:commandLink rendered="#{queryProfiloPersonale.formsAdapter.funzionalitaDisponibili['changePwd']}" action="#{queryProfiloPersonale.goToChangePwd}" styleClass="btn btn-default">
+					<f:ajax execute="@form" render="@form" />
+					#{i18n['acl.changepassword']}
+				</h:commandLink>
+			</div>
+		</div>
+		<!-- toolbar: fine -->
+	
+		<!-- messages: inizio -->
+		<h:panelGroup rendered="#{not empty facesContext.messageList}" layout="block" styleClass="docedit-messages alert alert-danger">
+			<h:messages styleClass="" id="validationMesseges" />
+		</h:panelGroup>
+		<h:inputHidden id="errorFieldIds" value="#{queryProfiloPersonale.errorFieldIds}" />
+		<script type="text/javascript">
+		$(document).ready(function() {
+			setInvalidInputFields();
+		});
+		</script>
+		<!-- messages: fine -->
+	
+		<!-- scheda query: inizio -->
+		<div class="row-fluid" style="margin-top:10px;">
+			<div id="fixedshowdoc" class="box span12 fixed-showdoc">
+				<div class="box-content">
+				
+					<div class="fieldset">
+						<div class="legend">#{i18n['dw4.profilo_personale']}</div>
+						
+						<div class="form-group">
+							<label for="templateForm:ppr0048" class="col-sm-4 control-label">#{i18n['dw4.giorni_di_preavviso_prima_della_scadenza']}</label>
+							<div class="col-sm-1">
+								<h:inputText id="ppr0048" value="#{queryProfiloPersonale.r_0048}" styleClass="#{ component.valid ? '' : 'invalidinput' } form-control" />
+							</div>
+						</div>
+						<div class="form-group">
+							<label for="templateForm:ppr0049" class="col-sm-4 control-label">#{i18n['dw4.visualizzazione_immagini_documento_su_finestra_a_parte']}</label>
+							<div class="col-sm-2">
+								<h:selectBooleanCheckbox id="ppr0049" value="#{queryProfiloPersonale.r_0049}" />
+							</div>
+						</div>
+						<h:panelGroup rendered="#{queryProfiloPersonale.formsAdapter.funzionalitaDisponibili['raggruppaCC']}" layout="block" styleClass="form-group">
+							<label for="templateForm:ppr0050" class="col-sm-4 control-label">#{i18n['dw4.visualizzazione_cc_all_apertura_del_documento']}</label>
+							<div class="col-sm-3">
+								<h:selectOneMenu id="ppr0050" value="#{queryProfiloPersonale.r_0050}" styleClass="form-control">
+									<f:selectItem itemValue="" itemLabel="#{i18n['dw4.mostra_tutti_i_nominativi']}" />
+									<f:selectItem itemValue="minimized" itemLabel="#{i18n['dw4.mostra_solo_una_riga_riassuntiva']}" />
+									<f:selectItem itemValue="compact" itemLabel="#{i18n['dw4.mostra_una_riga_riassuntiva_per_ogni_ufficio']}" />
+								</h:selectOneMenu>
+							</div>
+						</h:panelGroup>
+						<div class="form-group">
+							<label for="templateForm:ppr0051" class="col-sm-4 control-label">#{i18n['dw4.evidenzia_i_cc_personali']}</label>
+							<div class="col-sm-2">
+								<h:selectBooleanCheckbox id="ppr0051" value="#{queryProfiloPersonale.r_0051}" />
+							</div>
+						</div>
+						<div class="form-group">
+							<label for="templateForm:ppr0052" class="col-sm-4 control-label">#{i18n['dw4.elimina_frequenze']}</label>
+							<div class="col-sm-2">
+								<h:selectBooleanCheckbox id="ppr0052" value="#{queryProfiloPersonale.r_0052}" />
+							</div>
+						</div>
+						<h:panelGroup rendered="#{queryProfiloPersonale.formsAdapter.funzionalitaDisponibili['abilitaGestioneEndorser']}" layout="block" styleClass="form-group">
+							<label for="templateForm:ppr0053" class="col-sm-4 control-label">#{i18n['dw4.endorser']}</label>
+							<div class="col-sm-2">
+								<h:selectBooleanCheckbox id="ppr0053" value="#{queryProfiloPersonale.r_0053}" />
+							</div>
+						</h:panelGroup>
+						<div class="form-group">
+							<label for="templateForm:ppriwx01" class="col-sm-4 control-label">#{i18n['dw4.disabilita_iwx']}</label>
+							<div class="col-sm-2">
+								<h:selectBooleanCheckbox id="ppriwx01" value="#{queryProfiloPersonale.r_iwx01}" />
+							</div>
+						</div>
+					</div> <!-- /fieldset -->
+					
+					<h:panelGroup rendered="#{ queryProfiloPersonale.formsAdapter.funzionalitaDisponibili['abilitaConfigurazioneMailboxPersonali'] }">
+						<div class="fieldset">
+							<div class="legend">#{i18n['dw4.configurazione_mailbox']}</div>
+							
+							<ui:repeat id="mailboxes" var="mailbox" value="#{ queryProfiloPersonale.mailboxes }" varStatus="status">
+								<div class="mailbox-definition" style="padding:10px 0;">
+									<div class="form-group">
+						               	<label class="col-sm-2 control-label emphasis-title"><span>#{i18n['acl.mailbox']}</span></label>
+						               	<div class="col-sm-4">
+						               		<div class="input-group">
+						               			<div class="btn-group">
+						               				<h:commandLink action="#{queryProfiloPersonale.deleteMailbox}" title="#{i18n['dw4.elimina_istanza']}" styleClass="btn btn-default">
+											 			<f:ajax execute="@form" render="@form"/>
+											 			<span class="glyphicon glyphicon-minus"></span>
+													</h:commandLink>
+													<h:commandLink action="#{queryProfiloPersonale.addMailbox}" title="#{i18n['dw4.aggiungi_istanza']}" styleClass="btn btn-default">
+											 			<f:ajax execute="@form" render="@form"/>
+											 			<span class="glyphicon glyphicon-plus"></span>
+													</h:commandLink>
+													<h:commandLink action="#{queryProfiloPersonale.moveUpMailbox}" title="#{i18n['acl.up']}" rendered="#{status.index > 0}" styleClass="btn btn-default">
+											 			<f:ajax execute="@form" render="@form"/>
+											 			<span class="glyphicon glyphicon-chevron-up"></span>
+													</h:commandLink>
+													<h:commandLink action="#{queryProfiloPersonale.moveDownMailbox}" title="#{i18n['acl.down']}" rendered="#{fn:length(queryProfiloPersonale.mailboxes) > (status.index+1)}" styleClass="btn btn-default">
+											 			<f:ajax execute="@form" render="@form"/>
+											 			<span class="glyphicon glyphicon-chevron-down"></span>
+													</h:commandLink>
+						               			</div>
+						               		</div>
+										</div>
+									</div>
+									<div class="form-group">
+						               	<label for="templateForm:mailboxEmail" class="col-sm-2 control-label requiredField">* #{i18n['acl.email']}</label>
+						               	<div class="col-sm-9">
+						               		<h:inputText id="mailboxEmail" value="#{mailbox.email}" styleClass="#{ component.valid ? '' : 'invalidinput' } form-control" />
+						               	</div>
+									</div>
+									<div class="form-group">
+						               	<label for="templateForm:mailboxLogin" class="col-sm-2 control-label requiredField">* #{i18n['acl.login']}</label>
+						               	<div class="col-sm-3">
+						               		<h:inputText id="mailboxLogin" value="#{mailbox.login}" styleClass="#{ component.valid ? '' : 'invalidinput' } form-control" />
+						               	</div>
+						               	<label for="templateForm:mailboxPassword" class="col-sm-offset-1 col-sm-2 control-label requiredField">* #{i18n['acl.password']}</label>
+						               	<div class="col-sm-3">
+						               		<h:inputSecret id="mailboxPassword" value="#{mailbox.password}" redisplay="true" styleClass="#{ component.valid ? '' : 'invalidinput' } form-control" />
+						               	</div>
+									</div>
+									<div class="form-group">
+						               	<label for="templateForm:mailboxProtocol" class="col-sm-2 control-label requiredField">* #{i18n['acl.protocol']}</label>
+						               	<div class="col-sm-3">
+						               		<h:selectOneMenu id="mailboxProtocol" value="#{mailbox.protocol}" styleClass="form-control">
+												<f:selectItems value="#{queryProfiloPersonale.protocols}" var="protocollo" itemValue="#{protocollo.value}" itemLabel="#{protocollo.label}"></f:selectItems>
+											</h:selectOneMenu>
+						               	</div>
+									</div>
+									<div class="form-group">
+						               	<label for="templateForm:mailboxHost" class="col-sm-2 control-label requiredField">* #{i18n['acl.host']}</label>
+						               	<div class="col-sm-3">
+						               		<h:inputText id="mailboxHost" value="#{mailbox.host}" styleClass="#{ component.valid ? '' : 'invalidinput' } form-control" />
+						               	</div>
+						               	<label for="templateForm:mailboxPort" class="col-sm-offset-1 col-sm-2 control-label requiredField">* #{i18n['acl.port']}</label>
+						               	<div class="col-sm-3">
+						               		<h:inputText id="mailboxPort" value="#{mailbox.port}" styleClass="#{ component.valid ? '' : 'invalidinput' } form-control" />
+						               	</div>
+									</div>
+								</div>
+							</ui:repeat>
+						</div> <!-- /fieldset -->
+					</h:panelGroup>
+					
+					<h:panelGroup rendered="#{ fn:length(queryProfiloPersonale.vaschetteCustom) > 0 }">
+						<div class="fieldset">
+							<div class="legend">#{i18n['dw4.vaschette_utente']}</div>
+							
+							<ui:repeat id="vaschetteCustom" var="vaschetta" value="#{ queryProfiloPersonale.vaschetteCustom }" varStatus="status">
+								<div class="form-group">
+									<label class="col-sm-2 control-label">#{i18n['acl.title']}</label>
+									<div class="col-sm-9">
+										<div class="input-group">
+											<h:inputText id="titoloVaschetta" value="#{vaschetta.title}" styleClass="#{ component.valid ? '' : 'invalidinput' } form-control" />
+											
+											<div class="input-group-btn">
+												<h:commandLink onclick="return showHideQuery(#{status.index});" title="#{i18n['dw4.modifica_query']}" styleClass="btn btn-default">
+										 			<span class="glyphicon glyphicon-pencil"></span>
+												</h:commandLink>
+												<h:commandLink action="#{queryProfiloPersonale.deleteVaschettaCustom}" title="#{i18n['dw4.elimina_istanza']}" styleClass="btn btn-default">
+										 			<f:ajax execute="@form" render="@form"/>
+										 			<span class="glyphicon glyphicon-minus"></span>
+												</h:commandLink>
+												<h:commandLink action="#{queryProfiloPersonale.moveUpVaschettaCustom}" title="#{i18n['acl.up']}" styleClass="btn btn-default #{(status.index > 0) ? '' : 'disabled'}">
+										 			<f:ajax execute="@form" render="@form"/>
+										 			<span class="glyphicon glyphicon-chevron-up"></span>
+												</h:commandLink>
+												<h:commandLink action="#{queryProfiloPersonale.moveDownVaschettaCustom}" title="#{i18n['acl.down']}" styleClass="btn btn-default #{(fn:length(queryProfiloPersonale.vaschetteCustom) > (status.index+1)) ? '' : 'disabled'}">
+										 			<f:ajax execute="@form" render="@form"/>
+										 			<span class="glyphicon glyphicon-chevron-down"></span>
+												</h:commandLink>
+											</div>
+										</div>
+									</div>
+								</div>
+								<div id="queryVaschettaHolder_#{status.index}" class="form-group" style="display:none; margin-bottom:5px;">
+									<div class="col-sm-offset-2 col-sm-9">
+										<h:inputTextarea id="queryVaschetta" value="#{vaschetta.query}" rows="4" cols="120" styleClass="#{ component.valid ? '' : 'invalidinput' } form-control" />
+									</div>
+								</div>
+							</ui:repeat>
+							<script type="text/javascript">
+							function showHideQuery(index) {
+								if ($("#queryVaschettaHolder_"+index).is(":hidden"))
+									$("#queryVaschettaHolder_"+index).show();
+								else
+									$("#queryVaschettaHolder_"+index).hide();
+								
+								return false;	
+							}
+							</script>
+						</div> <!-- /fieldset -->
+					</h:panelGroup>
+					
+					<h:panelGroup rendered="#{ fn:length(queryProfiloPersonale.esportazioni) > 0 }">
+                        <div class="fieldset">
+                            <div class="legend">#{i18n['dw4.esportazioni']}</div>
+                            
+                            <ui:repeat id="esportazioniCustom" var="esportazione" value="#{ queryProfiloPersonale.esportazioni }" varStatus="status">
+                                <div class="form-group">
+                                    <label class="col-sm-2 control-label">#{i18n['acl.title']}</label>
+                                    <div class="col-sm-9">
+                                        <div class="input-group">
+                                            <h:inputText id="titoloEsportazione" value="#{esportazione.title}" styleClass="#{ component.valid ? '' : 'invalidinput' } form-control" />
+                                            
+                                            <div class="input-group-btn">
+                                                <h:commandLink onclick="return showHideQueryEsportazione(#{status.index});" title="#{i18n['dw4.modifica_query']}" styleClass="btn btn-default">
+                                                    <span class="glyphicon glyphicon-pencil"></span>
+                                                </h:commandLink>
+                                                <h:commandLink action="#{queryProfiloPersonale.deleteEsportazione}" title="#{i18n['dw4.elimina_istanza']}" styleClass="btn btn-default">
+                                                    <f:ajax execute="@form" render="@form"/>
+                                                    <span class="glyphicon glyphicon-minus"></span>
+                                                </h:commandLink>
+                                                <h:commandLink action="#{queryProfiloPersonale.moveUpEsportazione}" title="#{i18n['acl.up']}" styleClass="btn btn-default #{(status.index > 0) ? '' : 'disabled'}">
+                                                    <f:ajax execute="@form" render="@form"/>
+                                                    <span class="glyphicon glyphicon-chevron-up"></span>
+                                                </h:commandLink>
+                                                <h:commandLink action="#{queryProfiloPersonale.moveDownEsportazione}" title="#{i18n['acl.down']}" styleClass="btn btn-default #{(fn:length(queryProfiloPersonale.esportazioni) > (status.index+1)) ? '' : 'disabled'}">
+                                                    <f:ajax execute="@form" render="@form"/>
+                                                    <span class="glyphicon glyphicon-chevron-down"></span>
+                                                </h:commandLink>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div id="queryEsportazioneHolder_#{status.index}" class="form-group" style="display:none; margin-bottom:5px;">
+                                    <div class="col-sm-offset-2 col-sm-9">
+                                        <h:inputTextarea id="queryEsportazione" value="#{esportazione.query}" rows="4" cols="120" styleClass="#{ component.valid ? '' : 'invalidinput' } form-control" />
+                                    </div>
+                                </div>
+                            </ui:repeat>
+                            <script type="text/javascript">
+		                    function showHideQueryEsportazione(index) {
+		                        if ($("#queryEsportazioneHolder_"+index).is(":hidden"))
+		                            $("#queryEsportazioneHolder_"+index).show();
+		                        else
+		                            $("#queryEsportazioneHolder_"+index).hide();
+		                        
+		                        return false;   
+		                    }
+		                    </script>
+                        </div> <!-- /fieldset -->
+                    </h:panelGroup>
+					
+					<div class="fieldset">
+						<div class="legend">#{i18n['dw4.segnatura']}</div>
+						
+						<h:panelGroup rendered="#{!queryProfiloPersonale.enableIW}">
+							<div class="form-group">
+								<div class="col-sm-offset-2 col-sm-9">
+									<p class="form-control-static">#{i18n['dw4.il_browser_utilizzato_non_supporta_opzioni_di_stampa']}</p>
+								</div>
+							</div>
+						</h:panelGroup>
+						<h:panelGroup rendered="#{queryProfiloPersonale.enableIW}">
+							<h:panelGroup rendered="#{queryProfiloPersonale.segnaturaArrivo != null}" id="stampaSegnaturaArrivo" layout="block" styleClass="form-group">
+								<div class="col-sm-4 control-label">#{i18n['dw4.stampa_per_segnatura_protocolli_in_arrivo']}</div>
+								<div class="col-sm-3">
+									<h:selectOneMenu id="segnaturaArrivo_select" value="#{queryProfiloPersonale.segnaturaArrivo.type}" styleClass="form-control" onchange="changePreferenzeStampaSegnatura('segnaturaArrivo');">
+										<f:selectItem itemValue="" itemLabel="#{i18n['dw4.configurazione_iwx']}" />
+										<f:selectItem itemValue="seriale" itemLabel="#{i18n['dw4.porta_seriale']}" />
+										<f:selectItem itemValue="endorscan" itemLabel="Kodak i1200-ES" />
+									</h:selectOneMenu>
+								</div>
+								<div id="segnaturaArrivo_seriale" style="#{(queryProfiloPersonale.segnaturaArrivo.type eq 'seriale') ? 'display:block;' : 'display:none;'}">
+									<div for="segnaturaArrivoPortaCom" class="col-sm-1 control-label">COM</div>
+									<div class="col-sm-2">
+										<h:inputText id="segnaturaArrivoPortaCom" value="#{queryProfiloPersonale.segnaturaArrivo.portaCom}" styleClass="#{ component.valid ? '' : 'invalidinput' } form-control" />
+									</div>
+								</div>
+								<div id="segnaturaArrivo_iwx" style="#{(queryProfiloPersonale.segnaturaArrivo.type eq '') ? 'display:block;' : 'display:none;'}">
+									<div class="col-sm-offset-1 col-sm-2">
+										<button onclick="return IwxRuntime.Client.configPrinterIWX('sign_arrivo');" class="btn btn-primary btn-xs">#{i18n['dw4.configura']}...</button>
+									</div>
+								</div>
+							</h:panelGroup>
+							<h:panelGroup rendered="#{queryProfiloPersonale.segnaturaPartenza != null}" id="stampaSegnaturaPartenza" layout="block" styleClass="form-group">
+								<div class="col-sm-4 control-label">#{i18n['dw4.stampa_per_segnatura_protocolli_in_partenza']}</div>
+								<div class="col-sm-3">
+									<h:selectOneMenu id="segnaturaPartenza_select" value="#{queryProfiloPersonale.segnaturaPartenza.type}" styleClass="form-control" onchange="changePreferenzeStampaSegnatura('segnaturaPartenza');">
+										<f:selectItem itemValue="" itemLabel="#{i18n['dw4.configurazione_iwx']}" />
+										<f:selectItem itemValue="seriale" itemLabel="#{i18n['dw4.porta_seriale']}" />
+										<f:selectItem itemValue="endorscan" itemLabel="Kodak i1200-ES" />
+									</h:selectOneMenu>
+								</div>
+								<div id="segnaturaPartenza_seriale" style="#{(queryProfiloPersonale.segnaturaPartenza.type eq 'seriale') ? 'display:block;' : 'display:none;'}">
+									<div for="segnaturaPartenzaPortaCom" class="col-sm-1 control-label">COM</div>
+									<div class="col-sm-2">
+										<h:inputText id="segnaturaPartenzaPortaCom" value="#{queryProfiloPersonale.segnaturaPartenza.portaCom}" styleClass="#{ component.valid ? '' : 'invalidinput' } form-control" />
+									</div>
+								</div>
+								<div id="segnaturaPartenza_iwx" style="#{(queryProfiloPersonale.segnaturaPartenza.type eq '') ? 'display:block;' : 'display:none;'}">
+									<div class="col-sm-offset-1 col-sm-2">
+										<button onclick="return IwxRuntime.Client.configPrinterIWX('sign_partenza');" class="btn btn-primary btn-xs">#{i18n['dw4.configura']}...</button>
+									</div>
+								</div>
+							</h:panelGroup>
+							<h:panelGroup rendered="#{queryProfiloPersonale.segnaturaInterno != null}" id="stampaSegnaturaInterno" layout="block" styleClass="form-group">
+								<div class="col-sm-4 control-label">#{i18n['dw4.stampa_per_segnatura_protocolli_tra_uffici']}</div>
+								<div class="col-sm-3">
+									<h:selectOneMenu id="segnaturaInterno_select" value="#{queryProfiloPersonale.segnaturaInterno.type}" styleClass="form-control" onchange="changePreferenzeStampaSegnatura('segnaturaInterno');">
+										<f:selectItem itemValue="" itemLabel="#{i18n['dw4.configurazione_iwx']}" />
+										<f:selectItem itemValue="seriale" itemLabel="#{i18n['dw4.porta_seriale']}" />
+										<f:selectItem itemValue="endorscan" itemLabel="Kodak i1200-ES" />
+									</h:selectOneMenu>
+								</div>
+								<div id="segnaturaInterno_seriale" style="#{(queryProfiloPersonale.segnaturaInterno.type eq 'seriale') ? 'display:block;' : 'display:none;'}">
+									<div for="segnaturaInternoPortaCom" class="col-sm-1 control-label">COM</div>
+									<div class="col-sm-2">
+										<h:inputText id="segnaturaInternoPortaCom" value="#{queryProfiloPersonale.segnaturaInterno.portaCom}" styleClass="#{ component.valid ? '' : 'invalidinput' } form-control" />
+									</div>
+								</div>
+								<div id="segnaturaInterno_iwx" style="#{(queryProfiloPersonale.segnaturaInterno.type eq '') ? 'display:block;' : 'display:none;'}">
+									<div class="col-sm-offset-1 col-sm-2">
+										<button onclick="return IwxRuntime.Client.configPrinterIWX('sign_interno');" class="btn btn-primary btn-xs">#{i18n['dw4.configura']}...</button>
+									</div>
+								</div>
+							</h:panelGroup>
+							<h:panelGroup rendered="#{queryProfiloPersonale.segnaturaVarie != null}" id="stampaSegnaturaVarie" layout="block" styleClass="form-group">
+								<div class="col-sm-4 control-label">#{i18n['dw4.stampa_per_segnatura_documento_non_protocollati']}</div>
+								<div class="col-sm-3">
+									<h:selectOneMenu id="segnaturaVarie_select" value="#{queryProfiloPersonale.segnaturaVarie.type}" styleClass="form-control" onchange="changePreferenzeStampaSegnatura('segnaturaVarie');">
+										<f:selectItem itemValue="" itemLabel="#{i18n['dw4.configurazione_iwx']}" />
+										<f:selectItem itemValue="seriale" itemLabel="#{i18n['dw4.porta_seriale']}" />
+									</h:selectOneMenu>
+								</div>
+								<div id="segnaturaVarie_seriale" style="#{(queryProfiloPersonale.segnaturaVarie.type eq 'seriale') ? 'display:block;' : 'display:none;'}">
+									<div for="segnaturaVariePortaCom" class="col-sm-1 control-label">COM</div>
+									<div class="col-sm-2">
+										<h:inputText id="segnaturaVariePortaCom" value="#{queryProfiloPersonale.segnaturaVarie.portaCom}" styleClass="#{ component.valid ? '' : 'invalidinput' } form-control" />
+									</div>
+								</div>
+								<div id="segnaturaVarie_iwx" style="#{(queryProfiloPersonale.segnaturaVarie.type eq '') ? 'display:block;' : 'display:none;'}">
+									<div class="col-sm-offset-1 col-sm-2">
+										<button onclick="return IwxRuntime.Client.configPrinterIWX('sign_varie');" class="btn btn-primary btn-xs">#{i18n['dw4.configura']}...</button>
+									</div>
+								</div>
+							</h:panelGroup>
+							
+							<div style="margin-top:13px;">
+								<ui:include src="./showdoc@empty@iwx.xhtml"><ui:param name="bean" value="#{queryProfiloPersonale}"/></ui:include>
+							</div>
+						</h:panelGroup>
+					</div>
+					
+				</div>
+			</div>
+		</div>
+		<!-- scheda query: fine -->
+	</div>
+
+	<ui:include src="./query@pwd.xhtml"><ui:param name="pageBean" value="#{docwayChangePassword}"/></ui:include>
+	
+	<h:inputTextarea value="#{queryProfiloPersonale.xml}" rendered="#{queryProfiloPersonale.debugMode}" styleClass="form-control" rows="10" />
+</ui:define>
+    
+</ui:composition>    

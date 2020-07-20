@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" 
+	xmlns:h="http://java.sun.com/jsf/html" 
+	xmlns:ui="http://java.sun.com/jsf/facelets" 
+	xmlns:f="http://java.sun.com/jsf/core">
+<ui:composition>
+
+	<h:panelGroup rendered="#{docwayHome.formsAdapter.funzionalitaDisponibili['abilitaSoginSAP']}">
+		<div class="btn-group">
+			<button type="button" class="btn btn-primary openwaitmsg dropdown-toggle" data-toggle="dropdown">
+				SAP <span class="caret"></span>
+			</button>
+			<ul class="dropdown-menu">
+				<h:panelGroup rendered="#{bean.formsAdapter.paginaTitoliEnabled and buttons.sapTitlesExists}">
+					<li><h:commandLink action="#{buttons.paginaTitoli}">#{i18n['soginSAP.titles']}</h:commandLink></li>
+				</h:panelGroup>
+				<li><h:commandLink action="#{soginSAPQuery.gotoTableQGlobale}">#{i18n['soginSAP.torna_ricerca']}</h:commandLink></li>
+				
+				<h:panelGroup rendered="#{!empty soginSAPConnector.keySap and buttons.doc.stato ne 'associato'}">
+					<li class="divider"></li>
+					<li><h:commandLink action="#{buttons.asssignToSAP}">#{i18n['soginSAP.assegnazioneSAP']}</h:commandLink></li>
+				</h:panelGroup>
+			</ul>
+		</div>
+	</h:panelGroup>
+	   
+</ui:composition>   
+</html>

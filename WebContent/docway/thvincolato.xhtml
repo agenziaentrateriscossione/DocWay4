@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" 
+	  xmlns:h="http://java.sun.com/jsf/html" 
+	  xmlns:ui="http://java.sun.com/jsf/facelets" 
+	  xmlns:f="http://java.sun.com/jsf/core">
+<ui:composition>
+
+	<h:panelGroup id="thvincolato" layout="block">
+		<h:panelGroup rendered="#{pageBean.thvincolatoActive}">
+			<!-- Modal -->
+			<div id="thvincolatoModal" class="modal fade in" aria-hidden="false" aria-labelledby="thvincolatoModalLabel" role="dialog" tabindex="-1" style="display: block;">
+			<!--div class="modal fade" id="loadingbarModal" tabindex="-1" role="dialog" aria-labelledby="loadingbarModalLabel" aria-hidden="true"-->
+				<div class="modal-dialog">
+					<div class="modal-content jsf-modal">
+						<div class="modal-header">
+							<h:commandButton styleClass="close" title="#{i18n['acl.close']}" action="#{pageBean.thvincolato.close}" data-dismiss="modal"  value="&#215;" >
+			        			<f:ajax render="@form"/>
+			        		</h:commandButton>
+			        		
+			        		<h4 class="modal-title" id="thvincolatoModalLabel">Thesauro</h4>
+						</div>
+						<div class="modal-body">
+						
+							<!-- toolbar -->
+							<div class="row btn-toolbar dw-modal-content-buttons margin-bottom">
+								<div class="col-md-6">
+									<div class="btn-group">
+										<h:commandLink 
+											rendered="#{pageBean.thvincolato.formsAdapter.funzionalitaDisponibili['ins_record_thvincolato']}" 
+											action="thNewTermine" onclick="openCenterPopup('', 'popupNewThesauroRecord', 650, 190);" target="popupNewThesauroRecord" 
+											value="#{i18n['nuovo']}" styleClass="btn btn-default" />
+									</div>
+								</div>
+								<div class="col-md-6 text-right">
+									<div class="btn-group inline pull-right">
+										<h:commandLink title="#{i18n['prevPage']}" action="#{pageBean.thvincolato.paginaPrecedente}" styleClass="btn btn-default #{!(pageBean.thvincolato.formsAdapter.paginaPrecedenteEnabled) ? 'disabled' : ''}">
+											<f:ajax render="@form"/>
+											<span class="glyphicon glyphicon-chevron-left"></span>
+										</h:commandLink>
+										<h:commandLink title="#{i18n['nextPage']}" action="#{pageBean.thvincolato.paginaSuccessiva}" styleClass="btn btn-default #{!(pageBean.thvincolato.formsAdapter.paginaSuccessivaEnabled) ? 'disabled' : ''}">
+											<f:ajax render="@form"/>
+											<span class="glyphicon glyphicon-chevron-right"></span>
+										</h:commandLink>
+									</div>
+								</div>
+							</div>
+							
+							<!-- titles -->
+							<h:panelGroup rendered="#{fn:length(pageBean.thvincolato.titoli) > 0}">
+								<table class="table table-striped">
+									<thead>
+										<tr>
+											<th class="essential">#{i18n['acl.title']}</th>
+										</tr>
+									</thead>
+									<tbody>
+										<ui:repeat var="title" value="#{pageBean.thvincolato.titoli}" varStatus="status">
+											<tr>
+												<td class="essential">
+													<h:commandLink action="#{pageBean.thvincolato.confirm}" value="#{title.testo}">
+														<f:ajax execute="@form" render="@form" />
+													</h:commandLink>
+												</td>
+											</tr>
+										</ui:repeat>
+									</tbody>
+								</table>
+							</h:panelGroup>
+							<h:panelGroup rendered="#{fn:length(pageBean.thvincolato.titoli) == 0}">
+								<div style="margin-top:15px;" class="alert alert-info">#{i18n['acl.emptysearch']}</div>
+							</h:panelGroup>
+				        	
+					       	<h:inputTextarea value="#{pageBean.thvincolato.xml}" rendered="#{pageBean.debugMode}" styleClass="form-control" rows="10"/>
+						</div>
+						<div class="modal-footer">
+							<h:commandButton styleClass="btn btn-default" title="#{i18n['acl.close']}" action="#{pageBean.thvincolato.close}" data-dismiss="modal"  value="#{i18n['acl.close']}" >
+			        			<f:ajax render="@form"/>
+			        		</h:commandButton>
+						</div>
+					</div>
+				</div>
+			</div>
+		</h:panelGroup>
+		
+		<h:inputHidden id="focusElementTh"></h:inputHidden>
+		<h:outputScript>
+		// gestione del ritorno da lookup. focus su campo successivo al campo di lookup
+		setGlobalFocusFieldId($('#templateForm\\:focusElementTh').val());
+		</h:outputScript>
+    	
+	   	<h:inputHidden id="thNewTermine" rendered="#{pageBean.thvincolato != null}" value="#{pageBean.thvincolato.termine}" />
+	    <h:commandLink style="display:none;" id="saveNewTermine" action="#{pageBean.thvincolato.saveNewTermine}" >
+			<f:ajax execute="@form" render="@form" />
+		</h:commandLink>
+	</h:panelGroup>
+			
+</ui:composition>
+</html>

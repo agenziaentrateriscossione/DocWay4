@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" 
+	  xmlns:h="http://java.sun.com/jsf/html" 
+	  xmlns:ui="http://java.sun.com/jsf/facelets" 
+	  xmlns:f="http://java.sun.com/jsf/core">
+<ui:composition>
+	
+	<div class="fieldset">
+		<div class="legend">
+	    	#{i18n['dw4.dati_fattura']}
+	    				
+	    	<div class="pull-right">
+				<span class="glyphicons-pro euro" title="#{i18n['dw4.dati_fattura']}"></span>
+			</div>
+		</div>
+	    			
+	    <h:panelGroup rendered="#{ !fn:contains(bean.hideDivs, 'dati_uff_contabile,') }" id="centrocosto_holder" layout="block" styleClass="form-group">
+	   		<label for="templateForm:centrocosto_input" class="col-sm-2 control-label requiredField"><span>* #{i18n['dw4.centro_di_costo']}</span></label>
+			<div class="col-sm-9">
+				<ui:include src="../lookupField.xhtml">
+	        		<ui:param name="id" value="centrocosto" />
+	        		<ui:param name="field" value="#{bean.dati_fattura.centro_costo.name}" />
+	        		<ui:param name="bean" value="#{bean}" />
+	        		<ui:param name="action" value="lookupCentroCosto"/>
+	        		<ui:param name="clearaction" value="clearLookupCentroCosto"/>
+	        		<ui:param name="title" value="#{i18n['dw4.lookup_centro_costo']}"/>
+	        		<ui:param name="styleclass" value="#{ component.valid ? '' : 'invalidinput' } form-control"/>
+	        		<ui:param name="refresh" value="templateForm:centrocosto_holder templateForm:lookup templateForm:errormsg" />
+	        	</ui:include>
+	       	</div>
+	       	<h:inputHidden id="centro_costo_cod" value="#{bean.dati_fattura.centro_costo.cod}" />
+		</h:panelGroup>
+		
+		<h:panelGroup rendered="#{ fn:contains(bean.showDivs, 'cc_societa,') }">
+			<div class="form-group">
+				<label class="col-sm-2 control-label"><span>#{i18n['dw4.centro_di_costo']}</span></label>
+				<div class="col-sm-9">
+					<p class="form-control-static"><h:outputText value="#{bean.dati_fattura.centro_costo.name}" escape="false" /></p>
+				</div>
+			</div>
+		</h:panelGroup>
+		
+		<h:panelGroup rendered="#{ !empty bean.dati_fattura.partita_iva }" layout="block" styleClass="form-group">
+			<label class="col-sm-2 control-label"><span>#{i18n['dw4.codice_organizzatore']}</span></label>
+			<div class="col-sm-9">
+				<p class="form-control-static"><h:outputText value="#{bean.dati_fattura.partita_iva}" /></p>
+			</div>
+		</h:panelGroup>
+			
+		<div class="form-group">
+			<label for="templateForm:dataAcquisizioneFattura" class="col-sm-2 control-label"><span>#{i18n['dw4.data_acquisizione_fattura']}</span></label>
+			<div class="col-sm-9">
+				<p class="form-control-static"><h:outputText value="#{bean.doc.data_prot}"><f:converter converterId="DateConverter" /></h:outputText></p>
+			</div>
+		</div>
+		
+		<h:panelGroup rendered="#{ !empty bean.dati_fattura.data_fatt }" layout="block" styleClass="form-group">
+			<label class="col-sm-2 control-label"><span>#{i18n['dw4.data_emissione_fattura']}</span></label>
+			<div class="col-sm-9">
+				<p class="form-control-static"><h:outputText value="#{bean.dati_fattura.data_fatt}"><f:converter converterId="DateConverter" /></h:outputText></p>
+			</div>
+		</h:panelGroup>
+		
+		<h:panelGroup rendered="#{ !empty bean.dati_fattura.numero_fatt }" layout="block" styleClass="form-group">
+			<label class="col-sm-2 control-label"><span>#{i18n['dw4.numero_fattura']}</span></label>
+			<div class="col-sm-9">
+				<p class="form-control-static"><h:outputText value="#{bean.dati_fattura.numero_fatt}" /></p>
+	       	</div>
+		</h:panelGroup>
+		<h:panelGroup rendered="#{ !empty bean.dati_fattura.importo }" layout="block" styleClass="form-group">
+			<label class="col-sm-2 control-label"><span>#{i18n['dw4.importo_iva_compresa']}</span></label>
+			<div class="col-sm-9">
+				<p class="form-control-static"><h:outputText value="#{bean.dati_fattura.importo}" /></p>
+	       	</div>
+		</h:panelGroup>
+		
+		<div class="form-group">
+			<label class="col-sm-2 control-label"><span>#{i18n['dw4.stato_fattura']}</span></label>
+			<div class="col-sm-9">
+				<p class="form-control-static"><h:outputText value="#{bean.dati_fattura.stato}" /></p>
+			</div>
+		</div>
+		
+		<h:panelGroup rendered="#{ !empty bean.doc.rif_esterni[0].nome }" layout="block" styleClass="form-group">
+			<label class="col-sm-2 control-label"><span>#{i18n['dw4.ragione_sociale_fornitore']}</span></label>
+			<div class="col-sm-9">
+				<p class="form-control-static"><h:outputText value="#{bean.doc.rif_esterni[0].nome}" escape="false" /></p>
+			</div>
+		</h:panelGroup>
+	</div>
+	
+
+</ui:composition>
+</html>

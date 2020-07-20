@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core">
+<ui:composition>
+
+	<div class="showdoc-section">
+		<div class="title">
+			#{i18n['acl.gestione_archivi']}
+			
+			<div class="pull-right">
+				<span class="glyphicons-pro server" title="#{i18n['acl.gestione_archivi']}"></span>
+			</div>
+		</div>
+		
+		<dl class="dl-horizontal">
+			<h:panelGroup rendered="#{!empty aspect.archiveAuthorization.dominio}">
+				<dt>#{i18n['acl.dominio']}</dt>
+				<dd><h:outputText value="#{aspect.archiveAuthorization.dominio}" /></dd>
+			</h:panelGroup>
+			
+			<h:panelGroup rendered="#{fn:length(aspect.archiveAuthorization.archivi) == 0 or aspect.archiveAuthorization.archivi[0].id eq ''}">
+				<dt>#{i18n['dw4.archivio']}</dt>
+				<dd><h:outputText value="#{i18n['acl.nessun_archivio_configurato']}" /></dd>
+			</h:panelGroup>
+			
+			<h:panelGroup rendered="#{fn:length(aspect.archiveAuthorization.archivi) > 0 and aspect.archiveAuthorization.archivi[0].id ne ''}">
+				<dt>#{i18n['dw4.archivio']}</dt>
+				<dd>
+					<ui:repeat var="archivio" value="#{aspect.archiveAuthorization.archivi}" varStatus="indice">
+						<h:outputText value="#{archivio.descr}" />
+						&#160;<span class="outputField">( 
+							<h:outputText rendered="#{archivio.level eq '1'}" value="#{i18n['acl.amministratore']}" />
+							<h:outputText rendered="#{archivio.level eq '2'}" value="#{i18n['acl.archivista']}" /> 
+							<h:outputText rendered="#{archivio.level eq '3'}" value="#{i18n['acl.lettore']}" /> )
+						</span><br/>
+					</ui:repeat>
+				</dd>
+			</h:panelGroup>
+		</dl>
+	</div>
+
+</ui:composition>
+</html>

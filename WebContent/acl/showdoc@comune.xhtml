@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+    template="template.xhtml"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:f="http://java.sun.com/jsf/core">
+
+	<ui:define name="content">
+		<div class="comune showdoc">
+
+            <!-- primo livello toolbar: inizio -->
+            <div class="btn-toolbar" role="toolbar">
+                <div class="btn-group pull-right">
+                    <ui:include src="./navigationBar.xhtml">
+                        <ui:param name="bean" value="#{showdocComune}" />
+                    </ui:include>
+                </div>
+
+                <div class="btn-group">
+                    <h:commandLink rendered="#{showdocComune.formsAdapter.paginaTitoliEnabled}" action="#{showdocComune.paginaTitoli}" styleClass="btn btn-default openwaitmsg"><span>#{i18n['acl.titles']}</span></h:commandLink>
+                </div>
+            </div>
+            <!-- primo livello toolbar: fine -->
+            <h:panelGroup rendered="#{showdocComune.formsAdapter.funzionalitaDisponibili['ins_comuni'] or showdocComune.formsAdapter.funzionalitaDisponibili['canc_comuni']}">
+            	<!-- secondo livello toolbar: inizio -->
+				<div class="btn-toolbar" role="toolbar">
+					<div class="btn-group">
+						<h:commandLink rendered="#{showdocComune.formsAdapter.funzionalitaDisponibili['ins_comuni']}" action="#{showdocComune.modifyTableDoc}" styleClass="btn btn-primary openwaitmsg"><span>#{i18n['acl.modify']}</span></h:commandLink>
+			            <h:commandLink rendered="#{showdocComune.formsAdapter.funzionalitaDisponibili['canc_comuni']}" action="#{showdocComune.remove}" onclick="if (!owmConfirm('#{i18n['acl.deleteconfirm']}')) return false;" styleClass="btn btn-danger"><span>#{i18n['acl.delete']}</span></h:commandLink>
+					</div>
+				</div>
+				<!-- secondo livello toolbar: fine -->
+			</h:panelGroup>
+			
+            <h:panelGroup styleClass="messagesArea" layout="block">
+                <h:messages styleClass="info" id="validationMesseges" />
+            </h:panelGroup>
+            
+            <h5 class="sub-header" title="#{showdocComune.comune.nome}">
+                <span class="comuni glyphicons-pro"></span>&#160;
+                <h:outputText value="#{showdocComune.comune.nome}" escape="false" />
+            </h5>
+            
+            <!-- scheda show: inizio -->
+            <div id="fixedshowdoc" class="fixed-showdoc">
+                <div class="showdoc-section">
+                    <div class="title">
+                        #{i18n['acl.informazioni_di_base']}
+                        <div class="pull-right">
+                            <span class="glyphicons-pro tower" title="#{i18n['acl.informazioni_di_base']}"></span>
+                        </div>
+                    </div>
+
+                    <dl class="dl-horizontal">
+                    	<dt>#{i18n['acl.town']}</dt>
+                    	<dd>#{showdocComune.comune.nome}</dd>
+                    	
+                    	<h:panelGroup rendered="#{!empty showdocComune.comune.prov}">
+	                        <dt>#{i18n['acl.province']}</dt>
+	                        <dd>#{showdocComune.comune.prov}</dd>
+                        </h:panelGroup>
+                        
+                        <h:panelGroup rendered="#{!empty showdocComune.comune.regione}">
+	                        <dt>#{i18n['acl.country']}</dt>
+	                        <dd>#{showdocComune.comune.regione}</dd>
+                        </h:panelGroup>
+                        
+                        <h:panelGroup rendered="#{!empty showdocComune.comune.cap}">
+	                        <dt>#{i18n['acl.zip']}</dt>
+	                        <dd>#{showdocComune.comune.cap}</dd>
+                        </h:panelGroup>
+                        
+                        <h:panelGroup rendered="#{!empty showdocComune.comune.prefisso}">
+	                        <dt>#{i18n['acl.areacode']}</dt>
+	                        <dd>#{showdocComune.comune.prefisso}</dd>
+                        </h:panelGroup>
+                        
+                        <h:panelGroup rendered="#{!empty showdocComune.comune.nazione}">
+	                        <dt>#{i18n['acl.state']}</dt>
+	                        <dd>#{showdocComune.comune.nazione}</dd>
+                        </h:panelGroup>
+                        
+                        <h:panelGroup rendered="#{!empty showdocComune.comune.codice_istat}">
+	                        <dt>#{i18n['acl.istatcode']}</dt>
+	                        <dd>#{showdocComune.comune.codice_istat}</dd>
+                        </h:panelGroup>
+                    </dl>
+                </div>
+                
+                <ui:include src="./history.xhtml">
+                    <ui:param name="bean" value="#{showdocComune.comune}"/>
+                </ui:include>
+                
+           </div>
+           <!-- scheda show: fine -->
+	    </div> 
+		
+	    <h:inputTextarea value="#{showdocComune.xml}" styleClass="form-control" rows="10" rendered="#{showdocComune.debugMode}"/>
+	</ui:define>
+</ui:composition>

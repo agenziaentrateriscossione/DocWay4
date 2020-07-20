@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" 
+	  xmlns:h="http://java.sun.com/jsf/html" 
+	  xmlns:ui="http://java.sun.com/jsf/facelets" 
+	  xmlns:f="http://java.sun.com/jsf/core"
+	  xmlns:c="http://java.sun.com/jsp/jstl/core">
+<ui:composition>
+
+	<c:if test="#{bean.formsAdapter.funzionalitaDisponibili['enableRegistroFatture'] and (empty fattura.datiRegistroFatture.numFattura or empty fattura.datiRegistroFatture.dataEmissioneFattura or empty fattura.datiRegistroFatture.oggettoFornitura or empty fattura.datiRegistroFatture.dataScadenzaFattura or empty fattura.datiRegistroFatture.estremiImpegno)}">
+		<dt>
+			<span class="glyphicon glyphicon-remove-circle registro-fatture-error popoveritem" data-toggle="popover" data-placement="top" data-trigger="hover" data-content="#{i18n['dw4.sul_documento_non_risultano_registrati_tutti_i_dati_obbligatori_per_il_registro_delle_fatture']}"></span>
+		</dt>
+		<dd>
+			<span class="label-registro-fatture-error">
+				#{i18n['dw4.sul_documento_non_risultano_registrati_tutti_i_dati_obbligatori_per_il_registro_delle_fatture']}. #{i18n['dw4.dati_mancanti']}:
+				<c:if test="#{empty fattura.datiRegistroFatture.numFattura}">
+					<strong>#{i18n['dw4.numero_fattura']}</strong>, 
+				</c:if>
+				<c:if test="#{empty fattura.datiRegistroFatture.dataEmissioneFattura}">
+					<strong>#{i18n['dw4.data_fattura']}</strong>, 
+				</c:if>
+				<c:if test="#{empty fattura.datiRegistroFatture.oggettoFornitura}">
+					<strong>#{i18n['dw4.oggetto_fornitura']}</strong>, 
+				</c:if>
+				<c:if test="#{empty fattura.datiRegistroFatture.importoTotale}">
+					<strong>#{i18n['dw4.importo_totale']}</strong>, 
+				</c:if>
+				<c:if test="#{empty fattura.datiRegistroFatture.dataScadenzaFattura}">
+					<strong>#{i18n['dw4.data_scadenza']}</strong>, 
+				</c:if>
+				<c:if test="#{empty fattura.datiRegistroFatture.estremiImpegno}">
+					<strong>#{i18n['dw4.estremi_impegno']}</strong>, 
+				</c:if>
+			</span>
+		</dd>
+	</c:if>
+	<dt>#{i18n['dw4.numero_fattura']}</dt>
+	<dd>#{fattura.datiRegistroFatture.numFattura} &#160;</dd>
+	<dt>#{i18n['dw4.data_fattura']}</dt>
+	<dd><h:outputText value="#{fattura.datiRegistroFatture.dataEmissioneFattura}"><f:converter converterId="DateConverter"/></h:outputText> &#160;</dd>
+	<dt>#{i18n['dw4.oggetto_fornitura']}</dt>
+	<dd>#{fattura.datiRegistroFatture.oggettoFornitura} &#160;</dd>
+	<c:if test="#{!empty fattura.datiRegistroFatture.importoTotale}">
+		<dt>#{i18n['dw4.importo_totale']}</dt>
+		<dd>
+			#{fattura.datiRegistroFatture.importoTotale}
+			<c:if test="#{!empty fattura.datiGeneraliDocumento.divisa}">
+				(#{fattura.datiGeneraliDocumento.divisa})&#160;
+			</c:if>
+			<c:if test="#{fattura.datiRegistroFatture.finiIVA eq 'no'}">
+				<span class="spesa-rilevante-a-fini-iva">(#{i18n['dw4.spesa_non_rilevante_ai_fini_iva']})</span>
+			</c:if>
+			&#160;
+		</dd>
+	</c:if>
+	<c:if test="#{!empty fattura.datiRegistroFatture.dataScadenzaFattura}">
+		<dt>#{i18n['dw4.data_scadenza']}</dt>
+		<dd><h:outputText value="#{fattura.datiRegistroFatture.dataScadenzaFattura}"><f:converter converterId="DateConverter"/></h:outputText> &#160;</dd>
+	</c:if>
+	<c:if test="#{!empty fattura.datiRegistroFatture.estremiImpegno}">
+		<dt>#{i18n['dw4.estremi_impegno']}</dt>
+		<dd>#{fattura.datiRegistroFatture.estremiImpegno}</dd>
+	</c:if>
+	<c:if test="#{!empty fattura.datiRegistroFatture.cig}">
+		<dt>#{i18n['dw4.codice_cig']}</dt>
+		<dd>#{fattura.datiRegistroFatture.cig}</dd>
+	</c:if>
+	<c:if test="#{!empty fattura.datiRegistroFatture.cup}">
+		<dt>#{i18n['dw4.codice_cup']}</dt>
+		<dd>#{fattura.datiRegistroFatture.cup}</dd>
+	</c:if>
+	
+</ui:composition>
+</html>

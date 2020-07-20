@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" 
+	  xmlns:h="http://java.sun.com/jsf/html" 
+	  xmlns:ui="http://java.sun.com/jsf/facelets" 
+	  xmlns:f="http://java.sun.com/jsf/core">
+<ui:composition>
+
+	<h:panelGroup rendered="#{!empty bean.doc.scadenza.data_scadenza or (fn:length(bean.doc.xlink) > 0 and !empty bean.doc.xlink[0].href) or !empty bean.doc.extra.codice_progetto or !empty bean.doc.riferimenti.text or !empty bean.doc.keywords.text or (!empty bean.doc.tipologia.cod and bean.doc.tipo!='varie') or !empty bean.doc.extra.custom_select_1 or !empty bean.doc.extra.custom_select_2}">
+		<div class="showdoc-section">
+			<div class="title">
+				#{i18n['dw4.other']}
+				
+				<div class="pull-right">
+					<span class="glyphicon glyphicon-list-alt" title="#{i18n['dw4.other']}"></span>
+				</div>
+			</div>
+		
+			<dl class="dl-horizontal">
+				
+				<ui:include src="showdoc@datialtro@content.xhtml">
+					<ui:param name="bean" value="#{bean}"/>
+				</ui:include>
+				
+			</dl>
+		</div>
+	</h:panelGroup>
+
+</ui:composition>   
+</html>

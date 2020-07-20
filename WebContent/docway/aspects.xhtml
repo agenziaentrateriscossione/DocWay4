@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:c="http://java.sun.com/jsp/jstl/core">
+<ui:composition>
+	
+	<c:forEach var="aspect" items="#{bean.aspects}">
+		<ui:include src="#{aspect.template}">
+			<ui:param name="bean" value="#{bean}" />
+			<ui:param name="aspect" value="#{aspect}" />
+		</ui:include>
+	</c:forEach>
+
+</ui:composition>
+</html>

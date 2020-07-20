@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core">
+<ui:composition>
+
+			<h:panelGroup rendered="#{!empty bean.doc.limite_presentazione_proposte and !empty bean.doc.limite_presentazione_proposte.data}">
+				<dt>#{i18n['dw4.presentazione_entro']}</dt>
+				<dd>
+					#{bean.doc.limite_presentazione_proposte.data}
+					<h:panelGroup rendered="#{!empty bean.doc.limite_presentazione_proposte.ora}">
+						<strong>#{i18n['dw4.alle']}</strong> #{bean.doc.limite_presentazione_proposte.ora}
+					</h:panelGroup>
+				</dd>
+			</h:panelGroup>
+			
+			<h:panelGroup rendered="#{!empty bean.doc.pubblicazione_odg_dal.data}">
+				<dt>#{i18n['dw4.pubblicazione']}</dt>
+				<dd>
+					#{i18n['dw4.dal']} (#{bean.doc.pubblicazione_odg_dal.data} <h:panelGroup rendered="#{!empty bean.doc.pubblicazione_odg_dal.ora}">#{i18n['dw4.alle']} #{bean.doc.pubblicazione_odg_dal.ora}</h:panelGroup>)
+					<h:panelGroup rendered="#{!empty bean.doc.pubblicazione_odg_al.ora}">#{i18n['dw4.al']} (#{bean.doc.pubblicazione_odg_al.data} #{i18n['dw4.alle']} #{bean.doc.pubblicazione_odg_al.ora})</h:panelGroup>
+				</dd>
+			</h:panelGroup>
+
+			<h:panelGroup rendered="#{!empty bean.doc.note}">
+				<dt>#{i18n['dw4.note']}</dt>
+				<dd>
+					#{bean.doc.note}
+				</dd>
+			</h:panelGroup>
+</ui:composition>
+</html>

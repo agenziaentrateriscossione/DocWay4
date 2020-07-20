@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" 
+	  xmlns:h="http://java.sun.com/jsf/html" 
+	  xmlns:ui="http://java.sun.com/jsf/facelets" 
+	  xmlns:f="http://java.sun.com/jsf/core">
+<ui:composition>
+
+	<h:panelGroup rendered="#{bean.fascicolo.stato eq 'deposito'}">
+		<div class="showdoc-section">
+			<div class="title">
+				#{i18n['dw4.stati_del_fascicolo']}
+				
+				<div class="pull-right">
+					<span class="glyphicons-pro ok" title="#{i18n['dw4.stati_del_fascicolo']}"></span>
+				</div>
+			</div>
+			<div class="stati-doc-holder">
+				<dl class="dl-horizontal">
+					
+					<h:panelGroup rendered="#{bean.fascicolo.stato eq 'deposito'}">
+						<dt>
+							<span class="glyphicons-pro package archivio-deposito popoveritem"
+								data-toggle="popover" data-placement="bottom" data-trigger="hover"
+								data-content="#{i18n['dw4.fascicolo_versato_in_archivio_di_deposito']}"></span>
+						</dt>
+						<dd>#{i18n['dw4.fascicolo_versato_in_archivio_di_deposito']}
+						</dd>
+					</h:panelGroup>
+					
+				</dl>
+			</div>
+		</div>
+	</h:panelGroup>
+
+</ui:composition>
+</html>

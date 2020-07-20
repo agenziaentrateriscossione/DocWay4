@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" 
+	  xmlns:h="http://java.sun.com/jsf/html" 
+	  xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	  xmlns:ui="http://java.sun.com/jsf/facelets" 
+	  xmlns:f="http://java.sun.com/jsf/core"
+	  xmlns:p="http://xmlns.jcp.org/jsf/passthrough">
+
+	<ui:composition>
+	   <script type="text/javascript">
+       <!--
+       function showHideNameEsportazione() {
+           if ($("#nameEsportazioneContainer").is(":hidden"))
+               $("#nameEsportazioneContainer").show();
+           else
+               $("#nameEsportazioneContainer").hide();
+           
+           return true;   
+       }
+       //-->
+       </script>
+       
+       <h:panelGroup id="exportCSVAdvanced" layout="block">
+        <h:panelGroup rendered="#{pageBean.exportCVSAdvancedOpened}">
+            <!-- Modal -->
+            <div id="addEsportazioneModal" class="modal fade in" aria-hidden="false" aria-labelledby="addEsportazioneModalLabel" role="dialog" tabindex="-1" style="display: block;">
+                <div class="modal-dialog">
+                    <div class="modal-content jsf-modal">
+                        <div class="modal-header">
+                            <h:commandButton styleClass="close" title="#{i18n['acl.close']}" action="#{pageBean.closeExportCSVAdvanced}" p:data-dismiss="modal"  value="&#215;" >
+                                <f:ajax execute="@form" render="@form" />
+                            </h:commandButton>
+                            
+                            <h4 class="modal-title" id="addEsportazioneModalLabel">#{i18n['dw4.esportazione_csv']}</h4>
+                        </div>
+                        <div class="modal-body">
+                            <!-- messages -->
+                            <h:panelGroup rendered="#{not empty facesContext.messageList}" layout="block" styleClass="docedit-messages alert alert-danger" style="margin-bottom:15px;">
+                                <h:messages styleClass="" id="validationMessegesExportCSV" />
+                            </h:panelGroup>
+
+                            <ul class="nav nav-tabs">
+                                <ui:repeat var="export" value="#{pageBean.exportCSVAdvancedTabs}" varStatus="index0">
+                                    <li class="#{index0.index == 0 ? 'active' : ''}"><a data-toggle="tab" href="#csvgroup_#{index0.index}">#{export.name}</a></li>
+                                </ui:repeat>
+                            </ul>
+                            <div class="tab-content" style=" height: 150px; margin-top: 10px; overflow: auto;">
+                            <ui:repeat var="export" value="#{pageBean.exportCSVAdvancedTabs}" varStatus="index0" id="exportsCSV">
+                              <div id="csvgroup_#{index0.index}" class="tab-pane #{index0.index == 0 ? 'active' : ''}">
+                              <ui:repeat var="group" value="#{export.groups}" varStatus="index1" id="exportsCSVGroups">
+	                              <div class="checkbox">
+	                                  <label>
+	                                  <input id="csvgroupselect_#{index0.index}_#{index1.index}" type="checkbox" checked="#{(group.selected) ? 'checked' : ''}" onclick="changeSelectionAdvancedCSV('#{index0.index}','#{index1.index}');" />
+	                                  #{group.name}
+	                                  </label>
+	                                  
+	                                  <h:inputHidden value="#{group.selected}" id="csvGroup" />
+	                              </div>
+                              </ui:repeat>
+                              </div>
+                            </ui:repeat>
+                            </div>
+                        </div>
+                        <div class="modal-footer" style="margin-top: 0px;">
+                            <h:commandButton styleClass="btn btn-primary openwaitmsg" action="#{pageBean.exportCSVAdvanced}" value="#{i18n['dw4.esportazione_csv']}">
+                                <f:ajax execute="@form" render="@form" />
+                            </h:commandButton>
+                            
+                            <h:commandButton styleClass="btn btn-default" title="#{i18n['acl.close']}" action="#{pageBean.closeExportCSVAdvanced}" p:data-dismiss="modal"  value="#{i18n['acl.close']}" >
+                                <f:ajax execute="@form" render="@form" />
+                            </h:commandButton>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </h:panelGroup>
+       </h:panelGroup>
+	
+	</ui:composition>   
+</html>

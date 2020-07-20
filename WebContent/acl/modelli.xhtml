@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" 
+	  xmlns:h="http://java.sun.com/jsf/html" 
+	  xmlns:ui="http://java.sun.com/jsf/facelets" 
+	  xmlns:f="http://java.sun.com/jsf/core"
+	  xmlns:c="http://java.sun.com/jsp/jstl/core"
+	  xmlns:p="http://xmlns.jcp.org/jsf/passthrough">
+<ui:composition>
+
+	<div class="fieldset">
+		<div class="legend">
+			#{i18n['dw4.doc_informatici']}
+			
+			<div class="pull-right">
+				<span class="glyphicon glyphicon-floppy-disk" title="#{i18n['dw4.doc_informatici']}"></span>
+			</div>
+		</div>
+		
+		<ui:remove>
+			<div class="form-group">
+				<label class="col-sm-2 control-label">&#160;</label>
+				<div class="col-sm-9">
+					<h:selectOneRadio immediate="true" value="#{beanDoc.conservazione.tipo}" styleClass="radio-selection">
+						<f:selectItem itemLabel="#{i18n['dw4.non_candidato_alla_conservazione']}" itemValue=" " />
+						<f:selectItem itemLabel="#{i18n['dw4.originale_unico']}" itemValue="oriuni" />
+						<f:selectItem itemLabel="#{i18n['dw4.originale_non_unico']}" itemValue="orinon" />
+						<f:selectItem itemLabel="#{i18n['dw4.documento_informatico']}" itemValue="docinf" />
+					</h:selectOneRadio>
+				</div>
+			</div>
+		</ui:remove>
+		
+		<h:panelGroup rendered="#{enableFiles}" layout="block" id="files_Fields">
+			<div class="form-group">
+				<label class="col-sm-2 control-label emphasis-title">#{i18n['dw4.file']}</label>
+				<div class="col-sm-9 check-selection">
+					<h:panelGroup rendered="#{ enableFileAgentPDF }">
+						<h:selectBooleanCheckbox id="agentPdf" value="#{beanDoc.agent_pdf}" />
+						<label for="templateForm:agentPdf" style="width:130px;"><h:outputText value="#{i18n['dw4.converti_in_pdf']}" /></label>
+						&#160;&#160;
+					</h:panelGroup>
+					<h:selectBooleanCheckbox id="agentXml" value="#{beanDoc.agent_xml}" />
+					<label for="templateForm:agentXml" style="width:130px;"><h:outputText value="#{i18n['dw4.converti_in_xml']}" /></label>
+					
+					<!-- TODO Firma digitale e crittografia -->
+					
+					<h:inputHidden id="nFileId" value="#{beanDoc.xwFileIdsAttached}" />
+					<h:inputHidden id="nFileName" value="#{beanDoc.xwFileNamesAttached}" />
+					<h:inputHidden id="nFileTitle" value="#{beanDoc.xwFileTitlesAttached}" />
+					<h:commandLink id="addFilesButton" action="#{beanDoc.addFiles}" style="display:none;">
+						<f:ajax execute="@form" render=":templateForm:files_Fields :templateForm:errormsg" />
+					</h:commandLink>
+				</div>
+			</div>
+			<c:forEach var="modello" items="#{bean.organo.modelli}" varStatus="indice">
+				<div class="form-group">
+					<label class="col-sm-2 control-label">#{modello.file.name}</label>
+					<div class="col-sm-7">
+						<h:inputHidden id="xwFiles_#{indice.index}_fileName" value="#{modello.file.name}" />
+						<h:inputHidden id="xwFiles_#{indice.index}_xwayId" value="#{modello.file.xwayId}" />
+						<h:inputHidden id="xwFiles_#{indice.index}_iwxGuId" value="#{modello.file.iwxGuId}" />
+						
+						<div class="input-group">
+							<h:panelGroup rendered="#{bean.formsAdapter.funzionalitaDisponibili['abilitaLibroFirma']}">
+								<span class="input-group-addon firma-digitale-addon popoveritem" title="#{i18n['dw4.da_firmare']}" data-toggle="popover" data-placement="top" data-trigger="hover" data-content="#{i18n['dw4.richiesta_di_firma_digitale_sul_file_da_parte_del_responsabile']}" >
+									<label for="templateForm:xwFiles_#{indice.index}_checkFirma"><span class="glyphicons-pro pen firma-digitale normla-size-icon"></span></label>&#160;
+									<h:selectBooleanCheckbox id="xwFiles_#{indice.index}_checkFirma" value="#{modello.file.da_firmare}" label="#{i18n['dw4.da_firmare']}" title="#{i18n['dw4.da_firmare']}" />
+								</span>
+							</h:panelGroup>
+							<h:inputText id="xwFiles_#{indice.index}_fileTitle" value="#{modello.file.title}" styleClass="form-control" />
+							<div class="input-group-btn">
+								<h:commandLink action="#{beanDoc.deleteXwFile(indice.index)}" title="#{i18n['dw4.elimina_istanza']}" styleClass="btn btn-default #{!(indice.index &lt; fn:length(bean.organo.modelli)-1) ? 'disabled' : ''}">
+									<f:ajax execute="@form" render=":templateForm:files_Fields :templateForm:errormsg"/>
+						 			<span class="glyphicon glyphicon-minus"></span>
+								</h:commandLink>
+								<h:commandLink action="#{beanDoc.moveUpXwFile(indice.index)}" title="#{i18n['acl.up']}" styleClass="btn btn-default #{!(indice.index > 0 and indice.index != fn:length(bean.organo.modelli)-1) ? 'disabled' : ''}">
+						 			<f:ajax execute="@form" render=":templateForm:files_Fields :templateForm:errormsg"/>
+						 			<span class="glyphicon glyphicon-chevron-up"></span>
+								</h:commandLink>
+								<h:commandLink action="#{beanDoc.moveDownXwFile(indice.index)}" title="#{i18n['acl.down']}" styleClass="btn btn-default #{!(indice.index &lt; fn:length(bean.organo.modelli)-2) ? 'disabled' : ''}">
+						 			<f:ajax execute="@form" render=":templateForm:files_Fields :templateForm:errormsg"/>
+						 			<span class="glyphicon glyphicon-chevron-down"></span>
+								</h:commandLink>
+								
+								<h:panelGroup rendered="#{indice.index == fn:length(bean.organo.modelli)-1}">
+									<h:panelGroup rendered="#{bean.enableIW}">
+										<h:commandLink onclick="return IwxRuntime.Client.addDocIWX();" styleClass="btn btn-default sfogliaButton">#{i18n['dw4.sfoglia']}</h:commandLink>
+									</h:panelGroup>
+									<h:panelGroup rendered="#{!bean.enableIW}">
+										<span id="swfupload-files-control">
+											<span id="swfuploadFilesHolder"></span>
+											<h:commandLink id="xwFiles_#{indice.index}_swfuploadFilesBtn" onclick="return false;" styleClass="btn btn-default sfogliaButton">#{i18n['dw4.sfoglia']}</h:commandLink>
+										</span>
+									</h:panelGroup>
+								</h:panelGroup>
+							</div>
+						</div>
+					</div>
+				</div>
+			</c:forEach>
+		</h:panelGroup>
+		
+		<h:panelGroup rendered="#{enableImages}" layout="block" id="images_Fields">
+			<div class="form-group">
+				<label class="col-sm-2 control-label emphasis-title">#{i18n['dw4.images']}</label>
+				<div class="col-sm-9 check-selection">
+					<h:panelGroup rendered="#{ enableImageAgentPDF }">
+						<h:selectBooleanCheckbox id="iagentPdf" value="#{beanDoc.iagent_pdf}" />
+						<label for="templateForm:iagentPdf" style="width:130px;"><h:outputText value="#{i18n['dw4.converti_in_pdf']}" /></label>
+						&#160;&#160;
+					</h:panelGroup>
+					<h:selectBooleanCheckbox id="agentOcr" value="#{beanDoc.agent_ocr}" />
+					<label for="templateForm:agentOcr" style="width:130px;"><h:outputText value="#{i18n['dw4.con_ocr']}" /></label>
+					
+					<!-- TODO Firma digitale e crittografia -->
+					
+					<h:inputHidden id="nImageId" value="#{beanDoc.xwImageIdsAttached}" />
+					<h:inputHidden id="nImageName" value="#{beanDoc.xwImageNamesAttached}" />
+					<h:inputHidden id="nImageTitle" value="#{beanDoc.xwImageTitlesAttached}" />
+					<h:commandLink id="addImagesButton" action="#{beanDoc.addImages}" style="display:none;" >
+						<f:ajax execute="@form" render=":templateForm:images_Fields :templateForm:errormsg" />
+					</h:commandLink>
+				</div>
+			</div>
+			<c:forEach var="modello.file" items="#{beanDoc.immagini}" varStatus="indice">
+				<div class="form-group">
+					<label class="col-sm-2 control-label"><span>#{modello.nome}</span></label>
+					<div class="col-sm-7">
+						<h:inputHidden id="xwImages_#{indice.index}_fileName" value="#{modello.file.name}" />
+						<h:inputHidden id="xwImages_#{indice.index}_xwayId" value="#{modello.file.xwayId}" />
+						<h:inputHidden id="xwImages_#{indice.index}_iwxGuId" value="#{modello.file.iwxGuId}" />
+						
+						<div class="input-group">
+							<h:panelGroup rendered="#{bean.formsAdapter.funzionalitaDisponibili['abilitaLibroFirma']}">	
+								<span class="input-group-addon firma-digitale-addon popoveritem" title="#{i18n['dw4.da_firmare']}" data-toggle="popover" data-placement="top" data-trigger="hover" data-content="#{i18n['dw4.richiesta_di_firma_digitale_sul_file_da_parte_del_responsabile']}" >
+									<label for="templateForm:xwImages_#{indice.index}_checkFirma"><span class="glyphicons-pro pen firma-digitale normla-size-icon"></span></label>&#160;
+									<h:selectBooleanCheckbox id="xwImages_#{indice.index}_checkFirma" value="#{modello.file.da_firmare}" label="#{i18n['dw4.da_firmare']}" />
+								</span>
+							</h:panelGroup>
+							<h:inputText id="xwImages_#{indice.index}_fileTitle" value="#{modello.file.title}" styleClass="xwimageinput form-control" />
+							<div class="input-group-btn">
+								<h:panelGroup rendered="#{bean.enableIW}">
+									<h:commandLink rendered="#{modello.file.xwayId ne ''}" id="xwImages_#{indice.index}_image_apri_button" onclick="return IwxRuntime.Client.openImageIWX(#{indice.index});" title="#{i18n['dw4.apri_il_file']}" styleClass="btn btn-default">
+										<span class="glyphicon glyphicon-picture"></span>
+									</h:commandLink>
+									<h:commandLink rendered="#{modello.file.xwayId eq '' and modello.file.name ne ''}" title="#{i18n['dw4.apri_il_file']}" id="xwImages_#{indice.index}_file_download_button" onclick="return IwxRuntime.Client.downloadImageIWX(#{indice.index});" styleClass="btn btn-default">
+							   			<span class="glyphicon glyphicon-picture"></span>
+							   		</h:commandLink>
+							   	</h:panelGroup>
+								
+								<h:commandLink action="#{beanDoc.deleteXwImage(indice.index)}" title="#{i18n['dw4.elimina_istanza']}" styleClass="btn btn-default #{!(indice.index &lt; fn:length(beanDoc.immagini)-1) ? 'disabled' : ''}">
+									<f:ajax execute="@form" render=":templateForm:images_Fields :templateForm:errormsg"/>
+						 			<span class="glyphicon glyphicon-minus"></span>
+								</h:commandLink>
+								<h:commandLink action="#{beanDoc.moveUpXwImage(indice.index)}" title="#{i18n['acl.up']}" styleClass="btn btn-default #{!(indice.index > 0 and indice.index != fn:length(beanDoc.immagini)-1) ? 'disabled' : ''}">
+						 			<f:ajax execute="@form" render=":templateForm:images_Fields :templateForm:errormsg"/>
+						 			<span class="glyphicon glyphicon-chevron-up"></span>
+								</h:commandLink>
+								<h:commandLink action="#{beanDoc.moveDownXwImage(indice.index)}" title="#{i18n['acl.down']}" styleClass="btn btn-default #{!(indice.index &lt; fn:length(beanDoc.immagini)-2) ? 'disabled' : ''}">
+						 			<f:ajax execute="@form" render=":templateForm:images_Fields :templateForm:errormsg"/>
+						 			<span class="glyphicon glyphicon-chevron-down"></span>
+								</h:commandLink>
+								
+								<h:panelGroup rendered="#{indice.index == fn:length(beanDoc.immagini)-1}">
+									<h:panelGroup rendered="#{bean.enableIW}">
+										<h:commandLink onclick="return IwxRuntime.Client.addImageIWX();" styleClass="btn btn-default sfogliaButton">#{i18n['dw4.sfoglia']}</h:commandLink>
+										<div class="input-group-btn dropup scannerButton">
+  											<a class="btn btn-default dropdown-toggle" data-toggle="dropdown">#{i18n['dw4.scansione']} <span class="caret"></span></a>
+											<ul class="dropdown-menu">
+												<li><h:commandLink value="#{i18n['dw4.seleziona_scanner']}" onclick="return IwxRuntime.Client.selectTwainSourceIWX();"></h:commandLink></li>
+												<li><h:commandLink value="#{i18n['dw4.scansione']}" onclick="return IwxRuntime.Client.addImageTwainIWX('TWAIN_UI_MP');"></h:commandLink></li>
+												<li>
+													<h:commandLink onclick="return IwxRuntime.Client.addImageTwainIWX('TWAIN_NOUI_MP');" p:data-toggle="popover" p:data-placement="top" p:data-trigger="hover" p:data-content="#{i18n['dw4.msg_crash_scansione_rapida']} #{i18n['dw4.msg_uso_scansione_classica']}" styleClass="popoveritem">
+														#{i18n['dw4.scansione_rapida']}
+														<i class="glyphicon glyphicon-info-sign"></i>
+													</h:commandLink>
+												</li>
+											</ul>
+										</div>
+									</h:panelGroup>
+									<h:panelGroup rendered="#{!bean.enableIW}">
+										<span id="swfupload-images-control">
+											<span id="swfuploadImagesHolder"></span>
+											<h:commandLink id="xwImages_#{indice.index}_swfuploadImagesBtn" onclick="return false;" styleClass="btn btn-default sfogliaButton">#{i18n['dw4.sfoglia']}</h:commandLink>
+										</span>
+									</h:panelGroup>
+								</h:panelGroup>
+							</div>
+						</div>
+					</div>
+				</div>
+			</c:forEach>
+		</h:panelGroup>
+		
+		<h:panelGroup rendered="#{ enableFiles or enableImages }">
+			<h:panelGroup rendered="#{ !bean.enableIW }">
+				<script type="text/javascript">
+				var docInformaticiUploadUrl = "#{facesContext.externalContext.requestContextPath}/fileupload";
+				var docInformaticiFileLimit = "0"; // TODO dim massima files, recuperarla da file di properties
+				//var docInformaticiFileDescription = "#{i18n['dw4.all_files']}";
+				var docInformaticiFileDescription = "#{bean.docInformaticiFileDescription}";
+				//var docInformaticiFileTypes = "*.*";
+				var docInformaticiFileTypes = "#{bean.docInformaticiFileTypes}";
+				var docInformaticiImageLimit = "0"; // TODO dim massima images, recuperarla da file di properties
+				//var docInformaticiImageTypesDescription = "#{i18n['dw4.image_files']}";
+				var docInformaticiImageTypesDescription = "#{pageBean.docInformaticiImageDescription}";
+				//var docInformaticiImageTypes = "*.tif; *.tiff; *.jpg; *.jpeg; *.bmp; *.png";
+				var docInformaticiImageTypes = "#{bean.docInformaticiImageTypes}";
+				
+				window.loadSWFUpload = function() {
+					initSWFU(docInformaticiUploadUrl, "doc", "#{userBean.login}", "#{userBean.matricola}", "#{bean.formsAdapter.customTupleName}", "#{bean.formsAdapter.db}", docInformaticiFileLimit, '0', docInformaticiFileDescription, docInformaticiFileTypes);
+					initSWFU(docInformaticiUploadUrl, "image", "#{userBean.login}", "#{userBean.matricola}", "#{bean.formsAdapter.customTupleName}", "#{bean.formsAdapter.db}", docInformaticiImageLimit, '0', docInformaticiImageTypesDescription, docInformaticiImageTypes);
+				}
+				
+				$(window).load(function() {
+					jsf.ajax.addOnEvent(function(data) { 
+						if (data.status == 'success') {
+							initSWFU(docInformaticiUploadUrl, "doc", "#{userBean.login}", "#{userBean.matricola}", "#{bean.formsAdapter.customTupleName}", "#{bean.formsAdapter.db}", docInformaticiFileLimit, '0', docInformaticiFileDescription, docInformaticiFileTypes);
+							initSWFU(docInformaticiUploadUrl, "image", "#{userBean.login}", "#{userBean.matricola}", "#{bean.formsAdapter.customTupleName}", "#{bean.formsAdapter.db}", docInformaticiImageLimit, '0', docInformaticiImageTypesDescription, docInformaticiImageTypes);
+						}
+					});
+				});
+				</script>
+			</h:panelGroup>
+			
+			<h:panelGroup rendered="#{ bean.enableIW }">
+				<div class="clearfix">
+					<div class="iwx-box" style="margin-top:13px;">
+						<div class="iwx-button-bar">
+							<div class="iwx-buttons pull-left">
+								<h:panelGroup rendered="#{ enableImages }">
+									<span id="iwx-resize-buttons" class="btn-group">
+										<h:commandLink styleClass="btn btn-default btn-xs" title="#{i18n['dw4.adapt_to_page']}" onclick="return IwxRuntime.Client.adaptToPageIWX();"><span class="glyphicons-pro text_height"></span></h:commandLink>
+										<h:commandLink styleClass="btn btn-default btn-xs" title="#{i18n['dw4.adapt_to_width']}" onclick="return IwxRuntime.Client.adaptToWidthIWX();"><span class="glyphicons-pro text_width"></span></h:commandLink>
+										<h:commandLink styleClass="btn btn-default btn-xs" title="#{i18n['dw4.original_size']}" onclick="return IwxRuntime.Client.originalSizeIWX();"><span class="glyphicons-pro fullscreen"></span></h:commandLink>
+									</span>
+									<h:graphicImage url="/docway/css/images/spazio.png" alt="space" style="width:16px;" />
+									<span id="iwx-pages-buttons" style="display:none;">
+										<span class="btn-group">
+											<h:commandLink id="iwx_first_page_btn" styleClass="btn btn-default btn-xs" title="#{i18n['dw4.first_page']}" onclick="return IwxRuntime.Client.firstPageIWX();"><span class="glyphicon glyphicon-fast-backward"></span></h:commandLink>
+											<h:commandLink id="iwx_prev_page_btn" styleClass="btn btn-default btn-xs" title="#{i18n['dw4.prev_page']}" onclick="return IwxRuntime.Client.prevPageIWX();"><span class="glyphicon glyphicon-play icon-flipped"></span></h:commandLink>
+										</span>
+										&#160;<h:outputText value="#{i18n['dw4.page']}" />&#160;<span id="iwx-pages-curpage" style="font-weight:bold;"></span>&#160;<h:outputText value="#{i18n['dw4.of']}" />&#160;<span id="iwx-pages-maxpage" style="font-weight:bold;"></span>&#160;
+										<span class="btn-group">
+											<h:commandLink id="iwx_next_page_btn" styleClass="btn btn-default btn-xs" title="#{i18n['dw4.next_page']}" onclick="return IwxRuntime.Client.nextPageIWX();"><span class="glyphicon glyphicon-play"></span></h:commandLink>
+											<h:commandLink id="iwx_last_page_btn" styleClass="btn btn-default btn-xs" title="#{i18n['dw4.last_page']}" onclick="return IwxRuntime.Client.lastPageIWX();"><span class="glyphicon glyphicon-fast-forward"></span></h:commandLink>
+										</span>
+									</span>
+									<h:graphicImage url="/docway/css/images/spazio.png" alt="space" style="width:16px;" />
+									<span id="iwx-update-buttons" class="btn-group" style="display:none;" title="#{i18n['dw4.dopo_aver_apportato_modifiche_al_file_occorre_applicarle_utilizzando_l_apposito_pulsante_prima_di_procedere_con_altre_attivita']}">
+										<span class="btn-group dropup">
+	 										<a class="btn btn-default btn-xs dropdown-toggle" title="#{i18n['dw4.inserimento_sostituzione_di_pagine']}" data-toggle="dropdown"><span class="glyphicons-pro plus"></span> <span class="caret"></span></a>
+											<ul class="dropdown-menu">
+												<li><h:commandLink id="iwx_replace_page_btn" title="#{i18n['dw4.sostituisci_pagina_con_nuova_scansione']}" onclick="return IwxRuntime.Client.replacePageFromScanner();">
+													#{i18n['dw4.sostituisci_pagina_con_nuova_scansione']}
+												</h:commandLink></li>
+												<li><h:commandLink id="iwx_insert_page_btn" title="#{i18n['dw4.aggiungi_pagina_successiva_con_nuova_scansione']}" onclick="return IwxRuntime.Client.addPageFromScanner();">
+													#{i18n['dw4.aggiungi_pagina_successiva_con_nuova_scansione']}
+												</h:commandLink></li>
+											</ul>
+										</span>
+										<h:commandLink id="iwx_remove_page_btn" styleClass="btn btn-default btn-xs" title="#{i18n['dw4.eliminazione_della_pagina_corrente_dal_documento']}" onclick="return IwxRuntime.Client.removeCurrentPage('#{i18n['dw4.deleteconfirm_pageIWX']}');"><span class="glyphicons-pro remove_2"></span></h:commandLink>
+										<span class="btn-group dropup">
+	 										<a class="btn btn-default btn-xs dropdown-toggle" title="#{i18n['dw4.spostamento_della_pagina_corrente']}" data-toggle="dropdown"><span class="glyphicons-pro transfer"></span> <span class="caret"></span></a>
+											<ul class="dropdown-menu">
+												<li><h:commandLink id="iwx_moveafter_page_btn" title="#{i18n['dw4.sposta_la_pagina_corrente_avanti_di_una_posizione']}" onclick="return IwxRuntime.Client.moveCurrentPage('1');">
+													#{i18n['dw4.sposta_la_pagina_corrente_avanti_di_una_posizione']}
+												</h:commandLink></li>
+												<li><h:commandLink id="iwx_movebefore_page_btn" title="#{i18n['dw4.sposta_la_pagina_corrente_indietro_di_una_posizione']}" onclick="return IwxRuntime.Client.moveCurrentPage('0');">
+													#{i18n['dw4.sposta_la_pagina_corrente_indietro_di_una_posizione']}
+												</h:commandLink></li>
+											</ul>
+										</span>
+										<h:commandLink id="iwx_apply_changes_btn" title="#{i18n['dw4.applica_modifiche_al_file']}" styleClass="btn btn-default btn-xs disabled" onclick="return IwxRuntime.Client.applyChangesImageIWX();"><span class="glyphicons-pro floppy_open iwx-images-apply-changes"></span></h:commandLink>
+									</span>
+								</h:panelGroup>
+							</div>
+							<div class="iwx-version pull-right">
+								<input type="hidden" id="iwx_required_version" value="#{bean.requiredVersionIWX}" />
+								<input type="hidden" id="iwx_current_version" value="#{bean.currentVersionIWX}" />
+								#{i18n['dw4.iwx_version']}: <span id="iwx_version" style="font-weight:bold;"></span>
+							</div>
+							<div style="clear:both; display:none; height:0px; width:0px;"></div>
+						</div>
+						<div id="iwx_error_messages" class="iwx-error-logs"></div>
+						<h:panelGroup rendered="#{ enableImages }">
+							<div id="iwx_holder" style="min-height:25px; width:100%;"></div>
+						</h:panelGroup>
+						<h:panelGroup rendered="#{ !enableImages }">
+							<div id="iwx_holder" style="height:5px; width:100%;"></div>
+						</h:panelGroup>
+					</div>
+				</div>	
+				
+				<script type="text/javascript">
+				resetJobsIwx = '#{bean.resetJobsIWX}';
+				
+				window.loadIWX = function() {
+					initIwxAfterReload('#{facesContext.externalContext.requestContextPath}/fileupload', '#{cookie.JSESSIONID.value}', '#{userBean.login}', '#{userBean.matricola}', '#{bean.formsAdapter.customTupleName}', '#{bean.formsAdapter.db}', resetJobsIwx, 'openDocEditCurrentImage', null, null, '#{bean.iwxFileTypes}', '#{bean.iwxImageTypes}');
+				}
+				
+				$(window).load(function() {
+					jsf.ajax.addOnEvent(function(data) { 
+						if (data.status == 'success') {
+							initIwxAfterAjax('#{facesContext.externalContext.requestContextPath}/fileupload', '#{cookie.JSESSIONID.value}', '#{userBean.login}', '#{userBean.matricola}', '#{bean.formsAdapter.customTupleName}', '#{bean.formsAdapter.db}', 'openDocEditCurrentImage', null, null, '#{bean.iwxFileTypes}', '#{bean.iwxImageTypes}');
+						}
+					});
+				});
+				</script>
+			</h:panelGroup>
+		</h:panelGroup>
+	</div> <!-- /fieldset -->
+
+</ui:composition>
+</html>

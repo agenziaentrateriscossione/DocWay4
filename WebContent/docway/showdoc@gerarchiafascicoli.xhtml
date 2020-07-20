@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" 
+	  xmlns:h="http://java.sun.com/jsf/html" 
+	  xmlns:ui="http://java.sun.com/jsf/facelets" 
+	  xmlns:f="http://java.sun.com/jsf/core">
+<ui:composition>
+
+	<h:panelGroup rendered="#{fn:length(bean.fascicolo.gerarchiaFascicolo) > 1}">
+		<div class="showdoc-section">
+			<div class="title">
+				#{i18n['dw4.gerarchia_fascicoli']}
+				
+				<div class="pull-right">
+					<span class="glyphicon glyphicon-link" title="#{i18n['dw4.gerarchia_fascicoli']}"></span>
+				</div>
+			</div>
+			
+			<div class="gerarchia-fascicoli">
+				<div class="table-responsive">
+					<table class="table table-condensed gerarchia-fascicoli-table">
+						<tbody>
+							<ui:repeat var="fasc" value="#{bean.fascicolo.gerarchiaFascicolo}">
+								<tr>
+									<td style="white-space:nowrap;">
+										<h:panelGroup rendered="#{fasc.livello > 1}" styleClass="space-span">&#160;&#160;&#160;&#160;</h:panelGroup>
+										<h:panelGroup rendered="#{fasc.livello > 2}" styleClass="space-span">&#160;&#160;&#160;&#160;</h:panelGroup>
+										<h:panelGroup rendered="#{fasc.livello > 3}" styleClass="space-span">&#160;&#160;&#160;&#160;</h:panelGroup>
+										<h:panelGroup rendered="#{fasc.livello > 4}" styleClass="space-span">&#160;&#160;&#160;&#160;</h:panelGroup>
+										<h:panelGroup rendered="#{fasc.livello > 5}" styleClass="space-span">&#160;&#160;&#160;&#160;</h:panelGroup>
+										<h:panelGroup rendered="#{fasc.livello > 6}" styleClass="space-span">&#160;&#160;&#160;&#160;</h:panelGroup>
+										<h:panelGroup rendered="#{fasc.livello != '0' and fasc.haFratelli=='no'}" styleClass="tree-c-span">&#160;&#160;&#160;&#160;</h:panelGroup>
+										<h:panelGroup rendered="#{fasc.livello != '0' and fasc.haFratelli!='no'}" styleClass="tree-cb-span">&#160;&#160;&#160;&#160;</h:panelGroup>
+										<ui:remove>
+											<h:graphicImage url="/docway/css/images/spazio.png" alt="space" rendered="#{fasc.livello > 1}" style="width:22px;" />
+											<h:graphicImage url="/docway/css/images/spazio.png" alt="space" rendered="#{fasc.livello > 2}" style="width:22px;" />
+											<h:graphicImage url="/docway/css/images/spazio.png" alt="space" rendered="#{fasc.livello > 3}" style="width:22px;" />
+											<h:graphicImage url="/docway/css/images/spazio.png" alt="space" rendered="#{fasc.livello > 4}" style="width:22px;" />
+											<h:graphicImage url="/docway/css/images/spazio.png" alt="space" rendered="#{fasc.livello > 5}" style="width:22px;" />
+											<h:graphicImage url="/docway/css/images/spazio.png" alt="space" rendered="#{fasc.livello > 6}" style="width:22px;" />
+											<h:graphicImage url="/docway/css/images/btree/c.png" alt="tree_b" rendered="#{fasc.livello != '0' and fasc.haFratelli=='no'}"/>
+											<h:graphicImage url="/docway/css/images/btree/cb.png" alt="tree_cb" rendered="#{fasc.livello != '0' and fasc.haFratelli!='no'}"/>
+										</ui:remove>
+									
+										<h:panelGroup rendered="#{fasc.selezionato == 'no'}">
+											<h:commandLink action="#{bean.queryFasc}"><span class="glyphicons-pro #{(fasc.stato == 'deposito') ? 'folder_flag' : ((fasc.stato == 'chiuso') ? 'folder_closed' : 'folder_open')} normal-size-icon"></span></h:commandLink>
+										</h:panelGroup>
+										<h:panelGroup rendered="#{fasc.selezionato == 'si'}" styleClass="fascicolo-selezionato">
+											<span class="glyphicons-pro #{(fasc.stato == 'deposito') ? 'folder_flag' : ((fasc.stato == 'chiuso') ? 'folder_closed' : 'folder_open')} normal-size-icon"></span>
+										</h:panelGroup>
+									</td>
+									<td>
+										<h:panelGroup rendered="#{fasc.selezionato == 'no'}">
+											<h:commandLink action="#{bean.queryFasc}">
+												<h:outputText value="#{fasc.numero}"><f:converter converterId="NumFascConverter" /></h:outputText>
+												&#160;&#160; &#171;#{fasc.oggetto}&#187;
+											</h:commandLink>
+										</h:panelGroup>
+										<h:panelGroup rendered="#{fasc.selezionato == 'si'}" styleClass="fascicolo-selezionato">
+											<h:outputText value="#{fasc.numero}">
+												<f:converter converterId="NumFascConverter" />
+											</h:outputText>&#160;&#160; &#171;#{fasc.oggetto}&#187;
+										</h:panelGroup>
+									</td>
+								</tr>
+							</ui:repeat>
+						</tbody>
+					</table>
+				</div>
+			</div>
+		</div>
+	</h:panelGroup>
+
+</ui:composition>
+</html>

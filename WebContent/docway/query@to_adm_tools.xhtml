@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+    template="#{queryToAdmTools.pageTemplate}"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:f="http://java.sun.com/jsf/core">
+
+<ui:define name="content">
+	<div class="adm-tools">
+			
+		<div class="sub-header">
+			<span class="glyphicon glyphicon-wrench"></span>&#160;
+			#{i18n['dw4.strumenti_di_amministrazione']}
+		</div>
+		
+		<div class="btn-toolbar delibere-btn-toolbar" role="toolbar">
+			<div class="btn-group">
+				<h:outputLink value="#{facesContext.externalContext.requestContextPath}/acl/doceditOrgano.pf?table=@organo" styleClass="btn btn-primary">#{i18n['dw4.nuovo_organo']}</h:outputLink>
+			</div>
+		</div>
+		
+		<!-- scheda query: inizio -->
+		<div class="row-fluid" style="margin-top:10px;">
+			<div id="fixedshowdoc" class="box span12 fixed-showdoc">
+			
+				<div class="box-content">
+					<div class="fieldset">
+						<div class="legend">#{i18n['dw4.organi']}</div>
+						<table class="table table-striped">
+							<tbody>
+								<ui:repeat var="organo" value="#{queryToAdmTools.organi}">
+									<tr>
+										<td class="essential">
+											<a href="#{facesContext.externalContext.requestContextPath}/acl/showdocOrgano.pf?organoDb=#{organo.db}&amp;organoSel=#{organo.sel}&amp;organoPosizione=#{organo.indice-1}" class="openwaitmsg">#{organo.nome}</a>
+										</td>
+									</tr>
+								</ui:repeat>
+							</tbody>
+						</table>
+				       	<h:inputTextarea value="#{pageBean.lookupSeduta.xml}" rendered="#{pageBean.debugMode}" styleClass="form-control" rows="10"/>
+					</div> <!-- /fieldset -->
+				</div>
+			</div>
+		</div>
+		<!-- scheda query: fine -->
+	</div>
+	
+	<h:inputTextarea value="#{queryToAdmTools.xml}" rendered="#{queryToAdmTools.debugMode}" styleClass="form-control" rows="10" />	
+</ui:define>
+    
+</ui:composition>    

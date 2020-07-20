@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" 
+	  xmlns:h="http://java.sun.com/jsf/html" 
+	  xmlns:ui="http://java.sun.com/jsf/facelets" 
+	  xmlns:f="http://java.sun.com/jsf/core">
+<ui:composition>
+	
+	<h:panelGroup rendered="#{fn:length(bean.doc.componenti) > 0}">
+		<div class="showdoc-section">
+			<div class="title">
+				#{i18n['dw4.componenti']}
+				<div class="pull-right">
+					<span class="glyphicons-pro parents" title="#{i18n['dw4.componenti']}"></span>
+				</div>
+			</div>
+			<div class="table-responsive">
+				<table class="table table-bordered show-odg-table">
+					<thead>
+						<tr>
+							<th class="width-20">#{i18n['dw4.nominativo']}</th>
+							<th class="width-10">#{i18n['dw4.carica']}</th>
+							<th class="check-col">#{i18n['dw4.presente']}</th>
+							<th class="check-col">#{i18n['dw4.delega']}</th>
+							<th class="check-col">#{i18n['dw4.assente_giustificato']}</th>
+							<th class="check-col">#{i18n['dw4.assente_ng']}</th>
+						</tr>
+					</thead>
+					<tbody>
+						<ui:repeat var="componente" value="#{bean.doc.componenti}" varStatus="status">
+							<tr>
+								<td class="width-30">
+									<h:inputHidden name="NC_#{componente.pos}" value="#{componente.nominativo}"></h:inputHidden>
+									#{componente.nominativo}
+								</td>
+								<td class="width-20">#{componente.incarico}</td>
+								<td class="check-col hiddenRadio">
+									<input type="radio" name="S_#{componente.pos}" value="P" onclick="$('.S_#{componente.pos} input:hidden').val($(this).val());"/>
+										<h:panelGroup styleClass="S_#{componente.pos}">
+											<h:inputHidden value="#{componente.presenza}"></h:inputHidden>
+										</h:panelGroup>
+								</td>
+								<td class="check-col">
+									<h:inputText name="DELEGA_#{componente.pos}" value="#{componente.delega}" styleClass="hiddenDelega DELEGA_#{componente.pos}"
+										onfocus='chkDelega("#{componente.pos}")'>
+									</h:inputText>	
+								</td>
+								<td class="check-col">
+									<input type="radio" name="S_#{componente.pos}" value="G" onclick='clearDelega($(this).val(),"#{componente.pos}");'/>
+								</td>
+								<td class="check-col">
+									<input type="radio" name="S_#{componente.pos}" value="A" onclick='clearDelega($(this).val(),"#{componente.pos}");' />
+								</td>
+							</tr>
+						</ui:repeat>
+					</tbody>
+				</table>
+			</div>
+		</div>
+		<script type="text/javascript">
+			function clearDelega(val,classId){
+				$('.DELEGA_'+classId).val('');
+				$('.S_'+classId + ' input:hidden').val(val);
+			}
+			
+			function chkDelega(classId){
+				$('input:radio[name=S_'+classId+']')[0].checked=true;
+				$('.S_'+classId + ' input:hidden').val("P");
+			}
+			
+			$(document).ready(function(){
+				$('.hiddenDelega').val("");
+				$('.hiddenRadio input:radio').attr('checked', 'checked');
+				$('.hiddenRadio input:hidden').val("P");
+			});
+			
+		</script>
+		
+		
+	</h:panelGroup>
+	
+</ui:composition>
+</html>

@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" 
+	  xmlns:h="http://java.sun.com/jsf/html" 
+	  xmlns:ui="http://java.sun.com/jsf/facelets" 
+	  xmlns:f="http://java.sun.com/jsf/core"
+	  xmlns:p="http://xmlns.jcp.org/jsf/passthrough">
+<ui:composition>
+
+	<h:panelGroup id="infomsg">
+		<h:panelGroup rendered="#{msg.active}">
+			<!-- Modal -->
+			<div id="infomsgModal" class="modal fade in" aria-hidden="false" aria-labelledby="infomsgModalLabel" role="dialog" tabindex="-1" style="display: block;">
+			<!--div class="modal fade" id="infomsgModal" tabindex="-1" role="dialog" aria-labelledby="infomsgModalLabel" aria-hidden="true"-->
+				<div class="modal-dialog">
+					<div class="modal-content jsf-modal">
+						<div class="modal-header">
+							<h:commandLink class="close" action="#{msg.close}" p:data-dismiss="modal" value="&#215;">
+		                    	<f:ajax render="@form"/>
+		                   	</h:commandLink>
+							
+							<h4 class="modal-title" id="infomsgModalLabel">#{msg.type}</h4>
+						</div>
+						<div class="modal-body">
+						
+							<h:panelGroup layout="block" styleClass="alert #{(msg.type eq '' or fn:toLowerCase(msg.type) eq 'info') ? 'alert-info' : ''} #{(fn:toLowerCase(msg.type) eq 'success') ? 'alert-success' : ''} #{(fn:toLowerCase(msg.type) eq 'warning') ? 'alert-warning' : ''} #{(fn:toLowerCase(msg.type) eq 'error' or fn:toLowerCase(msg.type) eq 'fatal') ? 'alert-danger' : ''}">
+								#{msg.message}
+							</h:panelGroup>
+							
+							<h:inputTextarea value="#{msg.xml}" rendered="#{msg.debugMode}" styleClass="form-control" rows="10"/>
+							
+						</div>
+						<div class="modal-footer">
+							<h:commandLink styleClass="btn btn-default" action="#{msg.close}" p:data-dismiss="modal" value="#{i18n['acl.close']}">
+		                    	<f:ajax render="@form"/>
+		                   	</h:commandLink>
+						</div>
+					</div>
+				</div>
+			</div>
+			<!--h:outputScript>
+				$('#infomsgModal').modal('show');
+			</h:outputScript-->
+		</h:panelGroup>
+	</h:panelGroup>
+
+</ui:composition>	
+</html>

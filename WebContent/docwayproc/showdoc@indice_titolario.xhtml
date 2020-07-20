@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	template="template.xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:c="http://java.sun.com/jsp/jstl/core">
+
+<ui:define name="content">
+	<div class="vociIndice">
+	
+		<div class="sub-header">#{i18n['dw4.voci_di_indice']}</div>
+		
+		<!-- toolbar: inizio -->
+		<div class="btn-toolbar margin-bottom" role="toolbar">
+			<div class="pull-right">
+				<ui:include src="./navigationBar.xhtml">
+					<ui:param name="bean" value="#{showdocIndiceTitolario}"/>
+					<ui:param name="customPage" value="false"/>
+					<ui:param name="customPageId" value="showdocId"/>
+				</ui:include>
+			</div>
+			<div class="btn-group">
+				<h:commandLink action="#{docwayprocMenu.gotoTableQIndiceTitolario}" styleClass="btn btn-default">#{i18n['acl.ricerca']}</h:commandLink>
+				<h:commandLink rendered="#{showdocIndiceTitolario.formsAdapter.paginaTitoliEnabled}" action="#{showdocIndiceTitolario.paginaTitoli}" styleClass="btn btn-default">#{i18n['acl.titles']}</h:commandLink>
+			</div>
+			<div class="btn-group">
+				<h:commandLink rendered="#{showdocIndiceTitolario.formsAdapter.funzionalitaDisponibili['insertVI']}" action="#{showdocIndiceTitolario.modifyTableDoc}" styleClass="btn btn-default">#{i18n['dw4.modify']}</h:commandLink>
+				<h:commandLink rendered="#{showdocIndiceTitolario.formsAdapter.funzionalitaDisponibili['insertVI']}" action="#{showdocIndiceTitolario.rimuoviDoc}" onclick="if (!owmConfirm('#{i18n['dw4.deleteconfirm_indice_titolario']}')) return false;" styleClass="btn btn-danger">#{i18n['dw4.rimuoviDoc']}</h:commandLink>
+			</div>
+		</div>
+		<!-- toolbar: fine -->
+		
+		<!-- titolo della voce di indice: inizio -->
+		<div class="showdoc-title clearfix">
+			<div class="row">
+				<div class="col-xs-12">
+					<div class="showdoc-second-row-title" title="#{showdocIndiceTitolario.indice_titolario.voce}">
+						#{showdocIndiceTitolario.indice_titolario.voce}
+					</div>
+				</div>
+			</div>
+		</div>
+		<!-- titolo della voce di indice: fine -->
+		
+		<!-- dati della voce di indice: inizio -->
+		<div class="showdoc-section">
+			<div class="title">#{i18n['dw4.index']}</div>
+			
+			<dl class="dl-horizontal">
+				<dt>#{i18n['dw4.voce']}</dt>
+				<dd><h:outputText value="#{showdocIndiceTitolario.indice_titolario.voce}" /></dd>
+				<h:panelGroup rendered="#{!empty showdocIndiceTitolario.indice_titolario.compilazione_automatica.classif.cod}">
+					<dt>#{i18n['dw4.classif']}</dt>
+					<dd>
+						<h:outputText value="#{showdocIndiceTitolario.indice_titolario.compilazione_automatica.classif.cod.concat(' - ').concat(showdocIndiceTitolario.indice_titolario.compilazione_automatica.classif.text)}" escape="false"><f:converter converterId="ClassifConverter"/></h:outputText>
+					</dd>
+				</h:panelGroup>
+				<h:panelGroup rendered="#{!empty showdocIndiceTitolario.indice_titolario.compilazione_automatica.scarto.val}">
+					<dt>#{i18n['dw4.scarto']}</dt>
+					<dd>
+						<h:panelGroup rendered="#{showdocIndiceTitolario.indice_titolario.compilazione_automatica.scarto.val == '99'}"><h:outputText value="#{i18n['dw4.illimitato']}"/></h:panelGroup>
+						<h:panelGroup rendered="#{showdocIndiceTitolario.indice_titolario.compilazione_automatica.scarto.val == '01'}"><h:outputText value="#{i18n['dw4.1_anno']}"/></h:panelGroup>
+						<h:panelGroup rendered="#{showdocIndiceTitolario.indice_titolario.compilazione_automatica.scarto.val == '05'}"><h:outputText value="#{i18n['dw4.5_anni']}"/></h:panelGroup>
+						<h:panelGroup rendered="#{showdocIndiceTitolario.indice_titolario.compilazione_automatica.scarto.val == '10'}"><h:outputText value="#{i18n['dw4.10_anni']}"/></h:panelGroup>
+					</dd>
+				</h:panelGroup>
+				<h:panelGroup rendered="#{!empty showdocIndiceTitolario.indice_titolario.validita and !empty showdocIndiceTitolario.indice_titolario.validita[0].tipodoc}">
+					<dt>#{i18n['dw4.validita']}</dt>
+					<dd>
+						<ui:repeat var="validita" value="#{showdocIndiceTitolario.indice_titolario.validita}">
+							<h:panelGroup rendered="#{!empty validita.tipodoc}">
+								<span class="index-tipo-doc"><h:outputText value="#{validita.labelTipodoc}" /></span>
+							</h:panelGroup>
+						</ui:repeat>
+					</dd>
+				</h:panelGroup>
+				<h:panelGroup rendered="#{!empty showdocIndiceTitolario.indice_titolario.compilazione_automatica.oggetto and !empty showdocIndiceTitolario.indice_titolario.compilazione_automatica.oggetto[0].text}">
+					<dt>#{i18n['dw4.oggetti_predefiniti']}</dt>
+					<dd>
+						<ui:repeat var="oggetto" value="#{showdocIndiceTitolario.indice_titolario.compilazione_automatica.oggetto}" varStatus="indice">
+							<div class="index-oggetto-precompilato"><h:outputText value="#{oggetto.text}" /></div>
+						</ui:repeat>
+					</dd>
+				</h:panelGroup>
+			</dl>
+		</div>
+		<!-- dati della voce di indice: fine -->
+		
+		<h:panelGroup rendered="#{!empty showdocIndiceTitolario.indice_titolario.compilazione_automatica.rif_list}">
+			<!-- assegnazioni automatiche: inizio -->
+			<div class="showdoc-section">
+				<div class="title">#{i18n['dw4.assegnatari']}</div>
+				
+				<dl class="dl-horizontal">
+					<h:panelGroup rendered="#{!empty showdocIndiceTitolario.indice_titolario.compilazione_automatica.rpa.cod_persona or !empty showdocIndiceTitolario.indice_titolario.compilazione_automatica.rpa.cod_uff}">
+						<dt>#{i18n['dw4.proprietario']}</dt>
+						<dd>
+							<strong><h:outputText value="#{showdocIndiceTitolario.indice_titolario.compilazione_automatica.rpa.nome_uff}" /></strong>
+							<h:outputText rendered="#{!empty showdocIndiceTitolario.indice_titolario.compilazione_automatica.rpa.nome_uff}" value="&#160;&#160;" />
+							<h:outputText value="#{showdocIndiceTitolario.indice_titolario.compilazione_automatica.rpa.nome_persona}" />
+							&#160;
+						</dd>
+					</h:panelGroup>
+					<c:if test="#{fn:length(showdocIndiceTitolario.indice_titolario.compilazione_automatica.cds) > 0}">
+						<dt>#{i18n['dw4.cds']}</dt>
+						<dd>
+							<c:forEach var="rif" items="#{showdocIndiceTitolario.indice_titolario.compilazione_automatica.cds}" varStatus="indice">
+								<h:panelGroup rendered="#{!empty rif.cod_persona or !empty rif.cod_uff}">
+									<div class="index-assegnatario-precompilato">
+										<strong><h:outputText value="#{rif.nome_uff}" /></strong>
+										<h:outputText rendered="#{!empty rif.nome_uff}" value="&#160;&#160;" />
+										<h:outputText value="#{rif.nome_persona}" />
+									</div>
+								</h:panelGroup>
+							</c:forEach>
+							&#160;
+						</dd>
+					</c:if>
+					<c:if test="#{fn:length(showdocIndiceTitolario.indice_titolario.compilazione_automatica.cc) > 0}">
+						<dt>#{i18n['dw4.cc']}</dt>
+						<dd>
+							<c:forEach var="rif" items="#{showdocIndiceTitolario.indice_titolario.compilazione_automatica.cc}" varStatus="indice">
+								<h:panelGroup rendered="#{!empty rif.cod_persona or !empty rif.cod_uff}">
+									<div class="index-assegnatario-precompilato">
+										<strong><h:outputText value="#{rif.nome_uff}" /></strong>
+										<h:outputText rendered="#{!empty rif.nome_uff}" value="&#160;&#160;" />
+										<h:outputText value="#{rif.nome_persona}" />
+									</div>
+								</h:panelGroup>
+							</c:forEach>
+							&#160;
+						</dd>
+					</c:if>
+				</dl>
+			</div>
+			<!-- assegnazioni automatiche: fine -->
+		</h:panelGroup>
+		
+		<h:panelGroup rendered="#{!empty showdocIndiceTitolario.workflowTitolario.bwf_link and !empty showdocIndiceTitolario.workflowTitolario.bwf_link[0].name}">
+			<!-- workflow automatici: inizio -->
+			<div class="showdoc-section">
+				<div class="title">#{i18n['dw4.workflow']}</div>
+				
+				<dl class="dl-horizontal">
+					<dt>#{i18n['dw4.flusso_workflow']}</dt>
+					<dd>
+						<ui:repeat var="workflow" value="#{showdocIndiceTitolario.workflowTitolario.bwf_link}" varStatus="indice">
+							<div class="index-workflow-precompilato"><h:outputText value="#{workflow.label}" /></div>
+						</ui:repeat>
+					</dd>
+				</dl>
+			</div>
+			<!-- workflow automatici: fine -->
+		</h:panelGroup>
+	
+		<h:inputTextarea value="#{showdocIndiceTitolario.xml}" rendered="#{showdocIndiceTitolario.debugMode}" styleClass="form-control" rows="10" />
+	</div>
+</ui:define>
+
+</ui:composition>

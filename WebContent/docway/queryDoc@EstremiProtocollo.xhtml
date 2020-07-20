@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" 
+	  xmlns:h="http://java.sun.com/jsf/html" 
+	  xmlns:ui="http://java.sun.com/jsf/facelets" 
+	  xmlns:f="http://java.sun.com/jsf/core"
+	  xmlns:p="http://xmlns.jcp.org/jsf/passthrough">
+<ui:composition>
+
+	<h:panelGroup rendered="#{!bean.formsAdapter.funzionalitaDisponibili['nascondiprotocollo']}" id="estremiProtocolloPanel" layout="block">
+		<div class="fieldset">
+			<div class="legend">
+				<h:commandLink action="#{bean.openCloseWidgetEstremi}" styleClass="legend-link">
+					<f:ajax render="templateForm:estremiProtocolloPanel"/>
+					#{i18n['dw4.estremiprotocollo']}
+					<span class="pull-right">
+						<span class="glyphicon #{bean.estremi_protocollo ? 'glyphicon-collapse-up' : 'glyphicon-collapse-down'}"></span>
+					</span>
+				</h:commandLink>
+			</div>
+			
+			<h:panelGroup rendered="#{bean.estremi_protocollo}" id="estremiProtocolloCPanel" layout="block">
+				<div class="form-group">
+	        		<label for="templateForm:doc_anno" class="col-sm-2 control-label">#{i18n['dw4.anno']}</label>
+					<div class="col-sm-2">
+						<div class="input-group">
+							<h:inputText styleClass="form-control" value="#{bean.doc_anno}" id="doc_anno" />
+							<div class="input-group-btn">
+								<h:commandLink title="#{i18n['acl.vocabulary']}" action="#{bean.openIndexAnnoDoc}" styleClass="btn btn-default">
+									<f:ajax execute="@form" render="@form"/>
+									<span class="glyphicon glyphicon-search"></span>
+								</h:commandLink>
+							</div>
+						</div>
+					</div>
+	        	</div>
+	        	<div class="form-group">
+	        		<ui:include src="./rangeField.xhtml">
+						<ui:param name="label" value="#{i18n['dw4.numero_protocollo']}" />
+						<ui:param name="id" value="custom_num_prot" />
+						<ui:param name="from_value" value="#{bean.custom_da_num_prot}" />
+						<ui:param name="to_value" value="#{bean.custom_a_num_prot}" />
+						<ui:param name="is_date" value="false" />
+					</ui:include>
+					<ui:include src="./rangeField.xhtml">
+						<ui:param name="label" value="#{i18n['dw4.data_protocollo']}" />
+						<ui:param name="id" value="range_docdataprot" />
+						<ui:param name="from_value" value="#{bean.range_docdataprot_from}" />
+						<ui:param name="to_value" value="#{bean.range_docdataprot_to}" />
+						<ui:param name="is_date" value="true" />
+						<ui:param name="offset" value="1" />
+					</ui:include>
+	        	</div>
+	        	<div class="form-group">
+					<label for="templateForm:custom_numeri_prot" class="col-sm-2 control-label"><span>#{i18n['dw4.numeri_di_protocollo']}</span></label>
+					<div class="col-sm-9">
+						<h:inputText styleClass="form-control" value="#{bean.custom_numeri_prot}" id="custom_numeri_prot" p:placeholder="#{i18n['dw4.separare_i_valori_da_virgola']}" title="#{i18n['dw4.separare_i_valori_da_virgola']}" />
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="col-sm-2 control-label">#{i18n['dw4.annullati']}</label>
+					<div class="col-sm-2">
+						<span class="margin-right-10" style="white-space:nowrap;">
+							<h:selectBooleanCheckbox value="#{bean.annullati}" id="annullati_si"/>
+							<label for="templateForm:annullati_si" class="normal-weight-text">#{i18n['dw4.yes']}</label>
+						</span>
+						<span style="white-space:nowrap;">
+							<h:selectBooleanCheckbox value="#{bean.nonannullati}" id="annullati_no"/>
+							<label for="templateForm:annullati_no" class="normal-weight-text">#{i18n['dw4.no']}</label>
+						</span>
+					</div>
+					<h:panelGroup rendered="#{bean.formsAdapter.funzionalitaDisponibili['abilitaBozze']}">
+						<label class="col-sm-1 control-label">#{i18n['dw4.bozza']}</label>
+						<div class="col-sm-2">
+							<span class="margin-right-10" style="white-space:nowrap;">
+								<h:selectBooleanCheckbox value="#{bean.bozze}" id="bozze_si"/>
+								<label for="templateForm:bozze_si" class="normal-weight-text">#{i18n['dw4.yes']}</label>
+							</span>
+							<span style="white-space:nowrap;">
+								<h:selectBooleanCheckbox value="#{bean.nonbozze}" id="bozze_no"/>
+								<label for="templateForm:bozze_no" class="normal-weight-text">#{i18n['dw4.no']}</label>
+							</span>
+						</div>
+					</h:panelGroup>
+					<label class="col-sm-1 control-label">#{i18n['dw4.conservati']}</label>
+					<div class="col-sm-2">
+						<span class="margin-right-10" style="white-space:nowrap;">
+							<h:selectBooleanCheckbox value="#{bean.conservati}" id="conservati_si"/>
+							<label for="templateForm:conservati_si" class="normal-weight-text">#{i18n['dw4.yes']}</label>
+						</span>
+						<span style="white-space:nowrap;">
+							<h:selectBooleanCheckbox value="#{bean.nonconservati}" id="conservati_no"/>
+							<label for="templateForm:conservati_no" class="normal-weight-text">#{i18n['dw4.no']}</label>
+						</span>
+					</div>
+				</div>
+				<div class="form-group">
+					<h:panelGroup rendered="#{!bean.repertori_multipli}">
+						<label for="templateForm:non_repertoriati" class="col-sm-2 control-label">#{i18n['dw4.non_repertoriati']}</label>
+						<div class="col-sm-1">
+							<h:selectBooleanCheckbox value="#{bean.non_repertoriati}" id="non_repertoriati" />
+						</div>
+					</h:panelGroup>
+					<label for="templateForm:protDifferitoCheck" class="col-sm-2 control-label">#{i18n['dw4.differito']}</label>
+					<div class="col-sm-1">
+						<h:selectBooleanCheckbox value="#{bean.differito}" id="protDifferitoCheck"/>
+					</div>
+					<h:panelGroup rendered="#{bean.formsAdapter.funzionalitaDisponibili['abilitaLibroFirma']}">
+						<label for="templateForm:daFirmareCheck" class="col-sm-2 control-label">#{i18n['dw4.attesa_di_firma']}</label>
+						<div class="col-sm-1">
+							<h:selectBooleanCheckbox value="#{bean.da_firmare}" id="daFirmareCheck"/>
+						</div>
+					</h:panelGroup>
+				</div>
+	        </h:panelGroup>
+		</div> <!-- /fieldset -->
+	</h:panelGroup>
+
+</ui:composition>
+</html>

@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" 
+	xmlns:h="http://java.sun.com/jsf/html" 
+	xmlns:ui="http://java.sun.com/jsf/facelets" 
+	xmlns:f="http://java.sun.com/jsf/core">
+<ui:composition>
+
+	<div class="form-group">
+		<label for="templateForm:extraTipologiaFascicolo" class="col-sm-2 control-label">#{i18n['dw4.tipologia_fascicolo']}</label>
+		<div class="col-sm-4">
+			<h:selectOneMenu id="extraTipologiaFascicolo" value="#{bean.fasc_tipologia}" styleClass="form-control">
+				<f:selectItem itemValue="" itemLabel="" />
+				<f:selectItem itemValue="Fascicolo di Gara" itemLabel="Fascicolo di Gara" />
+				<f:selectItem itemValue="Fascicolo di Qualifica" itemLabel="Fascicolo di Qualifica" />
+			</h:selectOneMenu>
+		</div>
+	</div>
+	
+	<div class="form-group">
+		<label for="templateForm:numGaraFascicolo" class="col-sm-2 control-label">#{i18n['dw4.num_gara']}</label>
+		<div class="col-sm-3">
+			<div class="input-group">
+				<h:inputText styleClass="form-control" value="#{bean.fasc_num_gara}" id="numGaraFascicolo" />
+				<div class="input-group-btn">
+					<h:commandLink title="#{i18n['acl.vocabulary']}" action="#{bean.openIndexNumGaraFascicolo}" styleClass="btn btn-default">
+						<f:ajax execute="@form" render="@form"/>
+						<span class="glyphicon glyphicon-search"></span>
+					</h:commandLink>
+				</div>
+			</div>
+		</div>
+		<label for="templateForm:numOdaSapFascicolo" class="col-sm-offset-1 col-sm-2 control-label">#{i18n['dw4.num_oda_sap']}</label>
+		<div class="col-sm-3">
+			<div class="input-group">
+				<h:inputText styleClass="form-control" value="#{bean.fasc_num_oda_sap}" id="numOdaSapFascicolo" />
+				<div class="input-group-btn">
+					<h:commandLink title="#{i18n['acl.vocabulary']}" action="#{bean.openIndexNumOdaSapFascicolo}" styleClass="btn btn-default">
+						<f:ajax execute="@form" render="@form"/>
+						<span class="glyphicon glyphicon-search"></span>
+					</h:commandLink>
+				</div>
+			</div>
+		</div>
+	</div>
+		
+	<div class="form-group">
+		<ui:include src="../rangeField.xhtml">
+			<ui:param name="label" value="#{i18n['dw4.data_apertura']}" />
+			<ui:param name="id" value="range_fasc_dataapertura" />
+			<ui:param name="from_value" value="#{bean.range_fasc_dataapertura_from}" />
+			<ui:param name="to_value" value="#{bean.range_fasc_dataapertura_to}" />
+			<ui:param name="is_date" value="true" />
+		</ui:include>
+		
+		<ui:include src="../rangeField.xhtml">
+			<ui:param name="label" value="#{i18n['dw4.data_chiusura']}" />
+			<ui:param name="id" value="range_fasc_datachiusura" />
+			<ui:param name="from_value" value="#{bean.range_fasc_datachiusura_from}" />
+			<ui:param name="to_value" value="#{bean.range_fasc_datachiusura_to}" />
+			<ui:param name="is_date" value="true" />
+			<ui:param name="offset" value="1" />
+		</ui:include>
+	</div>
+	
+	<div class="form-group">
+		<label for="templateForm:fasc_fornitore" class="col-sm-2 control-label">#{i18n['dw4.fornitore']}</label>
+		<div class="col-sm-9">
+			<div class="input-group">
+				<h:inputText styleClass="form-control" value="#{bean.fasc_fornitore}" id="fasc_fornitore" />
+				<div class="input-group-btn">
+					<h:commandLink title="#{i18n['acl.vocabulary']}" action="#{bean.openIndexFascFornitore}" styleClass="btn btn-default">
+						<f:ajax execute="@form" render="@form"/>
+						<span class="glyphicon glyphicon-search"></span>
+					</h:commandLink>
+				</div>
+			</div>
+		</div>
+	</div>
+	
+	<div class="form-group">
+		<label for="templateForm:fasc_fornitore_codice" class="col-sm-2 control-label">#{i18n['dw4.codice_sap_e_proc']}</label>
+		<div class="col-sm-9">
+			<div class="input-group">
+				<h:inputText styleClass="form-control" value="#{bean.fasc_fornitore_codice}" id="fasc_fornitore_codice" />
+				<div class="input-group-btn">
+					<h:commandLink title="#{i18n['acl.vocabulary']}" action="#{bean.openIndexFascFornitoreCodice}" styleClass="btn btn-default">
+						<f:ajax execute="@form" render="@form"/>
+						<span class="glyphicon glyphicon-search"></span>
+					</h:commandLink>
+				</div>
+			</div>
+		</div>
+	</div>
+		
+</ui:composition>
+</html>

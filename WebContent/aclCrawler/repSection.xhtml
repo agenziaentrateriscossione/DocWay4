@@ -1,0 +1,94 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+          "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:f="http://java.sun.com/jsf/core" 
+      xmlns:h="http://java.sun.com/jsf/html">
+      
+<ui:composition>
+
+<div class="fieldset">
+    <div class="legend">
+    <span>#{repObj.title}</span>
+    <br/>  
+    <span class="normal-weight-text text-transform-none">#{i18n['aclCrawler.legendaRepertori']}</span>
+    </div>
+    
+    <div class="row">
+        <div class="col-sm-6">
+	        <div class="row">
+                <div class="col-sm-11 font-weight-bold">
+		            <div class="margin-left-5 aclcrawler-repsection-header" >I</div>
+                    <div class="aclcrawler-repsection-header">V</div>
+                    <div class="aclcrawler-repsection-header">C</div>
+                    <span class="margin-left-2">#{i18n['acl.description']}</span>
+                </div>
+	        </div>
+            <ui:repeat value="#{repObj.repertori['0']}" var="repertorio">
+            <div class="row">
+	            <div class="col-sm-11">
+	                <h:commandButton image="#{repertorio['imageI']}" rendered="#{!readOnly}" action="#{repObj.changeRepStatusI}" styleClass="margin-left-5">
+	                    <f:ajax execute="@this" render="@form"/>
+	                </h:commandButton>
+	                <h:graphicImage value="css/images/checked.gif" rendered="#{readOnly and repertorio['checkedI']}" alt="V" styleClass="margin-left-5"/>
+	                <h:graphicImage value="css/images/not_checked.gif" rendered="#{readOnly and !repertorio['checkedI']}" alt="X" styleClass="margin-left-5"/>
+	                
+	                <h:commandButton image="#{repertorio['imageV']}" rendered="#{!readOnly}" action="#{repObj.changeRepStatusV}" styleClass="margin-left-5">
+	                    <f:ajax execute="@this" render="@form"/>
+	                </h:commandButton>
+	                <h:graphicImage value="css/images/checked.gif" rendered="#{readOnly and repertorio['checkedV']}" alt="V" styleClass="margin-left-5"/>
+	                <h:graphicImage value="css/images/not_checked.gif" rendered="#{readOnly and !repertorio['checkedV']}" alt="X" styleClass="margin-left-5"/>
+	                
+	                <h:commandButton image="#{repertorio['imageC']}" rendered="#{!readOnly}" action="#{repObj.changeRepStatusC}" styleClass="margin-left-5">
+	                    <f:ajax execute="@this" render="@form"/>
+	                </h:commandButton>
+	                <h:graphicImage value="css/images/checked.gif" rendered="#{readOnly and repertorio['checkedC']}" alt="V" styleClass="margin-left-5"/>
+	                <h:graphicImage value="css/images/not_checked.gif" rendered="#{readOnly and !repertorio['checkedC']}" alt="X" styleClass="margin-left-5"/>
+	                
+	                <h:outputText value="#{repertorio['label']}" styleClass="margin-left-5"/>
+	            </div>
+            </div>
+            </ui:repeat>
+        </div>
+        
+        <div class="col-sm-6">
+            <div class="row">
+			    <div class="col-sm-11 font-weight-bold">
+			        <div class="margin-left-5 aclcrawler-repsection-header" >I</div>
+			        <div class="aclcrawler-repsection-header">V</div>
+			        <div class="aclcrawler-repsection-header">C</div>
+			        <span class="margin-left-2">#{i18n['acl.description']}</span>
+			    </div>
+			</div>
+            <ui:repeat value="#{repObj.repertori['1']}" var="repertorio">
+            <div class="row">
+                <div class="col-sm-11">
+                    <h:commandButton image="#{repertorio['imageI']}" rendered="#{!readOnly}" action="#{repObj.changeRepStatusI}" styleClass="margin-left-5">
+                        <f:ajax execute="@this" render="@form"/>
+                    </h:commandButton>
+                    <h:graphicImage value="css/images/checked.gif" rendered="#{readOnly and repertorio['checkedI']}" alt="V" styleClass="margin-left-5"/>
+                    <h:graphicImage value="css/images/not_checked.gif" rendered="#{readOnly and !repertorio['checkedI']}" alt="X" styleClass="margin-left-5"/>
+                    
+                    <h:commandButton image="#{repertorio['imageV']}" rendered="#{!readOnly}" action="#{repObj.changeRepStatusV}" styleClass="margin-left-5">
+                        <f:ajax execute="@this" render="@form"/>
+                    </h:commandButton>
+                    <h:graphicImage value="css/images/checked.gif" rendered="#{readOnly and repertorio['checkedV']}" alt="V" styleClass="margin-left-5"/>
+                    <h:graphicImage value="css/images/not_checked.gif" rendered="#{readOnly and !repertorio['checkedV']}" alt="X" styleClass="margin-left-5"/>
+                    
+                    <h:commandButton image="#{repertorio['imageC']}" rendered="#{!readOnly}" action="#{repObj.changeRepStatusC}" styleClass="margin-left-5">
+                        <f:ajax execute="@this" render="@form"/>
+                    </h:commandButton>
+                    <h:graphicImage value="css/images/checked.gif" rendered="#{readOnly and repertorio['checkedC']}" alt="V" styleClass="margin-left-5"/>
+                    <h:graphicImage value="css/images/not_checked.gif" rendered="#{readOnly and !repertorio['checkedC']}" alt="X" styleClass="margin-left-5"/>
+                    
+                    <h:outputText value="#{repertorio['label']}" styleClass="margin-left-5"/>
+                </div>
+            </div>
+            </ui:repeat>
+        </div>
+    </div>
+        
+</div>
+
+</ui:composition>
+</html>

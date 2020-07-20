@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html 
+	xmlns="http://www.w3.org/1999/xhtml" 
+	xmlns:h="http://java.sun.com/jsf/html" 
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://xmlns.jcp.org/jsf/passthrough">
+<ui:composition>
+		
+	<!-- header: inizio -->
+	<h:form id="menuForm">
+		<div class="navbar navbar-default navbar-fixed-top" role="navigation">
+			<div class="container-fluid row-navbar-first">
+				<div class="navbar-header">
+					<ui:remove>
+						<h:commandLink action="#{docwaymenu.loadDocWayMainPage}" styleClass="fullscreen-logo navbar-brand archive-#{docwayHome.formsAdapter.db} openwaitmsg">
+							<img class="application-logo" src="#{facesContext.externalContext.requestContextPath}/common/css/#{(!empty docwayHome.customDirCss) ? docwayHome.customDirCss.concat('/') : ''}images/logo/docway-small.png" alt="docway" />
+						</h:commandLink>
+					</ui:remove>
+					<h:commandLink action="#{docwaymenu.gotoTableQTo}" styleClass="fullscreen-logo navbar-brand archive-#{docwayHome.formsAdapter.db} openwaitmsg">
+								<img class="application-logo" src="#{facesContext.externalContext.requestContextPath}/delibere/css/#{(!empty docwayHome.customDirCss) ? docwayHome.customDirCss.concat('/') : ''}images/logo/docway-delibere-small.png" alt="#{i18n['dw4.docway_delibere']}" />
+					</h:commandLink>
+				</div>
+				<!-- @TODO VERIFICARE SE LA RICERCA COINCIDE O VA MODIFICATA -->	
+				<div class="navbar-form navbar-right">
+					<div class="input-group inline">
+						<span class="input-group-addon">
+							<h:selectBooleanCheckbox value="#{docwayHome.estremi}" id="estremiCheck" p:data-toggle="popover" p:data-placement="bottom" p:data-trigger="hover" p:data-content="#{i18n['dw4.solo_estremi']}" styleClass="popoveritem" />
+						</span>
+						<h:inputText id="globalSearchInput" p:placeholder="#{i18n['dw4.search']}..." styleClass="form-control submitsingleinput" value="#{docwayHome.searchTerms}"/>
+					</div>
+					<h:commandLink id="globalSearchInputBtn" action="#{docwayHome.search}" style="display:none;" />
+				</div>
+			</div>
+			<div class="container-fluid">
+				<div class="navbar-header">
+					<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target=".navbar-collapse">
+						<span class="sr-only">Toggle navigation</span>
+						<span class="icon-bar"></span>
+						<span class="icon-bar"></span>
+						<span class="icon-bar"></span>
+					</button>
+					<h:commandLink action="#{docwaymenu.loadDocWayMainPage}" styleClass="resizescreen-logo navbar-brand archive-#{docwayHome.formsAdapter.db}">
+						<img class="application-logo" src="#{facesContext.externalContext.requestContextPath}/delibere/css/#{(!empty docwayHome.customDirCss) ? docwayHome.customDirCss.concat('/') : ''}images/logo/docway-delibere-small.png" alt="#{i18n['dw4.docway_delibere']}" />
+					</h:commandLink>
+				</div>
+				<div style="height: 1px;" class="navbar-collapse collapse">
+					<ul class="nav navbar-nav">
+						<!-- LINK PER TORNARE A DOCWAY HOME -->
+						<h:panelGroup>
+							<li class="showhide-vaschette">
+								<h:commandLink action="#{docwaymenu.loadDocWayMainPage}" title="#{i18n['dw4.docway']}" styleClass="openclose-vaschette-link app-menu-item">
+									<span class="glyphicon glyphicon-log-in icon-flipped navbar-menu-icon"></span>
+									#{i18n['dw4.docway']}
+								</h:commandLink>
+							</li>
+						</h:panelGroup>
+						<li class="dropdown">
+							<a data-toggle="dropdown" class="dropdown-toggle" href="#">
+					        	<span class="glyphicon glyphicon-plus navbar-menu-icon"></span>
+					        	#{i18n['acl.insert']} <b class="caret"></b>
+					        </a>
+							<ul class="dropdown-menu">
+								<h:panelGroup rendered="#{!empty queryTo.organoSelezionato}">
+									<h:panelGroup rendered="#{queryTo.organoSelezionato.edita}">
+			    						<li><h:commandLink value="#{i18n['dw4.nuova_seduta']}" action="#{queryTo.inserisciSeduta}" immediate="true" styleClass="openwaitmsg"/></li>
+			    					</h:panelGroup>
+			    					<h:panelGroup rendered="#{queryTo.organoSelezionato.nuoveProposte}">
+										<li><h:commandLink value="#{i18n['dw4.nuova_proposta']}" action="#{queryTo.inserisciProposta}" immediate="true" styleClass="openwaitmsg"/></li>
+									</h:panelGroup>
+								</h:panelGroup>
+		    					<h:panelGroup rendered="#{docwayHome.formsAdapter.funzionalitaDisponibili['insInterno'] and !empty queryTo.organoSelezionato.xwfile.name}">
+									<li class="divider"></li>
+									<li><h:commandLink value="#{i18n['dw4.modello_della_proposta']}" immediate="true" title="#{i18n['dw4.download_modello_proposta']}" action="#{queryTo.downloadModelloProposta}"/></li>
+								</h:panelGroup>
+							</ul>
+						</li>
+						<li class="dropdown">
+					        <a data-toggle="dropdown" class="dropdown-toggle" href="#">
+					        	<span class="glyphicon glyphicon-search navbar-menu-icon"></span>
+					        	#{i18n['acl.advancedsearch']} <b class="caret"></b>
+					        </a>
+							<ul class="dropdown-menu">
+								<li><h:commandLink value="#{i18n['dw4.ricerca_standard']}" immediate="true" action="#{queryTo.gotoTableQGlobale_to('query4standard')}" styleClass="openwaitmsg"/></li>
+								<li><h:commandLink value="#{i18n['dw4.ricerca_per_componenti']}" immediate="true" action="#{queryTo.gotoTableQGlobale_to('query4comp')}" styleClass="openwaitmsg"/></li>
+							</ul>
+						</li>
+						<h:panelGroup rendered="#{queryTo.formsAdapter.funzionalitaDisponibili['enableAdmTools']}">
+							<li class="dropdown">
+						        <a data-toggle="dropdown" class="dropdown-toggle" href="#">
+						        	<span class="glyphicon glyphicon-th-list navbar-menu-icon"></span>
+						        	#{i18n['dw4.altre_funzioni']} <b class="caret"></b>
+						        </a>
+								<ul class="dropdown-menu">
+									<li><h:commandLink action="#{queryTo.gotoTableQToAdmTools}" value="#{i18n['dw4.amministrazione']}" /></li>
+								</ul>
+							</li>
+						</h:panelGroup>
+						<li class="dropdown">
+					        <a data-toggle="dropdown" class="dropdown-toggle" href="#">
+					        	<span class="glyphicon glyphicon-book navbar-menu-icon"></span>
+					        	#{i18n['dw4.help']} <b class="caret"></b>
+					        </a>
+							<ul class="dropdown-menu">
+								<li><h:commandLink action="#{queryTo.showVersioni}" value="#{i18n['dw4.about']} #{i18n['dw4.docway_delibere']}" styleClass="openwaitmsg"/></li>
+							</ul>
+						</li>
+					</ul>
+					<ul class="nav navbar-nav navbar-right">
+						<!-- INFO UTENTE -->
+						<li class="dropdown">
+					        <a data-toggle="dropdown" class="dropdown-toggle #{(docwayHome.accessoADM) ? 'user-login-adm' : ''}" title="#{userBean.userInfo}" href="#">
+					        	<span class="glyphicon glyphicon-user navbar-menu-icon"></span>
+					        	#{fn:substring(userBean.userInfo,0, fn:indexOf(userBean.userInfo, '('))} <b class="caret"></b>
+					        </a>
+							<ul class="dropdown-menu">
+								<li><h:commandLink action="#{docwaymenu.gotoTableQProfiloPersonale}" value="#{i18n['dw4.profilo_personale']}" styleClass="openwaitmsg"/></li>
+								<li class="divider"></li>
+								<li><h:commandLink action="#{userBean.logout}" value="#{i18n['dw4.esci']}" styleClass="openwaitmsg"/></li>
+							</ul>
+						</li>
+					</ul>
+				</div>
+			</div>
+		</div>
+		
+		<ui:include src="./loadingbar@stampe.xhtml"><ui:param name="pageBean" value="#{docwaymenu}"/></ui:include>
+		<ui:include src="./loadingbar@notif_diff.xhtml"><ui:param name="pageBean" value="#{docwaymenu}"/></ui:include>
+		<ui:include src="./query@versioni.xhtml"><ui:param name="pageBean" value="#{queryVersioni}"/></ui:include>
+	</h:form>
+	<!-- header: fine -->
+		
+</ui:composition>
+</html>

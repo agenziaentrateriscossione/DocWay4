@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core">
+<ui:composition>
+
+			<h:panelGroup rendered="#{!empty bean.doc.data_convocazione}">
+				<dt>#{i18n['dw4.convocazione']}</dt>
+				<dd>
+					<h:panelGroup rendered="#{! (bean.doc.stato eq 'sospesa') }">
+						#{bean.doc.data_convocazione}
+					</h:panelGroup>
+					(#{i18n['dw4.seduta']} <strong>#{bean.doc.stato}</strong>)
+				</dd>
+			</h:panelGroup>
+			
+			<h:panelGroup rendered="#{!empty bean.doc.nrecord_verbale}">
+				<dt></dt>
+				<dd>
+					<h:commandLink action="#{bean.doProjectionVerbale}">#{i18n['dw4.verbale']}</h:commandLink>
+				</dd>
+			</h:panelGroup>
+
+</ui:composition>
+</html>

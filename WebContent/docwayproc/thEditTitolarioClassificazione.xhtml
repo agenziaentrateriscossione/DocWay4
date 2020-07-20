@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+    template="template.xhtml"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:c="http://java.sun.com/jsp/jstl/core">
+
+<ui:define name="content">
+	<div class="titolarioClassificazione">
+	
+		<div class="sub-header">#{i18n['dw4.mod_titolario_classificazione']}</div>
+	
+		<!-- toolbar: inizio -->
+		<div class="btn-toolbar margin-bottom" role="toolbar">
+			<div class="btn-group">
+				<h:commandLink action="#{thEditTitolarioClassificazione.salvaNodo}" styleClass="btn btn-primary openwaitmsg" title="#{i18n['dw4.salvataggio_del_livello_corrente']}">#{i18n['dw4.salva_livello']}</h:commandLink>
+				<ui:remove>
+					<h:commandLink styleClass="btn btn-default">#{i18n['dw4.visualizza_titolario']}</h:commandLink>
+				</ui:remove>
+			</div>
+		</div>
+		<!-- toolbar: fine -->
+		
+		<!-- messages: inizio -->
+		<h:panelGroup rendered="#{not empty facesContext.messageList}" layout="block" styleClass="docedit-messages alert alert-danger">
+			<h:messages styleClass="" id="validationMesseges" />
+		</h:panelGroup>
+		<!-- messages: fine -->
+		
+		<script type="text/javascript">
+		function confermaCambioLivello() {
+			if ($('#templateForm\\:levelEdited').val() == 'true') {
+				if (owmConfirm("#{i18n['dw4.titolario_classificazione_salvataggio_livello_msg']}\n\n#{i18n['dw4.titolario_classificazione_procedere_msg']}"))
+					return true;
+				else
+					return false;
+			}
+			return true;
+		}
+		
+		function cambiaLivello(index) {
+			if (confermaCambioLivello()) {
+				var nodoToLoad = $('#templateForm\\:nodes\\:' + index + '\\:nodetext').val();
+				if (nodoToLoad != undefined &amp;&amp; nodoToLoad != null &amp;&amp; nodoToLoad != '') {
+					$('#templateForm\\:levelToLoad').val(nodoToLoad);
+					$('#templateForm\\:loadLevelBtn').trigger('click');
+				}
+				else
+					return false;
+			}
+			else
+				return false;
+		}
+		</script>
+		
+		<!-- scheda edit: inizio -->
+		<div class="row-fluid">
+			<div class="box span12">
+				<div class="box-content">
+				
+					<table class="table table-condensed edit-titolario-table">
+						<thead>
+							<tr>
+								<th style="width:40px;">
+									<h:commandLink onclick="return confermaCambioLivello();" action="#{thEditTitolarioClassificazione.risaliNodo}" styleClass="btn btn-default btn-xs">
+										<f:ajax execute="@form" render="@form"/>
+										<span class="glyphicon glyphicon-arrow-left"></span>
+									</h:commandLink>
+								</th>
+								<th>
+									<strong><h:outputText value="#{thEditTitolarioClassificazione.name}" escape="false" /></strong>
+								</th>
+							</tr>
+						</thead>
+						<tbody>
+							<h:panelGroup rendered="#{fn:length(thEditTitolarioClassificazione.nt) > 0}">
+								<ui:repeat id="nodes" var="node" value="#{thEditTitolarioClassificazione.nt}" varStatus="indice">
+									<tr>
+										<td>
+											<a onclick="return cambiaLivello('#{indice.index}');" class="btn btn-default btn-xs">
+												<span class="glyphicon glyphicon-arrow-right"></span>
+											</a>
+										</td>
+										<td>
+											<div class="input-group">
+												<h:inputText id="nodetext#{indice.index}" value="#{node.text}" styleClass="form-control" onchange="$('#templateForm\\:levelEdited').val('true');" />
+												
+												<span class="input-group-btn">
+													<h:commandLink action="#{thEditTitolarioClassificazione.addNodo}" title="#{i18n['dw4.aggiungi_istanza']}" styleClass="btn btn-default btn-xs">
+										 				<f:ajax execute="@form" render="@form"/>
+											 			<span class="glyphicon glyphicon-plus"></span>
+													</h:commandLink>
+													<h:commandLink action="#{thEditTitolarioClassificazione.removeNodo}" onclick="if (!owmConfirm('#{i18n['dw4.se_si_elimina_il_nodo_verranno_eliminati_anche_i_nodi_figli_Procedere_con_la_cancellazione']}')) return false;" title="#{i18n['dw4.elimina_istanza']}" styleClass="btn btn-danger btn-xs">
+											 			<f:ajax execute="@form" render="@form"/>
+											 			<span class="glyphicon glyphicon-minus"></span>
+													</h:commandLink>
+												</span>
+											</div>
+										</td>
+									</tr>
+								</ui:repeat>
+							</h:panelGroup>
+							<h:panelGroup rendered="#{fn:length(thEditTitolarioClassificazione.nt) == 0}">
+								<tr>
+									<td>&#160;</td>
+									<td>
+										<div class="input-group">
+											<span class="input-group-btn">
+												<h:commandLink action="#{thEditTitolarioClassificazione.addNodo}" title="#{i18n['dw4.aggiungi_istanza']}" styleClass="btn btn-default btn-xs">
+									 				<f:ajax execute="@form" render="@form"/>
+										 			<span class="glyphicon glyphicon-plus"></span>
+												</h:commandLink>
+											</span>
+										</div>
+									</td>
+								</tr>
+							</h:panelGroup>
+						</tbody>
+					</table>
+					
+					<h:inputHidden id="levelEdited" value="#{thEditTitolarioClassificazione.levelEdited}" />
+					<h:inputHidden id="levelToLoad" value="#{thEditTitolarioClassificazione.levelToLoad}" />
+					<h:commandLink id="loadLevelBtn" action="#{thEditTitolarioClassificazione.loadLevel}" style="display:none;">
+						<f:ajax execute="@form" render="@form" />
+					</h:commandLink>
+				</div>
+			</div>
+		</div>
+		<!-- scheda edit: fine -->
+
+		<h:inputTextarea value="#{thEditTitolarioClassificazione.xml}" rendered="#{thEditTitolarioClassificazione.debugMode}" styleClass="form-control" rows="10" />		
+	</div>
+</ui:define>
+
+</ui:composition>

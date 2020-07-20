@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" 
+	  xmlns:h="http://java.sun.com/jsf/html" 
+	  xmlns:ui="http://java.sun.com/jsf/facelets" 
+	  xmlns:f="http://java.sun.com/jsf/core">
+<ui:composition>
+
+	<div class="showdoc-section">
+		<div class="title">
+			#{i18n['dw4.dati_fattura']}
+			
+			<div class="pull-right">
+				<span class="glyphicons-pro euro" title="#{i18n['dw4.dati_fattura']}"></span>
+			</div>
+		</div>
+		<dl class="dl-horizontal">
+		
+			<h:panelGroup rendered="#{!empty bean.dati_fattura.centro_costo.name}">
+				<dt>#{i18n['dw4.centro_di_costo']}</dt>
+				<dd><h:outputText value="#{bean.dati_fattura.centro_costo.name}" escape="false" /></dd>
+			</h:panelGroup>
+			<h:panelGroup rendered="#{!empty bean.dati_fattura.partita_iva}">
+				<dt>#{i18n['dw4.codice_organizzatore']}</dt>
+				<dd>#{bean.dati_fattura.partita_iva}</dd>
+			</h:panelGroup>
+			<h:panelGroup rendered="#{!empty bean.doc.data_prot}">
+				<dt>#{i18n['dw4.data_acquisizione']}</dt>
+				<dd><h:outputText value="#{bean.doc.data_prot}"><f:converter converterId="DateConverter" /></h:outputText></dd>
+			</h:panelGroup>
+			<h:panelGroup rendered="#{!empty bean.dati_fattura.data_fatt}">
+				<dt>#{i18n['dw4.data_fattura']}</dt>
+				<dd><h:outputText value="#{bean.dati_fattura.data_fatt}"><f:converter converterId="DateConverter" /></h:outputText></dd>
+			</h:panelGroup>
+			<h:panelGroup rendered="#{!empty bean.dati_fattura.numero_fatt}">
+				<dt>#{i18n['dw4.numero_fattura']}</dt>
+				<dd>#{bean.dati_fattura.numero_fatt}</dd>
+			</h:panelGroup>
+			<h:panelGroup rendered="#{!empty bean.dati_fattura.importo}">
+				<dt>#{i18n['dw4.importo_iva_compresa']}</dt>
+				<dd>#{bean.dati_fattura.importo}</dd>
+			</h:panelGroup>
+			<h:panelGroup rendered="#{!empty bean.dati_fattura.stato}">
+				<dt>#{i18n['dw4.stato_fattura']}</dt>
+				<dd><strong>#{bean.dati_fattura.stato}</strong></dd>
+			</h:panelGroup>
+			<h:panelGroup rendered="#{!empty bean.doc.rif_esterni[0].nome}">
+				<dt>#{i18n['dw4.ragione_sociale_fornitore']}</dt>
+				<dd><h:outputText value="#{bean.doc.rif_esterni[0].nome}" escape="false" /></dd>
+			</h:panelGroup>
+			
+			<h:panelGroup rendered="#{!empty bean.dati_contabili.fornitore.codice}">
+				<dt>#{i18n['dw4.codice_fornitore']}</dt>
+				<dd>#{bean.dati_contabili.fornitore.codice}</dd>
+			</h:panelGroup>
+			<h:panelGroup rendered="#{!empty bean.dati_contabili.protocollo_iva}">
+				<dt>#{i18n['dw4.ragione_sociale_fornitore']}</dt>
+				<dd><h:outputText value="#{bean.dati_contabili.fornitore.rag_sociale}" escape="false" /></dd>
+			</h:panelGroup>
+			<h:panelGroup rendered="#{fn:length(bean.dati_contabili.scadenze) > 0 and !empty bean.dati_contabili.scadenze[0].text}">
+				<dt>#{i18n['dw4.scadenza']}</dt>
+				<dd>
+					<ui:repeat var="scadenza" value="#{bean.dati_contabili.scadenze}" offset="0" varStatus="indice">
+						#{scadenza.text}<br/>
+					</ui:repeat>
+				</dd>
+			</h:panelGroup>
+			<h:panelGroup rendered="#{!empty bean.dati_contabili.note}">
+				<dt>#{i18n['dw4.notes']}</dt>
+				<dd><pre><h:outputText value="#{bean.dati_contabili.note}" escape="false" /></pre></dd>
+			</h:panelGroup>
+			
+		</dl>
+	</div>
+
+</ui:composition>
+</html>

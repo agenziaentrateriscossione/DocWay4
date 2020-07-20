@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" 
+	  xmlns:h="http://java.sun.com/jsf/html" 
+	  xmlns:ui="http://java.sun.com/jsf/facelets" 
+	  xmlns:f="http://java.sun.com/jsf/core"
+	  xmlns:p="http://xmlns.jcp.org/jsf/passthrough">
+<ui:composition>
+
+	<h:panelGroup id="sceltaAooInit" layout="block">
+		<h:panelGroup rendered="#{aclHome.aoo_init_popup_active}">
+			<!-- Modal -->
+			<!--div id="sceltaAooInitModal" class="modal fade in" aria-hidden="false" aria-labelledby="sceltaAooInitModalLabel" role="dialog" tabindex="-1" style="display: block;"-->
+			<div class="modal fade" id="sceltaAooInitModal" role="dialog" aria-labelledby="sceltaAooInitModalLabel" aria-hidden="true">
+				<div class="modal-dialog">
+					<div class="modal-content jsf-modal">
+						<div class="modal-header">
+							<ui:remove>
+								<h:commandButton styleClass="close" title="#{i18n['acl.close']}" action="#{aclHome.closeAooInitSelection}" p:data-dismiss="modal"  value="&#215;" >
+				        			<f:ajax render="@form"/>
+				        		</h:commandButton>
+			        		</ui:remove>
+			        		
+			        		<h4 class="modal-title" id="sceltaAooInitModalLabel">#{i18n['acl.selezione_aoo']}</h4>
+						</div>
+						<div class="modal-body">
+							
+							<div class="alert alert-info" role="alert">
+								<strong>
+									<h:outputText rendered="#{!aclHome.formsAdapter.funzionalitaDisponibili['acl_int_aoo_restriction'] and !aclHome.formsAdapter.funzionalitaDisponibili['acl_ext_aoo_restriction']}" value="#{i18n['acl.utente_privo_di_restrizioni_in_acl']}" />
+									<h:outputText rendered="#{aclHome.formsAdapter.funzionalitaDisponibili['acl_int_aoo_restriction'] and !aclHome.formsAdapter.funzionalitaDisponibili['acl_ext_aoo_restriction']}" value="#{i18n['acl.utente_privo_di_restrizioni_su_anagrafica_esterna']}" />
+									<h:outputText rendered="#{!aclHome.formsAdapter.funzionalitaDisponibili['acl_int_aoo_restriction'] and aclHome.formsAdapter.funzionalitaDisponibili['acl_ext_aoo_restriction']}" value="#{i18n['acl.utente_privo_di_restrizioni_su_anagrafica_interna']}" />
+								</strong><br/>
+								<h:outputText value="#{i18n['acl.indicare_l_aoo_in_base_alla_quale_filtrare_i_risultati_delle_ricerche']}" />
+								<h:outputText rendered="#{aclHome.formsAdapter.funzionalitaDisponibili['acl_int_aoo_restriction'] and !aclHome.formsAdapter.funzionalitaDisponibili['acl_ext_aoo_restriction']}" value="#{i18n['acl.su_persone_strutture_esterne']}" />
+								<h:outputText rendered="#{!aclHome.formsAdapter.funzionalitaDisponibili['acl_int_aoo_restriction'] and aclHome.formsAdapter.funzionalitaDisponibili['acl_ext_aoo_restriction']}" value="#{i18n['acl.su_persone_strutture_interne_profili_ruoli_gruppi']}" />
+							</div>
+							
+							<div class="form-group">
+								<label for="templateForm:aooinitselect" class="col-sm-1 control-label">#{i18n['acl.aoo']}</label>
+								<div class="col-sm-11">
+									<h:selectOneMenu id="aooinitselect" value="#{aclHome.selectedCodSede}" styleClass="form-control">
+										<f:selectItems value="#{aclHome.sedi}" var="option" itemValue="#{option.codammaoo}" itemLabel="#{option.codammaoo}" />
+									</h:selectOneMenu>
+								</div>
+							</div>
+											
+						</div>
+						<div class="modal-footer">
+							<h:commandButton styleClass="btn btn-primary openwaitmsg" action="#{aclHome.selectInitAoo}" value="#{i18n['acl.confirm']}" />
+							
+							<ui:remove>
+								<h:commandButton styleClass="btn btn-default" title="#{i18n['acl.close']}" action="#{aclHome.closeAooInitSelection}" p:data-dismiss="modal" value="#{i18n['acl.close']}" >
+				        			<f:ajax render="@form"/>
+				        		</h:commandButton>
+			        		</ui:remove>
+						</div>
+					</div>
+				</div>
+			</div>
+			<script type="text/javascript">
+			$('#sceltaAooInitModal').modal('show');
+			</script>
+		</h:panelGroup>
+	</h:panelGroup>
+
+</ui:composition>	
+</html>

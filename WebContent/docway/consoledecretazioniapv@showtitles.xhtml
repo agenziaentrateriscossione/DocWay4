@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" 
+	  xmlns:h="http://java.sun.com/jsf/html" 
+	  xmlns:ui="http://java.sun.com/jsf/facelets" 
+	  xmlns:f="http://java.sun.com/jsf/core">
+<ui:composition>
+
+	<h:panelGroup rendered="#{bean.totRecords == 0}">
+		<div class="alert alert-info">
+			#{i18n['apv.nessuna_decretazione_trovata']}
+		</div>
+	</h:panelGroup>
+
+	<!-- toolbar: inizio -->
+	<div class="btn-toolbar" role="toolbar">
+		<div class="pull-right">
+			<ui:include src="./consoleapvAjaxNavigationBar.xhtml"><ui:param name="beanPaginator" value="#{bean.paginator}"/><ui:param name="customPage" value="true"/><ui:param name="customPageId" value="titlesId"/></ui:include>
+		</div>
+	</div>
+	<!-- toolbar: fine -->
+
+	<h:panelGroup rendered="#{bean.totRecords > 0}">
+		<table class="table table-hover doc-titles-table webmail-titles-table">
+			<thead>
+				<tr>
+					<th style="width:8%;">
+						<h:panelGroup>
+							<span style="white-space:nowrap;">
+								<h:commandLink action="#{bean.order}" actionListener="#{bean.attrListenerSortHeader}">
+									<f:attribute name="colSort" value="direzione" />
+									<f:ajax execute="@form" render="@form" />
+									#{i18n['apv.direzione']}
+								</h:commandLink>
+								<h:panelGroup rendered="#{bean.colSort ne '' and fn:toLowerCase(bean.colSort) eq 'direzione'}">
+									&#160;<span class="glyphicon #{ bean.ascSort ? 'glyphicon-chevron-up' : 'glyphicon-chevron-down' }" title="#{ bean.ascSort ? i18n['dw4.ordine_crescente'] : i18n['dw4.ordine_decrescente'] }"></span>
+								</h:panelGroup>
+							</span>
+						</h:panelGroup>
+					</th>
+					<th style="width:8%;">
+						<h:panelGroup>
+							<span style="white-space:nowrap;">
+								<h:commandLink action="#{bean.order}" actionListener="#{bean.attrListenerSortHeader}">
+									<f:attribute name="colSort" value="area" />
+									<f:ajax execute="@form" render="@form" />
+									#{i18n['apv.area']}
+								</h:commandLink>
+								<h:panelGroup rendered="#{bean.colSort ne '' and fn:toLowerCase(bean.colSort) eq 'area'}">
+									&#160;<span class="glyphicon #{ bean.ascSort ? 'glyphicon-chevron-up' : 'glyphicon-chevron-down' }" title="#{ bean.ascSort ? i18n['dw4.ordine_crescente'] : i18n['dw4.ordine_decrescente'] }"></span>
+								</h:panelGroup>
+							</span>
+						</h:panelGroup>
+					</th>
+					<th style="width:10%;">
+						<span style="white-space:nowrap;">
+							<h:commandLink action="#{bean.order}" actionListener="#{bean.attrListenerSortHeader}">
+								<f:attribute name="colSort" value="rep_decr" />
+								<f:ajax execute="@form" render="@form" />
+								#{i18n['apv.repertorio_decretazione']}
+							</h:commandLink>
+							<h:panelGroup rendered="#{bean.colSort ne '' and fn:toLowerCase(bean.colSort) eq 'rep_decr'}">
+								&#160;<span class="glyphicon #{ bean.ascSort ? 'glyphicon-chevron-up' : 'glyphicon-chevron-down' }" title="#{ bean.ascSort ? i18n['dw4.ordine_crescente'] : i18n['dw4.ordine_decrescente'] }"></span>
+							</h:panelGroup>
+						</span>
+					</th>
+					<th style="width:8%;">
+						<span style="white-space:nowrap;">
+							<h:commandLink action="#{bean.order}" actionListener="#{bean.attrListenerSortHeader}">
+								<f:attribute name="colSort" value="data" />
+								<f:ajax execute="@form" render="@form" />
+								#{i18n['apv.data']}
+							</h:commandLink>
+							<h:panelGroup rendered="#{bean.colSort ne '' and fn:toLowerCase(bean.colSort) eq 'data'}">
+								&#160;<span class="glyphicon #{ bean.ascSort ? 'glyphicon-chevron-up' : 'glyphicon-chevron-down' }" title="#{ bean.ascSort ? i18n['dw4.ordine_crescente'] : i18n['dw4.ordine_decrescente'] }"></span>
+							</h:panelGroup>
+						</span>
+					</th>
+					<th>
+						<span style="white-space:nowrap;">
+							<h:commandLink action="#{bean.order}" actionListener="#{bean.attrListenerSortHeader}">
+								<f:attribute name="colSort" value="oggetto" />
+								<f:ajax execute="@form" render="@form" />
+								#{i18n['apv.oggetto']}
+							</h:commandLink>
+							<h:panelGroup rendered="#{bean.colSort ne '' and fn:toLowerCase(bean.colSort) eq 'oggetto'}">
+								&#160;<span class="glyphicon #{ bean.ascSort ? 'glyphicon-chevron-up' : 'glyphicon-chevron-down' }" title="#{ bean.ascSort ? i18n['dw4.ordine_crescente'] : i18n['dw4.ordine_decrescente'] }"></span>
+							</h:panelGroup>
+						</span>
+					</th>
+					<th style="width:8%;">
+						<span style="white-space:nowrap;">
+							<h:commandLink action="#{bean.order}" actionListener="#{bean.attrListenerSortHeader}">
+								<f:attribute name="colSort" value="stato" />
+								<f:ajax execute="@form" render="@form" />
+								#{i18n['apv.stato']}
+							</h:commandLink>
+							<h:panelGroup rendered="#{bean.colSort ne '' and fn:toLowerCase(bean.colSort) eq 'stato'}">
+								&#160;<span class="glyphicon #{ bean.ascSort ? 'glyphicon-chevron-up' : 'glyphicon-chevron-down' }" title="#{ bean.ascSort ? i18n['dw4.ordine_crescente'] : i18n['dw4.ordine_decrescente'] }"></span>
+							</h:panelGroup>
+						</span>
+					</th>
+					<th style="width:10%;">
+						<span style="white-space:nowrap;">
+							<h:commandLink action="#{bean.order}" actionListener="#{bean.attrListenerSortHeader}">
+								<f:attribute name="colSort" value="in_attesa" />
+								<f:ajax execute="@form" render="@form" />
+								#{i18n['apv.in_attesa_da']}
+							</h:commandLink>
+							<h:panelGroup rendered="#{bean.colSort ne '' and fn:toLowerCase(bean.colSort) eq 'in_attesa'}">
+								&#160;<span class="glyphicon #{ bean.ascSort ? 'glyphicon-chevron-up' : 'glyphicon-chevron-down' }" title="#{ bean.ascSort ? i18n['dw4.ordine_crescente'] : i18n['dw4.ordine_decrescente'] }"></span>
+							</h:panelGroup>
+						</span>
+					</th>
+					<th style="width:8%;">
+						#{i18n['apv.invia_sollecito']}
+					</th>
+				</tr>
+			</thead>
+			<tbody>
+				<ui:repeat var="decr" value="#{bean.decretazioniOnPage}" varStatus="status">
+					<tr> 
+						<td class="webmail-coldata essential">
+							<h:outputText value="#{decr.direzione}"></h:outputText>
+						</td>
+						<td class="webmail-coldata essential">
+							<h:outputText value="#{decr.area}"></h:outputText>
+						</td>
+						<td class="webmail-coldata essential">
+							<h:outputLink value="#{facesContext.externalContext.requestContextPath}/docway/loaddoc.pf?alias=DOC%5FREPERTORIONUMERO&amp;value=#{decr.repertorio}">
+								<h:outputText value="#{decr.formattedRepertorio}"></h:outputText>
+							</h:outputLink>
+						</td>
+						<td class="webmail-coldata essential">
+							<h:outputText value="#{decr.data}"><f:convertDateTime pattern="dd/MM/yyyy"/></h:outputText>
+						</td>
+						<td class="webmail-coldata essential">
+							<h:outputText value="#{decr.oggetto}" rendered="#{!decr.linkContenutoAttoShow}"></h:outputText>
+							<h:commandLink action="#{bean.showAtto}" rendered="#{decr.linkContenutoAttoShow}">
+								<f:ajax execute="@form" render="@form" />
+								<f:setPropertyActionListener target="#{bean.current}" value="#{decr}"/>
+								<h:outputText value="#{decr.oggetto}"></h:outputText>
+							</h:commandLink>
+						</td>
+						<td class="webmail-coldata essential">
+							<img src="#{facesContext.externalContext.requestContextPath}/common/css/#{(!empty docwayInit.customDirCss) ? docwayInit.customDirCss.concat('/') : ''}images/console/decr/#{decr.statoAvanzamentoApv.getImgName()}.png" alt="#{i18n[decr.statoAvanzamentoApv.getI18N()]}" title="#{i18n[decr.statoAvanzamentoApv.getI18N()]}"/>
+						</td>
+						<td class="webmail-coldata essential">
+							<h:outputText value="#{decr.inAttesaDa}" escape="false"></h:outputText>
+						</td>
+						<td class="webmail-coldata essential">
+							<h:commandLink action="#{bean.inviaSollecito}" rendered="#{decr.linkInviaSollecitoShow}">
+								<f:ajax execute="@form" render="@form" />
+								<f:setPropertyActionListener target="#{bean.current}" value="#{decr}"/>
+								#{i18n['apv.invia_sollecito']}
+							</h:commandLink>
+						</td>
+					</tr>
+				</ui:repeat>
+			</tbody>
+		</table>
+	</h:panelGroup>
+		
+</ui:composition>   
+</html>

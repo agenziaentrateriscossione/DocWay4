@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" 
+	  xmlns:h="http://java.sun.com/jsf/html" 
+	  xmlns:ui="http://java.sun.com/jsf/facelets" 
+	  xmlns:f="http://java.sun.com/jsf/core"
+	  xmlns:c="http://java.sun.com/jsp/jstl/core">
+<ui:composition>
+
+	<h:panelGroup rendered="#{fn:length(bean.livelliVisibilita) > 0}" layout="block" styleClass="form-group">
+		<label class="col-sm-2 control-label">#{i18n['dw4.visibilita']}</label>
+		<div class="col-sm-9">
+			<ui:repeat id="visibilita" var="visibilita" value="#{bean.livelliVisibilita}" varStatus="indice">
+				<span class="margin-right-10" style="white-space:nowrap;">
+					<h:selectBooleanCheckbox value="#{visibilita.selected}" id="check" />
+					<label for="templateForm:visibilita:#{indice.index}:check" class="normal-weight-text">#{visibilita.labelPlurale}</label>
+				</span>
+			</ui:repeat>
+		</div>
+	</h:panelGroup>
+
+</ui:composition>
+</html>

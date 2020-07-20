@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+    template="#{docEditComune.pageTemplate}"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:f="http://java.sun.com/jsf/core">
+
+<ui:define name="content">
+	<div class="comune docedit">
+		
+		<!-- toolbar: inizio -->
+		<div class="btn-toolbar margin-bottom" role="toolbar">
+			<div class="btn-group">
+				<h:commandLink id="saveBtn" action="#{docEditComune.saveDocument}" styleClass="btn btn-primary openwaitmsg">#{i18n['acl.save']}</h:commandLink>
+				<h:commandLink action="#{docEditComune.clearDocument}" styleClass="btn btn-default">#{i18n['acl.clear']}</h:commandLink>
+				<h:commandLink rendered="#{docEditComune.popupPage}" onclick="self.close();" styleClass="btn btn-default">#{i18n['acl.close']}</h:commandLink>
+			</div>
+		</div>
+		<!-- toolbar: fine -->
+
+		<h5 class="sub-header">
+			<span class="comuni glyphicons-pro"></span>&#160;
+			<h:outputText value="#{i18n['acl.ins_comuni']}" escape="false" />
+		</h5>
+
+			<!-- messages: inizio -->
+		<h:panelGroup rendered="#{not empty facesContext.messageList}" layout="block" styleClass="docedit-messages alert alert-danger">
+			<h:messages styleClass="" id="validationMesseges" />
+		</h:panelGroup>
+		<!-- messages: fine -->
+		
+		<!-- scheda edit: inizio -->
+		<div class="row-fluid" style="margin-top:10px;">
+			<div id="fixedshowdoc" class="box span12 fixed-showdoc">
+				<div class="box-content">
+				
+					<div class="fieldset">
+						<div class="legend">
+                                #{i18n['acl.informazioni_di_base']}
+                                <div class="pull-right">
+                                    <span class="glyphicons-pro tower"
+                                        title="#{i18n['acl.informazioni_di_base']}"></span>
+                                </div>
+                            </div>
+						
+						<div class="form-group">
+							<label for="templateForm:comune_nome" class="col-sm-2 control-label requiredField">* #{i18n['acl.town']}</label>
+							<div class="col-sm-9">
+								<h:inputText id="comune_nome" value="#{docEditComune.comune.nome}" styleClass="#{ component.valid ? '' : 'invalidinput' } form-control" />
+							</div>
+						</div>
+						<div class="form-group">
+							<label for="templateForm:comune_prov_input" class="col-sm-2 control-label requiredField">* #{i18n['acl.province']}</label>
+							<div class="col-sm-5">
+								<ui:include src="./thField.xhtml">
+					        		<ui:param name="id" value="comune_prov" />
+					        		<ui:param name="field" value="#{docEditComune.comune.prov}" />
+					        		<ui:param name="bean" value="#{docEditComune}" />
+					        		<ui:param name="action" value="thVincolatoProv"/>
+					        		<ui:param name="title" value="#{i18n['acl.thprovince']}"/>
+					        		<ui:param name="styleclass" value="form-control"/>
+					        		<ui:param name="refresh" value="templateForm:comune_prov_input"/>
+					        	</ui:include>
+							</div>
+						</div>
+						<div class="form-group">
+							<label for="templateForm:comune_prov_input" class="col-sm-2 control-label">#{i18n['acl.country']}</label>
+							<div class="col-sm-5">
+								<ui:include src="./thField.xhtml">
+					        		<ui:param name="id" value="comune_regione" />
+					        		<ui:param name="field" value="#{docEditComune.comune.regione}" />
+					        		<ui:param name="bean" value="#{docEditComune}" />
+					        		<ui:param name="action" value="thVincolatoRegione"/>
+					        		<ui:param name="title" value="#{i18n['acl.thcountry']}"/>
+					        		<ui:param name="styleclass" value="form-control"/>
+					        		<ui:param name="refresh" value="templateForm:comune_regione_input"/>
+					        	</ui:include>
+							</div>
+						</div>
+						<div class="form-group">
+							<label for="templateForm:comune_cap" class="col-sm-2 control-label requiredField">* #{i18n['acl.zip']}</label>
+							<div class="col-sm-2">
+								<h:inputText id="comune_cap" value="#{docEditComune.comune.cap}" styleClass="#{ component.valid ? '' : 'invalidinput' } form-control" />
+							</div>
+						</div>
+						<div class="form-group">
+							<label for="templateForm:comune_prefisso" class="col-sm-2 control-label">#{i18n['acl.areacode']}</label>
+							<div class="col-sm-2">
+								<h:inputText id="comune_prefisso" value="#{docEditComune.comune.prefisso}" styleClass="form-control" />
+							</div>
+						</div>
+						<div class="form-group">
+							<label for="templateForm:comune_nazione_input" class="col-sm-2 control-label">#{i18n['acl.state']}</label>
+							<div class="col-sm-5">
+								<ui:include src="./thField.xhtml">
+					        		<ui:param name="id" value="comune_nazione" />
+					        		<ui:param name="field" value="#{docEditComune.comune.nazione}" />
+					        		<ui:param name="bean" value="#{docEditComune}" />
+					        		<ui:param name="action" value="thVincolatoNazione"/>
+					        		<ui:param name="title" value="#{i18n['acl.thstate']}"/>
+					        		<ui:param name="styleclass" value="form-control"/>
+					        		<ui:param name="refresh" value="templateForm:comune_nazione_input"/>
+					        	</ui:include>
+							</div>
+						</div>
+						<div class="form-group">
+							<label for="templateForm:comune_istat" class="col-sm-2 control-label">#{i18n['acl.istatcode']}</label>
+							<div class="col-sm-2">
+								<h:inputText id="comune_istat" value="#{docEditComune.comune.codice_istat}" styleClass="form-control" />
+							</div>
+						</div>
+					</div> <!-- /fieldset -->
+					
+				</div>
+			</div>
+		</div>
+		<!-- scheda edit: fine -->
+	</div>
+
+	<ui:fragment rendered="#{docEditComune.formsAdapter.fromLookup != null and docEditComune.formsAdapter.fromLookup == 'close'}">
+		<script type="text/javascript">
+		window.opener.$('#templateForm\\:lookupNewPhysDoc').val('#{docEditComune.formsAdapter.lookupNew}');
+		window.opener.$('#templateForm\\:redoLookupAfterInsert').trigger("click");
+		
+		self.close();
+		</script>
+	</ui:fragment>
+	
+	<ui:include src="./thvincolato.xhtml"> <ui:param name="pageBean" value="#{docEditComune}"/></ui:include>
+
+	<h:inputTextarea value="#{docEditComune.xml}" rendered="#{docEditComune.debugMode}" styleClass="form-control" rows="10" />
+</ui:define>
+
+</ui:composition>

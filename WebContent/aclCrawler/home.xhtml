@@ -1,0 +1,100 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+    template="../acl/template.xhtml"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:tredi="http://www.3di.it/jsf/tredi">
+
+    <ui:define name="content">
+    <h:panelGroup rendered="#{aclHome.formsAdapter.funzionalitaDisponibili['abilitaAclCrawler']}">
+        <div id="advancedSearch" class="aclCrawlerQuery submitEnterKey">
+            <!-- toolbar: inizio -->
+            <div class="btn-toolbar acl-toolbar" role="toolbar">
+	            <div class="btn-group">
+	                <h:commandLink id="ricercaLiberaBtn" action="#{aclCrawlerHome.search}" styleClass="btn btn-primary openwaitmsg" value="#{i18n['acl.search']}" />
+	                <h:commandLink action="#{aclCrawlerHome.clean}" styleClass="btn btn-default" value="#{i18n['acl.clear']}">
+	                    <f:ajax execute="@form" render="@form" />
+	                </h:commandLink>
+	            </div>
+	        </div>
+	        <!-- toolbar: fine -->
+	        
+	        <h5 class="sub-header">
+            <span class="glyphicon glyphicon-search"></span>&#160;
+            #{i18n['acl.usermanagment']}
+            </h5>
+	        
+	        <!-- messages: inizio -->
+        <h:panelGroup rendered="#{not empty facesContext.messageList}" layout="block" styleClass="docedit-messages alert alert-danger">
+            <h:messages styleClass="" id="validationMesseges" />
+        </h:panelGroup>
+        <!-- messages: fine -->
+        
+        <!-- scheda query: inizio -->
+        <div class="row-fluid" style="margin-top:10px;">
+	        <div class="box span12">
+	            <div class="box-content">
+	                <div class="fieldset">
+	                    <div class="legend">#{i18n['acl.restrictsearch']}</div>
+	                    
+	                    <div class="form-group">
+	                        <label class="col-sm-2 control-label">#{i18n['aclCrawler.aoos_select']}</label>
+	                        <div class="col-sm-3">
+	                            <h:selectOneMenu value="#{aclCrawlerHome.aoo}" styleClass="form-control">
+                                    <f:selectItems value="#{aclCrawlerHome.aoosItems}" var="aoo" itemLabel="#{aoo.name}" itemValue="#{aoo.value}" />
+                                </h:selectOneMenu>
+	                        </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">#{i18n['aclCrawler.appartenenza']}</label>
+                            <div class="col-sm-3">
+                                <div class="input-group">
+                                    <h:inputText id="crawler_appartenenza" value="#{aclCrawlerHome.appartenenza}" styleClass="form-control" />
+                                    <div class="input-group-btn">
+                                        <h:commandLink title="#{i18n['acl.vocabulary']}" action="#{aclCrawlerHome.openIndexAppartenenza}" styleClass="btn btn-default">
+                                            <f:ajax execute="@form" render="@form"/>
+                                            <span class="glyphicon glyphicon-search"></span>
+                                        </h:commandLink>
+                                    </div>
+                                </div>
+                            </div>
+                            <label class="col-sm-2 control-label">#{i18n['aclCrawler.altreUOR']}</label>
+                            <div class="col-sm-3">
+                                <div class="input-group">
+                                    <h:inputText id="crawler_altreuor" value="#{aclCrawlerHome.altreUOR}" styleClass="form-control" />
+                                    <div class="input-group-btn">
+                                        <h:commandLink title="#{i18n['acl.vocabulary']}" action="#{aclCrawlerHome.openIndexAltreUOR}" styleClass="btn btn-default">
+                                            <f:ajax execute="@form" render="@form"/>
+                                            <span class="glyphicon glyphicon-search"></span>
+                                        </h:commandLink>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+	                    
+	                </div>
+	                
+	                <ui:repeat var="rightSection" value="#{aclCrawlerHome.rights.rightsDocs}">
+	                   <tredi:section sectionObj="#{rightSection}" />
+	                </ui:repeat>
+	                
+	                <tredi:repSection repObj="#{aclCrawlerHome.rights.repSection}" />
+	                
+	            </div>
+	        </div>
+        </div>                
+	        
+        </div>
+    </h:panelGroup>
+    
+    <h:panelGroup rendered="#{!aclHome.formsAdapter.funzionalitaDisponibili['abilitaAclCrawler']}">
+      <h:outputText value="#{i18n['soginSAP.accessoVietato']}"></h:outputText>
+    </h:panelGroup>
+        
+    <ui:include src="../acl/showindex.xhtml"><ui:param name="pageBean" value="#{aclCrawlerHome}"/></ui:include>
+    <h:inputTextarea value="#{aclCrawlerHome.xml}" rendered="#{aclCrawlerHome.debugMode}" styleClass="form-control" rows="10"/>
+        
+    </ui:define>
+</ui:composition>

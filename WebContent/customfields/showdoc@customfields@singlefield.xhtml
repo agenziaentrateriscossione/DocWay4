@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:c="http://java.sun.com/jsp/jstl/core">
+<ui:composition>
+	
+	<h:panelGroup rendered="#{!empty fieldInstance.value}">
+		<div class="customfields-label">#{field.label}</div>
+		<div class="customfields-value">
+		
+			<h:panelGroup rendered="#{!empty field.xslOut}">
+			
+				<!-- applicazione di un modello XSL al campo custo -->
+				<h:outputText value="#{fieldInstance.value}" escape="false" />
+				
+			</h:panelGroup>
+			<h:panelGroup rendered="#{empty field.xslOut}">
+			
+				<h:panelGroup rendered="#{field.type eq 'calendar'}">
+					<h:outputText value="#{fieldInstance.value}"><f:converter converterId="DateConverter"/></h:outputText>
+				</h:panelGroup>
+				
+				<h:panelGroup rendered="#{field.type eq 'textarea'}">
+					<pre><h:outputText value="#{fieldInstance.value}" /></pre>
+				</h:panelGroup>
+				
+				<h:panelGroup rendered="#{field.type eq 'text' or field.type eq 'select' or field.type eq 'radio' or field.type eq 'checkbox'}">
+					<h:outputText value="#{fieldInstance.value}" />
+				</h:panelGroup>
+			
+			</h:panelGroup>
+			
+		</div>
+	</h:panelGroup>
+
+</ui:composition>
+</html>

@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" 
+	  xmlns:h="http://java.sun.com/jsf/html" 
+	  xmlns:ui="http://java.sun.com/jsf/facelets" 
+	  xmlns:f="http://java.sun.com/jsf/core">
+
+	<ui:composition>
+		
+		<h:panelGroup rendered="#{bean.classificazioneDaTitolario}" layout="block" class="form-group">
+			<label id="#{id}_label" class="control-label col-sm-2 #{ (!optionalField and editable) ? ' requiredField' : '' }">#{ (!optionalField and editable) ? '' : '' }#{i18n['dw4.classif_verbale']}</label>
+			
+			<h:panelGroup rendered="#{ editable }">
+				<div class="col-sm-1">
+					<div class="input-group">
+						<h:panelGroup rendered="#{bean.formsAdapter.funzionalitaDisponibili['classificazioneDaCodice']}">
+							<h:inputText id="#{id}_input" value="#{beanDoc.classif.filtroCod}" styleClass="#{ component.valid ? '' : 'invalidinput' }  form-control" onblur="executeAction(this);">
+								<f:ajax execute="@form" render="#{refresh}"/>
+							</h:inputText>
+						</h:panelGroup>
+						
+						<span class="input-group-btn">
+							<h:commandLink title="#{i18n['dw4.titolario_di_classificazione']}" action="#{bean[actionTitolario]}" id="#{id}_button" styleClass="btn btn-default">
+					   			<f:ajax execute="@form" render="#{refresh}"/>
+					   			<span class="glyphicon glyphicon-search"></span>
+					   		</h:commandLink>
+							
+							<h:commandLink title="#{i18n['dw4.titolario_di_classificazione']}: #{i18n['dw4.vista_gerarchica']}" action="#{bean[actionGerarchia]}" id="#{id}_gerarchia_button" styleClass="btn btn-default">
+					   			<f:ajax execute="@form" render="#{refresh}"/>
+					   			<span class="glyphicon glyphicon-list"></span>
+					   		</h:commandLink>
+					   		
+					   		<h:panelGroup rendered="#{bean.formsAdapter.funzionalitaDisponibili['opzioniAvanzateCambioClassif']}">
+								<h:commandLink title="#{i18n['dw4_passa_a_inserimento_manuale']}" action="#{bean.passaInserimentoManualeClassif}" id="#{id}_insmanuale_button" styleClass="btn btn-default">
+						   			<f:ajax execute="@form" render="#{refresh}"/>
+						   			<span class="glyphicon glyphicon-edit"></span>
+						   		</h:commandLink>
+							</h:panelGroup>
+				  		</span>
+					</div>
+				</div>
+				
+				  	<div class="#{ (readOnlyConservazione eq 'false' or beanDoc.scarto ne '') ? 'col-sm-4' : 'col-sm-7' }">
+				  		<p class="form-control-static"><strong><h:outputText id="#{id}_output" value="#{beanDoc.classif.text_ro}" escape="false" /></strong></p>
+						<h:inputHidden id="#{id}_text" value="#{beanDoc.classif.text}" />
+						<h:inputHidden id="#{id}_cod" value="#{beanDoc.classif.cod}" />
+					</div>
+					<h:inputText id="#{id}_Fields"  style="visibility:hidden"></h:inputText>
+			</h:panelGroup>
+	
+			<h:panelGroup rendered="#{ editableRadio }">
+				<div class="#{ (readOnlyConservazione eq 'false' or beanDoc.scarto ne '') ? 'col-sm-6' : 'col-sm-9' }">
+					<span class="radio-classif">
+	        			<input type="radio" id="classifRadio1" name="classifRadio" value="#{bean.classif_infasc}" checked="checked" />
+	        			<label for="classifRadio1"><h:outputText value="#{bean.classif_infasc}"><f:converter converterId="ClassifConverter"/></h:outputText></label>
+	        			&#160;
+	        			<input type="radio" id="classifRadio2" name="classifRadio" value="#{bean.fascicoloSpecialeInfo.classif.text}" onclick="$('#templateForm\\:#{id}_classif_switchToTableFsBtn').trigger('click');" />
+	        			<label for="classifRadio2"><h:outputText value="#{bean.fascicoloSpecialeInfo.classif.text}"><f:converter converterId="ClassifConverter"/></h:outputText></label>
+	        		</span>
+	        		<h:commandLink id="#{id}_classif_switchToTableFsBtn" action="#{bean.switchToTableFS}"><f:ajax execute="@form" render="@form" /></h:commandLink>
+        		</div>
+			</h:panelGroup>
+			
+			<h:panelGroup rendered="#{ !editable and !editableRadio }">
+				<div class="#{ (readOnlyConservazione eq 'false' or beanDoc.scarto ne '') ? 'col-sm-6' : 'col-sm-9' }">
+					<p class="form-control-static"><h:outputText value="#{beanDoc.classif.text}"><f:converter converterId="ClassifConverter"/></h:outputText></p>
+				</div>
+			</h:panelGroup>
+			
+			<ui:remove>
+					<h:panelGroup rendered="#{ readOnlyConservazione eq 'true' and beanDoc.scarto ne '' }">
+						<label class="control-label col-sm-2"><span>#{i18n['dw4.conservazione']}</span></label>
+						<div class="col-sm-1">
+							<p class="form-control-static">
+								<h:outputText rendered="#{beanDoc.scarto eq '01'}" value="#{i18n['dw4.1_anno']}" />
+								<h:outputText rendered="#{beanDoc.scarto eq '05'}" value="#{i18n['dw4.5_anni']}" />
+								<h:outputText rendered="#{beanDoc.scarto eq '10'}" value="#{i18n['dw4.10_anni']}" />
+								<h:outputText rendered="#{beanDoc.scarto eq '99'}" value="#{i18n['dw4.illimitato']}" />
+							</p>
+						</div>
+					</h:panelGroup>
+					<h:panelGroup rendered="#{ readOnlyConservazione eq 'false' }">
+						<label class="control-label col-sm-2"><span>#{i18n['dw4.conservazione']}</span></label>
+						<div class="col-sm-1">
+							<h:selectOneMenu value="#{beanDoc.scarto}" id="#{id}_doc_scarto" styleClass="form-control">
+								<f:selectItem itemValue="" itemLabel="#{i18n['dw4.da_assegnare']}" />
+								<f:selectItem itemValue="01" itemLabel="#{i18n['dw4.1_anno']}" />
+								<f:selectItem itemValue="05" itemLabel="#{i18n['dw4.5_anni']}" />
+								<f:selectItem itemValue="10" itemLabel="#{i18n['dw4.10_anni']}" />
+								<f:selectItem itemValue="99" itemLabel="#{i18n['dw4.illimitato']}" />
+							</h:selectOneMenu>
+						</div>
+					</h:panelGroup>
+			</ui:remove>
+		</h:panelGroup>
+		
+		<h:panelGroup rendered="#{!bean.classificazioneDaTitolario}" layout="block" class="form-group">
+			<label class="control-label col-sm-2 requiredField"><span>* #{i18n['dw4.classif']}</span></label>
+			<div class="col-sm-2">
+				<h:inputText id="#{id}_cod_nv" value="#{beanDoc.classifNV.cod}" styleClass="#{ component.valid ? '' : 'invalidinput' } form-control" title="#{i18n['dw4.inserire_un_codice_in_formato_xx_xx']}" />
+			</div>
+			<div class="col-sm-1">-</div>
+			<div class="col-sm-4">
+				<div class="input-group">
+					<h:inputText id="#{id}_text_nv" value="#{beanDoc.classifNV.text}" styleClass="#{ component.valid ? '' : 'invalidinput' } form-control" />
+					<span class="input-group-btn">
+					   	<h:commandLink title="#{i18n['dw4_passa_a_inserimento_da_titolario']}" action="#{bean.passaInserimentoTitolarioClassif}" id="#{id}_institolario_button" styleClass="btn btn-default">
+				   			<f:ajax execute="@form" render="#{refresh}"/>
+				   			<span class="glyphicon glyphicon-share"></span>
+				   		</h:commandLink>
+					</span>
+		   		</div>
+	   		</div>
+
+			<label class="control-label col-sm-1"><span>#{i18n['dw4.anno']}</span></label>
+			<div class="col-sm-2">
+				<h:inputText id="#{id}_anno" value="#{beanDoc.anno}" styleClass="#{ component.valid ? '' : 'invalidinput' } form-control" />
+			</div>
+		</h:panelGroup>
+		
+		<ui:remove>
+				<h:panelGroup rendered="#{editable and beanDoc.classif.cod ne '' and bean.classifOD eq beanDoc.classif.cod}" layout="block" class="form-group">
+					<label class="control-label col-sm-2 requiredField"><span>* #{i18n['dw4.motivazione']}</span></label>
+					<div class="col-sm-10">
+						<h:inputTextarea id="#{id}_motivazione" value="#{beanDoc.motiv_ogg_div}" rows="4" cols="120" styleClass="#{ component.valid ? '' : 'invalidinput' } form-control motiv_ogg_div_textarea" />
+					</div>
+				</h:panelGroup>
+		</ui:remove>
+    </ui:composition>
+
+</html>

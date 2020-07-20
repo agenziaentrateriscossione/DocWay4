@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	template="#{docwayHome.pageTemplate}"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core">
+
+<ui:define name="content">
+
+	<ui:remove>
+		<h5 class="sub-header">#{i18n['dw4.documenti_recenti']}</h5>
+	</ui:remove>
+	
+	<h:panelGroup rendered="#{fn:length(docwayHome.docRecenti.titoli) == 0}">
+		<div class="alert alert-info">#{i18n['dw4.nessun_documento_assegnato_negli_ultimi']} <strong>#{docwayHome.docRecenti.numGiorniDocRecenti}</strong> #{i18n['dw4.giorni']}</div>
+	</h:panelGroup>
+	<h:panelGroup rendered="#{fn:length(docwayHome.docRecenti.titoli) > 0}">
+		<ui:include src="./home@showtitles.xhtml">
+			<ui:param name="bean" value="#{docwayHome}"/>
+			<ui:param name="action" value="caricaDocRecente"/>
+			<ui:param name="titles" value="#{docwayHome.docRecenti.titoli}"/>
+		</ui:include>
+	</h:panelGroup>
+	
+	<script type="text/javascript">
+	$('#menuForm\\:globalSearchInput').focus();
+	</script>
+
+	<h:inputTextarea value="#{docwayHome.xml}" rendered="#{docwayHome.debugMode}" styleClass="form-control" rows="10" />
+</ui:define>
+
+</ui:composition>

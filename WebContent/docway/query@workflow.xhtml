@@ -1,0 +1,36 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+    template="#{queryWorkflow.pageTemplate}"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:f="http://java.sun.com/jsf/core">
+
+    <ui:define name="content">
+    	<div id="advancedSearch" class="schedaWorkflow">
+	    	<div class="rightSidePageTitle">#{i18n['dw4.workflow_search']}</div>
+			
+			<div class="actionButtonHolder">
+		        <h:commandLink id="advancedSearchButton" action="#{queryWorkflow.listWorkflowDefinitions}" styleClass="context-menu-one box menu-1 iconButton openwaitmsg"><span class="iconcerca">#{i18n['acl.search']}</span></h:commandLink>
+		        <h:commandLink action="#{queryWorkflow.resetQuery}" styleClass="context-menu-one box menu-1 iconButton openwaitmsg"><span class="iconpulisci">#{i18n['acl.clear']}</span></h:commandLink>
+			</div>
+				
+			<h:panelGroup styleClass="messagesArea" layout="block">
+				<h:messages styleClass="error" />
+			</h:panelGroup>
+			
+			<div class="rightSidePageContent">
+				<div class="fieldset">
+					<div class="formRow Floats_holder">
+						<div class="feHolder">
+							<label class="feLabel"><span>#{i18n['dw4.workflowdefinition_name']}</span></label>
+							<h:inputText styleClass="longinput" value="#{queryWorkflow.workName}" id="workName"/>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+					
+		<h:inputTextarea styleClass="form-control" rows="10" value="#{queryWorkflow.xml}" rendered="#{queryWorkflow.debugMode}"></h:inputTextarea>
+    </ui:define>
+    
+</ui:composition>    

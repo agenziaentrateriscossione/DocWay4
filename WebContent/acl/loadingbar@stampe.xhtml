@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core">
+<ui:composition>
+
+	<h:panelGroup rendered="#{pageBean.loadingbarstampeActive}">
+		<!-- Modal -->
+		<div id="loadingbarStampeModal" class="modal fade in" aria-hidden="false" aria-labelledby="loadingbarStampeModalLabel" role="dialog" tabindex="-1" style="display: block;">
+		<!--div class="modal fade" id="loadingbarStampeModal" tabindex="-1" role="dialog" aria-labelledby="loadingbarStampeModalLabel" aria-hidden="true"-->
+			<div class="modal-dialog">
+				<div class="modal-content jsf-modal">
+					<div class="modal-header">
+						<h:commandButton rendered="#{pageBean.loadingbarstampe.completed}" 
+								class="close" action="#{pageBean.loadingbarstampe.close}" value="&#215;" />
+						
+						<h4 class="modal-title" id="loagingbarStampeModalLabel">#{i18n['dw4.loadingbar_stampe']}</h4>
+					</div>
+					<div class="modal-body">
+						
+	        			<div class="well">					
+		        			<div class="loadingbar-message loadingbar-title"><h:outputText value="#{pageBean.loadingbarstampe.title}" escape="false"/></div>
+		        			<div class="loadingbar-message loadingbar-startdate"><h:outputText rendered="#{pageBean.loadingbarstampe.startDate ne ''}" value="job started at #{pageBean.loadingbarstampe.startDate}"/></div>
+		        			<div class="loadingbar-message loadingbar-status"><h:outputText value="#{pageBean.loadingbarstampe.status}"/></div>
+		        			<div class="loadingbar-message loadingbar-exceptions"><h:outputText value="#{pageBean.loadingbarstampe.exceptions}"/></div>
+		        			<div class="loadingbar-message loadingbar-progress"><h:outputText value="#{pageBean.loadingbarstampe.progress}"/></div>
+		        			<div class="loadingbar-message loadingbar-stopdate"><h:outputText rendered="#{pageBean.loadingbarstampe.stopDate ne ''}" value="job completed at #{pageBean.loadingbarstampe.stopDate}"/></div>
+	        			</div>
+			        	
+			        	<h:panelGroup rendered="#{pageBean.loadingbarstampe.stopDate ne ''}" display="block">
+		        			<h:panelGroup styleClass="loadingbar-resultmessage" layout="block" style="margin-bottom:20px;">
+		        				<h:outputText value="#{i18n['dw4.generazione_del_report_in_corso_Attendere_prego']}" />
+		        			</h:panelGroup>
+		        			
+		        			<h:commandLink immediate="true" id="downloadReportButton" actionListener="#{pageBean.loadingbarstampe.downloadReport}" style="display:none;">
+			        			#{i18n['dw4.download_del_report']}
+			        		</h:commandLink>
+							
+		        			<h:outputScript>
+		        				$(document).ready(function() {
+									$("#templateForm\\:downloadReportButton").trigger("click");
+								});
+		        			</h:outputScript>
+	        			</h:panelGroup>
+			        	
+			        	<div style="margin-top:20px;" class="progress">
+  							<div class="progress-bar" role="progressbar" aria-valuenow="#{pageBean.loadingbarstampe.percentage}" aria-valuemin="0" aria-valuemax="100" style="width: #{pageBean.loadingbarstampe.percentage}%;">
+    							<span class="sr-only">#{pageBean.loadingbarstampe.percentage}% Complete</span>
+  							</div>
+						</div>
+						
+						<h:commandLink style="display:none;" id="refreshStampe" action="#{pageBean.loadingbarstampe.refresh}" value="refresh">
+	        				<f:ajax execute="@form" render="@form" />
+	        			</h:commandLink>
+						<script type="text/javascript">
+						function refresh() {
+							if ($('#templateForm\\:refreshStampe').length != 0)
+								$('#templateForm\\:refreshStampe').trigger("click");
+						}
+						
+						var completed = #{pageBean.loadingbarstampe.completed};
+						if (!completed) {
+							window.setTimeout('refresh()',2000);
+						}
+						</script>
+						
+					</div>
+					<div class="modal-footer">
+						<h:commandButton rendered="#{pageBean.loadingbarstampe.completed}" 
+								class="btn btn-default"
+								action="#{pageBean.loadingbarstampe.close}" value="#{i18n['acl.close']}" />
+					</div>
+				</div>
+			</div>
+		</div>
+	</h:panelGroup>
+		
+</ui:composition>   
+</html>

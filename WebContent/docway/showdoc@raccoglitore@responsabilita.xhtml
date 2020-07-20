@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" 
+	  xmlns:h="http://java.sun.com/jsf/html" 
+	  xmlns:ui="http://java.sun.com/jsf/facelets" 
+	  xmlns:f="http://java.sun.com/jsf/core"
+	  xmlns:p="http://xmlns.jcp.org/jsf/passthrough">
+<ui:composition>
+	
+	<h:panelGroup rendered="#{!empty bean.raccoglitore.assegnazioneRPA.diritto}" layout="block" styleClass="showdoc-section">
+		<div class="title">				
+			#{i18n['dw4.assegnatari']}
+			
+			<div class="pull-right">
+				<span class="glyphicon glyphicon-user" title="#{i18n['dw4.assegnatari']}"></span>
+			</div>
+		</div>
+		
+		<div class="table-responsive">
+			<table class="table table-condensed">
+				<tbody>
+					<tr>
+						<td class="resp-type">
+							<h:outputText value="#{i18n[bean.raccoglitore.assegnazioneRPA.tipo_uff =='ruolo' ? 'dw4.ruoloproprietario' : 'dw4.proprietario']}" />
+						</td>
+						<td class="resp-name">
+							<h:panelGroup rendered="#{empty bean.raccoglitore.assegnazioneRPA.tipo_uff or bean.raccoglitore.assegnazioneRPA.tipo_uff =='ufficio'}">
+								<span class="nome-uff">#{bean.raccoglitore.assegnazioneRPA.nome_uff}</span> - #{bean.raccoglitore.assegnazioneRPA.nome_persona}
+							</h:panelGroup>
+							<h:panelGroup rendered="#{bean.raccoglitore.assegnazioneRPA.tipo_uff =='ruolo'}">
+								<span class="nome-uff">
+									<h:commandLink action="#{bean.showPersoneRuolo(bean.raccoglitore.assegnazioneRPA.cod_uff)}" title="#{i18n['dw4.mostra_tutte_le_persone_associate_al_ruolo']}"><f:ajax execute="@form" render="templateForm:showPersoneRuolo templateForm:errormsg" />#{bean.raccoglitore.assegnazioneRPA.nome_uff}</h:commandLink>
+								</span>
+							</h:panelGroup>
+						</td>
+						<td class="resp-date optional">
+							<h:outputText value="#{bean.data_assegRPA}"><f:converter converterId="DateConverter"/></h:outputText>
+						</td>
+						<td class="resp-cmds optional">
+							&#160;
+						</td>
+						<td class="resp-vars optional">
+							<h:panelGroup rendered="#{!empty bean.checkVistoRPA}">
+								<span class="glyphicon glyphicon-ok visto-icon normal-size-icon popoveritem" data-toggle="popover" data-placement="top" data-trigger="hover" data-content="#{bean.checkVistoRPA}"></span>
+							</h:panelGroup>
+						</td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+	</h:panelGroup>
+
+</ui:composition>   
+</html>

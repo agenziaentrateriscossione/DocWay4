@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	template="template.xhtml" xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core">
+
+	<ui:define name="content">
+		<div class="aoo showdoc">
+
+			<!-- primo livello toolbar: inizio -->
+			<div class="btn-toolbar" role="toolbar">
+				<div class="btn-group pull-right">
+					<ui:include src="./navigationBar.xhtml">
+						<ui:param name="bean" value="#{showdocAoo}" />
+					</ui:include>
+				</div>
+
+				<div class="btn-group">
+					<h:commandLink rendered="#{showdocAoo.formsAdapter.paginaTitoliEnabled}" action="#{showdocAoo.paginaTitoli}" styleClass="btn btn-default openwaitmsg">
+						<span>#{i18n['acl.titles']}</span>
+					</h:commandLink>
+				</div>
+			</div>
+			<!-- primo livello toolbar: fine -->
+			
+			<h:panelGroup rendered="#{(showdocAoo.formsAdapter.funzionalitaDisponibili['ins_aoo'] and (showdocAoo.adminAcl or showdocAoo.pecInGestione)) or (showdocAoo.formsAdapter.funzionalitaDisponibili['canc_aoo'] and showdocAoo.adminAcl)}">
+				<!-- secondo livello toolbar: inizio -->
+				<div class="btn-toolbar" role="toolbar">
+					<div class="btn-group">
+						<h:commandLink rendered="#{showdocAoo.formsAdapter.funzionalitaDisponibili['ins_aoo'] and (showdocAoo.adminAcl or showdocAoo.pecInGestione)}" action="#{showdocAoo.modifyTableDoc}" styleClass="btn btn-primary openwaitmsg">
+							<span>#{i18n['acl.modify']}</span>
+						</h:commandLink>
+						<h:commandLink rendered="#{showdocAoo.formsAdapter.funzionalitaDisponibili['canc_aoo'] and showdocAoo.adminAcl}" action="#{showdocAoo.remove}" onclick="if (!owmConfirm('#{i18n['acl.deleteconfirm']}')) return false;" styleClass="btn btn-danger">
+							<span>#{i18n['acl.delete']}</span>
+						</h:commandLink>
+					</div>
+				</div>
+				<!-- secondo livello toolbar: fine -->
+			</h:panelGroup>
+
+			<h:panelGroup styleClass="messagesArea" layout="block">
+				<h:messages styleClass="info" id="validationMesseges" />
+			</h:panelGroup>
+
+			<h5 class="sub-header" title="#{showdocAoo.aoo.nome}">
+				<span class="aoo glyphicons-pro"></span>&#160;
+				<h:outputText value="#{showdocAoo.aoo.nome}" escape="false" />
+			</h5>
+
+			<!-- scheda show: inizio -->
+			<div id="fixedshowdoc" class="fixed-showdoc">
+				<div class="showdoc-section">
+					<div class="title">
+						#{i18n['acl.informazioni_di_base']}
+						<div class="pull-right">
+							<span class="glyphicons-pro message_flag" title="#{i18n['acl.informazioni_di_base']}"></span>
+						</div>
+					</div>
+
+					<dl class="dl-horizontal">
+						<dt>#{i18n['acl.name']}</dt>
+						<dd>#{showdocAoo.aoo.nome}</dd>
+
+						<dt>#{i18n['acl.aoo']}</dt>
+						<dd>#{showdocAoo.aoo.cod_amm}#{showdocAoo.aoo.cod_aoo}</dd>
+					</dl>
+				</div>
+
+				<ui:repeat var="mailbox" value="#{showdocAoo.aoo.mailbox_archiviazione}" varStatus="indice">
+					<h:panelGroup rendered="#{!empty mailbox.nome or !empty mailbox.documentModel}" layout="block" styleClass="showdoc-section">
+						<div class="title">
+							#{i18n['acl.archiviazione']} #{indice.index+1}
+							
+							<div class="pull-right">
+								<span class="glyphicons-pro envelope" title="#{i18n['acl.archiviazione']} #{indice.index+1}"></span>
+							</div>
+						</div>
+
+						<dl class="dl-horizontal">
+							<h:panelGroup rendered="#{! empty mailbox.nome}">
+								<dt>#{i18n['acl.name']}</dt>
+								<dd>#{mailbox.nome}</dd>
+							</h:panelGroup>
+
+							<h:panelGroup rendered="#{! empty mailbox.documentModel}">
+								<dt>#{i18n['acl.documentModel']}</dt>
+								<dd>#{mailbox.documentModel}</dd>
+							</h:panelGroup>
+
+							<h:panelGroup rendered="#{! empty mailbox.oper}">
+								<dt>#{i18n['acl.operator']}</dt>
+								<dd>
+									#{mailbox.oper}
+									<h:panelGroup rendered="#{! empty mailbox.uff_oper}">
+										(#{mailbox.uff_oper})
+									</h:panelGroup>
+								</dd>
+							</h:panelGroup>
+							
+							<h:panelGroup rendered="#{mailbox.splitByAttachments}">
+								<dt>#{i18n['dw4.addon_di_archiviazione']}</dt>
+								<dd>
+									<h:panelGroup rendered="#{mailbox.splitByAttachments}">
+										#{i18n['acl.salvataggio_allegati_su_documenti_differenti']}<br/>
+									</h:panelGroup>
+								</dd>
+							</h:panelGroup>
+
+							<h:panelGroup rendered="#{! empty mailbox.responsabile.nome_pers}">
+								<dt class="emphasis-title">#{i18n['acl.director']}</dt>
+								<dd>&#160;</dd>
+							</h:panelGroup>
+							
+							<h:panelGroup rendered="#{! empty mailbox.responsabile.nome_pers}">
+								<dt>#{i18n['acl.oper']}</dt>
+								<dd>
+									#{mailbox.responsabile.nome_pers}
+									<h:panelGroup rendered="#{! empty mailbox.responsabile.matricola}">
+										(#{mailbox.responsabile.matricola})
+									</h:panelGroup>
+								</dd>
+							</h:panelGroup>
+
+							<h:panelGroup rendered="#{! empty mailbox.responsabile.nome_uff}">
+								<dt>#{i18n['acl.uff']}</dt>
+								<dd>
+									#{mailbox.responsabile.nome_uff}
+									<h:panelGroup rendered="#{! empty mailbox.responsabile.cod_uff}">
+										(#{mailbox.responsabile.cod_uff})
+									</h:panelGroup>
+								</dd>
+							</h:panelGroup>
+
+							<h:panelGroup rendered="#{docEditModifyAoo.formsAdapter.funzionalitaDisponibili['rolesManagement']}">
+								<h:panelGroup rendered="#{! empty mailbox.responsabile.nome_ruolo}">
+									<dt>#{i18n['acl.role']}</dt>
+									<dd>
+										#{mailbox.responsabile.nome_ruolo}
+										<h:panelGroup rendered="#{! empty mailbox.responsabile.cod_ruolo}">
+											(#{mailbox.responsabile.cod_ruolo})
+										</h:panelGroup>
+									</dd>
+								</h:panelGroup>
+							</h:panelGroup>
+							
+							<h:panelGroup rendered="#{fn:length(mailbox.gestoriMailbox) > 0 and !empty mailbox.gestoriMailbox[0].matricola}">
+								<dt class="emphasis-title">#{i18n['acl.gestori_casella']}</dt>
+								<dd>&#160;</dd>
+								<ui:repeat var="gestore" value="#{mailbox.gestoriMailbox}" varStatus="indiceGestori">
+									<dt>#{(gestore.livello eq 'titolare') ? i18n['acl.livello_titolare'] : i18n['acl.livello_cambio_password']}</dt>
+									<dd>#{gestore.nome_pers} (#{gestore.matricola})</dd>
+								</ui:repeat>
+							</h:panelGroup>
+
+							<h:panelGroup rendered="#{! empty mailbox.mailbox.email}">
+								<dt class="emphasis-title">#{i18n['acl.mailbox']}</dt>
+								<dd>&#160;</dd>
+							</h:panelGroup>
+
+							<h:panelGroup rendered="#{! empty mailbox.mailbox.email}">
+								<dt>#{i18n['acl.email']}</dt>
+								<dd>
+									#{mailbox.mailbox.email}
+									<h:panelGroup rendered="#{! empty mailbox.mailbox.login}">
+										(#{i18n['acl.login']}: #{mailbox.mailbox.login})
+									</h:panelGroup>
+								</dd>
+							</h:panelGroup>
+
+							<h:panelGroup rendered="#{!empty mailbox.mailbox.protocol or !empty mailbox.mailbox.host or !empty mailbox.mailbox.port}">
+								<dt>#{i18n['acl.host']}</dt>
+								<dd>
+									<h:panelGroup rendered="#{!empty mailbox.mailbox.protocol}">
+										#{mailbox.mailbox.protocol}&#160;
+									</h:panelGroup>
+									<h:panelGroup rendered="#{!empty mailbox.mailbox.host}">
+										#{mailbox.mailbox.host}&#160;
+									</h:panelGroup>
+									<h:panelGroup rendered="#{! empty mailbox.mailbox.port}">
+										#{mailbox.mailbox.port}&#160;
+									</h:panelGroup>
+								</dd>
+							</h:panelGroup>
+						</dl>
+					</h:panelGroup>
+				</ui:repeat>
+
+				<ui:repeat var="interop" value="#{showdocAoo.aoo.interoperabilita}" varStatus="indice">
+					<h:panelGroup rendered="#{!empty interop.cod_amm or !empty interop.cod_aoo or !empty interop.documentModel}" layout="block" styleClass="showdoc-section">
+						<div class="title">
+							#{i18n['acl.interoperabilita']} #{indice.index+1}
+							
+							<div class="pull-right">
+								<span class="glyphicons-pro certificate" title="#{i18n['acl.interoperabilita']} #{indice.index+1}"></span>
+							</div>
+						</div>
+
+						<dl class="dl-horizontal">
+							<h:panelGroup rendered="#{! empty interop.cod_amm}">
+								<dt>#{i18n['acl.cod_amm']}</dt>
+								<dd>#{interop.cod_amm}</dd>
+							</h:panelGroup>
+							<h:panelGroup rendered="#{! empty interop.cod_aoo}">
+								<dt>#{i18n['acl.cod_aoo']}</dt>
+								<dd>#{interop.cod_aoo}</dd>
+							</h:panelGroup>
+							<h:panelGroup rendered="#{! empty interop.db}">
+								<dt>#{i18n['acl.db']}</dt>
+								<dd>#{interop.db}</dd>
+							</h:panelGroup>
+
+							<h:panelGroup rendered="#{! empty interop.documentModel}">
+								<dt>#{i18n['acl.documentModel']}</dt>
+								<dd>
+									#{interop.documentModel}
+								</dd>
+							</h:panelGroup>
+							<h:panelGroup rendered="#{! empty interop.oper}">
+								<dt>#{i18n['acl.operator']}</dt>
+								<dd>
+									#{interop.oper}
+									<h:panelGroup rendered="#{! empty interop.uff_oper}">	
+										(#{interop.uff_oper})
+									</h:panelGroup>
+								</dd>
+							</h:panelGroup>
+							<h:panelGroup rendered="#{interop.protocollaFattura or interop.splitByAttachments}">
+								<dt>#{i18n['dw4.addon_di_archiviazione']}</dt>
+								<dd>
+									<h:panelGroup rendered="#{interop.protocollaFattura}">
+										#{i18n['acl.protocollazione_automatica_per_fatturePA_passive']}<br/>
+									</h:panelGroup>
+									<h:panelGroup rendered="#{interop.splitByAttachments}">
+										#{i18n['acl.salvataggio_allegati_su_documenti_differenti']}<br/>
+									</h:panelGroup>
+								</dd>
+							</h:panelGroup>
+							
+							<dt class="emphasis-title">#{i18n['acl.director']}</dt>
+							<dd>&#160;</dd>
+
+							<h:panelGroup rendered="#{! empty interop.responsabile.nome_pers}">
+								<dt>#{i18n['acl.oper']}</dt>
+								<dd>
+									#{interop.responsabile.nome_pers}
+									<h:panelGroup rendered="#{! empty interop.responsabile.matricola}">
+										(#{interop.responsabile.matricola})
+									</h:panelGroup>
+								</dd>
+							</h:panelGroup>
+							
+							<h:panelGroup rendered="#{! empty interop.responsabile.nome_uff}">
+								<dt>#{i18n['acl.uff']}</dt>
+								<dd>
+									#{interop.responsabile.nome_uff}
+									<h:panelGroup rendered="#{! empty interop.responsabile.cod_uff}">
+										(#{interop.responsabile.cod_uff})
+									</h:panelGroup>
+								</dd>
+							</h:panelGroup>
+							
+							<h:panelGroup rendered="#{fn:length(interop.gestoriMailbox) > 0 and !empty interop.gestoriMailbox[0].matricola}">
+								<dt class="emphasis-title">#{i18n['acl.gestori_casella']}</dt>
+								<dd>&#160;</dd>
+								<ui:repeat var="gestore" value="#{interop.gestoriMailbox}" varStatus="indiceGestori">
+									<dt>#{(gestore.livello eq 'titolare') ? i18n['acl.livello_titolare'] : i18n['acl.livello_cambio_password']}</dt>
+									<dd>#{gestore.nome_pers} (#{gestore.matricola})</dd>
+								</ui:repeat>
+							</h:panelGroup>
+							
+							<h:panelGroup rendered="#{! empty interop.mailbox_in.email}">
+								<dt class="emphasis-title">#{i18n['acl.mailbox_in']}</dt>
+								<dd>&#160;</dd>
+							</h:panelGroup>
+
+							<h:panelGroup rendered="#{! empty interop.mailbox_in.email}">
+								<dt>#{i18n['acl.email']}</dt>
+								<dd>
+									#{interop.mailbox_in.email}
+									<h:panelGroup rendered="#{! empty interop.mailbox_in.login}">
+										(#{i18n['acl.login']}: #{interop.mailbox_in.login})
+									</h:panelGroup>
+								</dd>
+							</h:panelGroup>
+							
+							<h:panelGroup rendered="#{!empty interop.mailbox_in.protocol or !empty interop.mailbox_in.host or !empty interop.mailbox_in.port}">
+								<dt>#{i18n['acl.host']}</dt>
+								<dd>
+									<h:panelGroup rendered="#{!empty interop.mailbox_in.protocol}">
+										#{interop.mailbox_in.protocol}&#160;
+									</h:panelGroup>
+									<h:panelGroup rendered="#{!empty interop.mailbox_in.host}">
+										#{interop.mailbox_in.host}&#160;
+									</h:panelGroup>
+									<h:panelGroup rendered="#{!empty interop.mailbox_in.port}">
+										#{interop.mailbox_in.port}&#160;
+									</h:panelGroup>
+								</dd>
+							</h:panelGroup>
+							
+							<h:panelGroup rendered="#{! empty interop.mailbox_out.email}">
+								<dt class="emphasis-title">#{i18n['acl.mailbox_out']}</dt>
+								<dd>&#160;</dd>
+							</h:panelGroup>
+
+							<h:panelGroup rendered="#{! empty interop.mailbox_out.email}">
+								<dt>#{i18n['acl.email']}</dt>
+								<dd>
+									#{interop.mailbox_out.email}
+									<h:panelGroup rendered="#{!empty interop.mailbox_out.login}">
+										(#{i18n['acl.login']}: #{interop.mailbox_out.login})
+									</h:panelGroup>
+								</dd>
+							</h:panelGroup>
+							
+							<h:panelGroup rendered="#{!empty interop.mailbox_out.protocol or !empty interop.mailbox_out.host or !empty interop.mailbox_out.port}">
+								<dt>#{i18n['acl.protocol']}</dt>
+								<dd>
+									<h:panelGroup rendered="#{!empty interop.mailbox_out.protocol}">
+										#{interop.mailbox_out.protocol}&#160;
+									</h:panelGroup>
+									<h:panelGroup rendered="#{!empty interop.mailbox_out.host}">
+										#{interop.mailbox_out.host}&#160;
+									</h:panelGroup>
+									<h:panelGroup rendered="#{!empty interop.mailbox_out.port}">
+										#{interop.mailbox_out.port}&#160;
+									</h:panelGroup>
+								</dd>
+							</h:panelGroup>
+							
+							<h:panelGroup rendered="#{! empty interop.notify.httpHost}">
+								<dt class="emphasis-title">#{i18n['acl.notify']}</dt>
+								<dd>
+									#{interop.notify.httpHost}#{fn:startsWith(interop.notify.uri,'/') ? '' : '/'}#{interop.notify.uri}
+									(#{i18n['acl.rpa']}: <h:outputText value="#{i18n['dw4.yes']}" styleClass="outputField" rendered="#{interop.notify.rpa}" /><h:outputText value="#{i18n['dw4.no']}" styleClass="outputField" rendered="#{!interop.notify.rpa}" />)
+								</dd>
+							</h:panelGroup>
+						</dl>
+					</h:panelGroup>
+				</ui:repeat>
+
+				<ui:include src="./history.xhtml">
+					<ui:param name="bean" value="#{showdocAoo.aoo}" />
+				</ui:include>
+
+			</div>
+			<!-- scheda show: fine -->
+		</div>
+
+		<h:inputTextarea value="#{showdocAoo.xml}" rendered="#{showdocAoo.debugMode}" styleClass="form-control" rows="10" />
+	</ui:define>
+</ui:composition>

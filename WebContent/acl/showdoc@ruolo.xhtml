@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	template="template.xhtml" xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core">
+
+<ui:define name="content">
+	<div class="ruolo showdoc">
+
+		<!-- primo livello toolbar: inizio -->
+		<div class="btn-toolbar" role="toolbar">
+			<div class="btn-group pull-right">
+				<ui:include src="./navigationBar.xhtml">
+					<ui:param name="bean" value="#{showdocRuolo}" />
+				</ui:include>
+			</div>
+
+			<div class="btn-group">
+				<h:commandLink rendered="#{showdocRuolo.formsAdapter.paginaTitoliEnabled}" action="#{showdocRuolo.paginaTitoli}" styleClass="btn btn-default openwaitmsg">
+					<span>#{i18n['acl.titles']}</span>
+				</h:commandLink>
+			</div>
+		</div>
+		<!-- primo livello toolbar: fine -->
+
+		<h:panelGroup rendered="#{showdocRuolo.formsAdapter.funzionalitaDisponibili['ins_roles'] or showdocRuolo.formsAdapter.funzionalitaDisponibili['del_roles']}">
+			<!-- secondo livello toolbar: inizio -->
+			<div class="btn-toolbar" role="toolbar">
+				<div class="btn-group">
+					<h:commandLink rendered="#{showdocRuolo.formsAdapter.funzionalitaDisponibili['ins_roles']}" action="#{showdocRuolo.modifyTableDoc}" styleClass="btn btn-primary openwaitmsg">
+						<span>#{i18n['acl.modify']}</span>
+					</h:commandLink>
+					<h:commandLink rendered="#{showdocRuolo.formsAdapter.funzionalitaDisponibili['del_roles']}" action="#{showdocRuolo.remove}" onclick="if (!owmConfirm('#{i18n['acl.deleteconfirm']}')) return false;" styleClass="btn btn-danger">
+						<span>#{i18n['acl.delete']}</span>
+					</h:commandLink>
+				</div>
+			</div>
+			<!-- secondo livello toolbar: fine -->
+		</h:panelGroup>
+
+		<h:panelGroup styleClass="messagesArea" layout="block">
+			<h:messages styleClass="info" id="validationMesseges" />
+		</h:panelGroup>
+
+		<h5 class="sub-header" title="#{showdocRuolo.ruolo.nome}">
+			<span class="ruoli glyphicons-pro"></span>&#160;
+			<h:outputText value="#{showdocRuolo.ruolo.nome}" escape="false" />
+		</h5>
+
+		<!-- scheda show: inizio -->
+		<div id="fixedshowdoc" class="fixed-showdoc">
+			<div class="showdoc-section">
+				<div class="title">
+					#{i18n['acl.informazioni_di_base']}
+					
+					<div class="pull-right">
+						<span class="glyphicons-pro briefcase" title="#{i18n['acl.informazioni_di_base']}"></span>
+					</div>
+				</div>
+
+				<dl class="dl-horizontal">
+					<dt>#{i18n['acl.aoo']}</dt>
+					<dd>#{showdocRuolo.ruolo.cod_amm}#{showdocRuolo.ruolo.cod_aoo}</dd>
+					
+					<dt>#{i18n['acl.cod']}</dt>
+					<dd>#{showdocRuolo.ruolo.id}</dd>
+					
+					<dt>#{i18n['acl.name']}</dt>
+					<dd>#{showdocRuolo.ruolo.nome}</dd>
+
+					<h:panelGroup rendered="#{! empty showdocRuolo.ruolo.societa.text and showdocRuolo.formsAdapter.funzionalitaDisponibili['multiSocieta']}">
+						<dt>#{i18n['acl.society']}</dt>
+						<dd>#{showdocRuolo.ruolo.societa.text}</dd>
+					</h:panelGroup>
+
+					<h:panelGroup rendered="#{!empty showdocRuolo.ruolo.descrizione}">
+						<dt>#{i18n['acl.description']}</dt>
+						<dd>#{showdocRuolo.ruolo.descrizione}</dd>
+					</h:panelGroup>
+
+					<h:panelGroup rendered="#{! empty showdocRuolo.ruolo.pers_ass_count and showdocRuolo.ruolo.pers_ass_count != '0'}">
+						<dt>
+							<h:commandLink styleClass="openwaitmsg" action="#{showdocRuolo.viewPerson}">#{i18n['acl.persone_assegnate']}</h:commandLink>
+						</dt>
+						<dd>#{showdocRuolo.ruolo.pers_ass_count}</dd>
+					</h:panelGroup>
+				</dl>
+			</div>
+
+			<ui:include src="./history.xhtml">
+				<ui:param name="bean" value="#{showdocRuolo.ruolo}" />
+			</ui:include>
+		</div>
+		<!-- scheda show: fine -->
+	</div>
+
+	<h:inputTextarea value="#{showdocRuolo.xml}" styleClass="form-control" rows="10" rendered="#{showdocRuolo.debugMode}" />
+</ui:define>
+</ui:composition>

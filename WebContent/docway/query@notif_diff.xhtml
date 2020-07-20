@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+    template="#{queryNotifDiff.pageTemplate}"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:f="http://java.sun.com/jsf/core">
+
+<ui:define name="content">
+	<div class="notif-diff">
+		<!-- eventuale toolbar -->
+	
+		<div class="sub-header">#{i18n['dw4.invio_differito_delle_notifiche']}</div>
+		
+		<table class="table table-hover doc-titles-table">
+			<thead>
+				<tr>
+					<th class="notdiff-dest essential" style="width:20%;">#{i18n['dw4.destinatario']}</th>
+					<th class="notdiff-url essential" style="width:40%;">URL</th>
+					<th class="notdiff-stato essential" style="width:40%;">#{i18n['dw4.stato_invio']}</th>
+				</tr>
+			</thead>
+			<tbody>
+				<ui:repeat var="title" value="#{queryNotifDiff.dest}" varStatus="status">
+					<tr>    
+						<td class="notdiff-dest essential"><h:outputText value="#{title.email}" /></td>
+						<td class="notdiff-url essential">
+							<span style="white-space:nowrap;">
+								<h:outputLink value="#{title.url}" >
+									<h:outputText value="#{i18n['dw4.link_ai_documenti_di']}" />&#160;<h:outputText value="#{title.user}" />
+								</h:outputLink>
+							</span>	
+						</td>
+						<td class="notdiff-stato essential"><h:outputText value="#{title.status}" /></td>
+					</tr>
+				</ui:repeat>
+			</tbody>
+		</table>
+		
+		<h:inputTextarea value="#{queryNotifDiff.xml}" rendered="#{queryNotifDiff.debugMode}" styleClass="form-control" rows="10" />
+	</div>
+</ui:define>
+
+</ui:composition>

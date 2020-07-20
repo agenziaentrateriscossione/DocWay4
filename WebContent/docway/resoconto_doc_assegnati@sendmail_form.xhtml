@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+    template="#{resocontoDocAssegnati.pageTemplate}"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:f="http://java.sun.com/jsf/core">
+
+<ui:define name="content">
+
+	<div class="docedit notif-diff">
+	
+		<!-- toolbar: inizio -->
+		<div class="btn-toolbar" role="toolbar">
+			<div class="btn-group">
+				<h:commandLink id="saveBtn" action="#{resocontoDocAssegnati.inviaEmail}" styleClass="btn btn-primary openwaitmsg">
+					#{i18n['dw4.send']}
+				</h:commandLink>
+				
+				<ui:remove>
+					<h:commandLink onclick="history.back(); return false;" styleClass="btn btn-default">#{i18n['acl.cancel']}</h:commandLink>
+				</ui:remove>
+			</div>
+		</div>
+		<!-- toolbar: fine -->
+	
+		<h5 class="sub-header">
+			<span class="glyphicon glyphicon-envelope"></span>&#160;
+			#{i18n['dw4.invio_allegati_via_email_di_documenti_notificati_in_modo_differito']}
+		</h5>
+	
+		<!-- messages: inizio -->
+		<h:panelGroup rendered="#{not empty facesContext.messageList}" layout="block" styleClass="docedit-messages alert alert-danger">
+			<h:messages styleClass="" id="validationMesseges" />
+		</h:panelGroup>
+		<h:inputHidden id="errorFieldIds" value="#{docEditArrivo.errorFieldIds}" />
+		<script type="text/javascript">
+		$(document).ready(function() {
+			setInvalidInputFields();
+		});
+		</script>
+		<!-- messages: fine -->
+	
+		<!-- scheda edit: inizio -->
+		<div class="row-fluid" style="margin-top:10px;">
+			<div class="box span12">
+				<div class="box-content">
+				
+					<div class="fieldset">
+						<div class="legend">
+							#{i18n['dw4.invio_email']}
+							
+							<div class="pull-right">
+								<span class="glyphicon glyphicon-envelope" title="#{i18n['dw4.invio_email']}"></span>
+							</div>
+						</div>
+						
+						<div class="form-group">
+							<label for="templateForm:docBozza" class="col-sm-2 control-label requiredField"><span>#{i18n['dw4.from_upper']}</span></label>
+							<div class="col-sm-9">
+								<p class="form-control-static"><h:outputText value="#{resocontoDocAssegnati.email.mittente}" /></p>
+							</div>
+						</div>
+						
+						<ui:repeat id="destInt" var="destInt" value="#{resocontoDocAssegnati.email.destinatario_int}" varStatus="indice">
+							<div class="form-group">
+								<label class="col-sm-2 control-label">#{ (indice.index == 0) ? i18n['dw4.a_interni'] : '&#160;' }</label>
+								<div class="col-sm-5">
+									<ui:include src="./lookupRepeatField.xhtml">
+					        			<ui:param name="id" value="destinatarioInt" />
+					        			<ui:param name="field" value="#{destInt.full_email}" />
+						        		<ui:param name="element" value="#{destInt}" />
+						        		<ui:param name="bean" value="#{resocontoDocAssegnati}" />
+						        		<ui:param name="action" value="lookupDestinatarioInt"/>
+						        		<ui:param name="clearaction" value="clearLookupDestinatarioInt"/>
+						        		<ui:param name="title" value="#{i18n['dw4.lookup_destinatario']}"/>
+						        		<ui:param name="styleclass" value="#{ component.valid ? '' : 'invalidinput' } form-control"/>
+						        		<ui:param name="refresh" value="@form"/>
+						        	</ui:include>								
+								</div>
+								<div class="col-sm-2 input-group">
+									<div class="btn-group">
+										<h:commandLink action="#{resocontoDocAssegnati.deleteDestinatarioInt}" title="#{i18n['dw4.elimina_istanza']}" styleClass="btn btn-default">
+								 			<f:param name="destInt" value="#{destInt}"/>
+								 			<f:ajax execute="@form" render="@form"/>
+								 			<span class="glyphicon glyphicon-minus"></span>
+										</h:commandLink>
+										<h:commandLink action="#{resocontoDocAssegnati.addDestinatarioInt}" title="#{i18n['dw4.aggiungi_istanza']}" styleClass="btn btn-default">
+								 			<f:param name="destInt" value="#{destInt}"/>
+							 				<f:ajax execute="@form" render="@form"/>
+							 				<span class="glyphicon glyphicon-plus"></span>
+										</h:commandLink>
+									</div>
+								</div>
+							</div>
+						</ui:repeat>
+						
+						<ui:repeat id="destEst" var="destEst" value="#{resocontoDocAssegnati.email.destinatario_est}" varStatus="indice">
+							<div class="form-group">
+								<label class="col-sm-2 control-label">#{ (indice.index == 0) ? i18n['dw4.a_esterni'] : '&#160;' }</label>
+								<div class="col-sm-5">
+									<ui:include src="./lookupRepeatField.xhtml">
+					        			<ui:param name="id" value="destinatarioEst" />
+					        			<ui:param name="field" value="#{destEst.full_email}" />
+						        		<ui:param name="element" value="#{destEst}" />
+						        		<ui:param name="bean" value="#{resocontoDocAssegnati}" />
+						        		<ui:param name="action" value="lookupDestinatarioEst"/>
+						        		<ui:param name="clearaction" value="clearLookupDestinatarioEst"/>
+						        		<ui:param name="title" value="#{i18n['dw4.lookup_destinatario']}"/>
+						        		<ui:param name="styleclass" value="#{ component.valid ? '' : 'invalidinput' } form-control"/>
+						        		<ui:param name="refresh" value="@form"/>
+						        	</ui:include>
+						        </div>
+						        <div class="col-sm-2 input-group">
+									<div class="btn-group">
+							        	<h:commandLink action="#{resocontoDocAssegnati.deleteDestinatarioEst}" title="#{i18n['dw4.elimina_istanza']}" styleClass="btn btn-default">
+								 			<f:param name="destEst" value="#{destEst}"/>
+								 			<f:ajax execute="@form" render="@form"/>
+								 			<span class="glyphicon glyphicon-minus"></span>
+										</h:commandLink>
+										<h:commandLink action="#{resocontoDocAssegnati.addDestinatarioEst}" title="#{i18n['dw4.aggiungi_istanza']}" styleClass="btn btn-default">
+								 			<f:param name="destEst" value="#{destEst}"/>
+							 				<f:ajax execute="@form" render="@form"/>
+								 			<span class="glyphicon glyphicon-plus"></span>
+										</h:commandLink>
+									</div>
+								</div>
+							</div>
+						</ui:repeat>
+						
+						<div class="form-group">
+							<label for="templateForm:mailSubject" class="col-sm-2 control-label">#{i18n['dw4.object']}</label>
+							<div class="col-sm-9">
+								<h:inputText id="mailSubject" value="#{resocontoDocAssegnati.email.oggetto}" styleClass="#{ component.valid ? '' : 'invalidinput' } form-control" />
+							</div>
+						</div>
+						
+						<div class="form-group">
+							<div class="col-sm-offset-2 col-sm-9">
+								<h:inputTextarea value="#{resocontoDocAssegnati.email.corpo}" rows="10" cols="120" styleClass="form-control" id="mailBody"/>
+							</div>
+						</div>
+						
+						<div class="form-group">
+							<label class="col-sm-2 control-label">#{i18n['dw4.attachments']}</label>
+							<div class="col-sm-9">
+								<p class="form-control-static">
+									<ui:repeat var="xwfile" value="#{resocontoDocAssegnati.doc.files}">
+										<h:outputText value="#{xwfile.title}" styleClass="outputField" /><br/>
+									</ui:repeat>
+									<ui:repeat var="image" value="#{resocontoDocAssegnati.doc.immagini}">
+										<h:outputText value="#{image.title}" styleClass="outputField" /><br/>
+									</ui:repeat>
+								</p>
+							</div>
+						</div>
+					</div> <!-- /fieldset -->
+				</div>
+			</div>
+		</div>
+		<!-- scheda edit: fine -->
+	</div>
+	
+	<ui:include src="./lookup.xhtml"> <ui:param name="pageBean" value="#{resocontoDocAssegnati}"/></ui:include>
+
+	<h:inputTextarea value="#{resocontoDocAssegnati.xml}" rendered="#{resocontoDocAssegnati.debugMode}" styleClass="form-control" rows="10" />
+</ui:define>
+
+</ui:composition>

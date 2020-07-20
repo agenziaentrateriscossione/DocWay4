@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	template="template.xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://xmlns.jcp.org/jsf/passthrough">
+
+<ui:define name="content">
+	<div id="advancedSearch" class="struint submitEnterKey">
+
+		<!-- toolbar: inizio -->
+		<div class="btn-toolbar docway-toolbar margin-bottom" role="toolbar">
+			<div class="btn-group">
+				<h:commandLink id="advancedSearchBtn" action="#{queryPersonaInterna.queryPlain}" styleClass="btn btn-primary openwaitmsg" value="#{i18n['acl.search']}" />
+				<h:commandLink action="#{queryPersonaInterna.resetQuery}" styleClass="btn btn-default" value="#{i18n['acl.clear']}"></h:commandLink>
+			</div>
+		</div>
+		<!-- toolbar: fine -->
+
+		<!-- messages: inizio -->
+		<h:panelGroup rendered="#{not empty facesContext.messageList}" layout="block" styleClass="docedit-messages alert alert-info">
+			<h:messages styleClass="" id="validationMesseges" />
+		</h:panelGroup>
+		<h:panelGroup rendered="#{queryPersonaInterna.warningSuRestrizioniPartizialiEnabled and queryPersonaInterna.formsAdapter.funzionalitaDisponibili['acl_int_aoo_restriction'] and !queryPersonaInterna.formsAdapter.funzionalitaDisponibili['acl_ext_aoo_restriction']}" layout="block" styleClass="docedit-messages alert alert-warning">
+			<h:outputText value="#{i18n['acl.la_ricerca_corrente_verra_filtrata_in_base_alla_propria_aoo_di_appartenenza_e_non_sara_presa_in_considerazione_la_selezione_dell_aoo_dal_menu_a_sinistra']}" />
+			(<strong><h:outputText value="#{i18n['acl.l_utente_ha_restrizioni_su_anagrafica_interna']}" /></strong>)
+		</h:panelGroup>
+		<!-- messages: fine -->
+		
+		<!-- scheda query: inizio -->
+		<div class="row-fluid" style="margin-top:10px;">
+			<div id="fixedshowdoc" class="box span12 fixed-showdoc">
+				<div class="box-content">
+					<div class="fieldset">
+						<div class="legend">#{i18n['acl.search_persint']}</div>
+						
+						<div class="form-group">
+							<label for="templateForm:query_persint_matricola" class="col-sm-2 control-label">#{i18n['acl.code']}</label>
+							<div class="col-sm-3">
+								<div class="input-group">
+									<h:inputText id="query_persint_matricola" value="#{queryPersonaInterna.persint_matricola}" styleClass="form-control" />
+									<div class="input-group-btn">
+										<h:commandLink title="#{i18n['acl.vocabulary']}" action="#{queryPersonaInterna.openIndexCodiceUnita}" styleClass="btn btn-default">
+											<f:ajax execute="@form" render="@form"/>
+											<span class="glyphicon glyphicon-search"></span>
+								        </h:commandLink>
+							        </div>
+						        </div>
+							</div>
+						</div>
+						<div class="form-group">
+							<label for="templateForm:query_persint_surname_name" class="col-sm-2 control-label">#{i18n['acl.surname_name']}</label>
+							<div class="col-sm-9">
+								<div class="input-group">
+									<h:inputText id="query_persint_surname_name" value="#{queryPersonaInterna.persint_cognome}" styleClass="form-control" />
+									<div class="input-group-btn">
+										<h:commandLink title="#{i18n['acl.vocabulary']}" action="#{queryPersonaInterna.openIndexCognome}" styleClass="btn btn-default">
+											<f:ajax execute="@form" render="@form"/>
+											<span class="glyphicon glyphicon-search"></span>
+								        </h:commandLink>
+							        </div>
+						        </div>
+							</div>
+						</div>
+						<div class="form-group">
+							<label for="templateForm:query_persint_login" class="col-sm-2 control-label">#{i18n['acl.login']}</label>
+							<div class="col-sm-5">
+								<div class="input-group">
+									<h:inputText id="query_persint_login" value="#{queryPersonaInterna.persint_loginname}" styleClass="form-control" />
+									<div class="input-group-btn">
+										<h:commandLink title="#{i18n['acl.vocabulary']}" action="#{queryPersonaInterna.openIndexLogin}" styleClass="btn btn-default">
+											<f:ajax execute="@form" render="@form"/>
+											<span class="glyphicon glyphicon-search"></span>
+								        </h:commandLink>
+							        </div>
+						        </div>
+							</div>
+						</div>
+						<div class="form-group">
+							<label for="templateForm:query_persint_nick" class="col-sm-2 control-label">#{i18n['acl.nickname']}</label>
+							<div class="col-sm-5">
+								<div class="input-group">
+									<h:inputText id="query_persint_nick" value="#{queryPersonaInterna.persint_soprannome}" styleClass="form-control" />
+									<div class="input-group-btn">
+										<h:commandLink title="#{i18n['acl.vocabulary']}" action="#{queryPersonaInterna.openIndexNickname}" styleClass="btn btn-default">
+											<f:ajax execute="@form" render="@form"/>
+											<span class="glyphicon glyphicon-search"></span>
+								        </h:commandLink>
+							        </div>
+						        </div>
+							</div>
+						</div>
+						<div class="form-group">
+							<label for="templateForm:query_persint_qualifica" class="col-sm-2 control-label">#{i18n['acl.qualifica']}</label>
+							<div class="col-sm-5">
+								<div class="input-group">
+									<h:inputText id="query_persint_qualifica" value="#{queryPersonaInterna.persint_qualifica}" styleClass="form-control" />
+									<div class="input-group-btn">
+										<h:commandLink title="#{i18n['acl.vocabulary']}" action="#{queryPersonaInterna.openIndexQualifica}" styleClass="btn btn-default">
+											<f:ajax execute="@form" render="@form"/>
+											<span class="glyphicon glyphicon-search"></span>
+								        </h:commandLink>
+							        </div>
+						        </div>
+							</div>
+						</div>
+						<div class="form-group">
+							<label for="templateForm:query_persint_skills" class="col-sm-2 control-label">#{i18n['acl.skill']}</label>
+							<div class="col-sm-9">
+								<div class="input-group">
+									<h:inputText id="query_persint_skills" value="#{queryPersonaInterna.persint_competenze}" styleClass="form-control" />
+									<div class="input-group-btn">
+										<h:commandLink title="#{i18n['acl.vocabulary']}" action="#{queryPersonaInterna.openIndexCompetenze}" styleClass="btn btn-default">
+											<f:ajax execute="@form" render="@form"/>
+											<span class="glyphicon glyphicon-search"></span>
+								        </h:commandLink>
+							        </div>
+						        </div>
+							</div>
+						</div>
+						<div class="form-group">
+							<label for="templateForm:query_persint_rights" class="col-sm-2 control-label">#{i18n['acl.rights']}</label>
+							<div class="col-sm-5">
+								<div class="input-group">
+									<h:inputText id="query_persint_rights" value="#{queryPersonaInterna.persint_diritti}" styleClass="form-control" />
+									<div class="input-group-btn">
+										<h:commandLink title="#{i18n['acl.vocabulary']}" action="#{queryPersonaInterna.openIndexDiritti}" styleClass="btn btn-default">
+											<f:ajax execute="@form" render="@form"/>
+											<span class="glyphicon glyphicon-search"></span>
+								        </h:commandLink>
+							        </div>
+						        </div>
+							</div>
+						</div>
+						<div class="form-group">
+							<label for="templateForm:query_persint_operatore" class="col-sm-2 control-label">#{i18n['acl.operator']}</label>
+							<div class="col-sm-5">
+								<div class="input-group">
+									<h:inputText id="query_persint_operatore" value="#{queryPersonaInterna.persint_operatore}" styleClass="form-control" p:placeholder="#{i18n['acl.oper']}" title="#{i18n['acl.oper']}" />
+									<div class="input-group-btn">
+										<h:commandLink title="#{i18n['acl.vocabulary']}" action="#{queryPersonaInterna.openIndexOperatore}" styleClass="btn btn-default">
+											<f:ajax execute="@form" render="@form"/>
+											<span class="glyphicon glyphicon-search"></span>
+								        </h:commandLink>
+							        </div>
+						        </div>
+							</div>
+							<div class="col-sm-4">
+								<div class="input-group">
+									<h:inputText id="query_persint_uffoperatore" value="#{queryPersonaInterna.persint_uffoperatore}" styleClass="form-control" p:placeholder="#{i18n['acl.uff']}" title="#{i18n['acl.uff']}" />
+									<div class="input-group-btn">
+										<h:commandLink title="#{i18n['acl.vocabulary']}" action="#{queryPersonaInterna.openIndexUffOperatore}" styleClass="btn btn-default">
+											<f:ajax execute="@form" render="@form"/>
+											<span class="glyphicon glyphicon-search"></span>
+								        </h:commandLink>
+							        </div>
+						        </div>
+							</div>
+						</div>
+						<div class="form-group">
+							<label for="templateForm:query_persint_nome_profilo" class="col-sm-2 control-label">#{i18n['acl.name_profile']}</label>
+							<div class="col-sm-5">
+								<div class="input-group">
+									<h:inputText id="query_persint_nome_profilo" value="#{queryPersonaInterna.persint_profilename}" styleClass="form-control" />
+									<div class="input-group-btn">
+										<h:commandLink title="#{i18n['acl.vocabulary']}" action="#{queryPersonaInterna.openIndexProfileName}" styleClass="btn btn-default">
+											<f:ajax execute="@form" render="@form"/>
+											<span class="glyphicon glyphicon-search"></span>
+								        </h:commandLink>
+							        </div>
+						        </div>
+							</div>
+						</div>
+						<h:panelGroup rendered="#{queryPersonaInterna.formsAdapter.funzionalitaDisponibili['abilitaConfrontoDiritti']}" layout="block" styleClass="form-group">
+							<label for="templateForm:query_persint_dirittipersonalizzati" class="col-sm-2 control-label">
+								<span class="popoveritem" data-toggle="popover" data-placement="top" data-trigger="hover" data-content="#{i18n['acl.cerca_le_sole_persone_interne_con_diritti_personalizzati_rispetto_al_profilo_di_appartenenza']}">
+									#{i18n['acl.diritti_personalizzati']}
+									<span class="glyphicon glyphicon-info-sign popoveritem"></span>
+								</span>
+							</label>
+							<div class="col-sm-1">
+								<h:selectBooleanCheckbox value="#{queryPersonaInterna.persint_dirittipersonalizzati}" id="query_persint_dirittipersonalizzati" />
+							</div>
+						</h:panelGroup>
+					</div> <!-- /fieldset -->
+					
+					<ui:include src="./aspects.xhtml">
+						<ui:param name="bean" value="#{queryPersonaInterna}"/>
+					</ui:include>
+				</div>
+			</div>
+		</div>
+		<script type="text/javascript">
+		$(document).ready(function() {
+			// focus su campo globale
+			$('#templateForm\\:query_persint_surname_name').focus();
+		});
+		</script>
+		<!-- scheda query: fine -->
+	</div>
+	
+	<h:inputTextarea value="#{queryPersonaInterna.xml}" rendered="#{queryPersonaInterna.debugMode}" styleClass="form-control" rows="10" />
+
+	<ui:include src="./showindex.xhtml"> <ui:param name="pageBean" value="#{queryPersonaInterna}"/></ui:include>
+</ui:define>
+    
+</ui:composition>    

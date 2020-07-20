@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" 
+	  xmlns:h="http://java.sun.com/jsf/html" 
+	  xmlns:ui="http://java.sun.com/jsf/facelets" 
+	  xmlns:f="http://java.sun.com/jsf/core">
+<ui:composition>
+		
+	<ui:repeat var="contenuto" value="#{bean.doc.contenuto_in}">
+		<h:panelGroup rendered="#{!empty contenuto.cod}">
+			<div class="form-group">
+				<label class="col-sm-2 control-label">#{contenuto == bean.doc.contenuto_in[0] ? i18n['dw4.contenutoin'] : '&#160;'}</label>
+				<div class="col-sm-9">
+					<p class="form-control-static">
+						<span class="glyphicon glyphicon-inbox normal-size-icon" title="#{i18n['dw4.raccoglitore']}"></span>
+						<h:outputText value="#{contenuto.text}" styleClass="outputField" />
+					</p>
+				</div>
+			</div>
+		</h:panelGroup>
+	</ui:repeat>
+
+</ui:composition>
+</html>

@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" 
+	  xmlns:h="http://java.sun.com/jsf/html" 
+	  xmlns:ui="http://java.sun.com/jsf/facelets" 
+	  xmlns:f="http://java.sun.com/jsf/core">
+<ui:composition>
+	
+	<script type="text/javascript">
+	$(document).ready(function() {
+		activateEnterModeOnWebMailFilter();
+	});
+	
+	$(window).load(function() {
+		jsf.ajax.addOnEvent(function(data) { 
+			if (data.status == 'success') {
+				activateEnterModeOnWebMailFilter();
+			}
+		});
+	});
+	
+	function activateEnterModeOnWebMailFilter() {
+		/*
+		 * Avvio del filtro di ricerca in caso di pressione del tasto invio su un
+		 * campo di ricerca di tipo input text
+		 */
+		$('#webmailFilter input[type=text]').bind('keypress', function(e) {
+			var code = (e.keyCode ? e.keyCode : e.which);
+			if (code == 13) { // Enter keycode
+				$('#templateForm\\:webmailFilterBtn').trigger('click');
+			}
+		});
+	}
+	</script>
+	
+	<div class="fieldset">
+		<div class="legend">#{i18n['dw4.mailbox']}</div>
+		
+		<div class="form-group">
+       		<label class="col-sm-4 control-label"><span>#{i18n['acl.email']}</span></label>
+       		<div class="col-sm-7">
+       			<h:selectOneMenu value="#{bean.current_mailbox_mail}" immediate="true" onchange="changeMailbox();" styleClass="form-control">
+					<f:selectItems value="#{bean.mailboxes}" var="mailbox" itemValue="#{mailbox.email}" itemLabel="#{mailbox.email}" />
+				</h:selectOneMenu>
+       		</div>
+       	</div>
+       	<script type="text/javascript">
+		function changeMailbox() {
+			$('#templateForm\\:loadMailboxBtn').trigger('click');
+		}
+		</script>
+		<h:commandLink id="loadMailboxBtn" action="#{bean.loadMailbox}" style="visibility:hidden;">
+			<f:ajax execute="@form" render="@form" />
+		</h:commandLink>
+		
+		<h:panelGroup rendered="#{bean.connected}" layout="block" styleClass="form-group">
+			<label class="col-sm-4 control-label"><span>#{i18n['dw4.current_folder']}</span></label>
+       		<div class="col-sm-7">
+       			<div class="input-group">
+       				<input type="text" name="currentdir" value="#{bean.current_folder}" class="form-control" readonly="readonly" />
+					<h:panelGroup rendered="#{bean.current_protocol eq 'imap' or bean.current_protocol eq 'imaps'}" layout="block" styleClass="input-group-btn">
+						<h:commandLink title="#{title}" action="#{bean[action]}" id="#{id}_button" onclick="setFocusLookup(this);" >
+				   			<f:ajax execute="@form" render="#{refresh}"/>
+				   			<span class="glyphicon glyphicon-search"></span>
+				   		</h:commandLink>
+				   		<h:commandLink action="#{bean.loadFoldersTree}" title="#{i18n['dw4.caricamento_delle_cartelle_della_casella_di_posta']}" styleClass="btn btn-default">
+							<f:ajax execute="@form" render="@form" />
+							<span class="glyphicon glyphicon-folder-open"></span>
+						</h:commandLink>
+			  		</h:panelGroup>
+       			</div>
+       		</div>
+		</h:panelGroup>
+	</div> <!-- /fieldset -->
+	
+	<h:panelGroup rendered="#{bean.connected}">
+		<div class="fieldset" id="webmailFilter">
+			<div class="legend">#{i18n['dw4.mailbox']}</div>
+			
+			<div class="form-group">
+	       		<label class="col-sm-4 control-label"><span>#{i18n['dw4.filtro_per']}</span></label>
+	       		<div class="col-sm-7">
+	       			<h:selectOneMenu value="#{bean.filter.type}" onchange="changeFilterType();" styleClass="form-control">
+						<f:selectItem itemValue="sentdate" itemLabel="#{i18n['dw4.data_spedizione']}" />
+						<f:selectItem itemValue="content" itemLabel="#{i18n['dw4.contenuto']}" />
+					</h:selectOneMenu>
+	       		</div>
+	       	</div>
+	       	<script type="text/javascript">
+			function changeFilterType() {
+				$('#templateForm\\:changeFilterTypeBtn').trigger('click');
+			}
+			</script>
+			<h:commandLink id="changeFilterTypeBtn" action="#{bean.changeFilterType}" style="visibility:hidden;">
+				<f:ajax execute="@form" render="@form" />
+			</h:commandLink>
+			
+			<div class="form-group">
+	       		<label for="templateForm:sentDateFrom" class="col-sm-4 control-label"><span>#{i18n['dw4.data_spedizione']} #{i18n['dw4.dal']}</span></label>
+	       		<div class="col-sm-7">
+	       			<h:panelGroup rendered="#{bean.filter.type eq 'sentdate'}">
+	       				<div class="input-group date" data-date-format="dd/mm/yyyy">
+							<h:inputText id="sentDateFrom" value="#{bean.filter.from}" styleClass="#{ component.valid ? '' : 'invalidinput' } form-control datepicker">
+								<f:converter converterId="DateConverter"/>
+							</h:inputText>
+							<span class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></span>
+						</div>
+	       			</h:panelGroup>
+	       			<h:panelGroup rendered="#{bean.filter.type ne 'sentdate'}">
+       					<h:inputText id="sentDateFromReadOnly" value="#{bean.filter.from}" readonly="true" styleClass="#{ component.valid ? '' : 'invalidinput' } form-control readonlyinput">
+							<f:converter converterId="DateConverter"/>
+						</h:inputText>
+	       			</h:panelGroup>
+	       		</div>
+	       	</div>
+	       	
+	       	<div class="form-group">
+	       		<label for="templateForm:contains" class="col-sm-4 control-label"><span>#{i18n['dw4.contiene']}</span></label>
+				<div class="col-sm-7">
+					<h:inputText readonly="#{bean.filter.type ne 'content'}" id="contains" value="#{bean.filter.contains}" styleClass="#{ component.valid ? '' : 'invalidinput' } form-control #{ bean.filter.type ne 'content' ? 'readonlyinput' : '' }" />
+				</div>
+			</div>
+			
+			<div class="form-group">
+				<div class="col-sm-offset-4 col-sm-7">
+					<h:commandLink id="webmailFilterBtn" action="#{bean.search}" styleClass="btn btn-primary openwaitmsg" >
+						<f:ajax execute="@form" render="@form" />
+						<span class="iconcerca">#{i18n['dw4.filtra']}</span>
+					</h:commandLink>
+				</div>
+			</div>
+		</div>  <!-- /fieldset -->
+	</h:panelGroup>
+	
+</ui:composition>   
+</html>

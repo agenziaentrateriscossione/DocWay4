@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" 
+	  xmlns:h="http://java.sun.com/jsf/html" 
+	  xmlns:ui="http://java.sun.com/jsf/facelets" 
+	  xmlns:f="http://java.sun.com/jsf/core">
+<ui:composition>
+	
+	<h:panelGroup rendered="#{!empty organo.componenti}" layout="block" id="componenti">
+		<div class="fieldset">
+			<div class="legend">
+             #{i18n['dw4.componenti']}
+             <div class="pull-right">
+                 <span class="glyphicons-pro parents" title="#{i18n['dw4.componenti']}"></span>
+             </div>
+         </div>
+			
+			<ui:repeat id="componente" var="componente" value="#{organo.componenti}" varStatus="indice">
+				<div class="form-group">
+					<label class="col-sm-2 control-label">#{i18n['dw4.nominativo']}</label>
+					<div class="col-sm-3">
+						<h:inputText id="nominativo" rendered="#{!readOnly}" value="#{componente.nominativo}" styleClass="form-control" />
+						<h:panelGroup rendered="#{readOnly}">
+							<p class="form-control-static">
+								<h:outputText value="#{componente.nominativo}" />
+							</p>
+						</h:panelGroup>
+					</div>
+
+					<label class="col-sm-1 control-label"><span>#{i18n['dw4.incarico']}</span></label>
+					<div class="col-sm-3">
+						<h:panelGroup rendered="#{!readOnly}">
+								<h:inputText id="incarico" value="#{componente.incarico}" styleClass="form-control" />
+						</h:panelGroup>
+						<h:panelGroup rendered="#{readOnly}">
+							<p class="form-control-static">
+								<h:outputText value="#{componente.incarico}" />
+							</p>
+						</h:panelGroup>
+					</div>
+					<div class="col-sm-2">
+						<div class="input-group">
+							<div class="btn-group">
+								<h:commandLink action="#{organo.deleteComponente}" title="#{i18n['dw4.elimina_istanza']}" styleClass="btn btn-default">
+						 			<f:ajax execute="@form" render=":templateForm:componenti :templateForm:errormsg"/>
+						 			<span class="glyphicon glyphicon-minus"></span>
+								</h:commandLink>
+								
+								<h:commandLink action="#{organo.addComponente}" title="#{i18n['dw4.aggiungi_istanza']}" styleClass="btn btn-default">
+						 			<f:ajax execute="@form" render=":templateForm:componenti :templateForm:errormsg"/>
+						 			<span class="glyphicon glyphicon-plus"></span>
+								</h:commandLink>
+							</div>
+						</div>
+					</div>
+				</div>
+				
+			</ui:repeat>
+		</div> <!-- /fieldset -->
+	</h:panelGroup>
+
+</ui:composition>
+</html>

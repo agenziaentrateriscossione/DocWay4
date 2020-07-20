@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+    template="#{docEditSeduta.pageTemplate}"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:c="http://java.sun.com/jsp/jstl/core">
+
+<ui:define name="content">
+	<div class="seduta docedit">
+		<!-- toolbar: inizio -->
+		<div class="btn-toolbar" role="toolbar">
+			<div class="btn-group">
+				<h:commandLink id="saveBtn" action="#{docEditSeduta.saveDocument}" 
+							styleClass="btn btn-primary openwaitmsg">
+					#{i18n['acl.save']}
+				</h:commandLink>
+				
+				<h:commandLink action="#{docEditSeduta.clearDocument}" 
+							styleClass="btn btn-default">
+					#{i18n['acl.clear']}
+				</h:commandLink>	
+			</div>
+		</div>
+		<!-- toolbar: fine -->
+		
+		<h5 class="sub-header">
+			<span class="doc-tipo-seduta glyphicons-pro"></span>&#160;
+			<h:outputText value="#{docEditSeduta.docEditTitle}" escape="false" />
+		</h5>
+	
+		<!-- messages: inizio -->
+		<h:panelGroup rendered="#{not empty facesContext.messageList}" layout="block" styleClass="docedit-messages alert alert-danger">
+			<h:messages styleClass="" id="validationMesseges" />
+		</h:panelGroup>
+		<h:inputHidden id="errorFieldIds" value="#{docEditSeduta.errorFieldIds}" />
+		<!-- messages: fine -->
+		
+		<!-- scheda edit: inizio -->
+		<div class="row-fluid" style="margin-top:10px;">
+			<div id="fixedshowdoc" class="box span12 fixed-showdoc">
+				<div class="box-content">
+				
+					<div class="fieldset">
+						<div class="legend">
+							#{i18n['dw4.datidoc']}
+							
+							<div class="pull-right">
+								<span class="doc-tipo-seduta glyphicons-pro" title="#{i18n['dw4.datidoc']}"></span>
+							</div>
+						</div>
+						
+						<div class="form-group">
+							<label for="templateForm:sedutaStraordinaria" class="col-sm-2 control-label"><span>#{i18n['dw4.straordinaria']}</span></label>
+							<div class="col-sm-3">
+								<h:selectBooleanCheckbox id="sedutaStraordinaria" immediate="true" value="#{docEditSeduta.doc.straordinaria}">
+									<f:ajax execute="@this" />
+								</h:selectBooleanCheckbox>
+							</div>
+						</div>
+						
+						<div class="form-group">
+							<ui:include src="./dateField.xhtml">
+								<ui:param name="label" value="#{i18n['dw4.convocazione']}" />
+								<ui:param name="id" value="dataConvocazione" />
+								<ui:param name="value" value="#{docEditSeduta.doc.data_convocazione}" />
+							</ui:include>
+						</div>
+						
+						<div class="form-group endsection">
+							<ui:include src="./dateField.xhtml">
+								<ui:param name="label" value="#{i18n['dw4.presentazione_entro']}" />
+								<ui:param name="id" value="dataPresentazione_entro" />
+								<ui:param name="value" value="#{docEditSeduta.doc.limite_presentazione_proposte.data}" />
+								<ui:param name="onblur" value="#{docEditSeduta.doc.straordinaria}" />
+							</ui:include>
+							
+							<ui:include src="./timeField.xhtml">
+								<ui:param name="label" value="#{i18n['dw4.ora']}" />
+								<ui:param name="id" value="oraPresentazione_entro" />
+								<ui:param name="value" value="#{docEditSeduta.doc.limite_presentazione_proposte.ora}" />
+								<ui:param name="onblur" value="#{docEditSeduta.doc.straordinaria}" />
+							</ui:include>
+						</div>
+						
+						<div class="form-group">
+							<label class="col-sm-2 control-label"><span>#{i18n['dw4.pubblicazione']}</span></label>
+						</div>
+						
+						<div class="form-group">
+							<ui:include src="./dateField.xhtml">
+								<ui:param name="label" value="#{i18n['dw4.dal']}" />
+								<ui:param name="id" value="pubblicazioneDaData" />
+								<ui:param name="value" value="#{docEditSeduta.doc.pubblicazione_odg_dal.data}" />
+								<ui:param name="onblur" value="#{docEditSeduta.doc.straordinaria}" />
+							</ui:include>
+							
+							<ui:include src="./timeField.xhtml">
+								<ui:param name="label" value="#{i18n['dw4.ora']}" />
+								<ui:param name="id" value="pubblicazioneDaOra" />
+								<ui:param name="value" value="#{docEditSeduta.doc.pubblicazione_odg_dal.ora}" />
+								<ui:param name="onblur" value="#{docEditSeduta.doc.straordinaria}" />
+							</ui:include>
+						</div>
+						<div class="form-group endsection">
+							<ui:include src="./dateField.xhtml">
+								<ui:param name="label" value="#{i18n['dw4.al']}" />
+								<ui:param name="id" value="pubblicazioneAlData" />
+								<ui:param name="value" value="#{docEditSeduta.doc.pubblicazione_odg_al.data}" />
+								<ui:param name="onblur" value="#{docEditSeduta.doc.straordinaria}" />
+							</ui:include>
+							
+							<ui:include src="./timeField.xhtml">
+								<ui:param name="label" value="#{i18n['dw4.ora']}" />
+								<ui:param name="id" value="pubblicazioneAlOra" />
+								<ui:param name="value" value="#{docEditSeduta.doc.pubblicazione_odg_al.ora}" />
+								<ui:param name="onblur" value="#{docEditSeduta.doc.straordinaria}" />
+							</ui:include>
+						</div>
+						
+						<div class="form-group endsection">
+							<label for="templateForm:noteSeduta" class="col-sm-2 control-label"><span>#{i18n['dw4.note']}</span></label>
+							<div class="col-sm-3">
+								<h:inputTextarea class="col-sm-12 form-control" id="noteSeduta" rows="3" value="#{docEditSeduta.doc.note}" />
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<!-- scheda edit: fine -->
+		
+		<script type="text/javascript">
+		function checkDateSeduta(theinput) {
+			
+			var inputVal = $(theinput).val();
+			var inputDate = new Date(inputVal.substring(3,5) + "/" + inputVal.substring(0,2) + "/" + inputVal.substring(6));
+			console.log(inputDate);
+			
+		};
+		</script>
+	
+	<h:inputTextarea value="#{docEditSeduta.xml}" rendered="#{docEditSeduta.debugMode}" styleClass="form-control" rows="10" />	
+		
+	</div>
+</ui:define>
+
+</ui:composition>

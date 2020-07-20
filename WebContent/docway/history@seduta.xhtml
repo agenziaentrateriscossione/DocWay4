@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" 
+	  xmlns:h="http://java.sun.com/jsf/html" 
+	  xmlns:ui="http://java.sun.com/jsf/facelets" 
+	  xmlns:f="http://java.sun.com/jsf/core"
+	  xmlns:fn="http://java.sun.com/jsp/jstl/functions">
+<ui:composition>
+
+	<div class="showdoc-section">
+		<div class="title">
+			#{i18n['acl.servicesinformation']}
+			
+			<div class="pull-right">
+				<span class="glyphicons-pro settings" title="#{i18n['acl.servicesinformation']}"></span>
+			</div>
+		</div>
+	
+		<dl class="dl-horizontal">
+			<dt>Id</dt>
+			<dd>
+				#{bean.nrecord}
+			</dd>
+			<dt>#{i18n['acl.registration']}</dt>
+			<dd>
+				<strong>#{bean.creazione.uff_oper}</strong> - 
+				<a target="acl" href="#{facesContext.externalContext.requestContextPath}/acl/loadrif.pf?db=#{viewbean.formsAdapter.aclDb}&amp;searchKey=#{(!empty bean.creazione.cod_oper) ? 'persint_matricola' : 'persint_nomcogn'}&amp;value=#{(!empty bean.creazione.cod_oper) ? bean.creazione.cod_oper : bean.creazione.oper}">#{bean.creazione.oper}</a>
+				&#160;#{bean.creazione.dateLong} #{bean.creazione.ora}
+			</dd>
+			<h:panelGroup rendered="#{!empty(bean.ultima_modifica.dateLong)}">
+				<dt>#{i18n['acl.lastmodify']}</dt>
+				<dd>
+					<strong>#{bean.ultima_modifica.uff_oper}</strong> - 
+					<a target="acl" href="#{facesContext.externalContext.requestContextPath}/acl/loadrif.pf?db=#{viewbean.formsAdapter.aclDb}&amp;searchKey=#{(!empty bean.ultima_modifica.cod_oper) ? 'persint_matricola' : 'persint_nomcogn'}&amp;value=#{(!empty bean.ultima_modifica.cod_oper) ? bean.ultima_modifica.cod_oper : bean.ultima_modifica.oper}">#{bean.ultima_modifica.oper}</a>
+					&#160;#{bean.ultima_modifica.dateLong} #{bean.ultima_modifica.ora}
+				</dd>
+			</h:panelGroup>
+		</dl>
+	</div>
+
+</ui:composition>
+</html>

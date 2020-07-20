@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+    template="#{queryStampe.pageTemplate}"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:c="http://java.sun.com/jsp/jstl/core">
+
+<ui:define name="content">
+	<div class="report">
+		
+		<!-- toolbar: inizio -->
+		<div class="btn-toolbar margin-bottom" role="toolbar">
+			<div class="btn-group">
+				<h:commandLink id="printBtn" action="#{queryStampe.findAndPrint}" styleClass="btn btn-primary openwaitmsg">#{i18n['dw4.print']}</h:commandLink>
+				<h:commandLink rendered="#{queryStampe.selid eq ''}" action="#{docwaymenu.gotoTableQStampe}" styleClass="btn btn-default">#{i18n['acl.clear']}</h:commandLink>
+				<h:commandLink rendered="#{queryStampe.selid ne ''}" action="#{queryStampe.backToList}" styleClass="btn btn-default">#{i18n['torna']}</h:commandLink>
+			</div>
+		</div>
+		<!-- toolbar: fine -->
+		
+		<div class="sub-header">
+			<span class="glyphicon glyphicon-print"></span>&#160;
+			#{i18n['dw4.protocollo_generale_Stampe']}
+		</div>
+		
+		<!-- messages: inizio -->
+		<div class="docedit-messages alert alert-info">#{i18n['dw4.selezionare_una_modalita_di_stampa_quindi_premere_il_pulsante_stampa']}</div>
+		
+		<h:panelGroup rendered="#{not empty facesContext.messageList}" layout="block" styleClass="docedit-messages alert alert-danger">
+			<h:messages styleClass="" id="validationMesseges" />
+		</h:panelGroup>
+		<!-- messages: fine -->
+		
+		<h:commandLink id="checkItemBtn" action="#{queryStampe.checkItem}" style="display:none;"><f:ajax execute="@form" render="@form" /></h:commandLink>
+		<h:commandLink id="checkTipoDocBtn" action="#{queryStampe.checkTipoDoc}" style="display:none;"><f:ajax execute="@form" render="@form" /></h:commandLink>
+		<h:commandLink id="checkOpzioniStampaBtn" action="#{queryStampe.checkOpzioniStampa}" style="display:none;"><f:ajax execute="@form" render="@form" /></h:commandLink>
+		<h:commandLink id="checkOpzioniRepertoriBtn" action="#{queryStampe.checkOpzioniRepertori}" style="display:none;"><f:ajax execute="@form" render="@form" /></h:commandLink>
+		<script type="text/javascript">
+		function checkTipoDocStampe() {
+			$("#templateForm\\:checkTipoDocBtn").trigger('click');
+		}
+		
+		function checkOpzioniStampa() {
+			$("#templateForm\\:checkOpzioniStampaBtn").trigger('click');
+		}
+		
+		function checkOpzioniRepertori() {
+			$("#templateForm\\:checkOpzioniRepertoriBtn").trigger('click');
+		}
+		</script>
+		
+		<!-- scheda query: inizio -->
+		<div class="row-fluid" style="margin-top:10px;">
+			<div id="fixedshowdoc" class="box span12 fixed-showdoc">
+				<div class="box-content">
+				
+					<div class="fieldset">
+						<div class="legend">#{i18n['dw4.flusso_documenti']}</div>
+						
+						<div class="form-group">
+							<div class="col-sm-offset-2 col-sm-9">
+								<ul class="list-inline">
+									<li class="optstampa-inline-item">
+										<h:selectBooleanCheckbox id="opt_chkbox_arrivo" value="#{queryStampe.arrivo}" />
+										<label for="templateForm:opt_chkbox_arrivo"  class="normal-weight-text" style="white-space:normal;">#{i18n['dw4.documenti_in_arrivo']}</label>
+									</li>
+									<li class="optstampa-inline-item">
+										<h:selectBooleanCheckbox id="opt_chkbox_partenza" value="#{queryStampe.partenza}" onchange="checkTipoDocStampe();" />
+										<label for="templateForm:opt_chkbox_partenza"  class="normal-weight-text" style="white-space:normal;">#{i18n['dw4.documenti_in_partenza']}</label>
+									</li>
+									<li class="optstampa-inline-item">
+										<h:selectBooleanCheckbox id="opt_chkbox_interno" value="#{queryStampe.interno}" onchange="checkTipoDocStampe();" />
+										<label for="templateForm:opt_chkbox_interno"  class="normal-weight-text" style="white-space:normal;">#{i18n['dw4.documenti_tra_uffici']}</label>
+									</li>
+									<li class="optstampa-inline-item">
+										<h:selectBooleanCheckbox id="opt_chkbox_varie" value="#{queryStampe.varie}" onchange="checkTipoDocStampe();" />
+										<label for="templateForm:opt_chkbox_varie"  class="normal-weight-text" style="white-space:normal;">#{i18n['dw4.documenti_non_protocollati']}</label>
+									</li>
+								</ul>
+							</div>
+						</div>
+					</div> <!-- /fieldset -->
+				
+					<div class="fieldset">
+						<div class="legend">#{i18n['dw4.tipo_di_stampa']}</div>
+						
+						<div class="form-group">
+							<label for="templateForm:tipostampa" class="col-sm-2 control-label">#{i18n['acl.type']}</label>
+							<div class="col-sm-3">
+								<h:selectOneMenu id="tipostampa" value="#{queryStampe.printType}" styleClass="form-control" onchange="$('#templateForm\\:checkItemBtn').trigger('click');">
+									<f:selectItem itemValue="selezione" itemLabel="#{i18n['dw4.selezione_corrente']}" itemDisabled="#{queryStampe.selid eq ''}" />
+									<f:selectItem itemValue="giornaliero" itemLabel="#{i18n['dw4.giornaliero']}" />
+									<f:selectItem itemValue="annuale" itemLabel="#{i18n['dw4.per_un_intero_anno']}" />
+									<f:selectItem itemValue="daterange" itemLabel="#{i18n['dw4.per_intervallo_di_date']}" />
+									<f:selectItem itemValue="numrange" itemLabel="#{i18n['dw4.per_intervallo_di_numeri_protocollo']}" />
+									<f:selectItem itemValue="uor" itemLabel="#{i18n['dw4.per_uor']}" />
+									<f:selectItem itemValue="fulltext" itemLabel="#{i18n['dw4.ricerca_full_text']}" />
+									<f:selectItem itemValue="numreprange" itemLabel="#{i18n['dw4.per_intervallo_di_numeri_di_repertorio']}" />
+								</h:selectOneMenu>
+							</div>
+						</div>
+						
+						<h:panelGroup rendered="#{queryStampe.printType eq 'selezione' and queryStampe.selid ne ''}" layout="block" styleClass="form-group">
+							<label class="col-sm-2 control-label">#{i18n['dw4.selezione_corrente']}</label>
+							<div class="col-sm-9">
+								<p class="form-control-static"><strong>#{queryStampe.count} #{i18n['dw4.documents']}</strong></p>
+							</div>
+						</h:panelGroup>
+						
+						<h:panelGroup rendered="#{queryStampe.printType eq 'giornaliero'}" layout="block" styleClass="form-group">
+							<ui:include src="./dateField.xhtml">
+								<ui:param name="label" value="#{i18n['dw4.data']}" />
+								<ui:param name="id" value="dataProt" />
+								<ui:param name="value" value="#{queryStampe.dataProt}" />
+							</ui:include>
+						</h:panelGroup>
+						
+						<h:panelGroup rendered="#{queryStampe.printType eq 'annuale'}" layout="block" styleClass="form-group">
+							<label for="templateForm:docAnno" class="col-sm-2 control-label">#{i18n['dw4.anno']}</label>
+							<div class="col-sm-2">
+								<h:inputText id="docAnno" value="#{queryStampe.doc_anno}" styleClass="#{ component.valid ? '' : 'invalidinput' } form-control" />
+							</div>
+						</h:panelGroup>
+						
+						<h:panelGroup rendered="#{queryStampe.printType eq 'daterange'}" layout="block" styleClass="form-group">
+							<ui:include src="./rangeField.xhtml">
+								<ui:param name="label" value="#{i18n['dw4.dates']}" />
+								<ui:param name="id" value="dataProt" />
+								<ui:param name="from_value" value="#{queryStampe.range_docdataprot_from}" />
+								<ui:param name="to_value" value="#{queryStampe.range_docdataprot_to}" />
+								<ui:param name="is_date" value="true" />
+							</ui:include>
+						</h:panelGroup>
+						
+						<h:panelGroup rendered="#{queryStampe.printType eq 'numrange'}" layout="block" styleClass="form-group">
+							<ui:include src="./rangeField.xhtml">
+								<ui:param name="label" value="#{i18n['dw4.numeri_di_protocollo']}" />
+								<ui:param name="id" value="numProt" />
+								<ui:param name="from_value" value="#{queryStampe.custom_da_num_prot}" />
+								<ui:param name="to_value" value="#{queryStampe.custom_a_num_prot}" />
+								<ui:param name="is_date" value="false" />
+							</ui:include>
+						</h:panelGroup>
+						
+						<h:panelGroup rendered="#{queryStampe.printType eq 'uor'}" layout="block" styleClass="form-group">
+							<label for="templateForm:nome_uff_text" class="col-sm-2 control-label">#{i18n['dw4.proprietario']}</label>
+							<div class="col-sm-9">
+								<h:inputHidden value="#{queryStampe.uor.cod_uff}" id="cod_uff" />
+								<ui:include src="./lookupField.xhtml">
+					        		<ui:param name="id" value="nome_uff" />
+					        		<ui:param name="field" value="#{queryStampe.uor.nome_uff}" />
+					        		<ui:param name="bean" value="#{queryStampe}" />
+					        		<ui:param name="action" value="lookupUor"/>
+					        		<ui:param name="clearaction" value="clearUor"/>
+					        		<ui:param name="title" value="#{i18n['dw4.lookup_uor']}"/>
+					        		<ui:param name="styleclass" value="form-control"/>
+					        		<ui:param name="refresh" value="templateForm:nome_uff_input templateForm:cod_uff templateForm:lookup templateForm:errormsg" />
+					        	</ui:include>
+							</div>
+						</h:panelGroup>
+						
+						<h:panelGroup rendered="#{queryStampe.printType eq 'fulltext'}" layout="block" styleClass="form-group">
+							<label for="templateForm:fullTextField" class="col-sm-2 control-label">#{i18n['dw4.ricerca_full_text']}</label>
+							<div class="col-sm-9">
+								<h:inputText id="fullTextField" value="#{queryStampe.custom_globale}" styleClass="#{ component.valid ? '' : 'invalidinput' } form-control" />
+							</div>
+						</h:panelGroup>
+						
+						<h:panelGroup rendered="#{queryStampe.printType eq 'numreprange'}" layout="block" styleClass="form-group">
+							<ui:include src="./rangeField.xhtml">
+								<ui:param name="label" value="#{i18n['dw4.numeri_di_repertorio']}" />
+								<ui:param name="id" value="numRep" />
+								<ui:param name="from_value" value="#{queryStampe.custom_rep_da}" />
+								<ui:param name="to_value" value="#{queryStampe.custom_rep_a}" />
+								<ui:param name="is_date" value="false" />
+							</ui:include>
+						</h:panelGroup>
+						
+						<h:panelGroup rendered="#{fn:length(queryStampe.listof_rep) > 0}" layout="block" styleClass="form-group" style="margin-top:15px;">
+							<label class="col-sm-2 control-label">#{i18n['dw4.elenco_repertori']}</label>
+							<div class="col-sm-9">
+								<ul class="list-inline">
+									<c:forEach var="rep" items="#{queryStampe.listof_rep}" varStatus="repIndice">
+										<c:forEach var="tabella" items="#{rep.list_tabelle}" varStatus="tableIndice">	
+											<li class="optstampa-inline-item">
+												<h:selectBooleanCheckbox id="rep_#{repIndice.index}_#{tableIndice.index}" value="#{tabella.selected}" onchange="checkOpzioniRepertori();" />
+												<label for="templateForm:rep_#{repIndice.index}_#{tableIndice.index}" class="normal-weight-text" style="white-space:normal;">#{rep.descrizione} #{tabella.text}</label>
+											</li>
+										</c:forEach>
+									</c:forEach>
+								</ul>
+							</div>
+						</h:panelGroup>
+					</div> <!-- /fieldset -->
+					
+					<h:panelGroup rendered="#{fn:length(queryStampe.societaSelect) > 0}" layout="block" styleClass="fieldset">
+						<ui:include src="./multisocietaFields.xhtml">
+							<ui:param name="beanDoc" value="#{queryStampe}" />
+			        	</ui:include>
+					</h:panelGroup>
+					
+					<div class="fieldset">
+						<div class="legend">#{i18n['dw4.opzioni_di_stampa']}</div>
+						
+						<div class="form-group">
+							<div class="col-sm-offset-2 col-sm-9">
+								<ul class="list-inline">
+									<li class="optstampa-inline-item">
+										<h:selectBooleanCheckbox id="opt_chkbox_printId" value="#{queryStampe.chkbox_printId}" />
+										<label for="templateForm:opt_chkbox_printId" class="normal-weight-text" style="white-space:normal;">#{i18n['dw4.stampa_id']}</label>
+									</li>
+									<li class="optstampa-inline-item">
+										<h:selectBooleanCheckbox id="opt_chkbox_classif" value="#{queryStampe.chkbox_classif}" />
+										<label for="templateForm:opt_chkbox_classif" class="normal-weight-text" style="white-space:normal;">#{i18n['dw4.stampa_classificazione_e_num_fasc']}</label>
+									</li>
+									<li class="optstampa-inline-item">
+										<h:selectBooleanCheckbox id="opt_chkbox_printUor" value="#{queryStampe.chkbox_printUor}" immediate="true" valueChangeListener="#{queryStampe.printOptionValueChange}" onchange="checkOpzioniStampa();" />
+										<label for="templateForm:opt_chkbox_printUor" class="normal-weight-text" style="white-space:normal;">#{i18n['dw4.stampa_uor']}</label>
+									</li>
+									<li class="optstampa-inline-item">
+										<h:selectBooleanCheckbox id="opt_chkbox_printPostit" value="#{queryStampe.chkbox_printPostit}" />
+										<label for="templateForm:opt_chkbox_printPostit" class="normal-weight-text" style="white-space:normal;">#{i18n['dw4.stampa_le_annotazioni']}</label>
+									</li>
+									<li class="optstampa-inline-item">
+										<h:selectBooleanCheckbox id="opt_chkbox_customDocAnnullato" value="#{queryStampe.chkbox_customDocAnnullato}" immediate="true" valueChangeListener="#{queryStampe.printOptionValueChange}" onchange="checkOpzioniStampa();" />
+										<label for="templateForm:opt_chkbox_customDocAnnullato" class="normal-weight-text" style="white-space:normal;">#{i18n['dw4.solo_documenti_annullati']}</label>
+									</li>
+									<li class="optstampa-inline-item">
+										<h:selectBooleanCheckbox id="opt_chkbox_customDocNonAnnullato" value="#{queryStampe.chkbox_customDocNonAnnullato}" immediate="true" valueChangeListener="#{queryStampe.printOptionValueChange}" onchange="checkOpzioniStampa();" />
+										<label for="templateForm:opt_chkbox_customDocNonAnnullato" class="normal-weight-text" style="white-space:normal;">#{i18n['dw4.solo_documenti_non_annullati']}</label>
+									</li>
+									<li class="optstampa-inline-item">
+										<h:selectBooleanCheckbox id="opt_chkbox_distCons" value="#{queryStampe.chkbox_distCons}" immediate="true" valueChangeListener="#{queryStampe.printOptionValueChange}" onchange="checkOpzioniStampa();" />
+										<label for="templateForm:opt_chkbox_distCons" class="normal-weight-text" style="white-space:normal;">#{i18n['dw4.distinta_di_consegna']}</label>
+									</li>
+								</ul>
+							</div>
+						</div>
+						
+						<div class="form-group" style="margin-top:15px;">
+							<label for="templateForm:ordinamento" class="col-sm-2 control-label">#{i18n['dw4.ordinamento']}</label>
+							<div class="col-sm-3">
+								<h:selectOneMenu id="ordinamento" value="#{queryStampe.ordinamento}" styleClass="form-control">
+								<f:selectItems value="#{queryStampe.ordinamento_select.options}" var="option" itemValue="#{option.value}" itemLabel="#{option.label}"/>
+							</h:selectOneMenu>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<!-- scheda query: fine -->
+	
+	</div>
+
+	<ui:include src="./lookup.xhtml"> <ui:param name="pageBean" value="#{queryStampe}"/></ui:include>
+	<ui:include src="./loadingbar@ctrl_gestione.xhtml"><ui:param name="pageBean" value="#{queryStampe}"/></ui:include>
+			
+	<h:inputTextarea value="#{queryStampe.xml}" rendered="#{queryStampe.debugMode}" styleClass="form-control" rows="10" />
+</ui:define>
+    
+</ui:composition>    

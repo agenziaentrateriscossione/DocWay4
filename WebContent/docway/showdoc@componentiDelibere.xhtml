@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" 
+	  xmlns:h="http://java.sun.com/jsf/html" 
+	  xmlns:ui="http://java.sun.com/jsf/facelets" 
+	  xmlns:f="http://java.sun.com/jsf/core">
+<ui:composition>
+
+	<h:panelGroup rendered="#{fn:length(bean.doc.datiProposta.delibera) > 0}">
+		<div class="showdoc-section">
+			<div class="title">
+				#{i18n['dw4.componenti']}
+				<div class="pull-right">
+					<span class="glyphicons-pro parents" title="#{i18n['dw4.componenti']}"></span>
+				</div>
+			</div>
+			<div class="table-responsive">
+				<table class="table table-bordered show-odg-table">
+					<thead>
+						<tr>
+							<th class="width-20">#{i18n['dw4.nominativo']}</th>
+							<th class="width-10">#{i18n['dw4.incarico']}</th>
+							<th class="check-col">#{i18n['dw4.favorevole']}</th>
+							<th class="check-col">#{i18n['dw4.contrario']}</th>
+							<th class="check-col">#{i18n['dw4.astenuto']}</th>
+							<th class="check-col">#{i18n['dw4.assente_giustificato']}</th>
+							<th class="check-col">#{i18n['dw4.assente_ng']}</th>
+						</tr>
+					</thead>
+					<tbody>
+						<ui:repeat var="componente" value="#{bean.doc.datiProposta.delibera}" varStatus="status">
+							<tr>
+								<td>
+									#{componente.nominativo}
+									<h:panelGroup rendered="#{!empty componente.delega}">
+										<div>
+											<em><strong>#{i18n['dw4.del']}. #{componente.delega}</strong></em>
+										</div>
+									</h:panelGroup>
+								</td>
+								<td class="carica-col">#{componente.incarico}</td>
+								<td class="check-col">
+									<h:panelGroup rendered="#{componente.parere eq 'Favorevole'}"><span class="glyphicon glyphicon-ok"></span></h:panelGroup>
+								</td>
+								<td class="check-col">
+									<h:panelGroup rendered="#{componente.parere eq 'Contrario'}"><span class="glyphicon glyphicon-ok"></span></h:panelGroup>
+								</td>
+								<td class="check-col">
+									<h:panelGroup rendered="#{componente.parere eq 'Astenuto'}"><span class="glyphicon glyphicon-ok"></span></h:panelGroup>
+								</td>
+								<td class="check-col">
+									<h:panelGroup rendered="#{componente.parere eq 'Assente giustificato'}"><span class="glyphicon glyphicon-ok"></span></h:panelGroup>
+								</td>
+								<td class="check-col">
+									<h:panelGroup rendered="#{componente.parere eq 'Assente non giustificato'}"><span class="glyphicon glyphicon-ok"></span></h:panelGroup>
+								</td>
+							</tr>
+						</ui:repeat>
+					</tbody>
+				</table>
+			</div>
+		</div>
+	</h:panelGroup>
+
+</ui:composition>
+</html>

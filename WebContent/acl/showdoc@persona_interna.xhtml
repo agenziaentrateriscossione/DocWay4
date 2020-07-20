@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	template="template.xhtml" xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core">
+
+<ui:define name="content">
+
+	<div class="persint showdoc">
+		<!-- primo livello toolbar: inizio -->
+		<div class="btn-toolbar" role="toolbar">
+			<div class="btn-group pull-right">
+				<ui:include src="./navigationBar.xhtml">
+					<ui:param name="bean" value="#{showdocPersonaInterna}" />
+				</ui:include>
+			</div>
+
+			<div class="btn-group">
+				<h:commandLink rendered="#{showdocPersonaInterna.formsAdapter.paginaTitoliEnabled}" action="#{showdocPersonaInterna.paginaTitoli}" styleClass="btn btn-default openwaitmsg">
+					<span>#{i18n['acl.titles']}</span>
+				</h:commandLink>
+			</div>
+		</div>
+		<!-- primo livello toolbar: fine -->
+
+		<h:panelGroup rendered="#{(showdocPersonaInterna.formsAdapter.funzionalitaDisponibili['ins_persint'] or showdocPersonaInterna.formsAdapter.funzionalitaDisponibili['canc_persint']) and !empty(showdocPersonaInterna.persona_interna.nrecord) and showdocPersonaInterna.persona_interna.nrecord ne '.'}">
+			<!-- secondo livello toolbar: inizio -->
+			<div class="btn-toolbar" role="toolbar">
+				<div class="btn-group">
+					<h:commandLink rendered="#{showdocPersonaInterna.formsAdapter.funzionalitaDisponibili['ins_persint'] and !empty(showdocPersonaInterna.persona_interna.nrecord) and showdocPersonaInterna.persona_interna.nrecord ne '.'}" action="#{showdocPersonaInterna.modifyTableDoc}" styleClass="btn btn-primary openwaitmsg">
+						<span>#{i18n['acl.modify']}</span>
+					</h:commandLink>
+					<h:commandLink rendered="#{showdocPersonaInterna.formsAdapter.funzionalitaDisponibili['canc_persint'] and !empty(showdocPersonaInterna.persona_interna.nrecord) and showdocPersonaInterna.persona_interna.nrecord ne '.'}" action="#{showdocPersonaInterna.remove}" onclick="if (!owmConfirm('#{i18n['acl.deleteconfirm']}')) return false;" styleClass="btn btn-danger">
+						<span>#{i18n['acl.delete']}</span>
+					</h:commandLink>
+					<h:commandLink rendered="#{showdocPersonaInterna.formsAdapter.funzionalitaDisponibili['ins_persint'] and !empty(showdocPersonaInterna.persona_interna.nrecord) and showdocPersonaInterna.persona_interna.nrecord ne '.'}" action="#{showdocPersonaInterna.ripetiNuovo}" styleClass="btn btn-default openwaitmsg">
+						<span>#{i18n['acl.clone']}</span>
+					</h:commandLink>
+					
+					<h:panelGroup rendered="#{showdocPersonaInterna.formsAdapter.funzionalitaDisponibili['abilitaConfrontoDiritti']}" layout="block" styleClass="btn-group">
+						<button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+							#{i18n['acl.confronta']} <span class="caret"></span>
+						</button>
+						<ul class="dropdown-menu">
+							<li><h:commandLink id="selezionapersona" action="#{showdocPersonaInterna.selezionaPersona}"><f:ajax execute="@form" render="@form" />#{i18n['acl.seleziona']}</h:commandLink></li>
+							<h:panelGroup rendered="#{!empty showdocPersonaInterna.matricolaPersonaSelezionata and showdocPersonaInterna.matricolaPersonaSelezionata ne showdocPersonaInterna.persona_interna.matricola}">
+								<li><h:commandLink id="confrontapersona" action="#{showdocPersonaInterna.confrontaConPersona}"><f:ajax execute="@form" render="@form" />#{i18n['acl.confronta_con_selezionato']}</h:commandLink></li>
+							</h:panelGroup>
+							<h:panelGroup rendered="#{showdocPersonaInterna.persona_interna.profile_changed}">
+								<li class="divider"></li>
+								<li><h:commandLink id="confrontaprofilo" action="#{showdocPersonaInterna.confrontaConProfilo}"><f:ajax execute="@form" render="@form" />#{i18n['acl.confronta_con_profilo']}</h:commandLink></li>
+							</h:panelGroup>
+						</ul>
+					</h:panelGroup>
+				</div>
+			</div>
+			<!-- secondo livello toolbar: fine -->
+		</h:panelGroup>
+
+		<h:panelGroup rendered="#{not empty facesContext.messageList}" layout="block" styleClass="docedit-messages alert alert-info">
+			<h:messages styleClass="" id="validationMesseges" />
+		</h:panelGroup>
+
+		<h:panelGroup rendered="#{!empty(showdocPersonaInterna.persona_interna.nrecord) and showdocPersonaInterna.persona_interna.nrecord ne '.'}">
+
+			<h5 class="sub-header" title="#{showdocPersonaInterna.persona_interna.titolo_deferenza} #{showdocPersonaInterna.persona_interna.titolo} #{showdocPersonaInterna.persona_interna.cognome} #{showdocPersonaInterna.persona_interna.nome} #{showdocPersonaInterna.persona_interna.secondo_nome}">
+				<span class="persone-interne glyphicons-pro"></span>&#160;
+				<h:outputText value="#{showdocPersonaInterna.persona_interna.titolo_deferenza} #{showdocPersonaInterna.persona_interna.titolo} #{showdocPersonaInterna.persona_interna.cognome} #{showdocPersonaInterna.persona_interna.nome} #{showdocPersonaInterna.persona_interna.secondo_nome}" escape="false" />
+			</h5>
+
+			<!-- scheda show: inizio -->
+			<div id="fixedshowdoc" class="fixed-showdoc">
+				<div class="showdoc-section">
+					<div class="title">
+						#{i18n['acl.informazioni_di_base']}
+						
+						<div class="pull-right">
+							<span class="glyphicons-pro user" title="#{i18n['acl.informazioni_di_base']}"></span>
+						</div>
+					</div>
+
+					<dl class="dl-horizontal">
+						<dt>#{i18n['acl.name']}</dt>
+						<dd>#{showdocPersonaInterna.persona_interna.cognome} #{showdocPersonaInterna.persona_interna.nome}</dd>
+					
+						<h:panelGroup rendered="#{! empty showdocPersonaInterna.persona_interna.soprannome}">
+							<dt>#{i18n['acl.nickname']}</dt>
+							<dd>#{showdocPersonaInterna.persona_interna.soprannome}</dd>
+						</h:panelGroup>
+
+						<dt>#{i18n['acl.aoo']}</dt>
+						<dd>#{showdocPersonaInterna.persona_interna.cod_amm}#{showdocPersonaInterna.persona_interna.cod_aoo}</dd>
+						
+						<dt>#{i18n['acl.code']}</dt>
+						<dd>#{showdocPersonaInterna.persona_interna.matricola}</dd>
+
+						<ui:repeat var="login"
+							value="#{showdocPersonaInterna.persona_interna.login}"
+							varStatus="index">
+							<h:panelGroup rendered="#{!empty login.name}">
+								<dt>#{index.index == 0 ? i18n['acl.login'] : '&#160;'}</dt>
+								<dd>
+									<h:outputText value="#{login.name}" />
+									&#160;
+									<h:panelGroup rendered="#{showdocPersonaInterna.formsAdapter.funzionalitaDisponibili['changePwd']}">
+										<span class="btn-group">
+											<h:commandLink styleClass="btn btn-default btn-xs openwaitmsg" title="#{i18n['acl.changepassword']}" action="#{showdocPersonaInterna.changePassword}">
+												<f:param name="login" value="#{login}" />
+												<span class="glyphicons-pro pencil changepwd"></span>
+											</h:commandLink>
+										</span>
+									</h:panelGroup>
+								</dd>
+							</h:panelGroup>
+						</ui:repeat>
+
+						<h:panelGroup rendered="#{!empty showdocPersonaInterna.persona_interna.nome_uff}">
+							<dt>#{i18n['acl.assigned']}</dt>
+							<dd>
+								<h:commandLink styleClass="openwaitmsg" value="#{showdocPersonaInterna.persona_interna.nome_uff}" title="#{showdocPersonaInterna.persona_interna.nome_uff}" action="#{showdocPersonaInterna.navigateAppartenenza}" rendered="#{! empty showdocPersonaInterna.persona_interna.physDoc}" />
+								<h:outputText rendered="#{empty showdocPersonaInterna.persona_interna.physDoc}" value="#{showdocPersonaInterna.persona_interna.nome_uff}" />
+							</dd>
+						</h:panelGroup>
+
+						<h:panelGroup rendered="#{! empty showdocPersonaInterna.persona_interna.qualifica.text}">
+							<dt>#{i18n['acl.qualifica']}</dt>
+							<dd>#{showdocPersonaInterna.persona_interna.qualifica.text}</dd>
+						</h:panelGroup>
+
+						<ui:repeat var="gruppo_appartenenza" value="#{showdocPersonaInterna.persona_interna.gruppo_appartenenza}" varStatus="index">
+							<h:panelGroup rendered="#{!empty gruppo_appartenenza.nome}">
+								<dt>#{index.index == 0? i18n['acl.groups'] : '&#160;'}</dt>
+								<dd>
+									<h:commandLink styleClass="openwaitmsg" value="#{gruppo_appartenenza.nome}" title="#{gruppo_appartenenza.nome}" action="#{showdocPersonaInterna.navigateGroup}" rendered="#{! empty gruppo_appartenenza.cod}">
+										<f:param name="gruppo_appartenenza" value="#{gruppo_appartenenza}" />
+									</h:commandLink>
+									<h:outputText value="#{gruppo_appartenenza.nome}" rendered="#{empty gruppo_appartenenza.cod}" />
+								</dd>
+							</h:panelGroup>
+						</ui:repeat>
+
+						<ui:repeat var="responsabilita" value="#{showdocPersonaInterna.persona_interna.responsabilita}" varStatus="index">
+							<h:panelGroup rendered="#{!empty responsabilita.nome}">
+								<dt>#{index.index == 0 ? i18n['acl.responsabilita'] : '&#160;'}</dt>
+								<dd>
+									<h:commandLink styleClass="openwaitmsg" value="#{responsabilita.nome}" title="#{responsabilita.nome}" action="#{showdocPersonaInterna.navigateResponsabilita}" rendered="#{! empty responsabilita.physDoc}">
+										<f:param name="responsabilita" value="#{responsabilita}" />
+									</h:commandLink>
+									<h:outputText value="#{responsabilita.nome}" rendered="#{empty responsabilita.physDoc}" />
+								</dd>
+							</h:panelGroup>
+						</ui:repeat>
+
+						<ui:repeat var="mansione" value="#{showdocPersonaInterna.persona_interna.mansione}" varStatus="index">
+							<h:panelGroup rendered="#{!empty mansione.text}">
+								<dt>#{index.index == 0 ? i18n['acl.roles-skills'] : '&#160;'}</dt>
+								<dd>
+									<h:commandLink styleClass="openwaitmsg" value="#{mansione.text}" title="#{mansione.text}" action="#{showdocPersonaInterna.navigateRuolo}" rendered="#{! empty mansione.cod}">
+										<f:param name="mansione" value="#{mansione}" />
+									</h:commandLink>
+									<h:outputText value="#{mansione.text}" rendered="#{empty mansione.cod}" />
+								</dd>
+							</h:panelGroup>
+						</ui:repeat>
+
+						<h:panelGroup rendered="#{ showdocPersonaInterna.profilo_assegnato }">
+							<dt>#{i18n['acl.profile']}</dt>
+							<dd>
+								<h:commandLink styleClass="openwaitmsg" value="#{showdocPersonaInterna.persona_interna.profile_name}" title="#{showdocPersonaInterna.persona_interna.profile_name}" action="#{showdocPersonaInterna.navigateProfile}" />
+								
+								<h:panelGroup rendered="#{showdocPersonaInterna.formsAdapter.funzionalitaDisponibili['abilitaConfrontoDiritti'] and showdocPersonaInterna.persona_interna.profile_changed}">
+									&#160; <span class="label label-info">#{i18n['acl.diritti_personalizzati_rispetto_al_profilo_di_appertenenza']}</span>
+								</h:panelGroup>
+							</dd>
+						</h:panelGroup>
+
+						<h:panelGroup rendered="#{! empty showdocPersonaInterna.persona_interna.sesso}">
+							<dt>#{i18n['acl.sex']}</dt>
+							<dd>#{showdocPersonaInterna.persona_interna.sesso}</dd>
+						</h:panelGroup>
+
+						<h:panelGroup
+							rendered="#{! empty showdocPersonaInterna.persona_interna.multisocieta}">
+							<dt>#{i18n['acl.multisocieta']}</dt>
+							<dd>#{showdocPersonaInterna.persona_interna.multisocieta}</dd>
+						</h:panelGroup>
+					</dl>
+				</div>
+				
+				<ui:include src="./aspects.xhtml">
+					<ui:param name="bean" value="#{showdocPersonaInterna}" />
+				</ui:include>
+
+				<h:panelGroup rendered="#{showdocPersonaInterna.persona_interna.recapito.indirizzo.renderIndirizzo or showdocPersonaInterna.persona_interna.recapito.renderTelefoni or showdocPersonaInterna.persona_interna.recapito.renderEmail or showdocPersonaInterna.persona_interna.recapito.renderSitiWeb}">
+					<div class="showdoc-section">
+						<div class="title">
+							#{i18n['acl.workdata']}
+							<div class="pull-right">
+								<span class="glyphicons-pro building" title="#{i18n['acl.workdata']}"></span>
+							</div>
+						</div>
+
+						<ui:include src="./recapito.xhtml">
+							<ui:param name="bean" value="#{showdocPersonaInterna.persona_interna.recapito}" />
+						</ui:include>
+					</div>
+				</h:panelGroup>
+
+				<h:panelGroup rendered="#{showdocPersonaInterna.persona_interna.recapito_personale.indirizzo.renderIndirizzo or showdocPersonaInterna.persona_interna.recapito_personale.renderTelefoni or showdocPersonaInterna.persona_interna.recapito_personale.renderEmail or showdocPersonaInterna.persona_interna.recapito_personale.renderSitiWeb}">
+					<div class="showdoc-section">
+						<div class="title">
+							#{i18n['acl.personaldata']}
+							<div class="pull-right">
+								<span class="glyphicons-pro home" title="#{i18n['acl.personaldata']}"></span>
+							</div>
+						</div>
+
+						<ui:include src="./recapito.xhtml">
+							<ui:param name="bean" value="#{showdocPersonaInterna.persona_interna.recapito_personale}" />
+							<ui:param name="hidecertificata" value="true" />
+						</ui:include>
+					</div>
+				</h:panelGroup>
+
+				<h:panelGroup rendered="#{! empty showdocPersonaInterna.persona_interna.competenze.text or ! empty showdocPersonaInterna.persona_interna.note.text}">
+					<div class="showdoc-section">
+						<div class="title">
+							#{i18n['dw4.other']}
+							<div class="pull-right">
+								<span class="glyphicon glyphicon-list-alt" title="#{i18n['dw4.other']}"></span>
+							</div>
+						</div>
+
+						<dl class="dl-horizontal">
+							<h:panelGroup rendered="#{! empty showdocPersonaInterna.persona_interna.competenze.text}">
+								<dt>#{i18n['acl.skill']}</dt>
+								<dd><pre>#{showdocPersonaInterna.persona_interna.competenze.text}</pre></dd>
+							</h:panelGroup>
+
+							<h:panelGroup
+								rendered="#{! empty showdocPersonaInterna.persona_interna.note.text}">
+								<dt>#{i18n['acl.notes']}</dt>
+								<dd><pre>#{showdocPersonaInterna.persona_interna.note.text}</pre></dd>
+							</h:panelGroup>
+						</dl>
+					</div>
+				</h:panelGroup>
+
+				<ui:include src="./rightsManager.xhtml">
+					<ui:param name="bean" value="#{showdocPersonaInterna.persona_interna}" />
+					<ui:param name="modify" value="false" />
+				</ui:include>
+				<ui:include src="./history.xhtml">
+					<ui:param name="bean" value="#{showdocPersonaInterna.persona_interna}" />
+				</ui:include>
+			</div>
+			<!-- scheda show: fine -->
+		</h:panelGroup>
+	</div>
+
+	<h:panelGroup rendered="#{empty(showdocPersonaInterna.persona_interna.nrecord) or showdocPersonaInterna.persona_interna.nrecord eq '.'}">
+		<div class="alert alert-warning margin-top-30"> #{i18n['acl.documento_non_disponibile']}</div>
+	</h:panelGroup>
+
+	<ui:include src="./compareRights.xhtml"> <ui:param name="pageBean" value="#{showdocPersonaInterna}"/></ui:include>
+
+	<h:inputTextarea value="#{showdocPersonaInterna.xml}" rendered="#{showdocPersonaInterna.debugMode}" styleClass="form-control" rows="10" />
+
+</ui:define>
+
+</ui:composition>

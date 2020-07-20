@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+    template="#{docwayWebmail.pageTemplate}"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:c="http://java.sun.com/jsp/jstl/core">
+
+<ui:define name="content">
+	<div class="webmail">
+		
+		<!-- webmail: inizio -->
+		<c:if test="#{!docwayWebmail.connected}">
+			<h:panelGroup rendered="#{!docwayWebmail.connected}" styleClass="alert alert-info" layout="block">
+				#{i18n['dw4.attualmente_non_si_e_connessi_ad_alcuna_casella_di_posta']}
+			</h:panelGroup>
+		</c:if>
+		<c:if test="#{docwayWebmail.connected}">
+			<div class="webmail row clearfix">
+				<div class="col-xs-12 col-sm-3 col-md-3 col-lg-3">
+					
+					<ui:include src="./webmail@filter.xhtml">
+		        		<ui:param name="bean" value="#{docwayWebmail}" />
+		        	</ui:include>
+					
+				</div>
+				<div class="col-xs-12 col-sm-9 col-md-9 col-lg-9">
+					
+					<!-- toolbar: inizio -->
+					<div class="btn-toolbar margin-bottom" role="toolbar">
+						<div class="btn-group">
+							<h:commandLink action="#{docwayWebmail.logout}" styleClass="btn btn-default" title="#{i18n['dw4.disconnessione_dal_server_di_posta']}">
+								<f:ajax execute="@form" render="@form" />
+								#{i18n['dw4.disconnetti']}
+							</h:commandLink>
+						</div>
+					</div>
+					<!-- toolbar: fine -->
+					
+					<div class="sub-header">#{i18n['dw4.ricezione_posta']}</div>
+				
+					<!-- messages: inizio -->
+					<h:panelGroup rendered="#{not empty facesContext.messageList}" layout="block" styleClass="docedit-messages alert alert-danger">
+						<h:messages styleClass="" id="validationMesseges" />
+					</h:panelGroup>
+					<!-- messages: fine -->
+	
+					<ui:include src="./webmail@showtitles.xhtml">
+		        		<ui:param name="bean" value="#{docwayWebmail}" />
+		        	</ui:include>
+					
+				</div>
+			</div>
+		</c:if>
+		<!-- webmail: fine -->
+		
+		<ui:include src="./webmail@showemail.xhtml"><ui:param name="pageBean" value="#{docwayWebmailPreview}" /></ui:include>
+		<ui:include src="./webmail@showfolders.xhtml"><ui:param name="pageBean" value="#{docwayWebmailFolders}" /></ui:include>
+		
+		<h:inputTextarea value="#{docwayWebmail.xml}" rendered="#{docwayWebmail.debugMode}" styleClass="form-control" rows="10" />
+	</div>
+</ui:define>
+
+</ui:composition>

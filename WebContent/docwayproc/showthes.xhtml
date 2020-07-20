@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" 
+	  xmlns:h="http://java.sun.com/jsf/html" 
+	  xmlns:ui="http://java.sun.com/jsf/facelets" 
+	  xmlns:f="http://java.sun.com/jsf/core"
+	  xmlns:c="http://java.sun.com/jsp/jstl/core">
+<ui:composition>
+ 
+	<h:panelGroup id="showthes" layout="block">
+		<h:panelGroup rendered="#{pageBean.showthesActive}">
+			<!-- Modal -->
+			<div id="showthesModal" class="modal fade in" aria-hidden="false" aria-labelledby="showthesModalLabel" role="dialog" tabindex="-1" style="display: block;">
+			<!--div class="modal fade" id="showthesModal" tabindex="-1" role="dialog" aria-labelledby="showthesModalLabel" aria-hidden="true"-->
+				<div class="modal-dialog modal-lg">
+					<div class="modal-content jsf-modal">
+						<div class="modal-header">
+							<h:commandButton styleClass="close" title="#{i18n['acl.close']}" action="#{pageBean.showthes.close}" data-dismiss="modal"  value="&#215;" >
+			        			<f:ajax render="@form"/>
+			        		</h:commandButton>
+			        		
+			        		<h4 class="modal-title" id="showthesModalLabel">#{pageBean.showthes.windowTitle}</h4>
+						</div>
+						<div class="modal-body">
+							
+							<h:panelGroup rendered="#{ pageBean.showthes.vista_gerarchica and pageBean.showthes.thes_node != null}">
+	                   			<div class="btn-group">
+	                   				<h:commandLink onclick="espandiGerarchiaThesauro(); return false;" styleClass="btn btn-default" >#{i18n['dw4.espandi_rami']}</h:commandLink>
+									<h:commandLink onclick="contraiGerarchiaThesauro(); return false;" styleClass="btn btn-default" >#{i18n['dw4.contrai_rami']}</h:commandLink>
+								</div>
+
+	                   			<div class="titVistaGerarchica-container">
+	                   				<ui:include src="./showthesNodoGerarchia.xhtml">
+	                   					<ui:param name="showthes" value="#{pageBean.showthes}"/>
+	                   					<ui:param name="currentThes" value="#{pageBean.showthes.thes_node}"/>
+	                   				</ui:include>
+	                   			</div>
+	                   		</h:panelGroup>
+	                   		
+	                   		<h:panelGroup rendered="#{!pageBean.showthes.vista_gerarchica}" layout="block">
+	                   			<h:panelGroup rendered="#{pageBean.showthes.thes_node != null}" layout="block">
+	                   				<h:panelGroup rendered="#{!pageBean.showthes.thes_node.radice}" layout="block" styleClass="thTitles">
+	                   					<table class="table table-striped">
+											<tbody>
+												<tr>
+													<td style="width:30px;">
+														<h:commandLink action="#{pageBean.showthes.showthesRelBack}" styleClass="btn btn-default btn-xs">
+															<f:ajax render="@form"/>
+															<span class="glyphicon glyphicon-arrow-left"></span>
+														</h:commandLink>
+													</td>
+													<td style="width:30px;"><strong>#{pageBean.showthes.thes_node.codice}</strong></td>
+													<td><strong>#{pageBean.showthes.thes_node.titolo}</strong></td>
+												</tr>
+											</tbody>
+										</table>
+	                   				</h:panelGroup>
+	                   				
+	                   				<h:panelGroup rendered="#{fn:length(pageBean.showthes.thes_node.childrens) > 0}" layout="block" styleClass="thTitlesLimited">
+				                   		<table class="table table-striped">
+											<tbody>
+												<ui:repeat var="thes" value="#{pageBean.showthes.thes_node.childrens}" varStatus="indice">
+													<tr>
+														<td style="width:30px;">
+															<h:commandLink action="#{pageBean.showthes.showthesRel}" styleClass="btn btn-default btn-xs">
+																<f:param name="thes" value="#{thes}"></f:param>
+																<f:ajax render="@form"/>
+																<span class="glyphicon glyphicon-arrow-right"></span>
+															</h:commandLink>
+														</td>
+														<td style="width:30px;">#{thes.codice}</td>
+														<td>#{thes.titolo}</td>
+													</tr>
+												</ui:repeat>
+											</tbody>
+										</table>
+									</h:panelGroup>
+	                   			</h:panelGroup>
+							</h:panelGroup>
+							
+					       	<h:inputTextarea value="#{pageBean.showthes.xml}" rendered="#{pageBean.debugMode}" styleClass="form-control" rows="10"/>
+						</div>
+						<div class="modal-footer">
+							<h:commandButton styleClass="btn btn-default" title="#{i18n['acl.close']}" action="#{pageBean.showthes.close}" data-dismiss="modal"  value="#{i18n['acl.close']}" >
+			        			<f:ajax render="@form"/>
+			        		</h:commandButton>
+						</div>
+					</div>
+				</div>
+			</div>
+		</h:panelGroup>
+	</h:panelGroup>
+
+</ui:composition>
+</html>

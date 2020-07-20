@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	template="template.xhtml" xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core">
+
+	<ui:define name="content">
+		<div class="strutint showdoc">
+
+			<!-- primo livello toolbar: inizio -->
+			<div class="btn-toolbar" role="toolbar">
+				<div class="btn-group pull-right">
+					<ui:include src="./navigationBar.xhtml">
+						<ui:param name="bean" value="#{showdocStrutturaEsterna}" />
+					</ui:include>
+				</div>
+
+				<div class="btn-group">
+					<h:commandLink rendered="#{showdocStrutturaEsterna.formsAdapter.paginaTitoliEnabled}" action="#{showdocStrutturaEsterna.paginaTitoli}" styleClass="btn btn-default">#{i18n['acl.titles']}</h:commandLink>
+				</div>
+			</div>
+			<!-- primo livello toolbar: fine -->
+
+			<!-- secondo livello toolbar: inizio -->
+			<div class="btn-toolbar" role="toolbar">
+				<div class="btn-group">
+					<h:commandLink rendered="#{showdocStrutturaEsterna.formsAdapter.funzionalitaDisponibili['ins_struest']}" action="#{showdocStrutturaEsterna.modifyTableDoc}" styleClass="btn btn-primary openwaitmsg">#{i18n['acl.modify']}</h:commandLink>
+					<h:commandLink rendered="#{showdocStrutturaEsterna.formsAdapter.funzionalitaDisponibili['canc_struest'] and (empty showdocStrutturaEsterna.struttura_esterna.pers_ass_count or showdocStrutturaEsterna.struttura_esterna.pers_ass_count == '0')}" action="#{showdocStrutturaEsterna.remove}" onclick="if (!owmConfirm('#{i18n['acl.deleteconfirm']}')) return false;" styleClass="btn btn-danger">#{i18n['acl.delete']}</h:commandLink>
+					
+					<h:commandLink action="#{showdocStrutturaEsterna.insTableDocPersonaEsterna}" styleClass="btn btn-default openwaitmsg">#{i18n['acl.insertuser']}</h:commandLink>
+					<h:panelGroup rendered="#{showdocStrutturaEsterna.formsAdapter.funzionalitaDisponibili['ins_struest']}">
+						<h:commandLink action="#{showdocStrutturaEsterna.ripetiNuovo}" styleClass="btn btn-default openwaitmsg">#{i18n['acl.clone']}</h:commandLink>
+					</h:panelGroup>
+
+					<h:panelGroup layout="block" styleClass="btn-group">
+						<button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+							#{i18n['acl.hierarchy']} <span class="caret"></span>
+						</button>
+						<ul class="dropdown-menu">
+							<li><h:commandLink value="#{i18n['acl.view']}" action="#{showdocStrutturaEsterna.apriGerarchia}" styleClass="openwaitmsg"></h:commandLink></li>
+						</ul>
+					</h:panelGroup>
+				</div>
+			</div>
+			<!-- secondo livello toolbar: fine -->
+
+			<h5 class="sub-header" title="#{showdocStrutturaEsterna.struttura_esterna.nome}">
+				<span class="strutture-esterne glyphicons-pro"></span>&#160;
+				<h:outputText value="#{showdocStrutturaEsterna.struttura_esterna.nome}" escape="false" />
+			</h5>
+
+			<!-- scheda show: inizio -->
+			<div id="fixedshowdoc" class="fixed-showdoc">
+				<div class="showdoc-section">
+					<div class="title">
+						#{i18n['acl.informazioni_di_base']}
+						
+						<div class="pull-right">
+							<span class="glyphicons-pro factory" title="#{i18n['acl.informazioni_di_base']}"></span>
+						</div>
+					</div>
+
+					<dl class="dl-horizontal">
+						<dt>#{i18n['acl.aoo']}</dt>
+						<dd>#{showdocStrutturaEsterna.struttura_esterna.cod_amm}#{showdocStrutturaEsterna.struttura_esterna.cod_aoo}</dd>
+						
+						<h:panelGroup rendered="#{!empty showdocStrutturaEsterna.struttura_esterna.cod_uff}">
+							<dt>#{i18n['acl.cod']}</dt>
+							<dd>#{showdocStrutturaEsterna.struttura_esterna.cod_uff}</dd>
+						</h:panelGroup>
+
+						<dt>#{i18n['acl.name']}</dt>
+						<dd>#{showdocStrutturaEsterna.struttura_esterna.nome}</dd>
+
+						<h:panelGroup rendered="#{!empty showdocStrutturaEsterna.struttura_esterna.nome_responsabile or !empty showdocStrutturaEsterna.struttura_esterna.cognome_responsabile}">
+							<dt>#{i18n['acl.director']}</dt>
+							<dd>
+								<h:commandLink styleClass="openwaitmsg" action="#{showdocStrutturaEsterna.viewResponsabile}" value="#{showdocStrutturaEsterna.struttura_esterna.cognome_responsabile} #{showdocStrutturaEsterna.struttura_esterna.nome_responsabile}" />
+							</dd>
+						</h:panelGroup>
+
+						<h:panelGroup rendered="#{!empty showdocStrutturaEsterna.struttura_esterna.cod_SAP}">
+							<dt>#{i18n['acl.sapcod']}</dt>
+							<dd>#{showdocStrutturaEsterna.struttura_esterna.cod_SAP}</dd>
+						</h:panelGroup>
+
+						<h:panelGroup rendered="#{!empty showdocStrutturaEsterna.struttura_esterna.codice_fiscale}">
+							<dt>#{i18n['acl.cf']}</dt>
+							<dd>#{showdocStrutturaEsterna.struttura_esterna.codice_fiscale}</dd>
+						</h:panelGroup>
+
+						<h:panelGroup rendered="#{!empty showdocStrutturaEsterna.struttura_esterna.partita_iva}">
+							<dt>#{i18n['acl.piva']}</dt>
+							<dd>#{showdocStrutturaEsterna.struttura_esterna.partita_iva}</dd>
+						</h:panelGroup>
+
+						<h:panelGroup
+							rendered="#{!empty showdocStrutturaEsterna.struttura_esterna.tipologia}">
+							<dt>#{i18n['acl.tipologia']}</dt>
+							<dd>#{showdocStrutturaEsterna.struttura_esterna.tipologia}</dd>
+						</h:panelGroup>
+
+						<h:panelGroup
+							rendered="#{!empty showdocStrutturaEsterna.struttura_esterna.pers_ass_count and showdocStrutturaEsterna.struttura_esterna.pers_ass_count != '0'}">
+							<dt>
+								<h:commandLink styleClass="openwaitmsg" action="#{showdocStrutturaEsterna.viewPerson}">#{i18n['acl.persone_assegnate']}</h:commandLink>
+							</dt>
+							<dd>#{showdocStrutturaEsterna.struttura_esterna.pers_ass_count}</dd>
+						</h:panelGroup>
+					</dl>
+				</div>
+
+				<h:panelGroup rendered="#{ showdocStrutturaEsterna.formsAdapter.funzionalitaDisponibili['interop_webservice'] and !empty showdocStrutturaEsterna.struttura_esterna.interop_webservice.remote_administration.cod_amm_aoo }">
+					<div class="showdoc-section">
+						<div class="title">
+							#{i18n['acl.interoperabilita_via_web_services']}
+							<div class="pull-right">
+								<span class="glyphicons-pro new_window" title="#{i18n['acl.interoperabilita_via_web_services']}"></span>
+							</div>
+						</div>
+
+						<dl class="dl-horizontal">
+							<dt>#{i18n['acl.codice_ammaoo']}</dt>
+							<dd>#{showdocStrutturaEsterna.struttura_esterna.interop_webservice.remote_administration.cod_amm_aoo}</dd>
+						</dl>
+
+					</div>
+				</h:panelGroup>
+
+				<h:panelGroup
+					rendered="#{showdocStrutturaEsterna.struttura_esterna.indirizzo.renderIndirizzo or showdocStrutturaEsterna.struttura_esterna.renderTelefoni or showdocStrutturaEsterna.struttura_esterna.renderSitiWeb or showdocStrutturaEsterna.struttura_esterna.renderEmail or !empty showdocStrutturaEsterna.struttura_esterna.email_certificata.addr}">
+					<div class="showdoc-section">
+						<div class="title">
+							#{i18n['acl.recapito']}
+							<div class="pull-right">
+								<span class="glyphicons-pro address_book" title="#{i18n['acl.recapito']}"></span>
+							</div>
+						</div>
+
+						<ui:include src="./recapito.xhtml">
+							<ui:param name="bean"
+								value="#{showdocStrutturaEsterna.struttura_esterna}" />
+						</ui:include>
+					</div>
+				</h:panelGroup>
+
+				<h:panelGroup
+					rendered="#{!empty showdocStrutturaEsterna.struttura_esterna.competenze.text or !empty showdocStrutturaEsterna.struttura_esterna.note.text}">
+					<div class="showdoc-section">
+						<div class="title">
+							#{i18n['dw4.other']}
+							<div class="pull-right">
+								<span class="glyphicon glyphicon-list-alt" title="#{i18n['dw4.other']}"></span>
+							</div>
+						</div>
+
+						<dl class="dl-horizontal">
+							<h:panelGroup rendered="#{!empty showdocStrutturaEsterna.struttura_esterna.competenze.text}">
+								<dt>#{i18n['acl.skill']}</dt>
+								<dd><pre>#{showdocStrutturaEsterna.struttura_esterna.competenze.text}</pre></dd>
+							</h:panelGroup>
+
+							<h:panelGroup rendered="#{!empty showdocStrutturaEsterna.struttura_esterna.note.text}">
+								<dt>#{i18n['acl.notes']}</dt>
+								<dd><pre>#{showdocStrutturaEsterna.struttura_esterna.note.text}</pre></dd>
+							</h:panelGroup>
+						</dl>
+					</div>
+				</h:panelGroup>
+
+				<ui:include src="./history.xhtml">
+					<ui:param name="bean" value="#{showdocStrutturaEsterna.struttura_esterna}" />
+				</ui:include>
+			</div>
+		</div>
+
+		<h:inputTextarea value="#{showdocStrutturaEsterna.xml}" styleClass="form-control" rows="10" rendered="#{showdocStrutturaEsterna.debugMode}" />
+	</ui:define>
+
+</ui:composition>

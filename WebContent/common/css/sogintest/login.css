@@ -1,0 +1,30 @@
+a {color: #55732e;}
+a:hover{color:#5d822e;}
+
+.btn-primary {
+background-image: -webkit-linear-gradient(top, #83ac3a 0%, #55732e 100%);
+background-image: linear-gradient(to bottom, #83ac3a 0%, #55732e 100%);
+filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ff83ac3a', endColorstr='#ff55732e', GradientType=0);
+border-color: #55732e;
+}
+
+.btn-primary:hover, .btn-primary:focus {background-color: #55732e;}
+
+.form-control:focus {
+  border-color: #83ac3a;
+  outline: 0;
+  -webkit-box-shadow: inset 0 1px 1px rgba(0,0,0,.075), 0 0 8px rgba(131, 172, 58, 0.6);
+  box-shadow: inset 0 1px 1px rgba(0,0,0,.075), 0 0 8px rgba(131, 172, 58, 0.6);
+}
+
+/*############################### STILI PER IDENTIFICAZIONE ARCHIVIO - INIZIO ###############################*/
+
+.login-archive-xdocwaydoc-nuclecodoc, .logout-archive-xdocwaydoc-nuclecodoc, .login-archive-xdocwayproc-nuclecodoc, .logout-archive-xdocwayproc-nuclecodoc {
+	background: url('images/logo/nucleco-big.png') no-repeat center;
+}
+
+.login-archive-xdocwaydoc-nuclecodoc img, .logout-archive-xdocwaydoc-nuclecodoc img, .login-archive-xdocwayproc-nuclecodoc img, .logout-archive-xdocwayproc-nuclecodoc img {
+	visibility: hidden;
+}
+
+/*############################### STILI PER IDENTIFICAZIONE ARCHIVIO - FINE ###############################*/

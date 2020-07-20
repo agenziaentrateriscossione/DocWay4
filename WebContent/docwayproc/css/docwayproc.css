@@ -1,0 +1,26 @@
+.main.single-line-header {
+	top: 0;
+}
+
+.index-tipo-doc {
+	padding-right: 30px;
+}
+
+.index-oggetto-precompilato, .index-assegnatario-precompilato, .index-workflow-precompilato {
+	margin-bottom: 5px;
+}
+
+.edit-titolario-table {
+	background-color: #f9f9f9;
+	margin-top: 10px;
+	border: 1px solid #ddd;
+}
+
+.table.edit-titolario-table > thead > tr > th, .table.edit-titolario-table > tbody > tr > td {
+	border: 0;
+}
+
+.swfupload {
+    position: absolute;
+    z-index: 1;
+}

@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" 
+	  xmlns:h="http://java.sun.com/jsf/html" 
+	  xmlns:ui="http://java.sun.com/jsf/facelets" 
+	  xmlns:f="http://java.sun.com/jsf/core">
+<ui:composition>
+
+	<ui:repeat id="#{idHolder}email" var="email" value="#{pageBean.emails}" varStatus="indice">
+		<div class="form-group">
+			<label for="templateForm:#{idHolder}email:#{indice.index}:address" class="col-sm-2 control-label">#{indice.index == 0 ? i18n['acl.email'] : '&#160;'}</label>
+			<div class="col-sm-7">
+				<div class="input-group">
+					<h:inputText id="address" value="#{email.addr}" styleClass="form-control" />
+					<div class="input-group-btn">
+						<h:commandLink action="#{pageBean.deleteEmail}" styleClass="btn btn-default" title="#{i18n['dw4.elimina_istanza']}">
+		        			<f:ajax execute="@form" render="@form"/>
+		        			<span class="glyphicon glyphicon-minus"></span>
+		       			</h:commandLink>
+		       			<h:commandLink action="#{pageBean.addEmail}" styleClass="btn btn-default" title="#{i18n['dw4.aggiungi_istanza']}">
+		        			<f:ajax execute="@form" render="@form"/>
+		        			<span class="glyphicon glyphicon-plus"></span>
+		       			</h:commandLink>
+						
+						<h:commandLink action="#{pageBean.moveUpEmail}" title="#{i18n['dw4.sposta_su']}" styleClass="btn btn-default #{(indice.index) > 0 ? '' : 'disabled'}">
+		       				<f:ajax execute="@form" render="@form"/>
+		        			<span class="glyphicon glyphicon-chevron-up"></span>
+		       			</h:commandLink>
+		       			<h:commandLink action="#{pageBean.moveDownEmail}" title="#{i18n['dw4.sposta_giu']}" styleClass="btn btn-default #{fn:length(pageBean.emails) > (indice.index+1) ? '' : 'disabled'}">
+		       				<f:ajax execute="@form" render="@form"/>
+		        			<span class="glyphicon glyphicon-chevron-down"></span>
+		       			</h:commandLink>
+   					</div>
+  				</div>
+			</div>
+		</div>
+	</ui:repeat>
+	
+	<h:panelGroup rendered="#{emailCertificataEnabled eq 'true' and pageBean.email_certificata != null}" layout="block" styleClass="form-group">
+		<label for="templateForm:#{idHolder}emailcert_address" class="col-sm-2 control-label">#{i18n['acl.emailcertified']}</label>
+		<div class="col-sm-7">
+			<h:inputText id="#{idHolder}emailcert_address" value="#{pageBean.email_certificata.addr}" styleClass="form-control"/>
+		</div>
+	</h:panelGroup>
+
+</ui:composition>
+</html>

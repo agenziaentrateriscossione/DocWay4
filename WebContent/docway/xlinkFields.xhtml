@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" 
+	  xmlns:h="http://java.sun.com/jsf/html" 
+	  xmlns:ui="http://java.sun.com/jsf/facelets" 
+	  xmlns:f="http://java.sun.com/jsf/core">
+<ui:composition>
+	
+	<h:panelGroup rendered="#{!bean.customfields.hiddenSections['link'] and bean.formsAdapter.funzionalitaDisponibili['inserimentoLink']}" layout="block" id="xlinkHolder">
+		<div class="fieldset">
+			<div class="legend">
+				#{i18n['dw4.link']}
+				
+				<div class="pull-right">
+					<span class="glyphicon glyphicon-link" title="#{i18n['dw4.link']}"></span>
+				</div>
+			</div>
+			
+			<ui:repeat var="link" value="#{beanDoc.xlink}" varStatus="indice">
+				<div class="form-group">
+					<label class="col-sm-2 control-label">#{i18n['acl.description']}</label>
+					<div class="col-sm-3">
+						<h:inputText rendered="#{!readOnly}" value="#{link.text}" styleClass="form-control" />
+						<h:panelGroup rendered="#{readOnly}">
+							<p class="form-control-static">
+								<h:outputText value="#{link.text}" />
+							</p>
+						</h:panelGroup>
+					</div>
+
+					<label class="col-sm-2 control-label"><span>URL</span></label>
+					<div class="col-sm-4">
+						<h:panelGroup rendered="#{!readOnly}">
+							<div class="input-group">
+								<h:inputText value="#{link.href}" styleClass="form-control" />
+								<div class="input-group-btn">
+									<h:commandLink action="#{beanDoc.deleteXlink}" title="#{i18n['dw4.elimina_istanza']}" styleClass="btn btn-default">
+							 			<f:ajax execute="@form" render=":templateForm:xlinkHolder :templateForm:errormsg"/>
+							 			<span class="glyphicon glyphicon-minus"></span>
+									</h:commandLink>
+									
+									<h:commandLink action="#{beanDoc.addXlink}" title="#{i18n['dw4.aggiungi_istanza']}" styleClass="btn btn-default">
+							 			<f:ajax execute="@form" render=":templateForm:xlinkHolder :templateForm:errormsg"/>
+							 			<span class="glyphicon glyphicon-plus"></span>
+									</h:commandLink>
+								</div>
+							</div>
+						</h:panelGroup>
+						<h:panelGroup rendered="#{readOnly}">
+							<p class="form-control-static">
+								<a href="javascript:void(0);" title="#{link.href}" onclick="return openUrl('#{link.href}');"><h:outputText value="#{link.href}" /></a>
+							</p>
+						</h:panelGroup>
+					</div>
+				</div>
+			</ui:repeat>
+		</div> <!-- /fieldset -->
+	</h:panelGroup>
+
+</ui:composition>
+</html>

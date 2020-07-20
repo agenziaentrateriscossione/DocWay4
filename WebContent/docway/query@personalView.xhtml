@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+    template="#{queryPersonalView.pageTemplate}"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:c="http://java.sun.com/jsp/jstl/core">
+
+<ui:define name="content">
+	<div class="repertorio">
+		<div class="sub-header">
+			<span class="glyphicon glyphicon-search"></span>&#160;
+			#{i18n['dw4.documenti_personalizzati']} - #{i18n['acl.ricerca']}
+		</div>
+		
+		<h:panelGroup rendered="#{fn:length(queryPersonalView.listof_personalView) > 0 or fn:length(queryPersonalView.listof_customFields) > 0}">
+			<div class="list-group">
+				<ui:repeat var="personalView" value="#{queryPersonalView.listof_personalView}" varStatus="status">
+					<ui:repeat var="tabella" value="#{personalView.list_tabelle}">
+						
+						<h:commandLink styleClass="list-group-item"  action="#{queryPersonalView.gotoTableQ}" actionListener="#{queryPersonalView.attrListenerSelectPersonalView}" >
+							<ui:remove>
+								<h:graphicImage rendered="#{!empty personalView.icona}" url="#{personalView.icona}" styleClass="infoicon" alt="#{i18n['acl.ricerca']} #{personalView.descrizione}" title="#{i18n['acl.ricerca']} #{personalView.descrizione}" />
+							</ui:remove>
+							<h:panelGroup rendered="#{!empty personalView.icona}">
+								<span class="#{personalView.icona} normal-size-icon" title="#{i18n['acl.ricerca']} #{personalView.descrizione}"></span>
+							</h:panelGroup>
+							<h:panelGroup rendered="#{empty personalView.icona}">
+								<span class="glyphicon glyphicon-search normal-size-icon" title="#{i18n['acl.ricerca']} #{personalView.descrizione}"></span>
+							</h:panelGroup>
+							&#160;
+							#{personalView.descrizione} #{tabella.text}
+							<f:attribute name="tipoTabella" value="#{tabella.tipo}" />
+							<f:attribute name="textTabella" value="#{tabella.text}" />
+							<f:param name="personalView" value="#{personalView}"></f:param>
+						</h:commandLink>
+						
+					</ui:repeat>
+				</ui:repeat>
+				
+				<ui:repeat var="customFields" value="#{queryPersonalView.listof_customFields}" varStatus="status">
+					<h:commandLink styleClass="list-group-item"  action="#{queryPersonalView.gotoTableQCustomFields}">
+						<h:panelGroup rendered="#{!empty customFields.icona}">
+							<span class="#{customFields.icona} normal-size-icon" title="#{i18n['acl.ricerca']} #{customFields.descrizione}"></span>
+						</h:panelGroup>
+						<h:panelGroup rendered="#{empty personalView.icona}">
+							<span class="glyphicon glyphicon-search normal-size-icon" title="#{i18n['acl.ricerca']} #{customFields.descrizione}"></span>
+						</h:panelGroup>
+						&#160;
+						#{customFields.descrizione} 
+						<h:panelGroup rendered="#{customFields.tabella eq 'varie'}">(#{i18n['dw4.abbr_nonprotocollato']})</h:panelGroup>
+						<h:panelGroup rendered="#{customFields.tabella eq 'interno'}">(#{i18n['dw4.abbr_uffici']})</h:panelGroup>
+						<h:panelGroup rendered="#{customFields.tabella eq 'arrivo'}">(#{i18n['dw4.abbr_arrivo']})</h:panelGroup>
+						<h:panelGroup rendered="#{customFields.tabella eq 'partenza'}">(#{i18n['dw4.abbr_partenza']})</h:panelGroup> 
+					</h:commandLink>
+				</ui:repeat>
+			</div>
+		</h:panelGroup>
+		<h:panelGroup rendered="#{fn:length(queryPersonalView.listof_personalView) == 0 and fn:length(queryPersonalView.listof_customFields) == 0}">
+			<div class="alert alert-info">#{i18n['dw4.non_sono_presenti_altre_tipologie_di_documenti']}</div>
+		</h:panelGroup>
+		
+		<h:inputTextarea value="#{queryPersonalView.xml}" rendered="#{queryPersonalView.debugMode}" styleClass="form-control" rows="10" />
+	</div>
+</ui:define>
+
+</ui:composition>

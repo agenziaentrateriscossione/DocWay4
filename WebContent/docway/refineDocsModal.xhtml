@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" 
+	  xmlns:h="http://java.sun.com/jsf/html" 
+	  xmlns:ui="http://java.sun.com/jsf/facelets" 
+	  xmlns:f="http://java.sun.com/jsf/core"
+	  xmlns:c="http://java.sun.com/jsp/jstl/core"
+	  xmlns:p="http://xmlns.jcp.org/jsf/passthrough">
+<ui:composition>
+
+	<!-- Refine Modal -->
+	<div class="modal fade" id="refineDocsModal" tabindex="-1" role="dialog"
+		aria-labelledby="refineDocsModalLabel" aria-hidden="true">
+		<div class="modal-dialog">
+			<div id="raffinaFilter" class="modal-content submitEnterKey">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+						<span aria-hidden="true">&#215;</span>
+					</button>
+					<h4 class="modal-title" id="refineDocsModalLabel">#{i18n['dw4.raffinamento_della_ricerca']}</h4>
+				</div>
+				<div class="modal-body">
+					
+					<div class="form-group">
+						<label for="templateForm:refineDocsSearchTerms" class="col-lg-3 control-label"><span>#{i18n['dw4.ricerca_full_text']}</span></label>
+						<div class="col-lg-8">
+							<div class="input-group inline">
+								<span class="input-group-addon">
+									<h:selectBooleanCheckbox value="#{beanTitles.raffinaSoloEstremi}" id="raffinaEstremiCheck" p:data-toggle="popover" p:data-placement="bottom" p:data-trigger="hover" p:data-content="#{i18n['dw4.solo_estremi']}" styleClass="popoveritem" />
+								</span>
+								<h:inputText id="refineDocsSearchTerms" styleClass="form-control submitsingleinput" value="#{beanTitles.raffinaSearchTerms}"/>
+							</div>
+						</div>
+					</div>
+					<div class="form-group">
+						<label for="templateForm:refineDocsAnno" class="col-lg-3 control-label"><span>#{i18n['dw4.anno']}</span></label>
+						<div class="col-lg-3">
+							<h:inputText id="refineDocsAnno" value="#{beanTitles.raffinaAnno}" styleClass="form-control" />
+						</div>
+						<label for="templateForm:refineDocsNumProt" class="col-lg-2 control-label"><span>#{i18n['dw4.nprot']}</span></label>
+						<div class="col-lg-3">
+							<h:inputText id="refineDocsNumProt" value="#{beanTitles.raffinaNumProt}" styleClass="form-control" />
+						</div>
+					</div>
+					
+				</div>
+				<div class="modal-footer">
+					<h:commandButton id="raffinaFilterBtn" action="#{beanTitles.raffina}" styleClass="btn btn-primary" value="#{i18n['dw4.refine']}" />
+					<button type="button" class="btn btn-default" data-dismiss="modal">#{i18n['acl.close']}</button>
+				</div>
+			</div>
+		</div>
+	</div>
+	<script type="text/javascript">
+	$('#refineDocsModal').on('show.bs.modal', function (event) {
+		setTimeout(function(){ $('#templateForm\\:refineDocsSearchTerms').focus(); }, 1000);
+	});
+	</script>
+
+</ui:composition>   
+</html>

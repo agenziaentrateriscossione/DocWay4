@@ -1,0 +1,882 @@
+<!DOCTYPE html>
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+    template="#{dwrepQueryGlobale.pageTemplate}"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:c="http://java.sun.com/jsp/jstl/core"
+    xmlns:p="http://xmlns.jcp.org/jsf/passthrough">
+
+<ui:define name="content">
+	<div id="advancedSearch" class="globale submitEnterKey">
+	
+		<ui:remove>
+			<h5 class="sub-header">#{i18n['dw4.globale_search']}</h5>
+		</ui:remove>
+
+		<!-- toolbar: inizio -->
+		<div class="btn-toolbar docway-toolbar" role="toolbar">
+			<div class="btn-group">
+				<h:commandLink id="advancedSearchBtn" action="#{dwrepQueryGlobale.queryPlain}" styleClass="btn btn-primary openwaitmsg" value="#{i18n['acl.search']}" />
+				<ui:remove>
+					<h:commandLink rendered="#{dwrepQueryGlobale.formsAdapter.funzionalitaDisponibili['showRefine']}" action="#{dwrepQueryGlobale.refine}" value="#{i18n['dw4.refine']}" styleClass="btn btn-default" />
+				</ui:remove>				
+				
+				<h:commandLink action="#{dwrepQueryGlobale.resetQuery}" styleClass="btn btn-default" value="#{i18n['acl.clear']}">
+					<f:ajax execute="@form" render="@form" />
+				</h:commandLink>
+			</div>
+		</div>
+		<!-- toolbar: fine -->
+		
+		<!-- messages: inizio -->
+		<h:panelGroup rendered="#{not empty facesContext.messageList}" layout="block" styleClass="docedit-messages alert alert-danger">
+			<h:messages styleClass="" id="validationMesseges" />
+		</h:panelGroup>
+		<!-- messages: fine -->
+		
+		<!-- scheda query: inizio -->
+		<div class="row-fluid" style="margin-top:10px;">
+		<div class="box span12">
+			<div class="box-content">
+				<div class="fieldset">
+					<div class="legend">#{i18n['acl.freesearch']}</div>
+					
+					<div class="form-group">
+						<label for="templateForm:doc_globale" class="col-sm-2 control-label">#{i18n['dw4.ricerca_full_text']}</label>
+						<div class="col-sm-9">
+							<h:inputText id="doc_globale" styleClass="form-control" value="#{dwrepQueryGlobale.custom_globale}"/>
+						</div>
+					</div>
+					<div class="form-group">
+						<div class="col-sm-offset-2 col-sm-9">
+						  <div class="radio-selection">
+							<h:selectOneRadio value="#{dwrepQueryGlobale.radio}" layout="pageDirection">
+								<f:selectItem itemValue="1" itemLabel="#{i18n['dw4.globale']}" />
+								<f:selectItem itemValue="2" itemLabel="#{i18n['dw4.globalerecord']}"/>
+								<f:selectItem itemValue="3" itemLabel="#{i18n['dw4.globaleallegati']}"/>
+							</h:selectOneRadio>
+					       </div>
+						</div>
+					</div>
+				</div>
+				
+				<h:panelGroup id="bloccoarrivo" layout="block">
+					<h:panelGroup rendered="#{dwrepQueryGlobale.arrivo or dwrepQueryGlobale.partenza}" layout="block" styleClass="#{dwrepQueryGlobale.arrivo and !dwrepQueryGlobale.partenza ? 'arrivo' : (dwrepQueryGlobale.arrivo and dwrepQueryGlobale.partenza ? 'globale' : 'partenza')}">
+						<div class="fieldset">
+							<div class="legend">
+								#{i18n[dwrepQueryGlobale.arrivo and !dwrepQueryGlobale.partenza ? 'dw4.protarrivo' : (dwrepQueryGlobale.partenza and ! dwrepQueryGlobale.arrivo ? 'dw4.protpartenza' : 'dw4.protocollo')]}
+							</div>
+							
+							<div class="form-group">
+								<label for="templateForm:doc_rifesternirifnome" class="col-sm-2 control-label">#{i18n[dwrepQueryGlobale.arrivo and !dwrepQueryGlobale.partenza ? 'dw4.mittente' : (dwrepQueryGlobale.partenza and ! dwrepQueryGlobale.arrivo ? 'dw4.destinatario' : 'dw4.mittdestesterni')]}</label>
+								<div class="col-sm-9">
+									<div class="input-group">
+										<h:inputText id="doc_rifesternirifnome" value="#{dwrepQueryGlobale.doc_rifesternirifnome}" styleClass="form-control" />
+										<div class="input-group-btn">
+											<h:commandLink title="#{i18n['acl.vocabulary']}" action="#{dwrepQueryGlobale.openIndexRifEsterniDoc}" styleClass="btn btn-default">
+												<f:ajax execute="@form" render="@form"/>
+												<span class="glyphicon glyphicon-search"></span>
+									        </h:commandLink>
+								        </div>
+							        </div>
+								</div>
+							</div>
+							<div class="form-group">
+								<label for="templateForm:codice_fiscale" class="col-sm-2 control-label">#{i18n['acl.cf']}</label>
+								<div class="col-sm-3">
+									<div class="input-group">
+										<h:inputText styleClass="form-control" value="#{dwrepQueryGlobale.codice_fiscale}" id="codice_fiscale"/>
+										<div class="input-group-btn">
+											<h:commandLink title="#{i18n['acl.vocabulary']}" action="#{dwrepQueryGlobale.openIndexCodFiscaleDoc}" styleClass="btn btn-default">
+												<f:ajax execute="@form" render="@form"/>
+												<span class="glyphicon glyphicon-search"></span>
+											</h:commandLink>
+										</div>
+									</div>
+								</div>
+								<label for="templateForm:partita_iva" class="col-sm-offset-1 col-sm-2 control-label">#{i18n['acl.piva']}</label>
+								<div class="col-sm-3">
+									<div class="input-group">
+										<h:inputText styleClass="form-control" value="#{dwrepQueryGlobale.partita_iva}" id="partita_iva"/>
+										<div class="input-group-btn">
+											<h:commandLink title="#{i18n['acl.vocabulary']}" action="#{dwrepQueryGlobale.openIndexPIvaDoc}" styleClass="btn btn-default">
+												<f:ajax execute="@form" render="@form"/>
+												<span class="glyphicon glyphicon-search"></span>
+											</h:commandLink>
+										</div>
+									</div>
+								</div>
+							</div>
+							<div class="form-group">
+								<label for="templateForm:doc_rifesternirifreferentenominativo" class="col-sm-2 control-label">#{i18n[dwrepQueryGlobale.arrivo and !dwrepQueryGlobale.partenza ? 'dw4.firmatario' : (dwrepQueryGlobale.partenza and ! dwrepQueryGlobale.arrivo ? 'dw4.corteseattenzione' : 'dw4.referente')]}</label>
+								<div class="col-sm-4">
+									<div class="input-group">
+										<h:inputText styleClass="form-control" value="#{dwrepQueryGlobale.doc_rifesternirifreferentenominativo}" id="doc_rifesternirifreferentenominativo"/>
+										<div class="input-group-btn">
+											<h:commandLink title="#{i18n['acl.vocabulary']}" action="#{dwrepQueryGlobale.openIndexFirmatarioDoc}" styleClass="btn btn-default">
+												<f:ajax execute="@form" render="@form"/>
+												<span class="glyphicon glyphicon-search"></span>
+											</h:commandLink>
+										</div>
+									</div>
+								</div>
+								<h:panelGroup rendered="#{dwrepQueryGlobale.partenza and !dwrepQueryGlobale.arrivo}">
+									<label for="templateForm:ccCheck" class="col-sm-2 control-label">#{i18n['dw4.cc']}</label>
+									<div class="col-sm-2">
+										<h:selectBooleanCheckbox id="ccCheck" value="#{dwrepQueryGlobale.custom_cc}"/>
+									</div>
+								</h:panelGroup>
+								<h:panelGroup rendered="#{!dwrepQueryGlobale.partenza or dwrepQueryGlobale.arrivo}">
+									<label for="templateForm:doc_rifesternirifreferenteruolo" class="col-sm-2 control-label">#{i18n['acl.role']}</label>
+									<div class="col-sm-3">
+										<div class="input-group">
+											<h:inputText styleClass="form-control" value="#{dwrepQueryGlobale.doc_rifesternirifreferenteruolo}" id="doc_rifesternirifreferenteruolo"/>
+											<div class="input-group-btn">
+												<h:commandLink title="#{i18n['acl.vocabulary']}" action="#{dwrepQueryGlobale.openIndexRuoloDoc}" styleClass="btn btn-default">
+													<f:ajax execute="@form" render="@form"/>
+													<span class="glyphicon glyphicon-search"></span>
+												</h:commandLink>
+											</div>
+										</div>
+									</div>
+								</h:panelGroup>
+							</div>
+							<h:panelGroup rendered="#{dwrepQueryGlobale.partenza and !dwrepQueryGlobale.arrivo}" layout="block" styleClass="form-group">
+								<label for="templateForm:doc_rifesternirifreferenteruoloP" class="col-sm-2 control-label">#{i18n['acl.role']}</label>
+								<div class="col-sm-4">
+									<div class="input-group">
+										<h:inputText styleClass="form-control" value="#{dwrepQueryGlobale.doc_rifesternirifreferenteruolo}" id="doc_rifesternirifreferenteruoloP"/>
+										<div class="input-group-btn">
+											<h:commandLink title="#{i18n['acl.vocabulary']}" action="#{dwrepQueryGlobale.openIndexRuoloDoc}" styleClass="btn btn-default">
+												<f:ajax execute="@form" render="@form"/>
+												<span class="glyphicon glyphicon-search"></span>
+											</h:commandLink>
+										</div>
+									</div>
+								</div>
+							</h:panelGroup>
+							<h:panelGroup rendered="#{(dwrepQueryGlobale.arrivo and !dwrepQueryGlobale.partenza) or (!dwrepQueryGlobale.arrivo and dwrepQueryGlobale.partenza)}" layout="block" styleClass="form-group">
+								<h:panelGroup rendered="#{dwrepQueryGlobale.arrivo}">
+									<label for="templateForm:doc_rifestrenirifnprot" class="col-sm-2 control-label">#{i18n['dw4.protmittente']}</label>
+									<div class="col-sm-3">
+										<div class="input-group">
+											<h:inputText styleClass="form-control" value="#{dwrepQueryGlobale.doc_rifestrenirifnprot}" id="doc_rifestrenirifnprot"/>
+											<div class="input-group-btn">
+												<h:commandLink title="#{i18n['acl.vocabulary']}" action="#{dwrepQueryGlobale.openIndexNumeroDoc}" styleClass="btn btn-default">
+													<f:ajax execute="@form" render="@form"/>
+													<span class="glyphicon glyphicon-search"></span>
+												</h:commandLink>
+											</div>
+										</div>
+									</div>
+								</h:panelGroup>
+								<ui:include src="../docway/rangeField.xhtml">
+									<ui:param name="label" value="#{i18n['dw4.data_doc']}" />
+									<ui:param name="id" value="range_docrifesternirifdataprot" />
+									<ui:param name="from_value" value="#{dwrepQueryGlobale.range_docrifesternirifdataprot_from}" />
+									<ui:param name="to_value" value="#{dwrepQueryGlobale.range_docrifesternirifdataprot_to}" />
+									<ui:param name="is_date" value="true" />
+									<ui:param name="offset" value="#{(dwrepQueryGlobale.arrivo) ? '1' : ''}" />
+								</ui:include>
+							</h:panelGroup>
+							<div class="form-group">
+								<div class="col-sm-offset-2 col-sm-9">
+									<h:selectBooleanCheckbox id="interopCheck" value="#{dwrepQueryGlobale.interoperabilita}"/>
+									<label for="templateForm:interopCheck" class="normal-weight-text">
+										<h:outputText value="#{i18n[dwrepQueryGlobale.arrivo and !dwrepQueryGlobale.partenza ? 'dw4.interopdoc' : (dwrepQueryGlobale.partenza and ! dwrepQueryGlobale.arrivo ? 'dw4.interoppartenzadoc' : 'dw4.interoparrivopartenzadoc')]}" />
+									</label>
+								</div>
+							</div>
+						</div> <!-- /fieldset -->
+					</h:panelGroup>
+				</h:panelGroup>
+				
+				<h:panelGroup id="repertori" layout="block">
+					<h:panelGroup rendered="#{dwrepQueryGlobale.repertori_multipli}" layout="block" styleClass="repertorio">
+						<div class="fieldset">
+							<div class="legend">#{i18n['dw4.repertori']}</div>
+							
+							<div class="form-group">
+								<label for="templateForm:repertorio_anno" class="col-sm-2 control-label">#{i18n['dw4.anno']}</label>
+								<div class="col-sm-2">
+									<div class="input-group">
+										<h:inputText styleClass="form-control" value="#{dwrepQueryGlobale.repertorio_anno}" id="repertorio_anno" />
+										<div class="input-group-btn">
+											<h:commandLink title="#{i18n['acl.vocabulary']}" action="#{dwrepQueryGlobale.openIndexAnnoRep}" styleClass="btn btn-default">
+												<f:ajax execute="@form" render="@form"/>
+												<span class="glyphicon glyphicon-search"></span>
+											</h:commandLink>
+										</div>
+									</div>
+								</div>
+								<ui:include src="../docway/rangeField.xhtml">
+									<ui:param name="label" value="#{i18n['dw4.num']}" />
+									<ui:param name="id" value="custom_rep" />
+									<ui:param name="from_value" value="#{dwrepQueryGlobale.custom_rep_da}" />
+									<ui:param name="to_value" value="#{dwrepQueryGlobale.custom_rep_a}" />
+									<ui:param name="is_date" value="false" />
+									<ui:param name="offset" value="2" />
+								</ui:include>
+							</div>
+							<div class="form-group">
+								<div class="col-sm-offset-2 col-sm-9">
+									<h:inputHidden id="custom_repertorio"/>
+									<ul class="list-inline">
+										<c:forEach var="rep" items="#{dwrepQueryGlobale.listof_rep}" varStatus="repIndice">
+											<c:forEach var="tabella" items="#{rep.list_tabelle}" varStatus="tableIndice">	
+												<li class="repertorio-inline-item">
+													<h:selectBooleanCheckbox id="rep_#{repIndice.index}_#{tableIndice.index}" value="#{tabella.selected}">
+														<f:ajax render="templateForm:scadenzaaol" execute="@form"/>
+													</h:selectBooleanCheckbox>
+													<label for="templateForm:rep_#{repIndice.index}_#{tableIndice.index}" class="normal-weight-text" style="white-space:normal;">#{rep.descrizione} #{tabella.text}</label>
+												</li>
+											</c:forEach>
+										</c:forEach>
+									</ul>
+								</div>
+							</div>
+							<div class="form-group">
+								<label for="templateForm:custom_numeri_rep" class="col-sm-2 control-label"><span>#{i18n['dw4.numeri_di_repertorio']}</span></label>
+								<div class="col-sm-9">
+									<h:inputText styleClass="form-control" value="#{dwrepQueryGlobale.custom_numeri_rep}" id="custom_numeri_rep" p:placeholder="#{i18n['dw4.separare_i_valori_da_virgola']}" title="#{i18n['dw4.separare_i_valori_da_virgola']}" />
+								</div>
+							</div>
+							<div class="form-group">
+								<label for="templateForm:tipologia_repertorio" class="col-sm-2 control-label"><span>#{i18n['dw4.tipodocumento']}</span></label>
+								<div class="col-sm-3">
+									<div class="input-group">
+										<h:inputText styleClass="form-control" value="#{dwrepQueryGlobale.tipologia_repertorio}" id="tipologia_repertorio" />
+										<div class="input-group-btn">
+											<h:commandLink title="#{i18n['acl.vocabulary']}" action="#{dwrepQueryGlobale.openIndexTipologiaDoc}" styleClass="btn btn-default">
+												<f:ajax execute="@form" render="@form"/>
+												<span class="glyphicon glyphicon-search"></span>
+											</h:commandLink>
+										</div>
+									</div>
+								</div>
+							</div>
+							<h:panelGroup id="scadenzaaol" layout="block">
+								<h:panelGroup rendered="#{dwrepQueryGlobale.selectRepertorioCustom}">
+									<h:panelGroup rendered="#{dwrepQueryGlobale.formsAdapter.funzionalitaDisponibili['abilitaRichiedenteInterno'] or dwrepQueryGlobale.formsAdapter.funzionalitaDisponibili['abilitaRichiedenteEsterno'] or dwrepQueryGlobale.formsAdapter.funzionalitaDisponibili['abilitaRichiedenteInternoEsterno']}" layout="block" styleClass="form-group">
+										<h:panelGroup rendered="#{dwrepQueryGlobale.formsAdapter.funzionalitaDisponibili['abilitaRichiedenteEsterno'] or dwrepQueryGlobale.formsAdapter.funzionalitaDisponibili['abilitaRichiedenteInternoEsterno']}">
+											<label for="templateForm:richiedenteEsterno" class="col-sm-2 control-label"><span>#{i18n['dw4.richiedente_esterno']}</span></label>
+											<div class="col-sm-3">
+												<div class="input-group">
+													<h:inputText styleClass="form-control" value="#{dwrepQueryGlobale.richiedenteEsterno}" id="richiedenteEsterno"/>
+													<div class="input-group-btn">
+														<h:commandLink title="#{i18n['acl.vocabulary']}" action="#{dwrepQueryGlobale.openIndexRichiedenteEsternoDoc}" styleClass="btn btn-default">
+															<f:ajax execute="@form" render="@form"/>
+															<span class="glyphicon glyphicon-search"></span>
+														</h:commandLink>
+													</div>
+												</div>
+											</div>
+										</h:panelGroup>
+										<h:panelGroup rendered="#{dwrepQueryGlobale.formsAdapter.funzionalitaDisponibili['abilitaRichiedenteInterno'] or dwrepQueryGlobale.formsAdapter.funzionalitaDisponibili['abilitaRichiedenteInternoEsterno']}">
+											<label for="templateForm:richiedenteInterno" class="col-sm-offset-1 col-sm-2 control-label"><span>#{i18n['dw4.richiedente_interno']}</span></label>
+											<div class="col-sm-3">
+												<div class="input-group">
+													<h:inputText styleClass="form-control" value="#{dwrepQueryGlobale.richiedenteInterno}" id="richiedenteInterno"/>
+													<div class="input-group-btn">
+														<h:commandLink title="#{i18n['acl.vocabulary']}" action="#{dwrepQueryGlobale.openIndexRichiedenteInternoDoc}" styleClass="btn btn-default">
+															<f:ajax execute="@form" render="@form"/>
+															<span class="glyphicon glyphicon-search"></span>
+														</h:commandLink>
+													</div>
+												</div>
+											</div>
+										</h:panelGroup>
+									</h:panelGroup>
+									<div class="form-group">
+										<ui:include src="../docway/rangeField.xhtml">
+											<ui:param name="label" value="#{i18n['dw4.scadenzaaol']}" />
+											<ui:param name="id" value="range_docpubblicazioneal" />
+											<ui:param name="from_value" value="#{dwrepQueryGlobale.range_docpubblicazioneal_from}" />
+											<ui:param name="to_value" value="#{dwrepQueryGlobale.range_docpubblicazioneal_to}" />
+											<ui:param name="is_date" value="false" />
+										</ui:include>
+									</div>
+								</h:panelGroup>
+							</h:panelGroup>
+						</div> <!-- /fieldset -->
+					</h:panelGroup>
+				</h:panelGroup>
+				
+				<h:panelGroup rendered="#{!dwrepQueryGlobale.formsAdapter.funzionalitaDisponibili['nascondiprotocollo']}" id="estremiProtocolloPanel" layout="block">
+					<div class="fieldset">
+						<div class="legend">
+							<h:commandLink action="#{dwrepQueryGlobale.openCloseWidgetEstremi}" styleClass="legend-link">
+								<f:ajax render="templateForm:estremiProtocolloPanel"/>
+								#{i18n['dw4.estremiprotocollo']}
+								<span class="pull-right">
+									<span class="glyphicon #{dwrepQueryGlobale.estremi_protocollo ? 'glyphicon-collapse-up' : 'glyphicon-collapse-down'}"></span>
+								</span>
+							</h:commandLink>
+						</div>
+						
+						<h:panelGroup rendered="#{dwrepQueryGlobale.estremi_protocollo}" id="estremiProtocolloCPanel" layout="block">
+							<ui:include src="../docway/multisocietaFields.xhtml">
+								<ui:param name="beanDoc" value="#{dwrepQueryGlobale}" />
+				        	</ui:include>
+				        	<div class="form-group">
+				        		<label for="templateForm:doc_anno" class="col-sm-2 control-label">#{i18n['dw4.anno']}</label>
+								<div class="col-sm-2">
+									<div class="input-group">
+										<h:inputText styleClass="form-control" value="#{dwrepQueryGlobale.doc_anno}" id="doc_anno" />
+										<div class="input-group-btn">
+											<h:commandLink title="#{i18n['acl.vocabulary']}" action="#{dwrepQueryGlobale.openIndexAnnoDoc}" styleClass="btn btn-default">
+												<f:ajax execute="@form" render="@form"/>
+												<span class="glyphicon glyphicon-search"></span>
+											</h:commandLink>
+										</div>
+									</div>
+								</div>
+				        	</div>
+				        	<div class="form-group">
+				        		<ui:include src="../docway/rangeField.xhtml">
+									<ui:param name="label" value="#{i18n['dw4.numero_protocollo']}" />
+									<ui:param name="id" value="custom_num_prot" />
+									<ui:param name="from_value" value="#{dwrepQueryGlobale.custom_da_num_prot}" />
+									<ui:param name="to_value" value="#{dwrepQueryGlobale.custom_a_num_prot}" />
+									<ui:param name="is_date" value="false" />
+								</ui:include>
+								<ui:include src="../docway/rangeField.xhtml">
+									<ui:param name="label" value="#{i18n['dw4.data_protocollo']}" />
+									<ui:param name="id" value="range_docdataprot" />
+									<ui:param name="from_value" value="#{dwrepQueryGlobale.range_docdataprot_from}" />
+									<ui:param name="to_value" value="#{dwrepQueryGlobale.range_docdataprot_to}" />
+									<ui:param name="is_date" value="true" />
+									<ui:param name="offset" value="1" />
+								</ui:include>
+				        	</div>
+				        	<div class="form-group">
+								<label for="templateForm:custom_numeri_prot" class="col-sm-2 control-label"><span>#{i18n['dw4.numeri_di_protocollo']}</span></label>
+								<div class="col-sm-9">
+									<h:inputText styleClass="form-control" value="#{dwrepQueryGlobale.custom_numeri_prot}" id="custom_numeri_prot" p:placeholder="#{i18n['dw4.separare_i_valori_da_virgola']}" title="#{i18n['dw4.separare_i_valori_da_virgola']}" />
+								</div>
+							</div>
+							<div class="form-group">
+								<label class="col-sm-2 control-label">#{i18n['dw4.annullati']}</label>
+								<div class="col-sm-2">
+									<span class="margin-right-10" style="white-space:nowrap;">
+										<h:selectBooleanCheckbox value="#{dwrepQueryGlobale.annullati}" id="annullati_si"/>
+										<label for="templateForm:annullati_si" class="normal-weight-text">#{i18n['dw4.yes']}</label>
+									</span>
+									<span style="white-space:nowrap;">
+										<h:selectBooleanCheckbox value="#{dwrepQueryGlobale.nonannullati}" id="annullati_no"/>
+										<label for="templateForm:annullati_no" class="normal-weight-text">#{i18n['dw4.no']}</label>
+									</span>
+								</div>
+								<h:panelGroup rendered="#{dwrepQueryGlobale.formsAdapter.funzionalitaDisponibili['abilitaBozze']}">
+									<label class="col-sm-1 control-label">#{i18n['dw4.bozza']}</label>
+									<div class="col-sm-2">
+										<span class="margin-right-10" style="white-space:nowrap;">
+											<h:selectBooleanCheckbox value="#{dwrepQueryGlobale.bozze}" id="bozze_si"/>
+											<label for="templateForm:bozze_si" class="normal-weight-text">#{i18n['dw4.yes']}</label>
+										</span>
+										<span style="white-space:nowrap;">
+											<h:selectBooleanCheckbox value="#{dwrepQueryGlobale.nonbozze}" id="bozze_no"/>
+											<label for="templateForm:bozze_no" class="normal-weight-text">#{i18n['dw4.no']}</label>
+										</span>
+									</div>
+								</h:panelGroup>
+								<label class="col-sm-1 control-label">#{i18n['dw4.conservati']}</label>
+								<div class="col-sm-2">
+									<span class="margin-right-10" style="white-space:nowrap;">
+										<h:selectBooleanCheckbox value="#{dwrepQueryGlobale.conservati}" id="conservati_si"/>
+										<label for="templateForm:conservati_si" class="normal-weight-text">#{i18n['dw4.yes']}</label>
+									</span>
+									<span style="white-space:nowrap;">
+										<h:selectBooleanCheckbox value="#{dwrepQueryGlobale.nonconservati}" id="conservati_no"/>
+										<label for="templateForm:conservati_no" class="normal-weight-text">#{i18n['dw4.no']}</label>
+									</span>
+								</div>
+							</div>
+							<div class="form-group">
+								<label for="templateForm:protDifferitoCheck" class="col-sm-2 control-label">#{i18n['dw4.differito']}</label>
+								<div class="col-sm-1">
+									<h:selectBooleanCheckbox value="#{dwrepQueryGlobale.differito}" id="protDifferitoCheck"/>
+								</div>
+								<h:panelGroup rendered="#{dwrepQueryGlobale.formsAdapter.funzionalitaDisponibili['abilitaLibroFirma']}">
+									<label for="templateForm:daFirmareCheck" class="col-sm-2 control-label">#{i18n['dw4.attesa_di_firma']}</label>
+									<div class="col-sm-1">
+										<h:selectBooleanCheckbox value="#{dwrepQueryGlobale.da_firmare}" id="daFirmareCheck"/>
+									</div>
+								</h:panelGroup>
+							</div>
+				        </h:panelGroup>
+					</div> <!-- /fieldset -->
+				</h:panelGroup>
+				
+				<h:panelGroup id="datiDocPanel" layout="block">
+					<div class="fieldset">
+						<div class="legend">
+							<h:commandLink action="#{dwrepQueryGlobale.openCloseWidgetDati}" styleClass="legend-link">
+								<f:ajax render="templateForm:datiDocPanel"/>
+								#{i18n['dw4.datidoc']}
+								<span class="pull-right">
+									<span class="glyphicon #{dwrepQueryGlobale.dati_documento ? 'glyphicon-collapse-up' : 'glyphicon-collapse-down'}"></span>
+								</span>
+							</h:commandLink>
+						</div>
+						
+						<h:panelGroup rendered="#{dwrepQueryGlobale.dati_documento}" id="datiDocCPanel" layout="block">
+							<div class="form-group">
+								<label for="templateForm:doc_oggetto" class="col-sm-2 control-label">#{i18n['dw4.object']}</label>
+								<div class="col-sm-9">
+									<div class="input-group">
+										<h:inputText styleClass="form-control" value="#{dwrepQueryGlobale.doc_oggetto}" id="doc_oggetto" />
+										<div class="input-group-btn">
+											<h:commandLink title="#{i18n['acl.vocabulary']}" action="#{dwrepQueryGlobale.openIndexOggettoDoc}" styleClass="btn btn-default">
+												<f:ajax execute="@form" render="@form"/>
+												<span class="glyphicon glyphicon-search"></span>
+											</h:commandLink>
+										</div>
+									</div>
+								</div>
+							</div>
+							<div class="form-group">
+								<label for="templateForm:custom_doc_classif" class="col-sm-2 control-label">#{i18n['dw4.classif']}</label>
+								<div class="col-sm-1">
+									<h:inputText styleClass="form-control" value="#{dwrepQueryGlobale.custom_doc_classifcod}" id="custom_doc_classifcod"/>
+								</div>
+								<div class="col-sm-8">
+									<div class="input-group">
+										<h:inputText styleClass="form-control" value="#{dwrepQueryGlobale.custom_doc_classif}" id="custom_doc_classif"/>
+										<div class="input-group-btn">
+											<h:commandLink title="#{i18n['acl.vocabulary']}" action="#{dwrepQueryGlobale.openIndexClassifDoc}" styleClass="btn btn-default">
+												<f:ajax execute="@form" render="@form"/>
+												<span class="glyphicon glyphicon-search"></span>
+											</h:commandLink>
+										</div>
+									</div>
+								</div>
+							</div>
+							<div class="form-group">
+								<label for="templateForm:doc_voceindice" class="col-sm-2 control-label">#{i18n['dw4.index']}</label>
+								<div class="col-sm-9">
+									<div class="input-group">
+										<h:inputText styleClass="form-control" value="#{dwrepQueryGlobale.doc_voceindice}" id="doc_voceindice"/>
+										<div class="input-group-btn">
+											<h:commandLink title="#{i18n['acl.vocabulary']}" action="#{dwrepQueryGlobale.openIndexVoceIndice}" styleClass="btn btn-default">
+												<f:ajax execute="@form" render="@form"/>
+												<span class="glyphicon glyphicon-search"></span>
+											</h:commandLink>
+										</div>
+									</div>
+								</div>
+							</div>
+							<div class="form-group">
+								<label for="templateForm:doc_allegato" class="col-sm-2 control-label">#{i18n['dw4.attachments']}</label>
+								<div class="col-sm-3">
+									<div class="input-group">
+										<h:inputText styleClass="form-control" value="#{dwrepQueryGlobale.doc_allegato}" id="doc_allegato"/>
+										<div class="input-group-btn">
+											<h:commandLink title="#{i18n['acl.vocabulary']}" action="#{dwrepQueryGlobale.openIndexAllegatoDoc}" styleClass="btn btn-default">
+												<f:ajax execute="@form" render="@form"/>
+												<span class="glyphicon glyphicon-search"></span>
+											</h:commandLink>
+										</div>
+									</div>
+								</div>
+								<label for="templateForm:doc_postit" class="col-sm-offset-1 col-sm-2 control-label">#{i18n['dw4.annotazioni']}</label>
+								<div class="col-sm-3">
+									<div class="input-group">
+										<h:inputText styleClass="form-control" value="#{dwrepQueryGlobale.doc_postit}" id="doc_postit"/>
+										<div class="input-group-btn">
+											<h:commandLink title="#{i18n['acl.vocabulary']}" action="#{dwrepQueryGlobale.openIndexPostitDoc}" styleClass="btn btn-default">
+												<f:ajax execute="@form" render="@form"/>
+												<span class="glyphicon glyphicon-search"></span>
+											</h:commandLink>
+										</div>
+									</div>
+								</div>
+							</div>
+							<div class="form-group">
+								<label for="templateForm:doc_note" class="col-sm-2 control-label">#{i18n['dw4.notes']}</label>
+								<div class="col-sm-3">
+									<div class="input-group">
+										<h:inputText styleClass="form-control" value="#{dwrepQueryGlobale.doc_note}" id="doc_note"/>
+										<div class="input-group-btn">
+											<h:commandLink title="#{i18n['acl.vocabulary']}" action="#{dwrepQueryGlobale.openIndexNoteDoc}" styleClass="btn btn-default">
+												<f:ajax execute="@form" render="@form"/>
+												<span class="glyphicon glyphicon-search"></span>
+											</h:commandLink>
+										</div>
+									</div>
+								</div>
+								<label for="templateForm:doc_keywords" class="col-sm-offset-1 col-sm-2 control-label">#{i18n['dw4.keywords']}</label>
+								<div class="col-sm-3">
+									<div class="input-group">
+										<h:inputText styleClass="form-control" value="#{dwrepQueryGlobale.doc_keywords}" id="doc_keywords"/>
+										<div class="input-group-btn">
+											<h:commandLink title="#{i18n['acl.vocabulary']}" action="#{dwrepQueryGlobale.openIndexKeywordsDoc}" styleClass="btn btn-default">
+												<f:ajax execute="@form" render="@form"/>
+												<span class="glyphicon glyphicon-search"></span>
+											</h:commandLink>
+										</div>
+									</div>
+								</div>
+							</div>
+							<div class="form-group">
+								<label for="templateForm:mezzoTrasmissioneDoc" class="col-sm-2 control-label">#{i18n['dw4.a_mezzo']}</label>
+								<div class="col-sm-3">
+									<h:selectOneMenu id="mezzoTrasmissioneDoc" value="#{dwrepQueryGlobale.mezzo_trasmissione}" styleClass="form-control">
+										<f:selectItems value="#{dwrepQueryGlobale.arrivo_mezzo_trasmissione_select}" var="option" itemValue="#{option.value}" itemLabel="#{option.label}"/>
+										<f:ajax  execute="@form" render="@form"></f:ajax>
+									</h:selectOneMenu>
+								</div>
+								<label for="templateForm:tipologiaDoc" class="col-sm-offset-1 col-sm-2 control-label">#{i18n['acl.tipologia']}</label>
+								<div class="col-sm-3">
+									<h:selectOneMenu id="tipologiaDoc" value="#{dwrepQueryGlobale.tipologia}" styleClass="form-control">
+										<f:selectItems value="#{dwrepQueryGlobale.arrivo_tipologia_select}" var="option" itemValue="#{option.value}" itemLabel="#{option.label}"/>
+										<f:ajax  execute="@form" render="@form"></f:ajax>
+									</h:selectOneMenu>
+								</div>
+							</div>
+						</h:panelGroup>
+					</div> <!-- /fieldset -->
+				</h:panelGroup>
+				
+				<h:panelGroup id="workflowPanel" rendered="#{dwrepQueryGlobale.formsAdapter.funzionalitaDisponibili['abilitaeXtraWayWorkflow']}" layout="block">
+					<div class="fieldset">
+						<div class="legend">
+							<h:commandLink action="#{dwrepQueryGlobale.openCloseWidgetWorklofw}" styleClass="legend-link">
+								<f:ajax render="templateForm:workflowPanel"/>
+								#{i18n['dw4.workflow']}
+								<span class="pull-right">
+									<span class="glyphicon #{dwrepQueryGlobale.workflows_info ? 'glyphicon-collapse-up' : 'glyphicon-collapse-down'}"></span>
+								</span>
+							</h:commandLink>
+						</div>
+						
+						<h:panelGroup rendered="#{dwrepQueryGlobale.workflows_info}" id="workflowCPanel" layout="block">
+							<div class="form-group">
+								<label for="templateForm:doc_workflowlabel" class="col-sm-2 control-label">#{i18n['dw4.workflowdefinition_name']}</label>
+								<div class="col-sm-9">
+									<div class="input-group">
+										<h:inputText styleClass="form-control" value="#{dwrepQueryGlobale.workflow_label}" id="doc_workflowlabel" />
+										<div class="input-group-btn">
+											<h:commandLink title="#{i18n['acl.vocabulary']}" action="#{dwrepQueryGlobale.openIndexWorkflowLabel}" styleClass="btn btn-default">
+												<f:ajax execute="@form" render="@form"/>
+												<span class="glyphicon glyphicon-search"></span>
+											</h:commandLink>
+										</div>
+									</div>
+								</div>
+							</div>
+							<div class="form-group">
+								<label class="col-sm-2 control-label">#{i18n['dw4.workflow_stato']}</label>
+								<div class="col-sm-9">
+									<div class="input-group">
+										<span class="margin-right-20" style="white-space:nowrap;">
+                                           <h:selectBooleanCheckbox value="#{dwrepQueryGlobale.workflow_stato_attivo}" id="workflow_stato_attivo" />
+                                           <label for="templateForm:workflow_stato_attivo" class="normal-weight-text">#{i18n['dw4.workflow_stato_attivo']}</label>
+                                       </span>
+                                       <span class="margin-right-20" style="white-space:nowrap;">
+                                           <h:selectBooleanCheckbox value="#{dwrepQueryGlobale.workflow_stato_concluso}" id="workflow_stato_concluso" />
+                                           <label for="templateForm:workflow_stato_concluso" class="normal-weight-text">#{i18n['dw4.workflow_stato_concluso']}</label>
+                                       </span>
+                                       <span style="white-space:nowrap;">
+                                           <h:selectBooleanCheckbox value="#{dwrepQueryGlobale.workflow_stato_cancellato}" id="workflow_stato_cancellato" />
+                                           <label for="templateForm:workflow_stato_cancellato" class="normal-weight-text">#{i18n['dw4.workflow_stato_cancellato']}</label>
+                                       </span>
+									</div>
+								</div>
+							</div>
+						</h:panelGroup>
+					</div> <!-- /fieldset -->
+				</h:panelGroup>
+				
+				<h:panelGroup id="responsabilitaPanel" layout="block">
+					<div class="fieldset">
+						<div class="legend">
+							<h:commandLink action="#{dwrepQueryGlobale.openCloseWidgetResponsabilita}" styleClass="legend-link">
+								<f:ajax render="templateForm:responsabilitaPanel"/>
+								#{i18n['dw4.assegnatari']}
+								<span class="pull-right">
+									<span class="glyphicon #{dwrepQueryGlobale.responsabilita ? 'glyphicon-collapse-up' : 'glyphicon-collapse-down'}"></span>
+								</span>
+							</h:commandLink>
+						</div>
+						
+						<h:panelGroup rendered="#{dwrepQueryGlobale.responsabilita}" id="responsabilitaCPanel" layout="block">
+							<h:panelGroup id="rpa" layout="block" styleClass="form-group">
+								<label for="templateForm:rpanomeuff" class="col-sm-2 control-label">#{i18n['dw4.proprietario']}</label>
+								<div class="col-sm-4">
+									<div class="input-group">
+										<h:panelGroup rendered="#{dwrepQueryGlobale.interno and !dwrepQueryGlobale.arrivo and !dwrepQueryGlobale.partenza and !dwrepQueryGlobale.varie}">
+											<span class="input-group-addon">
+												<h:selectBooleanCheckbox value="#{dwrepQueryGlobale.escludi_our}" id="escludi_our" p:data-toggle="popover" p:data-placement="top" p:data-trigger="hover" p:data-content="#{i18n['dw4.escludi']}" styleClass="#{ component.valid ? '' : 'invalidinput' } popoveritem" />
+									      	</span>
+								      	</h:panelGroup>
+										<h:inputText styleClass="form-control" value="#{dwrepQueryGlobale.rpanomeuff}" id="rpanomeuff" p:placeholder="#{i18n['acl.uff']}" title="#{i18n['acl.uff']}" />
+										<div class="input-group-btn">
+											<h:commandLink title="#{i18n['acl.vocabulary']}" action="#{dwrepQueryGlobale.openIndexUORDoc}" styleClass="btn btn-default">
+												<f:ajax execute="@form" render="@form"/>
+												<span class="glyphicon glyphicon-search"></span>
+											</h:commandLink>
+										</div>
+									</div>
+								</div>
+								<div class="col-sm-5">
+									<div class="input-group">
+										<h:panelGroup rendered="#{dwrepQueryGlobale.interno and !dwrepQueryGlobale.arrivo and !dwrepQueryGlobale.partenza and !dwrepQueryGlobale.varie}">
+											<span class="input-group-addon">
+												<h:selectBooleanCheckbox value="#{dwrepQueryGlobale.escludi_rpa}" id="escludi_rpa" p:data-toggle="popover" p:data-placement="top" p:data-trigger="hover" p:data-content="#{i18n['dw4.escludi']}" styleClass="#{ component.valid ? '' : 'invalidinput' } popoveritem" />
+									      	</span>
+								      	</h:panelGroup>
+										<h:inputText styleClass="form-control" value="#{dwrepQueryGlobale.rpanomepersona}" id="rpanomepersona" p:placeholder="#{i18n['acl.oper']}" title="#{i18n['acl.oper']}" />
+										<div class="input-group-btn">
+											<h:commandLink title="#{i18n['acl.vocabulary']}" action="#{dwrepQueryGlobale.openIndexRPADoc}" styleClass="btn btn-default">
+												<f:ajax execute="@form" render="@form"/>
+												<span class="glyphicon glyphicon-search"></span>
+											</h:commandLink>
+										</div>
+									</div>									
+								</div>
+							</h:panelGroup>
+							<h:panelGroup id="rpam">
+								<h:panelGroup rendered="#{dwrepQueryGlobale.interno and !dwrepQueryGlobale.arrivo and !dwrepQueryGlobale.partenza and !dwrepQueryGlobale.varie}" layout="block" styleClass="form-group">
+									<label for="templateForm:rpamnomeuff" class="col-sm-2 control-label">#{i18n['dw4.proprietariom']}</label>
+									<div class="col-sm-4">
+										<div class="input-group">
+											<h:inputText styleClass="form-control" value="#{dwrepQueryGlobale.rpamnomeuff}" id="rpamnomeuff" p:placeholder="#{i18n['acl.uff']}" title="#{i18n['acl.uff']}" />
+											<div class="input-group-btn">
+												<h:commandLink title="#{i18n['acl.vocabulary']}" action="#{dwrepQueryGlobale.openIndexUORMDoc}" styleClass="btn btn-default">
+													<f:ajax execute="@form" render="@form"/>
+													<span class="glyphicon glyphicon-search"></span>
+												</h:commandLink>
+											</div>
+										</div>
+									</div>
+									<div class="col-sm-5">
+										<div class="input-group">
+											<h:inputText styleClass="form-control" value="#{dwrepQueryGlobale.rpamnomepersona}" id="rpamnomepersona" p:placeholder="#{i18n['acl.oper']}" title="#{i18n['acl.oper']}" />
+											<div class="input-group-btn">
+												<h:commandLink title="#{i18n['acl.vocabulary']}" action="#{dwrepQueryGlobale.openIndexRPAMDoc}" styleClass="btn btn-default">
+													<f:ajax execute="@form" render="@form"/>
+													<span class="glyphicon glyphicon-search"></span>
+												</h:commandLink>
+											</div>
+										</div>									
+									</div>
+								</h:panelGroup>
+							</h:panelGroup>
+							<div class="form-group">
+								<label for="templateForm:cdsnomeuff" class="col-sm-2 control-label">#{i18n['dw4.conferenza_di_servizi']}</label>
+								<div class="col-sm-4">
+									<div class="input-group">
+										<h:inputText styleClass="form-control" value="#{dwrepQueryGlobale.cdsnomeuff}" id="cdsnomeuff" p:placeholder="#{i18n['acl.uff']}" title="#{i18n['acl.uff']}" />
+										<div class="input-group-btn">
+											<h:commandLink title="#{i18n['acl.vocabulary']}" action="#{dwrepQueryGlobale.openIndexCDSUffDoc}" styleClass="btn btn-default">
+												<f:ajax execute="@form" render="@form"/>
+												<span class="glyphicon glyphicon-search"></span>
+											</h:commandLink>
+										</div>
+									</div>
+								</div>
+								<div class="col-sm-5">
+									<div class="input-group">
+										<h:inputText styleClass="form-control" value="#{dwrepQueryGlobale.cdsnomepersona}" id="cdsnomepersona" p:placeholder="#{i18n['acl.oper']}" title="#{i18n['acl.oper']}" />
+										<div class="input-group-btn">
+											<h:commandLink title="#{i18n['acl.vocabulary']}" action="#{dwrepQueryGlobale.openIndexCDSPersonaDoc}" styleClass="btn btn-default">
+												<f:ajax execute="@form" render="@form"/>
+												<span class="glyphicon glyphicon-search"></span>
+											</h:commandLink>
+										</div>
+									</div>									
+								</div>
+							</div>
+							<div class="form-group">
+								<label for="templateForm:opnomeuff" class="col-sm-2 control-label">#{i18n['dw4.operatore_incaricato']}</label>
+								<div class="col-sm-4">
+									<div class="input-group">
+										<h:inputText styleClass="form-control" value="#{dwrepQueryGlobale.opnomeuff}" id="opnomeuff" p:placeholder="#{i18n['acl.uff']}" title="#{i18n['acl.uff']}" />
+										<div class="input-group-btn">
+											<h:commandLink title="#{i18n['acl.vocabulary']}" action="#{dwrepQueryGlobale.openIndexOPUffDoc}" styleClass="btn btn-default">
+												<f:ajax execute="@form" render="@form"/>
+												<span class="glyphicon glyphicon-search"></span>
+											</h:commandLink>
+										</div>
+									</div>
+								</div>
+								<div class="col-sm-5">
+									<div class="input-group">
+										<h:inputText styleClass="form-control" value="#{dwrepQueryGlobale.opnomepersona}" id="opnomepersona" p:placeholder="#{i18n['acl.oper']}" title="#{i18n['acl.oper']}" />
+										<div class="input-group-btn">
+											<h:commandLink title="#{i18n['acl.vocabulary']}" action="#{dwrepQueryGlobale.openIndexOPPersonaDoc}" styleClass="btn btn-default">
+												<f:ajax execute="@form" render="@form"/>
+												<span class="glyphicon glyphicon-search"></span>
+											</h:commandLink>
+										</div>
+									</div>									
+								</div>
+							</div>
+							<div class="form-group">
+								<label for="templateForm:ccnomeuff" class="col-sm-2 control-label">#{i18n['dw4.cc']}</label>
+								<div class="col-sm-4">
+									<div class="input-group">
+										<h:inputText styleClass="form-control" value="#{dwrepQueryGlobale.ccnomeuff}" id="ccnomeuff" p:placeholder="#{i18n['acl.uff']}" title="#{i18n['acl.uff']}" />
+										<div class="input-group-btn">
+											<h:commandLink title="#{i18n['acl.vocabulary']}" action="#{dwrepQueryGlobale.openIndexCCUffDoc}" styleClass="btn btn-default">
+												<f:ajax execute="@form" render="@form"/>
+												<span class="glyphicon glyphicon-search"></span>
+											</h:commandLink>
+										</div>
+									</div>
+								</div>
+								<div class="col-sm-5">
+									<div class="input-group">
+										<h:inputText styleClass="form-control" value="#{dwrepQueryGlobale.ccnomepersona}" id="ccnomepersona" p:placeholder="#{i18n['acl.oper']}" title="#{i18n['acl.oper']}" />
+										<div class="input-group-btn">
+											<h:commandLink title="#{i18n['acl.vocabulary']}" action="#{dwrepQueryGlobale.openIndexCCPersonaDoc}" styleClass="btn btn-default">
+												<f:ajax execute="@form" render="@form"/>
+												<span class="glyphicon glyphicon-search"></span>
+											</h:commandLink>
+										</div>
+									</div>									
+								</div>
+							</div>
+						</h:panelGroup>
+					</div> <!-- /fieldset -->
+				</h:panelGroup>
+				
+				<h:panelGroup id="informazioniPanel" layout="block">
+					<div class="fieldset">
+						<div class="legend">
+							<h:commandLink action="#{dwrepQueryGlobale.openCloseWidgetInformazioni}" styleClass="legend-link">
+								<f:ajax render="templateForm:informazioniPanel"/>
+								#{i18n['acl.servicesinformation']}
+								<span class="pull-right">
+									<span class="glyphicon #{dwrepQueryGlobale.responsabilita ? 'glyphicon-collapse-up' : 'glyphicon-collapse-down'}"></span>
+								</span>
+							</h:commandLink>
+						</div>
+						
+						<h:panelGroup rendered="#{dwrepQueryGlobale.informazioni_servizio}" id="informazioniCPanel" layout="block">
+							<div class="form-group">
+								<ui:include src="../docway/rangeField.xhtml">
+									<ui:param name="label" value="#{i18n['dw4.data_creazione']}" />
+									<ui:param name="id" value="range_docstoriacreazionedata" />
+									<ui:param name="from_value" value="#{dwrepQueryGlobale.range_docstoriacreazionedata_from}" />
+									<ui:param name="to_value" value="#{dwrepQueryGlobale.range_docstoriacreazionedata_to}" />
+									<ui:param name="is_date" value="true" />
+								</ui:include>
+								<ui:include src="../docway/rangeField.xhtml">
+									<ui:param name="label" value="#{i18n['dw4.id']}" />
+									<ui:param name="id" value="rangenum_docnrecord" />
+									<ui:param name="from_value" value="#{dwrepQueryGlobale.rangenum_docnrecord_from}" />
+									<ui:param name="to_value" value="#{dwrepQueryGlobale.rangenum_docnrecord_to}" />
+									<ui:param name="is_date" value="false" />
+									<ui:param name="offset" value="1" />
+								</ui:include>
+							</div>
+							<div class="form-group">
+								<label for="templateForm:doc_storiacreazioneoper" class="col-sm-2 control-label">#{i18n['dw4.creazione-per']}</label>
+								<div class="col-sm-5">
+									<div class="input-group">
+										<h:inputText styleClass="form-control" value="#{dwrepQueryGlobale.doc_storiacreazioneoper}" id="doc_storiacreazioneoper" p:placeholder="#{i18n['acl.oper']}" title="#{i18n['acl.oper']}" />
+										<div class="input-group-btn">
+											<h:commandLink title="#{i18n['acl.vocabulary']}" action="#{dwrepQueryGlobale.openIndexCreazionePersonaDoc}" styleClass="btn btn-default">
+												<f:ajax execute="@form" render="@form"/>
+												<span class="glyphicon glyphicon-search"></span>
+											</h:commandLink>
+										</div>
+									</div>									
+								</div>
+								<div class="col-sm-4">
+									<div class="input-group">
+										<h:inputText styleClass="form-control" value="#{dwrepQueryGlobale.doc_storiacreazioneuffoper}" id="doc_storiacreazioneuffoper" p:placeholder="#{i18n['acl.uff']}" title="#{i18n['acl.uff']}" />
+										<div class="input-group-btn">
+											<h:commandLink title="#{i18n['acl.vocabulary']}" action="#{dwrepQueryGlobale.openIndexCreazioneUffDoc}" styleClass="btn btn-default">
+												<f:ajax execute="@form" render="@form"/>
+												<span class="glyphicon glyphicon-search"></span>
+											</h:commandLink>
+										</div>
+									</div>
+								</div>
+							</div>
+							<h:panelGroup rendered="#{!dwrepQueryGlobale.formsAdapter.funzionalitaDisponibili['nascondiprotocollo']}" layout="block" styleClass="form-group">
+								<label for="templateForm:doc_storiaprotocollazioneoper" class="col-sm-2 control-label">#{i18n['dw4.protocollazione-per']}</label>
+								<div class="col-sm-5">
+									<div class="input-group">
+										<h:inputText styleClass="form-control" value="#{dwrepQueryGlobale.doc_storiaprotocollazioneoper}" id="doc_storiaprotocollazioneoper" p:placeholder="#{i18n['acl.oper']}" title="#{i18n['acl.oper']}" />
+										<div class="input-group-btn">
+											<h:commandLink title="#{i18n['acl.vocabulary']}" action="#{dwrepQueryGlobale.openIndexProtocollazionePersonaDoc}" styleClass="btn btn-default">
+												<f:ajax execute="@form" render="@form"/>
+												<span class="glyphicon glyphicon-search"></span>
+											</h:commandLink>
+										</div>
+									</div>									
+								</div>
+								<div class="col-sm-4">
+									<div class="input-group">
+										<h:inputText styleClass="form-control" value="#{dwrepQueryGlobale.doc_storiaprotocollazioneuffoper}" id="doc_storiaprotocollazioneuffoper" p:placeholder="#{i18n['acl.uff']}" title="#{i18n['acl.uff']}" />
+										<div class="input-group-btn">
+											<h:commandLink title="#{i18n['acl.vocabulary']}" action="#{dwrepQueryGlobale.openIndexProtocollazioneUffDoc}" styleClass="btn btn-default">
+												<f:ajax execute="@form" render="@form"/>
+												<span class="glyphicon glyphicon-search"></span>
+											</h:commandLink>
+										</div>
+									</div>
+								</div>
+							</h:panelGroup>
+							<div class="form-group">
+								<label for="templateForm:umnomepersona" class="col-sm-2 control-label">#{i18n['acl.lastmodify']}</label>
+								<div class="col-sm-5">
+									<div class="input-group">
+										<h:inputText styleClass="form-control" value="#{dwrepQueryGlobale.umnomepersona}" id="umnomepersona" p:placeholder="#{i18n['acl.oper']}" title="#{i18n['acl.oper']}" />
+										<div class="input-group-btn">
+											<h:commandLink title="#{i18n['acl.vocabulary']}" action="#{dwrepQueryGlobale.openIndexUMPersonaDoc}" styleClass="btn btn-default">
+												<f:ajax execute="@form" render="@form"/>
+												<span class="glyphicon glyphicon-search"></span>
+											</h:commandLink>
+										</div>
+									</div>									
+								</div>
+								<div class="col-sm-4">
+									<div class="input-group">
+										<h:inputText styleClass="form-control" value="#{dwrepQueryGlobale.umnomeuff}" id="umnomeuff" p:placeholder="#{i18n['acl.uff']}" title="#{i18n['acl.uff']}" />
+										<div class="input-group-btn">
+											<h:commandLink title="#{i18n['acl.vocabulary']}" action="#{dwrepQueryGlobale.openIndexUMUffDoc}" styleClass="btn btn-default">
+												<f:ajax execute="@form" render="@form"/>
+												<span class="glyphicon glyphicon-search"></span>
+											</h:commandLink>
+										</div>
+									</div>
+								</div>
+							</div>
+							<div class="form-group">
+								<label for="templateForm:ordinamentoDocs" class="col-sm-2 control-label">#{i18n['dw4.ordinamento']}</label>
+								<div class="col-sm-3">
+									<h:selectOneMenu id="ordinamentoDocs" value="#{dwrepQueryGlobale.ordinamento}" styleClass="form-control">
+										<f:selectItems value="#{dwrepQueryGlobale.ordinamento_select.options}" var="option" itemValue="#{option.value}" itemLabel="#{option.label}"/>
+										<f:ajax execute="@form" render="@form"/>
+									</h:selectOneMenu>
+								</div>
+							</div>
+						</h:panelGroup>
+					</div> <!-- /fieldset -->
+				</h:panelGroup>
+			</div>
+		</div>
+		</div>
+		<!-- scheda query: fine -->
+		
+		<script type="text/javascript">
+		$(document).ready(function() {
+			// focus su campo globale
+			$('#templateForm\\:doc_globale').focus();
+		});
+		</script>
+
+		<h:inputTextarea value="#{dwrepQueryGlobale.xml}" rendered="#{dwrepQueryGlobale.debugMode}" styleClass="form-control" rows="10" />
+	</div>
+	
+	<ui:include src="../docway/showindex.xhtml"><ui:param name="pageBean" value="#{dwrepQueryGlobale}"/></ui:include>
+</ui:define>
+    
+</ui:composition>    

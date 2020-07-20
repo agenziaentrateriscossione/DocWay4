@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" 
+	xmlns:h="http://java.sun.com/jsf/html" 
+	xmlns:ui="http://java.sun.com/jsf/facelets" 
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:tredi="http://www.3di.it/jsf/tredi">
+<ui:composition>
+
+	<h:panelGroup layout="block" id="showTaskVars">
+		<h:panelGroup id="taskvars" rendered="#{bean.visible}">
+			<!-- Modal -->
+			<div id="taskvarsModal" class="modal fade in" aria-hidden="false" aria-labelledby="taskvarsModalLabel" role="dialog" tabindex="-1" style="display: block;">
+			<!--div class="modal fade" id="taskvarsModal" tabindex="-1" role="dialog" aria-labelledby="taskvarsModalLabel" aria-hidden="true"-->
+				<div class="modal-dialog">
+					<div class="modal-content jsf-modal">
+						<div class="modal-header">
+							<h:commandLink class="close" action="#{bean.closeView}" value="&#215;">
+		                    	<f:ajax render="templateForm:showTaskVars templateForm:workflowHolder templateForm:errormsg"/>
+		                   	</h:commandLink>
+							
+							<h4 class="modal-title" id="taskvarsModalLabel">#{i18n['dw4.dettagli_del_task']}</h4>
+						</div>
+						<div class="modal-body">
+						
+							<h:panelGroup rendered="#{fn:length(bean.variables) == 0}">
+								<div class="alert alert-info">
+									<h:outputText value="#{i18n['dw4.nessuna_variabile_specifica_associata_al_task_corrente']}" />
+								</div>
+							</h:panelGroup>
+							<h:panelGroup rendered="#{fn:length(bean.variables) > 0}">
+								<table class="table table-bordered">
+									<thead>
+										<tr>
+											<th style="width:25%;">#{i18n['dw4.label']}</th>
+											<th>#{i18n['acl.description']}</th>
+											<th style="width:40%;">#{i18n['dw4.value']}</th>
+										</tr>
+									</thead>
+									<tbody>
+										<ui:repeat var="variable" value="#{bean.variables}" varStatus="status">
+									        <tr>
+									        	<td><h:outputText value="#{variable.label}" /></td>
+									        	<td><h:outputText value="#{variable.description}" /></td>
+									        	<td>
+									        		<h:outputText rendered="#{variable.type ne 'java.util.Date'}" value="#{variable.value}" />
+									        		<h:panelGroup rendered="#{variable.type eq 'java.util.Date'}">
+									        			<h:outputText value="#{(empty variable.value) ? '' : fn:substring(variable.value, 0, 8)}"><f:converter converterId="DateConverter" /></h:outputText>
+									        		</h:panelGroup>
+									        	</td>
+											</tr>
+							        	</ui:repeat>
+									</tbody>
+								</table>
+							</h:panelGroup>
+							
+							<h:inputTextarea value="#{bean.xml}" rendered="#{bean.debugMode}" styleClass="form-control" rows="10"/>
+							
+						</div>
+						<div class="modal-footer">
+							<h:commandLink styleClass="btn btn-default" action="#{bean.closeView}"  value="#{i18n['acl.close']}">
+		                    	<f:ajax render="templateForm:showTaskVars templateForm:workflowHolder templateForm:errormsg"/>
+		                   	</h:commandLink>
+						</div>
+					</div>
+				</div>
+			</div>
+			<!--h:outputScript>
+				$('#taskvarsModal').modal('show');
+			</h:outputScript-->
+		</h:panelGroup>
+	</h:panelGroup>
+		
+</ui:composition>   
+</html>

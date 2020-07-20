@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" 
+	  xmlns:h="http://java.sun.com/jsf/html" 
+	  xmlns:ui="http://java.sun.com/jsf/facelets" 
+	  xmlns:f="http://java.sun.com/jsf/core"
+	  xmlns:c="http://java.sun.com/jsp/jstl/core"
+	  xmlns:p="http://xmlns.jcp.org/jsf/passthrough">
+<ui:composition>
+
+	<h:panelGroup rendered="#{pageBean.showindexActive}">
+		<!-- Modal -->
+		<div id="showIndexModal" class="modal fade in" aria-hidden="false" aria-labelledby="showIndexModalLabel" role="dialog" tabindex="-1" style="display: block;">
+		<!--div class="modal fade" id="showIndexModal" tabindex="-1" role="dialog" aria-labelledby="showIndexModalLabel" aria-hidden="true"-->
+			<div class="modal-dialog">
+				<div class="modal-content jsf-modal">
+					<div class="modal-header">
+						<h:commandButton styleClass="close" title="#{i18n['acl.close']}" action="#{pageBean.showindex.close}" data-dismiss="modal" value="&#215;" >
+		        			<f:ajax render="@form"/>
+		        		</h:commandButton>
+		        		
+		        		<h4 class="modal-title" id="showIndexModalLabel">#{i18n['acl.index']}</h4>
+					</div>
+					<div class="modal-body">
+						<h:panelGroup id="showIndexContent">
+							<!-- toolbar -->
+							<div class="row btn-toolbar dw-modal-content-buttons margin-bottom">
+								<div class="col-md-12">
+									<div class="btn-group inline pull-right">
+										<h:commandLink title="#{i18n['prevPage']}" action="#{pageBean.showindex.paginaPrecedente}" styleClass="btn btn-default #{!(pageBean.showindex.formsAdapter.paginaPrecedenteEnabled) ? 'disabled' : ''}">
+											<f:ajax event="action" render="@form"/>
+											<span class="glyphicon glyphicon-chevron-left"></span>
+										</h:commandLink>
+										<h:commandLink title="#{i18n['nextPage']}" action="#{pageBean.showindex.paginaSuccessiva}" styleClass="btn btn-default #{!(pageBean.showindex.formsAdapter.paginaSuccessivaEnabled) ? 'disabled' : ''}">
+											<f:ajax event="action" render="@form"/>
+											<span class="glyphicon glyphicon-chevron-right"></span>
+										</h:commandLink>
+									</div>
+								</div>
+							</div>
+							
+							<!-- titles -->
+							<h:panelGroup rendered="#{fn:length(pageBean.showindex.vocabolari) > 0}">
+								<table class="table table-striped">
+									<thead>
+										<tr>
+											<th class="essential" style="width:50px;">&#160;</th>
+											<th class="essential">#{i18n['dw4.value']}</th>
+										</tr>
+									</thead>
+									<tbody>
+										<ui:repeat id="vocabolari" var="vocabulary" value="#{pageBean.showindex.vocabolari}" varStatus="status">
+											<tr>
+												<td class="essential">
+													<input id="checkVoc#{status.index}" type="checkbox" checked="#{(vocabulary.selezionato) ? 'checked' : ''}" onclick="changeSelectionVocabulary('#{status.index}');" />
+													<h:inputHidden value="#{vocabulary.selezionato}" id="voc" />
+												</td>
+												<td class="essential">
+													 <h:commandLink action="#{pageBean.showindex.confirm}">
+														<f:param name="vocabulary" value="#{vocabulary}" />
+														#{vocabulary.chiave} <em>(#{vocabulary.frequenza})</em>
+													</h:commandLink>
+												</td>
+											</tr>
+										</ui:repeat>
+									</tbody>
+								</table>
+								<h:commandLink id="updateVocabolariSelezionatiBtn" action="#{pageBean.showindex.updateVocabolariSelezionati}">
+									<f:ajax execute="@form" render="@form" />
+								</h:commandLink>
+								
+								<h:panelGroup rendered="#{pageBean.showindex != null}">
+									<fieldset>
+										<legend>#{i18n['dw4.posizionamento']}</legend>
+										
+										<div class="form-group">
+											<div class="col-sm-12 submitEnterKey" id="idxPosiziona">
+								               	<h:inputText id="seekInput" value="#{pageBean.showindex.seekText}" p:placeholder="#{i18n['dw4.vai_a']}" styleClass="form-control" onkeydown="if (event.keyCode == 13) { $('#templateForm\\:idxPosizionaBtn').trigger('click'); }" />
+								               	<h:commandLink style="display:none;" id="idxPosizionaBtn" action="#{pageBean.showindex.posiziona}" title="#{i18n['dw4.vai_a']}" styleClass="openwaitmsg" >
+													<f:ajax execute="@form" render="templateForm:showIndexContent" />
+												</h:commandLink>
+											</div>
+										</div>
+									</fieldset>
+								</h:panelGroup>
+							</h:panelGroup>
+							<h:panelGroup rendered="#{fn:length(pageBean.showindex.vocabolari) == 0}">
+								<div style="margin-top:15px;" class="alert alert-info">#{i18n['acl.emptysearch']}</div>
+							</h:panelGroup>
+				        	
+					       	<h:inputTextarea value="#{pageBean.showindex.xml}" rendered="#{pageBean.debugMode}" styleClass="form-control" rows="10"/>
+						</h:panelGroup>
+					</div>
+					<div class="modal-footer">
+						<h:commandLink action="#{pageBean.showindex.confirmSelezionati}" styleClass="btn btn-primary openwaitmsg" >
+							<f:ajax execute="@form" render="@form" />
+							#{i18n['acl.confirm']}
+						</h:commandLink>
+						
+						<h:commandLink styleClass="btn btn-default" title="#{i18n['acl.close']}" action="#{pageBean.showindex.close}" data-dismiss="modal"  value="#{i18n['acl.close']}" >
+		        			<f:ajax render="@form"/>
+		        		</h:commandLink>
+					</div>
+				</div>
+			</div>
+		</div>
+		<!--h:outputScript>
+		$('#showIndexModal').modal('show');
+		</h:outputScript-->
+	</h:panelGroup>
+	
+	<h:inputHidden id="focusElementIndex"></h:inputHidden>
+
+</ui:composition>
+</html>

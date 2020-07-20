@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" 
+	  xmlns:h="http://java.sun.com/jsf/html" 
+	  xmlns:ui="http://java.sun.com/jsf/facelets" 
+	  xmlns:f="http://java.sun.com/jsf/core">
+<ui:composition>
+	
+	<h:panelGroup layout="block" id="showemailAnteprimaEmail">
+		<h:panelGroup rendered="#{pageBean.showemail and pageBean.message != null}">
+			<!-- Modal -->
+			<div id="showemailModal" class="modal fade in" aria-hidden="false" aria-labelledby="showemailModalLabel" role="dialog" tabindex="-1" style="display: block;">
+			<!--div class="modal fade" id="loadingbarModal" tabindex="-1" role="dialog" aria-labelledby="loadingbarModalLabel" aria-hidden="true"-->
+				<div class="modal-dialog modal-lg">
+					<div class="modal-content jsf-modal">
+						<div class="modal-header">
+							<h:commandButton styleClass="close" title="#{i18n['acl.close']}" action="#{pageBean.closeMessage}" data-dismiss="modal"  value="&#215;" />
+			        		
+			        		<h4 class="modal-title" id="showemailModalLabel">#{i18n['dw4.anteprima_email']}</h4>
+						</div>
+						<div class="modal-body">
+							
+							<h:panelGroup rendered="#{pageBean.message.converted}" styleClass="alert alert-info" layout="block">
+								<h:outputLink value="#{facesContext.externalContext.requestContextPath}/docway/loaddoc.pf?alias=%2Fdoc%2F%40messageId%2F&amp;value=#{pageBean.message.messageId}">#{i18n['dw4.l_email_corrente_risulta_gia_trasformata_in_documento']}</h:outputLink>
+							</h:panelGroup>
+							
+							<div class="row">
+								<div class="col-sm-8">
+									<strong><h:outputText value="#{pageBean.message.from.name}" escape="false" /> &lt;<h:outputText value="#{pageBean.message.from.address}" escape="false" />&gt;</strong>
+								</div>
+								<div class="col-sm-4 text-right">
+									<h:outputText value="#{pageBean.message.sentDate}" ><f:converter converterId="DateTimeConverter"/></h:outputText>
+								</div>
+							</div>
+							
+							<h:panelGroup rendered="#{fn:length(pageBean.message.to) > 0}" layout="block" styleClass="row">
+								<div class="col-sm-12">
+									<h:outputText value="#{i18n['dw4.a']}: " />
+									<ui:repeat var="recipient" value="#{pageBean.message.to}" varStatus="status">
+										<h:outputText value="#{recipient.name}" escape="false" /> &lt;<h:outputText value="#{recipient.address}" escape="false" />&gt;
+										<h:outputText rendered="#{status.index != (fn:length(pageBean.message.to)-1)}" value=", " />
+									</ui:repeat>
+								</div>
+							</h:panelGroup>
+							<h:panelGroup rendered="#{fn:length(pageBean.message.cc) > 0}" layout="block" styleClass="row">
+								<div class="col-sm-12">
+									<h:outputText value="#{i18n['dw4.cc']}: " />
+									<ui:repeat var="recipient" value="#{pageBean.message.cc}" varStatus="status">
+										<h:outputText value="#{recipient.name}" escape="false" /> &lt;<h:outputText value="#{recipient.address}" escape="false" />&gt;
+										<h:outputText rendered="#{status.index != (fn:length(pageBean.message.cc)-1)}" value=", " />
+									</ui:repeat>
+								</div>
+							</h:panelGroup>
+							<h:panelGroup rendered="#{fn:length(pageBean.message.bcc) > 0}" layout="block" styleClass="row">
+								<div class="col-sm-12">
+									<h:outputText value="#{i18n['dw4.bcc']}: " />
+									<ui:repeat var="recipient" value="#{pageBean.message.bcc}" varStatus="status">
+										<h:outputText value="#{recipient.name}" escape="false" /> &lt;<h:outputText value="#{recipient.address}" escape="false" />&gt;
+										<h:outputText rendered="#{status.index != (fn:length(pageBean.message.bcc)-1)}" value=", " />
+									</ui:repeat>
+								</div>
+							</h:panelGroup>
+							
+							<div class="row" style="margin-top: 10px;">
+								<div class="col-sm-12">
+									<span class="anteprima-email-oggetto"><h:outputText value="#{(empty pageBean.message.subject) ? i18n['dw4.nessun_oggetto'] : pageBean.message.subject}" escape="false"/></span>
+								</div>
+							</div>
+							
+							<h:panelGroup rendered="#{!empty pageBean.message.body}">
+								<iframe src="#{facesContext.externalContext.requestContextPath}/docway/webmail@showemail@content.jsf" class="webmail-content-iframe"></iframe>
+							</h:panelGroup>
+							
+							<h:panelGroup rendered="#{fn:length(pageBean.message.attachments) > 0}" layout="block" style="margin-top:5px;">
+								<ui:repeat var="attach" value="#{pageBean.message.attachments}" varStatus="status">
+									<div class="row">
+										<div class="col-sm-12">
+											<span class="glyphicon glyphicon-paperclip normal-size-icon"></span>
+											&#160;
+											<h:commandLink action="#{pageBean.downloadAttachment}" styleClass="blacklink">
+												<h:outputText value="#{attach.name}" escape="false" />
+											</h:commandLink>
+										</div>
+									</div>
+								</ui:repeat>
+							</h:panelGroup>
+							
+				        	
+					       	<h:inputTextarea value="#{pageBean.xml}" rendered="#{pageBean.debugMode}" styleClass="form-control" rows="10"/>
+						</div>
+						<div class="modal-footer">
+							<h:panelGroup rendered="#{fn:length(pageBean.documentModels) > 0}">
+								<div class="btn-group">
+									<button type="button" class="btn btn-primary openwaitmsg dropdown-toggle" data-toggle="dropdown">
+										#{i18n['dw4.trasforma']} <span class="caret"></span>
+									</button>
+									<ul class="dropdown-menu text-left">
+										<ui:repeat var="documentmodel" value="#{pageBean.documentModels}" varStatus="status">
+											<li><h:commandLink value="#{documentmodel}" action="#{pageBean.storeMessage}" /></li>
+										</ui:repeat>
+									</ul>
+								</div>
+							</h:panelGroup>
+						
+							<h:commandButton styleClass="btn btn-default" title="#{i18n['acl.close']}" action="#{pageBean.closeMessage}" data-dismiss="modal"  value="#{i18n['acl.close']}" />
+						</div>
+					</div>
+				</div>
+			</div>
+		</h:panelGroup>
+	</h:panelGroup>
+		 
+</ui:composition>   
+</html>

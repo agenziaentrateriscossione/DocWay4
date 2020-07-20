@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+    template="#{docEditAcquisizione.pageTemplate}"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:c="http://java.sun.com/jsp/jstl/core">
+
+<ui:define name="content">
+	<div class="docedit">
+	
+		<h5 class="sub-header">
+			<span class="glyphicons-pro qrcode"></span>&#160;
+			<h:outputText value="#{i18n['dw4.acquisizionemassiva_qrcode']}" escape="false" />
+		</h5>
+	
+		<!-- messages: inizio -->
+		<div class="docedit-messages alert alert-info">
+			#{i18n['dw4.acquisizione_massiva_da_scanner_di_documenti_tramite_riconoscimento_di_etichetta_qrcode_applicata_alla_prima_pagina']}.
+			#{i18n['dw4.tramite_le_informazioni_del_qrcode_i_file_verranno_automaticamente_caricati_sul_relativo_documento']}.
+		</div>
+		<h:panelGroup rendered="#{not empty facesContext.messageList}" layout="block" styleClass="docedit-messages alert alert-danger">
+			<h:messages styleClass="" id="validationMesseges" />
+		</h:panelGroup>
+		<h:inputHidden id="errorFieldIds" value="#{docEditAcquisizione.errorFieldIds}" />
+		<!-- messages: fine -->
+		
+		<!-- scheda edit: inizio -->
+		<div class="row-fluid" style="margin-top:10px;">
+			<div class="box span12">
+				<div class="box-content">
+				
+					<div class="btn-group">
+						<button type="button" class="btn btn-primary" onclick="return IwxRuntime.Client.aquireImagesByQrcode();" onkeypress="return IwxRuntime.Client.aquireImagesByQrcode();">#{i18n['dw4.avvia_acquisizione']}</button>
+						<button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+							<span class="caret"></span>
+							<span class="sr-only">Toggle Dropdown</span>
+						</button>
+						<ul class="dropdown-menu" role="menu">
+							<li><a href="#" onclick="return IwxRuntime.Client.aquireImagesByQrcode();" onkeypress="return IwxRuntime.Client.aquireImagesByQrcode();">#{i18n['dw4.avvia_acquisizione']}</a></li>
+							<li><a href="#" onclick="return IwxRuntime.Client.selectTwainSourceIWX();" onkeypress="return IwxRuntime.Client.selectTwainSourceIWX();">#{i18n['dw4.seleziona_scanner']}</a></li>
+						</ul>
+					</div>
+				
+					<div id="iwx_progress_bar_holder" class="progress" style="margin-top: 10px;">
+  						<div id="iwx_progress_bar" class="progress-bar" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="0" style="width:0%;">
+							<span id="iwx_progress_bar_curvalue">0</span> #{i18n['dw4.completati']}
+						</div>
+					</div>
+					
+					<ui:remove>
+						<script type="text/javascript">
+						var begin = 0;
+						var end = 8;
+						var current = 0;
+						
+						function incrementa() {
+							current = current + 1;
+							
+							var percentage = 0;
+							if (current &gt;= 8)
+								percentage = 100;
+							else
+								percentage = 100 * (current-begin) / (end-begin);
+							
+							//alert(percentage);
+							
+							//if (percentage &gt; 0)
+							//	$('#iwx_progress_bar_holder').css('display', 'block');
+								
+							$('#iwx_progress_bar').attr('aria-valuenow', current);
+							$('#iwx_progress_bar_curvalue').html(current);
+							$('#iwx_progress_bar').css('width', percentage+'%');
+							
+							return false;
+						}
+						
+						function decrementa() {
+							current = current - 1;
+							
+							var percentage = 0;
+							if (current &lt;= 0)
+								percentage = 0;
+							else
+								percentage = 100 * (current-begin) / (end-begin);
+							
+							//alert(percentage);
+							
+							$('#iwx_progress_bar').attr('aria-valuenow', current);
+							$('#iwx_progress_bar_curvalue').html(current);
+							$('#iwx_progress_bar').css('width', percentage+'%');
+							
+							//if (percentage == 0)
+							//	$('#iwx_progress_bar_holder').css('display', 'none');
+							
+							return false;
+						}
+						</script>
+						<div>
+							<h:commandLink onclick="return decrementa();" styleClass="btn btn-default">Decrementa progressbar</h:commandLink>
+							<h:commandLink onclick="return incrementa();" styleClass="btn btn-default">Incrementa progressbar</h:commandLink>
+						</div>
+					</ui:remove>
+					
+					<div id="iwx_process_messages" class="iwx-process-messages">
+						#{i18n['dw4.in_attesa_dell_avvio_dell_acquisizione']}.<br/>
+					</div>
+				
+					<div class="iwx-box" style="margin-top:13px;">
+						<div class="iwx-button-bar">
+							<div class="iwx-buttons pull-left">
+								<!-- eventuale menu iwx in caso di implementazione dell'anteprima immagini da importare -->								
+							</div>
+							<div class="iwx-version pull-right">
+								<input type="hidden" id="iwx_required_version" value="#{docEditAcquisizione.requiredVersionIWX}" />
+								<input type="hidden" id="iwx_current_version" value="#{docEditAcquisizione.currentVersionIWX}" />
+								#{i18n['dw4.iwx_version']}: <span id="iwx_version" style="font-weight:bold;"></span>
+							</div>
+							<div style="clear:both; display:none; height:0px; width:0px;"></div>
+						</div>
+						<div id="iwx_error_messages" class="iwx-error-logs"></div>
+						<div id="iwx_holder" style="height:5px; width:100%;"></div>
+					</div>
+					
+					<script type="text/javascript">
+					resetJobsIwx = '#{docEditAcquisizione.resetJobsIWX}';
+					var iwxHeight = "#{(enableImages) ? '' : '5px;'}";
+					
+					window.loadIWX = function() {
+						initIwxAfterReload('#{facesContext.externalContext.requestContextPath}/fileupload', '#{cookie.JSESSIONID.value}', '#{userBean.login}', '#{userBean.matricola}', '#{docEditAcquisizione.formsAdapter.customTupleName}', '#{docEditAcquisizione.formsAdapter.db}', resetJobsIwx, 'openDocEditCurrentImage', null, iwxHeight, '#{docEditAcquisizione.iwxFileTypes}', '#{docEditAcquisizione.iwxImageTypes}');
+					}
+					
+					$(window).load(function() {
+						jsf.ajax.addOnEvent(function(data) { 
+							if (data.status == 'success') {
+								initIwxAfterAjax('#{facesContext.externalContext.requestContextPath}/fileupload', '#{cookie.JSESSIONID.value}', '#{userBean.login}', '#{userBean.matricola}', '#{docEditAcquisizione.formsAdapter.customTupleName}', '#{docEditAcquisizione.formsAdapter.db}', 'openDocEditCurrentImage', null, iwxHeight, '#{docEditAcquisizione.iwxFileTypes}', '#{docEditAcquisizione.iwxImageTypes}');
+							}
+						});
+					});
+					</script>
+				</div>
+			</div>
+		</div>
+	
+	</div>
+	
+	<h:inputTextarea value="#{docEditAcquisizione.xml}" rendered="#{docEditAcquisizione.debugMode}" styleClass="form-control" rows="10" />
+</ui:define>
+	
+</ui:composition>

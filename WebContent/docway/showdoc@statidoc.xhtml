@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" 
+	  xmlns:h="http://java.sun.com/jsf/html" 
+	  xmlns:ui="http://java.sun.com/jsf/facelets" 
+	  xmlns:f="http://java.sun.com/jsf/core">
+<ui:composition>
+
+	<h:panelGroup rendered="#{bean.showSectionStatiDocumento}">
+		<div class="showdoc-section">
+			<div class="title">
+				#{i18n['dw4.stati_del_documento']}
+				
+				<div class="pull-right">
+					<span class="glyphicons-pro ok" title="#{i18n['dw4.stati_del_documento']}"></span>
+				</div>
+			</div>
+			<div class="stati-doc-holder">
+				<dl class="dl-horizontal">
+					<ui:include src="showdoc@statidoc@content.xhtml">
+                        <ui:param name="bean" value="#{bean}"/>
+                    </ui:include>
+				</dl>
+			</div>
+		</div>
+	</h:panelGroup>
+
+</ui:composition>
+</html>

@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+    template="#{docEditRepertorio.pageTemplate}"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:c="http://java.sun.com/jsp/jstl/core">
+
+<ui:define name="content">
+	<div class="repertorio">
+	
+		<div class="sub-header">#{i18n['dw4.repertori_documenti_personalizzati']} - #{i18n['acl.insert']}</div>
+		
+		<div class="list-group">
+			<ui:repeat var="titoloRepertorio" value="#{docEditRepertorio.listof_rep}" varStatus="status">
+				
+				<h:panelGroup rendered="#{ !fn:contains(docEditRepertorio.excludeInsertRepertori, titoloRepertorio.codice.concat(',')) }"> <!-- repertori per i quali l'inserimento NON deve essere attivo -->
+				
+					<h:panelGroup rendered="#{ !empty docEditRepertorio.customInsertRepertorio[titoloRepertorio.codice] }">
+						<!-- repertorio con logica custom -->
+						
+						<ui:repeat var="tabella" value="#{titoloRepertorio.list_tabelle}">
+							<h:commandLink styleClass="list-group-item" action="#{docEditRepertorio[docEditRepertorio.customInsertRepertorio[titoloRepertorio.codice]]}" actionListener="#{docEditRepertorio.attrListenerSelectRepertorio}">
+								<span class="glyphicon glyphicon-pencil normal-size-icon"></span>
+							
+								#{titoloRepertorio.descrizione} #{tabella.text} 
+								<f:attribute name="tipoRepertorio" value="#{tabella.tipo}" />
+								<f:attribute name="textTabella" value="#{tabella.text}" />
+								<f:param name="titoloRepertorio" value="#{titoloRepertorio}"></f:param>
+							</h:commandLink>
+						</ui:repeat>
+						
+					</h:panelGroup>
+					<h:panelGroup rendered="#{ empty docEditRepertorio.customInsertRepertorio[titoloRepertorio.codice] }">
+						
+						<ui:repeat var="tabella" value="#{titoloRepertorio.list_tabelle}">
+							<h:commandLink styleClass="list-group-item" action="#{docEditRepertorio.insTableDocRep}" actionListener="#{docEditRepertorio.attrListenerSelectRepertorio}">
+								<span class="glyphicon glyphicon-pencil normal-size-icon"></span>
+							
+								#{titoloRepertorio.descrizione} #{tabella.text} 
+								<f:attribute name="tipoRepertorio" value="#{tabella.tipo}" />
+								<f:attribute name="textTabella" value="#{tabella.text}" />
+								<f:param name="titoloRepertorio" value="#{titoloRepertorio}"></f:param>
+							</h:commandLink>
+						</ui:repeat>
+						
+					</h:panelGroup>
+					
+				</h:panelGroup>
+				
+			</ui:repeat>
+		</div>
+		
+		<h:inputTextarea value="#{docEditRepertorio.xml}" rendered="#{docEditRepertorio.debugMode}" styleClass="form-control" rows="10" />
+	</div>
+</ui:define>
+
+</ui:composition>

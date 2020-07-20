@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" 
+	  xmlns:h="http://java.sun.com/jsf/html" 
+	  xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	  xmlns:ui="http://java.sun.com/jsf/facelets" 
+	  xmlns:f="http://java.sun.com/jsf/core"
+	  xmlns:p="http://xmlns.jcp.org/jsf/passthrough">
+<ui:composition>
+
+	<h:panelGroup layout="block" id="loadingbarCtrlGestione">
+		<h:panelGroup rendered="#{pageBean.loadingbarActive and !pageBean.loadingbar.error}">
+			<!-- Modal -->
+			<div id="loadingbarCtrlGestioneModal" class="modal fade in" aria-hidden="false" aria-labelledby="loadingbarCtrlGestioneModalLabel" role="dialog" tabindex="-1" style="display: block;">
+			<!--div class="modal fade" id="loadingbarCtrlGestioneModal" tabindex="-1" role="dialog" aria-labelledby="loadingbarCtrlGestioneModalLabel" aria-hidden="true"-->
+				<div class="modal-dialog">
+					<div class="modal-content jsf-modal">
+						<div class="modal-header">
+							<h:commandButton styleClass="close" action="#{pageBean.loadingbar.close}" value="&#215;" />
+							
+							<h4 class="modal-title" id="loadingbarCtrlGestioneModalLabel">#{(pageBean.loadingbar.title eq '') ? i18n['dw4.stampa_report'] : pageBean.loadingbar.title}</h4>
+						</div>
+						<div class="modal-body">
+							
+		        			<div class="well">
+		        				<h:panelGroup rendered="#{pageBean.loadingbar.stopDate eq ''}">
+			        				<div class="loadingbar-message" style="margin-bottom:15px;"><h:outputText value="#{(pageBean.loadingbar.title eq '') ? i18n['dw4.elaborazione_dei_documenti_da_stampare_in_corso'] : i18n['dw4.elaborazione_del_controllo_di_gestione_in_corso']}" /></div>
+			        			</h:panelGroup>
+			        			<div class="loadingbar-message loadingbar-startdate"><h:outputText rendered="#{pageBean.loadingbar.startDate ne ''}" value="job started at #{pageBean.loadingbar.startDate}"/></div>
+			        			<div class="loadingbar-message loadingbar-status"><h:outputText value="#{pageBean.loadingbar.status}"/></div>
+			        			<div class="loadingbar-message loadingbar-exceptions"><h:outputText value="#{pageBean.loadingbar.exceptions}"/></div>
+			        			<div class="loadingbar-message loadingbar-progress"><h:outputText rendered="#{pageBean.loadingbar.progress ne 'nDoc=0'}" value="#{pageBean.loadingbar.progress}"/></div>
+			        			<div class="loadingbar-message loadingbar-stopdate"><h:outputText rendered="#{pageBean.loadingbar.stopDate ne ''}" value="job completed at #{pageBean.loadingbar.stopDate}"/></div>
+		        			</div>
+		        			
+		        			<h:panelGroup rendered="#{pageBean.loadingbar.stopDate ne ''}" display="block">
+	        				<h:commandLink style="display:none;" id="generaReportBtn" immediate="true" actionListener="#{pageBean.loadingbar.generaReport}" styleClass="context-menu-one box menu-1 iconButton loadingbarDownloadButton" />
+		        			<h:outputScript>
+								function generaReportCtrlGestione() {
+									$("#templateForm\\:generaReportBtn").trigger("click");
+								}
+								window.setTimeout('generaReportCtrlGestione()',2000);
+							</h:outputScript>
+	        			
+	        				<h:panelGroup styleClass="loadingbar-resultmessage" layout="block" style="margin-bottom:20px;">
+	        					<h:outputText value="#{(pageBean.loadingbar.title eq '') ? i18n['dw4.generazione_del_pdf_in_corso_Attendere_prego'] : i18n['dw4.generazione_del_report_per_il_controllo_di_gestione_in_corso_Attendere_prego']}" />
+		        			</h:panelGroup>
+	        			</h:panelGroup>
+		        			
+				        	<div style="margin-top:20px;" class="progress">
+	  							<div class="progress-bar" role="progressbar" aria-valuenow="#{(pageBean.loadingbar.completed) ? '100' : pageBean.loadingbar.percentage}" aria-valuemin="0" aria-valuemax="100" style="width: #{(pageBean.loadingbar.completed) ? '100' : pageBean.loadingbar.percentage}%;">
+	    							<span class="sr-only">#{pageBean.loadingbar.percentage}% Complete</span>
+	  							</div>
+							</div>
+							
+							<h:commandLink style="display:none;" id="refreshCtrlGestione" action="#{pageBean.loadingbar.refresh}" >
+		        				<f:ajax execute="@form" render="@form" />
+		        			</h:commandLink>
+							<script type="text/javascript">
+							function refreshCtrlGestione() {
+								$("#templateForm\\:refreshCtrlGestione").trigger("click");
+							}
+							var completed = #{pageBean.loadingbar.completed};
+							if (!completed) {
+								window.setTimeout('refreshCtrlGestione()',2000);
+							}
+							</script>
+							
+							<h:inputTextarea value="#{pageBean.loadingbar.xml}" rendered="#{pageBean.debugMode}" styleClass="form-control" rows="10" />
+						</div>
+						<div class="modal-footer">
+							<h:commandButton styleClass="btn btn-default"
+									action="#{pageBean.loadingbar.close}" value="#{i18n['acl.close']}" />
+						</div>
+					</div>
+				</div>
+			</div>
+			<!--script type="text/javascript">
+			$('#loadingbarCtrlGestioneModal').modal('show');
+			</script-->
+		</h:panelGroup>
+	</h:panelGroup>
+
+</ui:composition>   
+</html>

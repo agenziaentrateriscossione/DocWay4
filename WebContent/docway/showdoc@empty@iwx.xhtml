@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" 
+	  xmlns:h="http://java.sun.com/jsf/html" 
+	  xmlns:ui="http://java.sun.com/jsf/facelets" 
+	  xmlns:f="http://java.sun.com/jsf/core"
+	  xmlns:c="http://java.sun.com/jsp/jstl/core">
+<ui:composition>
+
+	<div class="iwx-box">
+		<div class="iwx-button-bar" style="position:relative;">
+			<div class="iwx-buttons pull-left"></div>
+			<div class="iwx-version pull-right">
+				<input type="hidden" id="iwx_required_version" value="#{bean.requiredVersionIWX}" />
+				<input type="hidden" id="iwx_current_version" value="#{bean.currentVersionIWX}" />
+				#{i18n['dw4.iwx_version']}: <span id="iwx_version" style="font-weight:bold;"></span>
+			</div>
+			<div style="clear:both; display:none; height:0px; width:0px;"></div>
+		</div>
+		<div id="iwx_error_messages" class="iwx-error-logs"></div>
+		<div id="iwx_holder" style="height:5px; width:100%;"></div>
+	</div>	
+	<script type="text/javascript">
+	window.loadIWX = function() {
+		initIwxAfterReload('#{facesContext.externalContext.requestContextPath}/fileupload', '#{cookie.JSESSIONID.value}', '#{userBean.login}', '#{userBean.matricola}', '#{bean.formsAdapter.customTupleName}', '#{bean.formsAdapter.db}', resetJobsIwx, '', '0px', '0px', '#{bean.iwxFileTypes}', '#{bean.iwxImageTypes}');
+	}
+	
+	$(window).load(function() {
+		jsf.ajax.addOnEvent(function(data) {
+			if (data.status == 'success') {
+				initIwxAfterReload('#{facesContext.externalContext.requestContextPath}/fileupload', '#{cookie.JSESSIONID.value}', '#{userBean.login}', '#{userBean.matricola}', '#{bean.formsAdapter.customTupleName}', '#{bean.formsAdapter.db}', '', '0px', '0px', '#{bean.iwxFileTypes}', '#{bean.iwxImageTypes}');
+			}
+		});
+	});
+	</script>
+		
+</ui:composition>   
+</html>

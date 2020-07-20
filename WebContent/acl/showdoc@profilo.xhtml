@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	template="template.xhtml" 
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core">
+
+<ui:define name="content">
+
+	<div class="persint showdoc">
+		<!-- primo livello toolbar: inizio -->
+		<div class="btn-toolbar" role="toolbar">
+			<div class="btn-group pull-right">
+				<ui:include src="./navigationBar.xhtml">
+					<ui:param name="bean" value="#{showdocProfilo}" />
+				</ui:include>
+			</div>
+
+			<div class="btn-group">
+				<h:commandLink rendered="#{showdocProfilo.formsAdapter.paginaTitoliEnabled}" action="#{showdocProfilo.paginaTitoli}" styleClass="btn btn-default openwaitmsg">
+					<span>#{i18n['acl.titles']}</span>
+				</h:commandLink>
+			</div>
+		</div>
+		<!-- primo livello toolbar: fine -->
+
+		<h:panelGroup rendered="#{showdocProfilo.formsAdapter.funzionalitaDisponibili['ins_profili'] or showdocProfilo.formsAdapter.funzionalitaDisponibili['canc_profili']}">
+			<!-- secondo livello toolbar: inizio -->
+			<div class="btn-toolbar" role="toolbar">
+				<div class="btn-group">
+					<h:commandLink rendered="#{showdocProfilo.formsAdapter.funzionalitaDisponibili['ins_profili']}" action="#{showdocProfilo.modifyTableDoc}" styleClass="btn btn-primary openwaitmsg">
+						<span>#{i18n['acl.modify']}</span>
+					</h:commandLink>
+					<h:commandLink rendered="#{showdocProfilo.formsAdapter.funzionalitaDisponibili['canc_profili']}" action="#{showdocProfilo.remove}" onclick="if (!owmConfirm('#{i18n['acl.deleteconfirm']}')) return false;" styleClass="btn btn-danger">
+						<span>#{i18n['acl.delete']}</span>
+					</h:commandLink>
+
+					<h:commandLink rendered="#{showdocProfilo.formsAdapter.funzionalitaDisponibili['ins_profili']}" action="#{showdocProfilo.ripetiNuovo}" styleClass="btn btn-default openwaitmsg">
+						<span>#{i18n['acl.clone']}</span>
+					</h:commandLink>
+				</div>
+			</div>
+			<!-- secondo livello toolbar: fine -->
+		</h:panelGroup>
+
+		<h:panelGroup styleClass="messagesArea" layout="block">
+			<h:messages styleClass="info" id="validationMesseges" />
+		</h:panelGroup>
+
+		<h5 class="sub-header" title="#{showdocProfilo.profilo.nome_profilo}">
+			<span class="profili glyphicons-pro"></span>&#160;
+			<h:outputText value="#{showdocProfilo.profilo.nome_profilo}" escape="false" />
+		</h5>
+
+		<!-- scheda show: inizio -->
+		<div id="fixedshowdoc" class="fixed-showdoc">
+			<div class="showdoc-section">
+				<div class="title">
+					#{i18n['acl.informazioni_di_base']}
+					
+					<div class="pull-right">
+						<span class="glyphicons-pro nameplate" title="#{i18n['acl.informazioni_di_base']}"></span>
+					</div>
+				</div>
+
+				<dl class="dl-horizontal">
+					<dt>#{i18n['acl.aoo']}</dt>
+					<dd>#{showdocProfilo.profilo.cod_amm}#{showdocProfilo.profilo.cod_aoo}</dd>
+					
+					<h:panelGroup
+						rendered="#{!empty showdocProfilo.profilo.matricola_profilo}">
+						<dt>#{i18n['acl.cod']}</dt>
+						<dd>#{showdocProfilo.profilo.matricola_profilo}</dd>
+					</h:panelGroup>
+
+					<dt>#{i18n['acl.name']}</dt>
+					<dd>#{showdocProfilo.profilo.nome_profilo}</dd>
+
+					<h:panelGroup rendered="#{!empty showdocProfilo.profilo.descrizione}">
+						<dt>#{i18n['acl.description']}</dt>
+						<dd><pre>#{showdocProfilo.profilo.descrizione}</pre></dd>
+					</h:panelGroup>
+
+					<h:panelGroup
+						rendered="#{! empty showdocProfilo.profilo.pers_ass_count and showdocProfilo.profilo.pers_ass_count != '0'}">
+						<dt>
+							<h:commandLink styleClass="openwaitmsg" action="#{showdocProfilo.viewPerson}">#{i18n['acl.userassigned']}</h:commandLink>
+						</dt>
+						<dd>#{showdocProfilo.profilo.pers_ass_count}</dd>
+					</h:panelGroup>
+				</dl>
+			</div>
+
+			<ui:include src="./rightsManager.xhtml">
+				<ui:param name="bean" value="#{showdocProfilo.profilo}" />
+				<ui:param name="modify" value="false" />
+			</ui:include>
+
+			<ui:include src="./history.xhtml">
+				<ui:param name="bean" value="#{showdocProfilo.profilo}" />
+			</ui:include>
+		</div>
+		<!-- scheda show: fine -->
+	</div>
+	
+	<h:inputTextarea value="#{showdocProfilo.xml}" styleClass="form-control" rows="10" rendered="#{showdocProfilo.debugMode}" />
+</ui:define>
+
+</ui:composition>

@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+    template="#{docEditArrivoORD.pageTemplate}"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:c="http://java.sun.com/jsp/jstl/core">
+
+<ui:define name="content">
+	<div class="offerta arrivo docedit">
+	
+		<!-- toolbar: inizio -->
+		<ui:include src="./docEdit@buttonBarProtocollo.xhtml">
+			<ui:param name="bean" value="#{docEditArrivoORD}"/>
+		</ui:include>
+		<!-- toolbar: fine -->
+		
+		<h5 class="sub-header">
+			<span class="doc-tipo-custom glyphicons-pro euro ordine"></span>&#160;
+			<h:outputText value="#{docEditArrivoORD.docEditTitle}" escape="false" />
+		</h5>
+	
+		<!-- messages: inizio -->
+		<h:panelGroup rendered="#{not empty facesContext.messageList}" layout="block" styleClass="docedit-messages alert alert-danger">
+			<h:messages styleClass="" id="validationMesseges" />
+		</h:panelGroup>
+		<h:inputHidden id="errorFieldIds" value="#{docEditArrivoORD.errorFieldIds}" />
+		<!-- messages: fine -->
+		
+		<script type="text/javascript">
+		function customCheckForm() {
+			if (!controlloWarningSeSenzaAllegato(#{docEditArrivoORD.warningSeNessunAllegato}, "#{i18n['dw4.non_e_stato_indicato_alcun_documento_informatico_Continuare_con_la_registrazione']}"))
+				return false;
+			
+			if (!controlloDuplicatiInSalvataggio('#{docEditArrivoORD.funzDispVerificaDuplicati}'))
+				return false;
+			
+			displayOpenwaitmsg();
+			return true;
+		}
+		
+		$(document).ready(function() {
+			apriPopupVerificaDuplicatiDoc();
+			
+			setInvalidInputFields();
+		});
+		
+		$(window).load(function() {
+			jsf.ajax.addOnEvent(function(data) { 
+				if (data.status == 'success') {
+					if (data.source.id == 'templateForm:existsDuplicatiBtn') 
+						apriPopupVerificaDuplicatiDoc();
+				}
+			});
+
+		});
+		</script>
+		
+		<!-- scheda edit: inizio -->
+		<div class="row-fluid" style="margin-top:10px;">
+		<div id="fixedshowdoc" class="box span12 fixed-showdoc">
+			<div class="box-content">
+			
+				<div class="fieldset">
+					<div class="legend">
+						#{i18n['dw4.datidoc']}
+						
+						<div class="pull-right">
+							<span class="glyphicon glyphicon-envelope" title="#{i18n['dw4.datidoc']}"></span>
+						</div>
+					</div>
+					
+					<h:panelGroup rendered="#{docEditArrivoORD.formsAdapter.funzionalitaDisponibili['abilitaBozze'] and !docEditArrivoORD.formsAdapter.funzionalitaDisponibili['disabilitaBozzeInInserimento']}">
+						<div class="form-group" style="#{(docEditArrivoORD.formsAdapter.funzionalitaDisponibili['mostraPulsanteSalvaBozzaInInserimento']) ? 'display:none;' : ''}">
+							<label for="templateForm:docBozza" class="col-sm-2 control-label"><span>#{i18n['dw4.bozza']}</span></label>
+							<div class="col-sm-3">
+								<h:selectBooleanCheckbox id="docBozza" immediate="true" value="#{docEditArrivoORD.doc.bozza}" valueChangeListener="#{docEditArrivoORD.doc.setNotificaAfterBozza}">
+									<f:ajax execute="@this" render="templateForm:sendMailRifInterniCheck" />
+								</h:selectBooleanCheckbox>
+							</div>
+						</div>
+					</h:panelGroup>
+					
+					<ui:include src="./multisocietaFields.xhtml">
+						<ui:param name="beanDoc" value="#{docEditArrivoORD.doc}" />
+		        	</ui:include>
+		        	
+		        	<h:panelGroup rendered="#{fn:length(docEditArrivoORD.doc.repTipologiaSelect) > 0}">
+						<div class="form-group">	
+							<label for="templateForm:repTipoDocumento" class="col-sm-2 control-label"><span>#{i18n['dw4.tipodocumento']}</span></label>
+							<div class="col-sm-5">
+								<h:selectOneMenu id="repTipoDocumento" value="#{docEditArrivoORD.doc.extra.tipo_repertorio}" styleClass="form-control">
+									<f:selectItems value="#{docEditArrivoORD.doc.repTipologiaSelect}" var="tipologia" itemValue="#{tipologia.text}" itemLabel="#{tipologia.text}"></f:selectItems>
+								</h:selectOneMenu>
+							</div>
+						</div>
+					</h:panelGroup>
+					
+					<ui:include src="./docEditProtPregFields.xhtml">
+						<ui:param name="bean" value="#{docEditArrivoORD}" />
+		        	</ui:include>
+		        	
+		        	<div class="form-group">
+		        		<label class="col-sm-2 control-label"><span>#{i18n['dw4.sigla_strutt']}</span></label>
+		        		<div class="col-sm-1">
+		        			<p class="form-control-static"><h:outputText value="#{docEditArrivoORD.doc.cod_amm_aoo}" /></p>
+		        		</div>
+		        		<label class="col-sm-2 control-label"><span>#{i18n['dw4.anno']}</span></label>
+		        		<div class="col-sm-1">
+		        			<p class="form-control-static"><h:outputText value="#{docEditArrivoORD.doc.anno}" /></p>
+		        		</div>
+		        		<label for="templateForm:mezzoTrasmissioneDoc" class="col-sm-2 control-label"><span>#{i18n['dw4.a_mezzo']}</span></label>
+		        		<div class="col-sm-3">
+		        			<h:selectOneMenu id="mezzoTrasmissioneDoc" value="#{docEditArrivoORD.doc.mezzo_trasmissione.cod}" valueChangeListener="#{docEditArrivoORD.checkMezzo}" styleClass="form-control">
+								<f:ajax execute="@this" render="templateForm:docRaccomandata" />
+								<f:selectItems value="#{docEditArrivoORD.doc.mezzoTrasmissioneSelect}" var="option" itemValue="#{option.value}" itemLabel="#{option.label}"></f:selectItems>
+							</h:selectOneMenu>
+		        		</div>
+		        	</div>
+		        	
+		        	<h:panelGroup id="docRaccomandata" layout="block">
+						<h:panelGroup rendered="#{docEditArrivoORD.formsAdapter.funzionalitaDisponibili['abilitaRaccomandate'] and docEditArrivoORD.showRaccomandataFields}" layout="block" styleClass="form-group">
+							<label for="templateForm:numraccomandata_input" class="col-sm-2 control-label"><span>#{i18n['dw4.num_raccomandata']}</span></label>
+							<div class="col-sm-4">
+								<ui:include src="./lookupField.xhtml">
+					        		<ui:param name="id" value="numraccomandata" />
+					        		<ui:param name="field" value="#{docEditArrivoORD.doc.numero_raccomandata[0].text}" />
+					        		<ui:param name="bean" value="#{docEditArrivoORD}" />
+					        		<ui:param name="action" value="lookupNumRaccomandata"/>
+					        		<ui:param name="clearaction" value="clearLookupNumRaccomandata"/>
+					        		<ui:param name="title" value="#{i18n['dw4.lookup_raccomandata']}"/>
+					        		<ui:param name="styleclass" value="form-control"/>
+					        		<ui:param name="refresh" value="templateForm:numraccomandata_input templateForm:lookup templateForm:errormsg"/>
+					        	</ui:include>
+				        	</div>
+						</h:panelGroup>
+					</h:panelGroup>
+					
+					<div class="form-group">
+						<label for="templateForm:nomeMittente_input" class="col-sm-2 control-label requiredField"><span>* #{i18n['dw4.mittente']}</span></label>
+						<div class="col-sm-4">
+							<ui:include src="./lookupRepeatField.xhtml">
+			        			<ui:param name="id" value="nomeMittente" />
+			        			<ui:param name="field" value="#{docEditArrivoORD.doc.rif_esterni[0].nome}" />
+				        		<ui:param name="element" value="#{docEditArrivoORD.doc.rif_esterni[0]}" />
+				        		<ui:param name="bean" value="#{docEditArrivoORD}" />
+				        		<ui:param name="action" value="lookupMittente"/>
+				        		<ui:param name="clearaction" value="clearLookupMittente"/>
+				        		<ui:param name="title" value="#{i18n['dw4.lookup_mittente']}"/>
+				        		<ui:param name="styleclass" value="#{ component.valid ? '' : 'invalidinput' } form-control"/>
+				        		<ui:param name="refresh" value="@form"/>
+				        		<ui:param name="notConstraint" value="#{docEditArrivoORD.formsAdapter.funzionalitaDisponibili['mittenteNonVincolato']}"/>
+				        	</ui:include>
+				        </div>
+				        <h:panelGroup rendered="#{docEditArrivoORD.formsAdapter.funzionalitaDisponibili['abilitaGestioneSAP']}" >
+							<label for="templateForm:codsap_mittente" class="col-sm-3 control-label"><span>#{i18n['acl.sapcod']}</span></label>
+							<div class="col-sm-2">
+								<h:inputText id="codsap_mittente" value="#{docEditArrivoORD.doc.rif_esterni[0].cod_SAP}" styleClass="form-control" disabled="true" readonly="true" />
+							</div>
+						</h:panelGroup>
+					</div>
+					
+					<div class="form-group">
+						<label for="templateForm:firmatario_input" class="col-sm-2 control-label"><span>#{i18n['dw4.firmatario']}</span></label>
+						<div class="col-sm-4">
+							<ui:include src="./lookupRepeatField.xhtml">
+			        			<ui:param name="id" value="firmatario" />
+				        		<ui:param name="field" value="#{docEditArrivoORD.doc.rif_esterni[0].referente.nominativo}" />
+				        		<ui:param name="element" value="#{docEditArrivoORD.doc.rif_esterni[0]}" />
+				        		<ui:param name="bean" value="#{docEditArrivoORD}" />
+				        		<ui:param name="action" value="lookupFirmatario"/>
+				        		<ui:param name="clearaction" value="clearLookupFirmatario"/>
+				        		<ui:param name="title" value="#{i18n['dw4.lookup_firmatario']}"/>
+				        		<ui:param name="styleclass" value="form-control"/>
+				        		<ui:param name="refresh" value="@form"/>
+				        		<ui:param name="notConstraint" value="#{!docEditArrivoORD.formsAdapter.funzionalitaDisponibili['firmatarioVincolato']}"/>
+				        	</ui:include>
+				        </div>
+						<label for="templateForm:firmatarioRole" class="col-sm-2 control-label"><span>#{i18n['acl.role']}</span></label>
+						<div class="col-sm-3">
+							<h:inputText id="firmatarioRole" value="#{docEditArrivoORD.doc.rif_esterni[0].referente.ruolo}" styleClass="form-control" />
+						</div>
+					</div>
+					
+					<h:panelGroup rendered="#{empty docEditArrivoORD.hideDivs or not fn:contains(docEditArrivoORD.hideDivs, 'indirizzo_fax')}">
+						<h:panelGroup rendered="#{docEditArrivoORD.formsAdapter.funzionalitaDisponibili['abilitaLookupFaxArrivo']}">
+							<div class="form-group">
+								<label class="col-sm-2 control-label"><span>#{i18n['acl.fax']}</span></label>
+								<div class="col-sm-2">
+									<h:panelGroup rendered="#{docEditArrivoORD.formsAdapter.funzionalitaDisponibili['abilitaLookupFaxArrivo']}">
+										<ui:include src="./lookupRepeatField.xhtml">
+						        			<ui:param name="id" value="fax" />
+							        		<ui:param name="field" value="#{docEditArrivoORD.doc.rif_esterni[0].fax}" />
+							        		<ui:param name="element" value="#{docEditArrivoORD.doc.rif_esterni[0]}" />
+							        		<ui:param name="bean" value="#{docEditArrivoORD}" />
+							        		<ui:param name="action" value="lookupFax"/>
+							        		<ui:param name="clearaction" value="clearLookupFax"/>
+							        		<ui:param name="title" value="#{i18n['dw4.lookup_fax']}"/>
+							        		<ui:param name="styleclass" value="form-control"/>
+							        		<ui:param name="refresh" value="templateForm:nomeMittente_input templateForm:address templateForm:emailCert templateForm:email templateForm:fax_input templateForm:piva templateForm:cf templateForm:lookup templateForm:errormsg"/>
+							        	</ui:include>
+									</h:panelGroup>
+								</div>
+							</div>
+						</h:panelGroup>
+						<h:panelGroup rendered="#{!empty docEditArrivoORD.doc.rif_esterni[0].cod}">
+							<div class="form-group">
+								<label for="templateForm:address" class="col-sm-2 control-label"><span>#{i18n['acl.address']}</span></label>
+								<div class="col-sm-4">
+									<h:inputText id="address" value="#{docEditArrivoORD.doc.rif_esterni[0].indirizzo}" styleClass="form-control" disabled="true" readonly="true" />
+								</div>
+							</div>
+							<div class="form-group">
+								<label class="col-sm-2 control-label"><span>#{i18n['dw4.email_cert']}</span></label>
+								<div class="col-sm-2">
+									<h:inputText id="emailCert" value="#{docEditArrivoORD.doc.rif_esterni[0].email_certificata}" styleClass="form-control" disabled="true" readonly="true" />
+								</div>
+								<label class="col-sm-1 control-label"><span>#{i18n['acl.email']}</span></label>
+								<div class="col-sm-2">
+									<h:inputText id="email" value="#{docEditArrivoORD.doc.rif_esterni[0].email}" styleClass="form-control" disabled="true" readonly="true" />
+								</div>
+								<h:panelGroup rendered="#{!docEditArrivoORD.formsAdapter.funzionalitaDisponibili['abilitaLookupFaxArrivo']}">
+									<label class="col-sm-1 control-label"><span>#{i18n['acl.fax']}</span></label>
+									<div class="col-sm-3">
+										<h:inputText id="fax" value="#{docEditArrivoORD.doc.rif_esterni[0].fax}" styleClass="form-control" />
+									</div>
+								</h:panelGroup>
+							</div>
+							<div class="form-group">
+								<label class="col-sm-2 control-label"><span>#{i18n['dw4.piva']}</span></label>
+								<div class="col-sm-2">
+									<h:inputText id="piva" value="#{docEditArrivoORD.doc.rif_esterni[0].partita_iva}" styleClass="readonlyinput form-control" disabled="true" readonly="true" />
+								</div>
+								<label class="col-sm-1 control-label"><span>#{i18n['dw4.cf']}</span></label>
+								<div class="col-sm-2">
+									<h:inputText id="cf" value="#{docEditArrivoORD.doc.rif_esterni[0].codice_fiscale}" styleClass="readonlyinput form-control" disabled="true" readonly="true" />
+								</div>
+							</div>
+						</h:panelGroup>
+					</h:panelGroup>
+					
+					<div class="form-group endsection">
+						<ui:include src="./dateField.xhtml">
+							<ui:param name="label" value="#{i18n['dw4.data_doc']}" />
+							<ui:param name="id" value="dataProtMittente" />
+							<ui:param name="value" value="#{docEditArrivoORD.doc.rif_esterni[0].data_prot}" />
+							<ui:param name="onblur" value="#{ (docEditArrivoORD.formsAdapter.funzionalitaDisponibili['verificaDuplicati']) ? 'verificaDuplicatiDocMittente();' : ''}" />
+						</ui:include>
+						<label for="templateForm:protMittente" class="col-sm-5 control-label"><span>#{i18n['dw4.prot_mittente']}</span></label>
+						<div class="col-sm-2">
+							<h:inputText id="protMittente" value="#{docEditArrivoORD.doc.rif_esterni[0].n_prot}" styleClass="#{ component.valid ? '' : 'invalidinput' } form-control" onblur="#{ (docEditArrivoORD.formsAdapter.funzionalitaDisponibili['verificaDuplicati']) ? 'verificaDuplicatiDocMittente();' : ''}" />
+						</div>
+						
+						<h:commandLink id="existsDuplicatiBtn" action="#{docEditArrivoORD.verificaDuplicatiDoc}" actionListener="#{docEditArrivoORD.attrListenerVerificaDuplicati}" style="display:none;">
+							<f:attribute name="tipoVerificaDuplicati" value="exists" />
+							<f:ajax execute="@form" render="templateForm:duplicatiDocPresenti templateForm:duplicatoVerificato templateForm:errormsg templateForm:nomeMittenteInit templateForm:dataProtMittenteInit templateForm:numProtMittenteInit" />
+						</h:commandLink>
+						<h:commandLink id="apriPopupDuplicatiBtn" action="#{docEditArrivoORD.verificaDuplicatiDoc}" actionListener="#{docEditArrivoORD.attrListenerVerificaDuplicati}" style="display:none;" onclick="openCenterPopup('', 'popupVerificaDuplicati')" target="popupVerificaDuplicati">
+							<f:attribute name="tipoVerificaDuplicati" value="popup" />
+						</h:commandLink>
+						
+						<h:inputHidden id="nomeMittenteInit" value="#{docEditArrivoORD.nomeMittenteInitValue}" />
+						<h:inputHidden id="dataProtMittenteInit" value="#{docEditArrivoORD.dataProtMittenteInitValue}" />
+						<h:inputHidden id="numProtMittenteInit" value="#{docEditArrivoORD.numProtMittenteInitValue}" />
+						
+						<h:inputHidden id="duplicatiDocPresenti" value="#{docEditArrivoORD.duplicatiPresenti}" />
+						<h:inputHidden id="duplicatoVerificato" value="#{docEditArrivoORD.duplicatoVerificato}" />
+					</div>
+					
+					<h:panelGroup rendered="#{ docEditArrivoORD.copyIfNotRipetiInFascicolo }">
+						<div class="form-group">
+							<label for="templateForm:voceindice_input" class="col-sm-2 control-label"><span>#{i18n['dw4.index']}</span></label>
+							<div class="col-sm-4">
+								<ui:include src="./lookupField.xhtml">
+					        		<ui:param name="id" value="voceindice" />
+					        		<ui:param name="field" value="#{docEditArrivoORD.doc.voce_indice.text}" />
+					        		<ui:param name="bean" value="#{docEditArrivoORD}" />
+					        		<ui:param name="action" value="lookupVoceIndice"/>
+					        		<ui:param name="clearaction" value="clearLookupVoceIndice"/>
+					        		<ui:param name="title" value="#{i18n['dw4.lookup_voce_indice']}"/>
+					        		<ui:param name="styleclass" value="form-control"/>
+					        		<ui:param name="refresh" value="templateForm:voceindice_input templateForm:doc_oggetto templateForm:classif_holder templateForm:lookup templateForm:errormsg" />
+					        	</ui:include>
+				        	</div>
+						</div>
+					</h:panelGroup>
+					
+					<div class="form-group">
+						<label for="templateForm:doc_oggetto" class="col-sm-2 control-label requiredField"><span>* #{i18n['dw4.object']}</span></label>
+						<div class="col-sm-9">
+							<h:inputTextarea id="doc_oggetto" value="#{docEditArrivoORD.doc.oggetto}" rows="4" cols="120" styleClass="#{ component.valid ? '' : 'invalidinput' } form-control" />
+						</div>
+					</div>
+					
+					<ui:include src="./allegatiFields.xhtml">
+						<ui:param name="bean" value="#{docEditArrivoORD}" />
+		        		<ui:param name="beanDoc" value="#{docEditArrivoORD.doc}" />
+		        	</ui:include>
+		        	
+		        	<h:panelGroup id="classif_holder" layout="block">
+						<ui:include src="./classifFields.xhtml">
+			        		<ui:param name="id" value="classif" />
+			        		<ui:param name="editable" value="#{ docEditArrivoORD.copyIfNotRipetiInFascicolo }" />
+			        		<ui:param name="bean" value="#{docEditArrivoORD}" />
+			        		<ui:param name="beanDoc" value="#{docEditArrivoORD.doc}" />
+			        		<ui:param name="actionTitolario" value="thVincolatoTitolarioClassificazione"/>
+			        		<ui:param name="actionGerarchia" value="gerarchiaTitolarioClassificazione"/>
+			        		<ui:param name="refresh" value="templateForm:classif_holder templateForm:showthes templateForm:errormsg"/>
+			        		<ui:param name="readOnlyConservazione" value="true" />
+			        		<ui:param name="optionalField" value="#{docEditArrivoORD.formsAdapter.funzionalitaDisponibili['docClassifEreditabile']}" />
+			        	</ui:include>
+		        	</h:panelGroup>
+		        	
+		        	<ui:include src="./visibilitaFields.xhtml">
+						<ui:param name="bean" value="#{docEditArrivoORD}" />
+		        		<ui:param name="beanDoc" value="#{docEditArrivoORD.doc}" />
+		        	</ui:include>
+		        	
+		        	<ui:remove>
+			        	<div class="form-group">
+							<label class="col-sm-2 control-label" for="templateForm:docSensibile"><span>#{i18n['dw4.dati_sensibili_e_giudiziari']}</span></label>
+							<div class="col-sm-2">
+								<h:selectBooleanCheckbox id="docSensibile" value="#{docEditArrivoORD.doc.sensibile}" label="#{i18n['dw4.dati_sensibili_e_giudiziari']}" />
+							</div>
+						</div>
+					</ui:remove>
+				</div> <!-- /fieldset -->
+				
+				<h:panelGroup rendered="#{docEditArrivoORD.protocolloDifferito}">
+					<div class="fieldset">
+						<div class="legend">#{i18n['dw4.informazioni_amministrative_circa_il_differimento_dei_termini']}</div>
+						
+						<div class="form-group">
+							<ui:include src="./dateField.xhtml">
+								<ui:param name="label" value="#{i18n['dw4.dataarrivo']}" />
+								<ui:param name="required" value="true" />
+								<ui:param name="id" value="dataArrivoProtDifferito" />
+								<ui:param name="value" value="#{docEditArrivoORD.doc.prot_differito.data_arrivo}" />
+							</ui:include>
+						</div>
+						<div class="form-group">
+							<label for="templateForm:motivazioneProtDifferito" class="col-sm-2 control-label">* #{i18n['dw4.motivazione']}</label>
+							<div class="col-sm-9">
+								<h:inputTextarea id="motivazioneProtDifferito" value="#{docEditArrivoORD.doc.prot_differito.text}" rows="4" cols="120" styleClass="#{ component.valid ? '' : 'invalidinput' } form-control" />
+							</div>
+						</div>
+					</div> <!-- /fieldset -->
+				</h:panelGroup>
+				
+				<ui:include src="./docEdit@datiOrdine.xhtml">
+					<ui:param name="bean" value="#{docEditArrivoORD}" />
+					<ui:param name="titoloBlocco" value="#{i18n['dw4.informazioni_dell_ordine']}" />
+					<ui:param name="titoloTotale" value="#{i18n['dw4.totale_ordine']}" />
+	        	</ui:include>
+	        	
+	        	<ui:include src="./docEdit@rifinterni@doc.xhtml">
+					<ui:param name="bean" value="#{docEditArrivoORD}" />
+	        	</ui:include>
+	        	
+	        	<div class="fieldset">
+	        		<div class="legend">
+	        			#{i18n['dw4.other']}
+	        			
+	        			<div class="pull-right">
+							<span class="glyphicon glyphicon-list-alt" title="#{i18n['dw4.other']}"></span>
+						</div>
+	        		</div>
+	        		
+	        		<ui:include src="./contenutoInFields.xhtml">
+						<ui:param name="bean" value="#{docEditArrivoORD}" />
+		        	</ui:include>
+		        	
+		        	<h:panelGroup rendered="#{docEditArrivoORD.formsAdapter.funzionalitaDisponibili['mostraCodiceProgetto']}">
+						<div class="form-group">
+			               	<label for="templateForm:codProgetto" class="col-sm-2 control-label">#{i18n['dw4.codice_progetto']}</label>
+			               	<div class="col-sm-9">
+			               		<h:inputText id="codProgetto" value="#{docEditArrivoORD.doc.extra.codice_progetto}" styleClass="form-control" />
+			               	</div>		
+						</div>
+					</h:panelGroup>
+					
+					<div class="form-group">
+		               	<label for="templateForm:riferimentiDoc" class="col-sm-2 control-label">#{i18n['dw4.riferimenti']}</label>
+		               	<div class="col-sm-4">
+		               		<h:inputText id="riferimentiDoc" value="#{docEditArrivoORD.doc.riferimenti.text}" styleClass="form-control" />
+		               	</div>		
+		               	<label for="templateForm:codTipologiaDoc" class="col-sm-2 control-label">#{i18n['acl.tipologia']}</label>
+		               	<div class="col-sm-3">
+			               	<h:selectOneMenu id="codTipologiaDoc" value="#{docEditArrivoORD.doc.tipologia.cod}" styleClass="form-control">
+								<f:selectItems value="#{docEditArrivoORD.doc.tipologiaSelect}" var="option" itemValue="#{option.value}" itemLabel="#{option.label}" itemLabelEscaped="false"></f:selectItems>
+							</h:selectOneMenu>
+						</div>
+					</div>
+					
+					<div class="form-group">
+		               	<label for="templateForm:note" class="col-sm-2 control-label">#{i18n['acl.notes']}</label>
+		               	<div class="col-sm-9">
+		               		<h:inputTextarea id="note" value="#{docEditArrivoORD.doc.note.text}" rows="4" cols="120" styleClass="form-control" />
+		               	</div>		
+					</div>
+					
+					<div class="form-group">
+						<label for="templateForm:keywordsDoc" class="col-sm-2 control-label">#{i18n['dw4.keywords']}</label>
+						<div class="col-sm-9">
+							<h:inputText id="keywordsDoc" value="#{docEditArrivoORD.doc.keywords.text}" styleClass="form-control" />
+						</div>			
+					</div>
+					
+					<h:panelGroup rendered="#{docEditArrivoORD.formsAdapter.funzionalitaDisponibili['show_customSelect1']}" layout="block" styleClass="form-group">
+						<h:panelGroup rendered="#{fn:length(docEditArrivoORD.doc.customSelect1) > 0}">
+						   	<label for="templateForm:customSelect1" class="col-sm-2 control-label">#{i18n['dw4.custom_select_1_label']}</label>
+						   	<div class="col-sm-3">
+				               	<h:selectOneMenu id="customSelect1" value="#{docEditArrivoORD.doc.extra.custom_select_1}" styleClass="form-control">
+									<f:selectItems value="#{docEditArrivoORD.doc.customSelect1}" var="option" itemValue="#{option.value}" itemLabel="#{option.value}"></f:selectItems>
+								</h:selectOneMenu>
+							</div>
+						</h:panelGroup>
+						<h:panelGroup rendered="#{fn:length(docEditArrivoORD.doc.customSelect2) > 0}">
+						   	<label for="templateForm:customSelect2" class="#{(fn:length(docEditArrivoORD.doc.customSelect1) > 0) ? 'col-sm-offset-1' : ''} col-sm-2 control-label">#{i18n['dw4.custom_select_2_label']}</label>
+			               	<div class="col-sm-3">
+				               	<h:selectOneMenu id="customSelect2" value="#{docEditArrivoORD.doc.extra.custom_select_2}" styleClass="form-control">
+									<f:selectItems value="#{docEditArrivoORD.doc.customSelect2}" var="option" itemValue="#{option.value}" itemLabel="#{option.value}"></f:selectItems>
+								</h:selectOneMenu>
+							</div>
+						</h:panelGroup>
+					</h:panelGroup>
+	        	</div> <!-- /fieldset -->
+	        	
+	        	<ui:include src="./xlinkFields.xhtml">
+					<ui:param name="bean" value="#{docEditArrivoORD}" />
+	        		<ui:param name="beanDoc" value="#{docEditArrivoORD.doc}" />
+	        	</ui:include>
+	        	
+	        	<ui:include src="./docInformaticiFields.xhtml">
+					<ui:param name="bean" value="#{docEditArrivoORD}" />
+	        		<ui:param name="beanDoc" value="#{docEditArrivoORD.doc}" />
+	        		<ui:param name="enableFiles" value="#{docEditArrivoORD.docInformaticiEnabled and docEditArrivoORD.formsAdapter.funzionalitaDisponibili['addFile']}" />
+	        		<ui:param name="enableImages" value="#{docEditArrivoORD.docInformaticiEnabled and docEditArrivoORD.formsAdapter.funzionalitaDisponibili['addImg']}" />
+	        		<ui:param name="enableFileAgentPDF" value="true" />
+	        		<ui:param name="enableImageAgentPDF" value="true" />
+	        	</ui:include>
+			</div>
+		</div>
+		</div>
+		<!-- scheda edit: fine -->
+		
+		<h:inputTextarea value="#{docEditArrivoORD.xml}" rendered="#{docEditArrivoORD.debugMode}" styleClass="form-control" rows="10" />	
+		
+		<ui:include src="./lookup.xhtml"> <ui:param name="pageBean" value="#{docEditArrivoORD}"/></ui:include>
+		<ui:include src="./rifintLookup.xhtml"> <ui:param name="pageBean" value="#{docEditArrivoORD}"/></ui:include>
+		<ui:include src="./showthes.xhtml"> <ui:param name="pageBean" value="#{docEditArrivoORD}"/></ui:include>
+		<ui:include src="./thvincolato.xhtml"> <ui:param name="pageBean" value="#{docEditArrivoORD}"/></ui:include>
+	</div>
+</ui:define>
+
+</ui:composition>

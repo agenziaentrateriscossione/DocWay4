@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" 
+	  xmlns:h="http://java.sun.com/jsf/html" 
+	  xmlns:ui="http://java.sun.com/jsf/facelets" 
+	  xmlns:f="http://java.sun.com/jsf/core"
+	  xmlns:p="http://xmlns.jcp.org/jsf/passthrough">
+<ui:composition>
+
+	<h:panelGroup layout="block" id="chanceClassif">
+		<h:panelGroup rendered="#{pageBean.view}">
+			<!-- Modal -->
+			<div id="cambiaClassifModal" class="modal fade in" aria-hidden="false" aria-labelledby="cambiaClassifModalLabel" role="dialog" tabindex="-1" style="display: block;">
+			<!--div class="modal fade" id="cambiaClassifModal" role="dialog" aria-labelledby="cambiaClassifModalLabel" aria-hidden="true"-->
+				<div class="modal-dialog modal-lg">
+					<div class="modal-content jsf-modal">
+						<div class="modal-header">
+							<h:commandButton styleClass="close" title="#{i18n['acl.close']}" action="#{pageBean.closeView}" p:data-dismiss="modal"  value="&#215;" >
+			        			<f:ajax render="chanceClassif"/>
+			        		</h:commandButton>
+			        		
+			        		<h4 class="modal-title" id="cambiaClassifModalLabel">#{i18n['dw4.cambiaclassif']}</h4>
+						</div>
+						<div class="modal-body">
+							
+							<ui:include src="./classifFields.xhtml">
+				        		<ui:param name="id" value="classif" />
+				        		<ui:param name="optionalField" value="true" />
+				        		<ui:param name="editable" value="true" />
+				        		<ui:param name="readOnlyConservazione" value="true" />
+				        		<ui:param name="bean" value="#{pageBean}" />
+				        		<ui:param name="beanDoc" value="#{pageBean.doc}" />
+				        		<ui:param name="actionTitolario" value="thVincolatoTitolarioClassificazione"/>
+				        		<ui:param name="actionGerarchia" value="gerarchiaTitolarioClassificazione"/>
+				        		<ui:param name="refresh" value="@form"/>
+				        	</ui:include>
+							
+							<h:inputTextarea value="#{pageBean.xml}" rendered="#{pageBean.debugMode}" styleClass="form-control" rows="10" />
+							
+						</div>
+						<div class="modal-footer">
+							<h:commandButton styleClass="btn btn-primary openwaitmsg" action="#{pageBean.confirmChangeclassif}" value="#{i18n['acl.save']}" />
+							
+							<h:commandButton styleClass="btn btn-default" title="#{i18n['acl.close']}" action="#{pageBean.closeView}" p:data-dismiss="modal"  value="#{i18n['acl.close']}" >
+			        			<f:ajax render="chanceClassif"/>
+			        		</h:commandButton>
+						</div>
+					</div>
+				</div>
+			</div>
+			<!--script type="text/javascript">
+			$('#cambiaClassifModal').modal('show');
+			</script-->
+		</h:panelGroup>
+	
+	</h:panelGroup>
+	
+	<ui:include src="./loadingbar@cambiaClassif.xhtml"><ui:param name="id" value="changeclassif"/></ui:include> 
+
+</ui:composition>   
+</html>

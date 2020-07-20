@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+    template="#{queryTrasferimento.pageTemplate}"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:p="http://xmlns.jcp.org/jsf/passthrough">
+
+<ui:define name="content">
+	<div class="adm-tools">
+	
+		<!-- toolbar: inizio -->
+		<div class="btn-toolbar docway-toolbar" role="toolbar">
+			<div class="btn-group">
+				<h:commandLink action="#{queryTrasferimento.trasferimentoMassivo}" styleClass="btn btn-primary openwaitmsg">
+					<f:ajax execute="@form" render="@form" />
+					#{i18n['dw4.trasferisci']}
+				</h:commandLink>
+				<h:commandLink action="#{docwaymenu.gotoTableQAdmTools}"  styleClass="btn btn-default">
+					#{i18n['torna']}
+				</h:commandLink>
+			</div>
+		</div>
+		<!-- toolbar: fine -->
+		
+		<!-- messages: inizio -->
+		<h:panelGroup rendered="#{not empty facesContext.messageList}" layout="block" styleClass="docedit-messages alert alert-danger">
+			<h:messages styleClass="" id="validationMesseges" />
+		</h:panelGroup>
+		<!-- messages: fine -->
+		
+		<!-- scheda query: inizio -->
+		<div class="row-fluid" style="margin-top:10px;">
+			<div class="box span12">
+				<div class="box-content">
+					<div class="fieldset">
+						<div class="legend">#{i18n['dw4.procedura_di_trasferimento_personale_e_responsabilita']}</div>
+						
+						<div class="form-group">
+							<label for="templateForm:vecchioUor" class="col-sm-2 control-label">#{i18n['dw4.vecchio_proprietario']}</label>
+							<div class="col-sm-4">
+								<h:inputText id="vecchioUor" p:placeholder="#{i18n['acl.uff']}" title="#{i18n['acl.uff']}" value="#{queryTrasferimento.vuor}" styleClass="#{ component.valid ? '' : 'invalidinput' } form-control" />
+							</div>
+							<div class="col-sm-5">
+								<h:inputText id="vecchioRpa" p:placeholder="#{i18n['acl.oper']}" title="#{i18n['acl.oper']}" value="#{queryTrasferimento.vrpa}" styleClass="#{ component.valid ? '' : 'invalidinput' } form-control" />
+							</div>
+						</div>
+						<div class="form-group">
+							<label for="templateForm:nuovoUor" class="col-sm-2 control-label">#{i18n['dw4.nuovo_proprietario']}</label>
+							<div class="col-sm-4">
+								<h:inputText id="nuovoUor" p:placeholder="#{i18n['acl.uff']}" title="#{i18n['acl.uff']}" value="#{queryTrasferimento.nuor}" styleClass="#{ component.valid ? '' : 'invalidinput' } form-control" />
+							</div>
+							<div class="col-sm-5">
+								<h:inputText id="nuovoRpa" p:placeholder="#{i18n['acl.oper']}" title="#{i18n['acl.oper']}" value="#{queryTrasferimento.nrpa}" styleClass="#{ component.valid ? '' : 'invalidinput' } form-control" />
+							</div>
+						</div>
+						<div class="form-group">
+							<div class="col-sm-offset-2 col-sm-9">
+								<h:selectBooleanCheckbox id="lvrpaCheck" value="#{queryTrasferimento.lvrpa}" title="#{i18n['dw4.verifica_la_presenza_del_vecchio_uor_rpa']}" />
+								<label for="templateForm:lvrpaCheck" class="normal-weight-text">#{i18n['dw4.verifica_la_presenza_del_vecchio_uor_rpa']}</label>
+							</div>
+						</div>
+						<div class="form-group">
+							<div class="col-sm-offset-2 col-sm-9">
+								<h:selectBooleanCheckbox id="ccCheck" value="#{queryTrasferimento.cc}" title="#{i18n['dw4.anche_cc_cds_op_e_opm']}" />
+								<label for="templateForm:ccCheck" class="normal-weight-text">#{i18n['dw4.anche_cc_cds_op_e_opm']}</label>
+							</div>
+						</div>
+						<div class="form-group">
+							<div class="col-sm-offset-2 col-sm-9">
+								<h:selectBooleanCheckbox id="bozzCheck" value="#{queryTrasferimento.bozz}" title="#{i18n['dw4.anche_bozze_di_documenti']}" />
+								<label for="templateForm:bozzCheck" class="normal-weight-text">#{i18n['dw4.anche_bozze_di_documenti']}</label>
+							</div>
+						</div>
+						<div class="form-group">
+							<div class="col-sm-offset-2 col-sm-9">
+								<h:selectBooleanCheckbox id="annCheck" value="#{queryTrasferimento.ann}" title="#{i18n['dw4.anche_documenti_annullati']}" />
+								<label for="templateForm:annCheck" class="normal-weight-text">#{i18n['dw4.anche_documenti_annullati']}</label>
+							</div>
+						</div>
+					</div> <!-- /fieldset -->
+				</div>
+			</div>
+		</div>
+		<!-- scheda query: fine -->
+	
+	</div>
+	
+	<ui:include src="./loadingbar@trasferimento.xhtml"><ui:param name="pageBean" value="#{queryTrasferimento}"/></ui:include>
+	
+	<h:inputTextarea value="#{queryTrasferimento.xml}" rendered="#{queryTrasferimento.debugMode}" styleClass="form-control" rows="10" />
+</ui:define>
+    
+</ui:composition>    

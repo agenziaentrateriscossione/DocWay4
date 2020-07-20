@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	template="./../docway/templateTo.xhtml" xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core">
+
+	<ui:define name="content">
+		<div class="organo showdoc">
+
+			<!-- primo livello toolbar: inizio -->
+			<div class="btn-toolbar" role="toolbar">
+				<div class="btn-group">
+					<h:outputLink value="#{facesContext.externalContext.requestContextPath}/docway/show-queryToAdmTools.pf" styleClass="btn btn-default openwaitmsg">
+						<span>#{i18n['torna']}</span>
+					</h:outputLink>
+				</div>
+			</div>
+			<!-- primo livello toolbar: fine -->
+			
+				<!-- secondo livello toolbar: inizio -->
+				<div class="btn-toolbar" role="toolbar">
+					<div class="btn-group">
+						<ui:remove> <h:commandLink rendered="#{showdocOrgano.formsAdapter.funzionalitaDisponibili['modifica']}" action="#{showdocOrgano.modifyTableDoc}" styleClass="btn btn-primary openwaitmsg"/></ui:remove>
+						<h:commandLink action="#{showdocOrgano.modifyTableDoc}" styleClass="btn btn-primary openwaitmsg">
+							<span>#{i18n['acl.modify']}</span>
+						</h:commandLink>
+						<ui:remove> <h:commandLink rendered="#{showdocOrgano.formsAdapter.funzionalitaDisponibili['rimuovidoc']}" action="#{showdocOrgano.remove}" onclick="if (!owmConfirm('#{i18n['acl.deleteconfirm']}')) return false;" styleClass="btn btn-danger" /></ui:remove>
+						<h:commandLink action="#{showdocOrgano.remove}" onclick="if (!owmConfirm('#{i18n['acl.deleteconfirm']}')) return false;" styleClass="btn btn-danger" >	
+							<span>#{i18n['acl.delete']}</span>
+						</h:commandLink>
+						<h:commandLink action="#{showdocOrgano.inserisciSedutaSospesa}" title="#{i18n['acl.inserisci_seduta_per_proposte_sospese']}" styleClass="btn btn-primary openwaitmsg">
+							<small><span>#{i18n['acl.ins_seduta_prop_sos']}</span></small>
+						</h:commandLink>
+					</div>
+				</div>
+				<!-- secondo livello toolbar: fine -->
+
+			<h:panelGroup styleClass="messagesArea" layout="block">
+				<h:messages styleClass="info" id="validationMesseges" />
+			</h:panelGroup>
+
+			<script type="text/javascript">
+			
+			$(document).ready(function() {
+				//disabilito il click all'esterno del templateForm in quanto la pagina corrente si trova in acl e non in docway
+				disableNoTemplateFormLinks("#{i18n['acl.torna_alert_message']}");
+			});
+			</script>
+
+			<h5 class="sub-header" title="#{showdocOrgano.organo.nome}">
+				<span class="organo glyphicons-pro"></span>&#160;
+				<h:outputText value="#{showdocOrgano.organo.nome}" escape="false" />
+			</h5>
+
+			<!-- scheda show: inizio -->
+			<div id="fixedshowdoc" class="fixed-showdoc">
+			
+				<div class="showdoc-section">
+					<div class="title">
+						#{i18n['acl.informazioni_di_base']}
+						<div class="pull-right">
+							<span class="glyphicons-pro home" title="#{i18n['acl.informazioni_di_base']}"></span>
+						</div>
+					</div>
+
+					<dl class="dl-horizontal">
+						<dt>#{i18n['acl.cod']}</dt>
+						<dd>#{showdocOrgano.organo.cod}</dd>
+						
+						<h:panelGroup rendered="#{!empty showdocOrgano.organo.classif}">
+							<dt>#{i18n['dw4.classif']} #{i18n['dw4.verbale']}</dt>
+							<dd><h:outputText value="#{showdocOrgano.organo.classif.cod} - #{showdocOrgano.organo.classif.text}" escape="false"><f:converter converterId="ClassifConverter"/><f:attribute name="classifFormat" value="#{bean.classifFormat}" /></h:outputText></dd>
+						</h:panelGroup>
+					</dl>
+				</div>
+				
+				<h:panelGroup rendered="#{!empty showdocOrgano.organo.categorie and !empty showdocOrgano.organo.categorie[0].cod}">
+					<div class="showdoc-section">
+						<div class="title">
+							#{showdocOrgano.categorieLabel}
+							<div class="pull-right">
+								<span class="glyphicons-pro tag" title="#{showdocOrgano.categorieLabel}"></span>
+							</div>
+						</div>
+						
+						<ui:repeat var="categoria" value="#{showdocOrgano.organo.categorie}">
+							<dl class="dl-horizontal">
+								<dt>#{categoria.cod}</dt>
+								<dd>#{categoria.nome} (#{categoria.tipo})</dd>
+							</dl>
+						</ui:repeat>
+					</div>
+				</h:panelGroup>
+				
+				<h:panelGroup rendered="#{!empty showdocOrgano.organo.componenti and !empty showdocOrgano.organo.componenti[0].nominativo}">
+					<div class="showdoc-section">
+						<div class="title">
+							#{i18n['dw4.componenti']}
+							<div class="pull-right">
+								<span class="glyphicons-pro parents" title="#{i18n['dw4.componenti']}"></span>
+							</div>
+						</div>
+						
+						<ui:repeat var="componente" value="#{showdocOrgano.organo.componenti}">
+							<dl class="dl-horizontal">
+								<dt></dt>
+								<dd>#{componente.nominativo} (#{componente.incarico})</dd>
+							</dl>
+						</ui:repeat>
+					</div>
+				</h:panelGroup>
+				
+				<h:panelGroup rendered="#{(!empty showdocOrgano.organo.lista_distribuzione_odg) or (!empty showdocOrgano.organo.lista_distribuzione_risultati) or (!empty showdocOrgano.organo.lista_distribuzione_verbali) or (!empty showdocOrgano.organo.lista_distribuzione_seduta)}">
+					<div class="showdoc-section">
+						<div class="title">
+							#{i18n['acl.lista_distribuzione']} (#{i18n['acl.email']})
+							<div class="pull-right">
+								<span class="glyphicons-pro message_flag" title="#{i18n['acl.lista_distribuzione']} (#{i18n['acl.email']})"></span>
+							</div>
+						</div>
+						
+						<h:panelGroup rendered="#{!empty showdocOrgano.organo.lista_distribuzione_odg}">
+							<dl class="dl-horizontal">
+								<dt>#{i18n['dw4.odg']}</dt>
+								<dd><a href="mailto:#{showdocOrgano.organo.lista_distribuzione_odg}">#{showdocOrgano.organo.lista_distribuzione_odg}</a></dd>
+							</dl>
+						</h:panelGroup>
+						
+						<h:panelGroup rendered="#{!empty showdocOrgano.organo.lista_distribuzione_risultati}">
+							<dl class="dl-horizontal">
+								<dt>#{i18n['dw4.risultati']}</dt>
+								<dd><a href="mailto:#{showdocOrgano.organo.lista_distribuzione_risultati}">#{showdocOrgano.organo.lista_distribuzione_risultati}</a></dd>
+							</dl>
+						</h:panelGroup>
+						
+						<h:panelGroup rendered="#{!empty showdocOrgano.organo.lista_distribuzione_verbali}">
+							<dl class="dl-horizontal">
+								<dt>#{i18n['dw4.verbale']}</dt>
+								<dd><a href="mailto:#{showdocOrgano.organo.lista_distribuzione_verbali}">#{showdocOrgano.organo.lista_distribuzione_verbali}</a></dd>
+							</dl>
+						</h:panelGroup>
+						
+						<h:panelGroup rendered="#{!empty showdocOrgano.organo.lista_distribuzione_seduta}">
+							<dl class="dl-horizontal">
+								<dt>#{i18n['dw4.ins']}/#{i18n['dw4.mod']} #{i18n['dw4.data_seduta']}</dt>
+								<dd><a href="mailto:#{showdocOrgano.organo.lista_distribuzione_seduta}">#{showdocOrgano.organo.lista_distribuzione_seduta}</a></dd>
+							</dl>
+						</h:panelGroup>
+					</div>
+				</h:panelGroup>
+				
+				<h:panelGroup rendered="#{(!empty showdocOrgano.organo.proposte)}">
+					<div class="showdoc-section">
+						<div class="title">
+							#{i18n['dw4.tipologie_di_proposte']}
+							<div class="pull-right">
+								<span class="glyphicons-pro notes" title="#{i18n['dw4.tipologie_di_proposte']}"></span>
+							</div>
+						</div>
+						
+						<ui:repeat var="proposta" value="#{showdocOrgano.organo.proposte}">
+							<dl class="dl-horizontal">
+								<dt>#{proposta.cod}</dt>
+								<dd>
+									<div>#{proposta.text} (#{proposta.tipo})</div>
+									<div>#{i18n['dw4.workflow']} : #{proposta.workflow.label}</div>
+								</dd>
+							</dl>
+						</ui:repeat>
+					</div>
+				</h:panelGroup>
+				
+				<h:panelGroup rendered="#{(!empty showdocOrgano.organo.modelli and showdocOrgano.almenoUnModello)}">
+					<ui:include src="./showdoc@xwfiles.xhtml">
+						<ui:param name="bean" value="#{showdocOrgano}"/>								
+					</ui:include>
+				</h:panelGroup>
+
+				<ui:include src="./history.xhtml">
+					<ui:param name="bean" value="#{showdocOrgano.organo}" />
+				</ui:include>
+				
+				<script type="text/javascript">
+				/**
+				 * apertura/chiusura della storia modifiche su record ACL
+				 * siccome utilizzo il template di delibere non mi ritrovo importato il file acl.js
+				 */
+				function openCloseHistory() {
+					if ($('#historyPanel').is(":hidden")) {
+						$('#historyPanel').fadeIn();
+						$('#hideHistoryLink').show();
+						$('#showHistoryLink').hide();
+					}
+					else {
+						$('#historyPanel').fadeOut();
+						$('#hideHistoryLink').hide();
+						$('#showHistoryLink').show();
+					}
+					
+					return false;
+				}
+				</script>	
+				
+			</div>
+			<!-- scheda show: fine -->
+		</div>
+
+		<h:inputTextarea value="#{showdocOrgano.xml}" rendered="#{showdocOrgano.debugMode}" styleClass="form-control" rows="10" />
+	</ui:define>
+</ui:composition>

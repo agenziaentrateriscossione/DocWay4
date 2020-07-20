@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+    template="#{queryFascicoloPersonale.pageTemplate}"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:f="http://java.sun.com/jsf/core">
+
+<ui:define name="content">
+	<div id="advancedSearch" class="fascicolo submitEnterKey">
+		
+		<!-- toolbar: inizio -->
+		<div class="btn-toolbar docway-toolbar margin-bottom" role="toolbar">
+			<div class="btn-group">
+				<h:commandLink id="advancedSearchBtn" action="#{queryFascicoloPersonale.queryPlain}" styleClass="btn btn-primary openwaitmsg" value="#{i18n['acl.search']}" />
+				<h:commandLink action="#{queryFascicoloPersonale.resetQuery}" styleClass="btn btn-default" value="#{i18n['acl.clear']}">
+					<f:ajax execute="@form" render="@form" />
+				</h:commandLink>
+				
+				<h:commandLink rendered="#{queryFascicoloPersonale.fascicoloSpecialeInfo.inserimento}" action="#{queryFascicoloPersonale.insTableDocFascicolo}" styleClass="btn btn-default">#{i18n['nuovo']}</h:commandLink>
+				
+				<ui:remove>
+					<h:commandLink rendered="#{!queryFascicoloPersonale.popupPage and queryFascicoloPersonale.formsAdapter.funzionalitaDisponibili['showRefine']}" action="#{queryFascicoloPersonale.refine}" styleClass="btn btn-default">#{i18n['dw4.refine']}</h:commandLink>
+				</ui:remove>				
+				
+				<h:commandLink rendered="#{queryFascicoloPersonale.popupPage}" onclick="self.close();" styleClass="btn btn-default">#{i18n['acl.close']}</h:commandLink>
+			</div>
+		</div>
+		<!-- toolbar: fine -->
+		
+		<h5 class="sub-header">
+			<span class="glyphicon glyphicon-search"></span>&#160;
+			#{i18n['dw4.fascicoli_del_personale_search']}
+		</h5>
+		
+		<!-- messages: inizio -->
+		<h:panelGroup rendered="#{not empty facesContext.messageList}" layout="block" styleClass="docedit-messages alert alert-danger">
+			<h:messages styleClass="" id="validationMesseges" />
+		</h:panelGroup>
+		<!-- messages: fine -->
+	
+		<!-- scheda query: inizio -->
+		<div class="row-fluid" style="margin-top:10px;">
+			<div id="fixedshowdoc" class="box span12 fixed-showdoc">
+				<div class="box-content">
+					<div class="fieldset">
+						<div class="legend">#{i18n['dw4.datifasc']}</div>
+						
+						<div class="form-group endsection">
+							<div class="col-sm-offset-2 col-sm-3">
+								<h:selectBooleanCheckbox id="soloAttiviCheck" value="#{queryFascicoloPersonale.attivi}"/>
+								<label class="normal-weight-text" for="templateForm:soloAttiviCheck">#{i18n['dw4.solo_attivi']}</label>
+							</div>
+						</div>
+						
+						<div class="form-group">
+							<label for="templateForm:fasc_anno" class="col-sm-2 control-label">#{i18n['dw4.anno']}</label>
+							<div class="col-sm-2">
+								<div class="input-group">
+									<h:inputText styleClass="form-control" value="#{queryFascicoloPersonale.fasc_anno}" id="fasc_anno" />
+									<div class="input-group-btn">
+										<h:commandLink title="#{i18n['acl.vocabulary']}" action="#{queryFascicoloPersonale.openIndexAnnoFascicolo}" styleClass="btn btn-default">
+											<f:ajax execute="@form" render="@form"/>
+											<span class="glyphicon glyphicon-search"></span>
+										</h:commandLink>
+									</div>
+								</div>
+							</div>
+							
+							<ui:include src="./rangeField.xhtml">
+								<ui:param name="label" value="#{i18n['dw4.num']}" />
+								<ui:param name="id" value="custom_numfasc" />
+								<ui:param name="from_value" value="#{queryFascicoloPersonale.custom_da_numfasc}" />
+								<ui:param name="to_value" value="#{queryFascicoloPersonale.custom_a_numfasc}" />
+								<ui:param name="is_date" value="false" />
+								<ui:param name="offset" value="2" />
+								<ui:param name="labelsize" value="2" />
+							</ui:include>
+						</div>
+						
+						<div class="form-group">
+							<label class="col-sm-2 control-label">#{i18n['dw4.descr_classif']}</label>
+							<div class="col-sm-9">
+								<h:panelGroup rendered="#{!queryFascicoloPersonale.showIfInsInFasc}">
+									<p class="form-control-static">
+										<h:outputText value="#{queryFascicoloPersonale.fasc_classif}"><f:converter converterId="ClassifConverter"/></h:outputText>
+									</p>
+					        	</h:panelGroup>
+					        	<h:panelGroup rendered="#{queryFascicoloPersonale.showIfInsInFasc}">
+					        		<span class="radio-classif">
+					        			<input type="radio" id="classifRadio1" name="classifRadio" value="#{queryFascicoloPersonale.classif_infasc}" onclick="$('#templateForm\\:classif_goToTableQBtn').trigger('click');" />
+					        			<label for="classifRadio1"><h:outputText styleClass="normal-weight-text" value="#{queryFascicoloPersonale.classif_infasc}"><f:converter converterId="ClassifConverter"/></h:outputText></label>
+					        			&#160;
+					        			<input type="radio" id="classifRadio2" name="classifRadio" value="#{queryFascicoloPersonale.fascicoloSpecialeInfo.classif.text}" checked="checked" />
+					        			<label for="classifRadio2"><h:outputText styleClass="normal-weight-text" value="#{queryFascicoloPersonale.fascicoloSpecialeInfo.classif.text}"><f:converter converterId="ClassifConverter"/></h:outputText></label>
+					        		</span>
+					        		<h:commandLink id="classif_goToTableQBtn" action="#{queryFascicoloPersonale.goToTableQ}"><f:ajax execute="@form" render="@form" /></h:commandLink>
+					        	</h:panelGroup>
+							</div>
+						</div>
+						
+						<h:panelGroup rendered="#{queryFascicoloPersonale.formsAdapter.funzionalitaDisponibili['attivaCampiNomeCognomeFascPersonale']}" layout="block" styleClass="form-group">
+							<label for="templateForm:fasc_nome" class="col-sm-2 control-label">#{i18n['acl.name']}</label>
+							<div class="col-sm-4">
+								<div class="input-group">
+									<h:inputText styleClass="form-control" value="#{queryFascicoloPersonale.fasc_nome}" id="fasc_nome" />
+									<div class="input-group-btn">
+										<h:commandLink title="#{i18n['acl.vocabulary']}" action="#{queryFascicoloPersonale.openIndexNomeFascicoloPersonale}" styleClass="btn btn-default">
+											<f:ajax execute="@form" render="@form"/>
+											<span class="glyphicon glyphicon-search"></span>
+										</h:commandLink>
+									</div>
+								</div>
+							</div>
+							<label for="templateForm:fasc_cognome" class="col-sm-1 control-label">#{i18n['acl.surname']}</label>
+							<div class="col-sm-4">
+								<div class="input-group">
+									<h:inputText styleClass="form-control" value="#{queryFascicoloPersonale.fasc_cognome}" id="fasc_cognome" />
+									<div class="input-group-btn">
+										<h:commandLink title="#{i18n['acl.vocabulary']}" action="#{queryFascicoloPersonale.openIndexCognomeFascicoloPersonale}" styleClass="btn btn-default">
+											<f:ajax execute="@form" render="@form"/>
+											<span class="glyphicon glyphicon-search"></span>
+										</h:commandLink>
+									</div>
+								</div>
+							</div>
+						</h:panelGroup>
+						
+						<h:panelGroup rendered="#{!queryFascicoloPersonale.formsAdapter.funzionalitaDisponibili['attivaCampiNomeCognomeFascPersonale']}" layout="block" styleClass="form-group">
+							<label for="templateForm:fasc_nominativo" class="col-sm-2 control-label">#{i18n['dw4.nominativo']}</label>
+							<div class="col-sm-9">
+								<div class="input-group">
+									<h:inputText styleClass="form-control" value="#{queryFascicoloPersonale.fasc_oggetto}" id="fasc_nominativo" />
+									<div class="input-group-btn">
+										<h:commandLink title="#{i18n['acl.vocabulary']}" action="#{queryFascicoloPersonale.openIndexOggettoFascicolo}" styleClass="btn btn-default">
+											<f:ajax execute="@form" render="@form"/>
+											<span class="glyphicon glyphicon-search"></span>
+										</h:commandLink>
+									</div>
+								</div>
+							</div>
+						</h:panelGroup>
+						
+						<div class="form-group">
+							<label for="templateForm:fasc_fsmatricola" class="col-sm-2 control-label">#{i18n['acl.code']}</label>
+							<div class="col-sm-4">
+								<div class="input-group">
+									<h:inputText styleClass="form-control" value="#{queryFascicoloPersonale.fasc_fsmatricola}" id="fasc_fsmatricola" />
+									<div class="input-group-btn">
+										<h:commandLink title="#{i18n['acl.vocabulary']}" action="#{queryFascicoloPersonale.openIndexMatricolaFascicoloPersonale}" styleClass="btn btn-default">
+											<f:ajax execute="@form" render="@form"/>
+											<span class="glyphicon glyphicon-search"></span>
+										</h:commandLink>
+									</div>
+								</div>
+							</div>
+							<label for="templateForm:fasc_fspersonale" class="col-sm-1 control-label">#{i18n['dw4.personale']}</label>
+							<div class="col-sm-4">
+								<h:selectOneMenu id="fasc_fspersonale" value="#{queryFascicoloPersonale.fasc_categoria}" styleClass="form-control">
+									<f:selectItems value="#{queryFascicoloPersonale.categorie}" var="option" itemValue="#{option.value}" itemLabel="#{option.value}"></f:selectItems>
+								</h:selectOneMenu>
+							</div>
+						</div>
+						
+						<div class="form-group">
+							<label for="templateForm:fasc_codfiscale" class="col-sm-2 control-label">#{i18n['dw4.codicefiscale']}</label>
+							<div class="col-sm-9">
+								<div class="input-group">
+									<h:inputText styleClass="form-control" value="#{queryFascicoloPersonale.fasc_codfiscale}" id="fasc_codfiscale" />
+									<div class="input-group-btn">
+										<h:commandLink title="#{i18n['acl.vocabulary']}" action="#{queryFascicoloPersonale.openIndexCodFiscaleFascicoloPersonale}" styleClass="btn btn-default">
+											<f:ajax execute="@form" render="@form"/>
+											<span class="glyphicon glyphicon-search"></span>
+										</h:commandLink>
+									</div>
+								</div>
+							</div>
+						</div>
+						
+						<div class="form-group">
+							<ui:include src="./rangeField.xhtml">
+								<ui:param name="label" value="#{i18n['acl.birthdate']}" />
+								<ui:param name="id" value="range_fascdatanascita" />
+								<ui:param name="from_value" value="#{queryFascicoloPersonale.range_fascdatanascita_from}" />
+								<ui:param name="to_value" value="#{queryFascicoloPersonale.range_fascdatanascita_to}" />
+								<ui:param name="is_date" value="true" />
+							</ui:include>
+						</div>
+						
+						<h:panelGroup rendered="#{queryFascicoloPersonale.formsAdapter.funzionalitaDisponibili['fascPersNumPos']}" layout="block" styleClass="form-group">
+							<label for="templateForm:fasc_luogonascita" class="col-sm-2 control-label">#{i18n['acl.birthtown']}</label>
+							<div class="col-sm-4">
+								<div class="input-group">
+									<h:inputText styleClass="form-control" value="#{queryFascicoloPersonale.fasc_luogonascita}" id="fasc_luogonascita" />
+									<div class="input-group-btn">
+										<h:commandLink title="#{i18n['acl.vocabulary']}" action="#{queryFascicoloPersonale.openIndexLuogoNascitaFascicoloPersonale}" styleClass="btn btn-default">
+											<f:ajax execute="@form" render="@form"/>
+											<span class="glyphicon glyphicon-search"></span>
+										</h:commandLink>
+									</div>
+								</div>
+							</div>
+						</h:panelGroup>
+						
+						<div class="form-group">
+							<ui:include src="./rangeField.xhtml">
+								<ui:param name="label" value="#{i18n['dw4.data_assunzione']}" />
+								<ui:param name="id" value="range_fascdataassunzione" />
+								<ui:param name="from_value" value="#{queryFascicoloPersonale.range_fascdataassunzione_from}" />
+								<ui:param name="to_value" value="#{queryFascicoloPersonale.range_fascdataassunzione_to}" />
+								<ui:param name="is_date" value="true" />
+							</ui:include>
+							
+							<ui:include src="./rangeField.xhtml">
+								<ui:param name="label" value="#{i18n['dw4.data_cessazione']}" />
+								<ui:param name="id" value="range_fascdatacessazione" />
+								<ui:param name="from_value" value="#{queryFascicoloPersonale.range_fascdatacessazione_from}" />
+								<ui:param name="to_value" value="#{queryFascicoloPersonale.range_fascdatacessazione_to}" />
+								<ui:param name="is_date" value="true" />
+								<ui:param name="offset" value="1" />
+							</ui:include>
+						</div>
+						
+						<div class="form-group">
+							<label for="templateForm:fasc_note" class="col-sm-2 control-label">#{i18n['dw4.notes']}</label>
+							<div class="col-sm-9">
+								<div class="input-group">
+									<h:inputText styleClass="form-control" value="#{queryFascicoloPersonale.fasc_note}" id="fasc_note" />
+									<div class="input-group-btn">
+										<h:commandLink title="#{i18n['acl.vocabulary']}" action="#{queryFascicoloPersonale.openIndexNoteFascicolo}" styleClass="btn btn-default">
+											<f:ajax execute="@form" render="@form"/>
+											<span class="glyphicon glyphicon-search"></span>
+										</h:commandLink>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div> <!-- /fieldset -->
+					
+					<div class="fieldset">
+						<div class="legend">#{i18n['acl.servicesinformation']}</div>
+						
+						<div class="form-group">
+							<label for="templateForm:ordinamentoFasc" class="col-sm-2 control-label">#{i18n['dw4.ordinamento']}</label>
+							<div class="col-sm-3">
+								<h:selectOneMenu id="ordinamentoFasc" value="#{queryFascicoloPersonale.ordinamento}" styleClass="form-control">
+									<f:selectItems value="#{queryFascicoloPersonale.ordinamentoFascicoli_select.options}" var="option" itemValue="#{option.value}" itemLabel="#{option.label}"/>
+									<f:ajax  execute="@form" render="@form"></f:ajax>
+								</h:selectOneMenu>
+							</div>
+						</div>
+					</div> <!-- /fieldset -->
+				</div>
+			</div>
+		</div>
+		<!-- scheda query: fine -->
+		
+		<h:inputTextarea value="#{queryFascicoloPersonale.xml}" rendered="#{queryFascicoloPersonale.debugMode}" styleClass="form-control" rows="10" />
+
+		<ui:include src="./showindex.xhtml"><ui:param name="pageBean" value="#{queryFascicoloPersonale}"/></ui:include>
+	</div>
+</ui:define>
+    
+</ui:composition>    

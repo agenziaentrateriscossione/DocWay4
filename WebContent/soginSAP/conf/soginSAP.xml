@@ -1,0 +1,13 @@
+<!DOCTYPE listof_rights SYSTEM "./diritti.dtd">
+<listof_rights>
+	<info>Prima linguetta</info>
+	<applicativo cod="SOGINSAP">sogin SAP</applicativo>
+	<common>
+		<group label="Diritti dell'utente per Sogin SAP" tipo="base">
+			<group>
+				<right cod="SOGINSAP-01" label="Abilita accesso all'applicativo" default="false"></right>
+			</group>
+        </group>
+    </common>
+</listof_rights>
+

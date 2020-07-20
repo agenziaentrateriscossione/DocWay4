@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:tredi="http://www.3di.it/jsf/tredi">
+
+<ui:composition>
+	<h:panelGroup layout="block" id="editTask">
+		<h:panelGroup id="executeTaskPopup" layout="block"
+			rendered="#{bean.viewExecuteTask}">
+			<!-- Modal -->
+			<div id="executeTaskModal" class="modal fade in" aria-hidden="false" aria-labelledby="executeTaskLabel" role="dialog" tabindex="-1" style="display: block;">
+				<!--div class="modal fade" id="loadingbarammModal" tabindex="-1" role="dialog" aria-labelledby="loadingbarammModalLabel" aria-hidden="true"-->
+				<div class="modal-dialog modal-lg">
+					<div class="modal-content jsf-modal">
+						<div class="modal-header">
+							<h:commandButton styleClass="close" action="#{bean.closeEditTask}" value="&#215;" />
+							<h4 class="modal-title" id="executeTaskModalLabel">&#160;</h4>
+						</div>
+						<div class="modal-body">
+							<div class="fieldset">
+								<tredi:taskForm id="workflowTaskForm"
+									wfId="#{bean.wfInstance.id}" taskId="#{bean.task.id}"
+									user="#{userBean.matricola}" password=""
+									action="#{bean.executeTask}" />
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</h:panelGroup>
+	</h:panelGroup>
+</ui:composition>
+</html>
+
+
+
+

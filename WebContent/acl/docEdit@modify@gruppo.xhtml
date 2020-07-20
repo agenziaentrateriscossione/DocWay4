@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+    template="template.xhtml"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:f="http://java.sun.com/jsf/core">
+
+	<ui:define name="content">
+	<div class="gruppo docedit">
+           <!-- toolbar: inizio -->
+            <div class="btn-toolbar margin-bottom" role="toolbar">
+                <div class="btn-group">
+                    <h:commandLink id="saveBtn" action="#{docEditModifyGruppo.saveDocument}" styleClass="btn btn-primary openwaitmsg">#{i18n['acl.save']}</h:commandLink>
+                    <h:commandLink action="#{docEditModifyGruppo.clearDocument}" styleClass="btn btn-default">#{i18n['acl.back']}</h:commandLink>
+                </div>
+            </div>
+            <!-- toolbar: fine -->
+            
+            <h5 class="sub-header">
+                <span class="gruppi glyphicons-pro"></span>&#160;
+                <h:outputText value="#{i18n['acl.mod_groups']}" escape="false" />
+            </h5>
+        
+            <!-- messages: inizio -->
+            <h:panelGroup rendered="#{not empty facesContext.messageList}" layout="block" styleClass="docedit-messages alert alert-danger">
+                <h:messages styleClass="" id="validationMesseges" />
+            </h:panelGroup>
+            <!-- messages: fine -->
+            
+            <script type="text/javascript">
+			$(document).ready(function() {
+				// disabilita link esterni al form per rilascio del lock sul documento
+				disableNoTemplateFormLinks("#{i18n['dw4.abbandona_alert_msg']}");
+			});
+			</script>
+           
+             <!-- scheda edit: inizio -->
+            <div class="row-fluid" style="margin-top:10px;">
+                <div id="fixedshowdoc" class="box span12 fixed-showdoc">
+                    <div class="box-content">
+                    
+                        <div class="fieldset">
+                            <div class="legend">#{i18n['acl.informazioni_di_base']}
+                                <div class="pull-right">
+                                    <span class="glyphicons-pro group" title="#{i18n['acl.informazioni_di_base']}"></span>
+                                </div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label class="col-sm-2 control-label requiredField"><span>* #{i18n['acl.name']}</span></label>
+                                <div class="col-sm-6">
+                                    <h:inputText id="gruppo_nome" value="#{docEditModifyGruppo.gruppo.nome}" styleClass="#{ component.valid ? '' : 'invalidinput' } form-control"/>
+                                </div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label class="col-sm-2 control-label requiredField">#{i18n['acl.cod_amm']}</label>
+                                <div class="col-sm-2">
+                                    <h:inputText id="gruppo_codamm" value="#{docEditModifyGruppo.gruppo.cod_amm}" readonly="true" styleClass="#{ component.valid ? '' : 'invalidinput' } form-control" />
+                                </div>
+                                <label class="col-sm-2 control-label requiredField">#{i18n['acl.cod_aoo']}</label>
+                                <div class="col-sm-2">
+                                	<h:inputText id="gruppo_codaoo" value="#{docEditModifyGruppo.gruppo.cod_aoo}" readonly="true" styleClass="#{ component.valid ? '' : 'invalidinput' } form-control" />
+                                </div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label class="col-sm-2 control-label"><span>#{i18n['acl.description']}</span></label>
+                                <div class="col-sm-9">
+                                    <h:inputTextarea value="#{docEditModifyGruppo.gruppo.descrizione}" rows="4" cols="120" styleClass="form-control"/>
+                                </div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label class="col-sm-2 control-label"><span>#{i18n['acl.director']}</span></label>
+                                <div class="col-sm-6">
+                                    <ui:include src="./lookupField.xhtml">
+                                        <ui:param name="id" value="demgr_nome_responsabile" />
+                                        <ui:param name="field" value="#{docEditModifyGruppo.gruppo.nomeresponsabile}" />
+                                        <ui:param name="bean" value="#{docEditModifyGruppo}" />
+                                        <ui:param name="action" value="lookupResponsabile"/>
+                                        <ui:param name="clearaction" value="clearLookupResponsabile"/>
+                                        <ui:param name="title" value="#{i18n['acl.directorlookup']}"/>
+                                        <ui:param name="styleclass" value="form-control"/>
+                                        <ui:param name="refresh" value="templateForm:demgr_nome_responsabile_input templateForm:demgr_cod_responsabile_input templateForm:gruppo_codamm templateForm:gruppo_codaoo templateForm:validationMesseges templateForm:lookup templateForm:errormsg"/>
+                                    </ui:include>
+                                    <h:inputHidden value="#{docEditModifyGruppo.gruppo.cod_responsabile}" id="demgr_cod_responsabile_input"/>
+                                </div>
+                            </div>
+                        </div> <!-- fieldset -->
+                        
+                        <ui:include src="./rightsGrManager.xhtml">
+                            <ui:param name="bean" value="#{docEditModifyGruppo.gruppo}" />
+                            <ui:param name="modify" value="true"/>
+                        </ui:include>
+                   </div>
+               </div>
+           </div>
+        </div>
+
+		<h:inputTextarea value="#{docEditModifyGruppo.xml}" styleClass="inputextarea" rendered="#{docEditModifyGruppo.debugMode}"/>
+		<ui:include src="./lookup.xhtml"> <ui:param name="pageBean" value="#{docEditModifyGruppo}"/></ui:include>
+	</ui:define>
+</ui:composition>

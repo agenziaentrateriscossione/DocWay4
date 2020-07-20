@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" 
+	  xmlns:h="http://java.sun.com/jsf/html" 
+	  xmlns:ui="http://java.sun.com/jsf/facelets" 
+	  xmlns:f="http://java.sun.com/jsf/core"
+	  xmlns:c="http://java.sun.com/jsp/jstl/core">
+<ui:composition>
+
+	<div class="fieldset">
+		<div class="legend">
+			#{i18n['dw4.dati_di_pagamento']}
+			
+			<div class="pull-right">
+				<span class="glyphicons-pro money" title="#{i18n['dw4.dati_di_pagamento']}"></span>
+			</div>
+		</div>
+	
+		<div class="form-group">
+			<label for="templateForm:condizioniPagamento" class="col-sm-2 control-label"><span>#{i18n['dw4.condizioni_pagamento']}</span></label>
+			<div class="col-sm-3">
+				<h:selectOneMenu id="condizioniPagamento" value="#{bean.fatturaPA.datiFattura[0].datiPagamento[0].condizioniPagamento}" styleClass="#{ component.valid ? '' : 'invalidinput' } form-control">
+					<f:selectItems value="#{bean.condizionipagamento_list}" var="option" itemValue="#{option.value}" itemLabel="#{option.label}"></f:selectItems>
+				</h:selectOneMenu>
+			</div>
+		</div>
+		
+		<h:panelGroup id="dettagliPagamentoHolder" layout="block">
+			<div class="form-group">
+				<label class="col-sm-2 control-label emphasis-title"><span>#{i18n['dw4.dettagli_pagamento']}</span></label>
+			</div>
+			
+			<ui:repeat id="dettaglioPagamento" var="pagamento" value="#{bean.fatturaPA.datiFattura[0].datiPagamento[0].dettaglioPagamento}" varStatus="indice">
+				<div class="docedit-customfield-group customfield-group-fields-multi">
+					<div class="form-group">
+						<label class="col-sm-2 control-label"><span>#{i18n['dw4.pagamento']} #{indice.index+1}</span></label>
+						<div class="col-sm-2">
+							<div class="input-group">
+								<div class="btn-group">
+									<h:commandLink action="#{bean.fatturaPA.datiFattura[0].datiPagamento[0].deleteDettaglioPagamento}" title="#{i18n['dw4.elimina_istanza']}" styleClass="btn btn-default">
+							 			<f:ajax execute="@form" render=":templateForm:dettagliPagamentoHolder :templateForm:errormsg"/>
+							 			<span class="glyphicon glyphicon-minus"></span>
+									</h:commandLink>
+									<h:commandLink action="#{bean.fatturaPA.datiFattura[0].datiPagamento[0].addDettaglioPagamento}" title="#{i18n['dw4.aggiungi_istanza']}" styleClass="btn btn-default">
+							 			<f:ajax execute="@form" render=":templateForm:dettagliPagamentoHolder :templateForm:errormsg"/>
+							 			<span class="glyphicon glyphicon-plus"></span>
+									</h:commandLink>
+									<h:commandLink action="#{bean.fatturaPA.datiFattura[0].datiPagamento[0].moveUpDettaglioPagamento}" title="#{i18n['acl.up']}" styleClass="btn btn-default #{(indice.index == 0) ? 'disabled' : ''}">
+							 			<f:ajax execute="@form" render=":templateForm:dettagliPagamentoHolder :templateForm:errormsg"/>
+							 			<span class="glyphicon glyphicon-chevron-up"></span>
+									</h:commandLink>
+									<h:commandLink action="#{bean.fatturaPA.datiFattura[0].datiPagamento[0].moveDownDettaglioPagamento}" title="#{i18n['acl.down']}" styleClass="btn btn-default #{(indice.index == fn:length(bean.fatturaPA.datiFattura[0].datiPagamento[0].dettaglioPagamento)-1) ? 'disabled' : ''}">
+							 			<f:ajax execute="@form" render=":templateForm:dettagliPagamentoHolder :templateForm:errormsg"/>
+							 			<span class="glyphicon glyphicon-chevron-down"></span>
+									</h:commandLink>
+								</div>
+							</div>
+						</div>
+					</div>
+					
+					<div class="form-group">
+						<label class="col-sm-2 control-label"><span>#{i18n['dw4.modalita_pagamento']}</span></label>
+						<div class="col-sm-5">
+							<h:selectOneMenu id="modalitaPagamento" value="#{pagamento.modalitaPagamento}" styleClass="#{ component.valid ? '' : 'invalidinput' } form-control">
+								<f:selectItems value="#{bean.modalitapagamento_list}" var="option" itemValue="#{option.value}" itemLabel="#{option.label}"></f:selectItems>
+							</h:selectOneMenu>
+				        </div>
+				        <ui:include src="../dateField.xhtml">
+							<ui:param name="label" value="#{i18n['dw4.scadenza']}" />
+							<ui:param name="id" value="scadenzaPagamento" />
+							<ui:param name="value" value="#{pagamento.dataScadenzaPagamento}" />
+						</ui:include>
+					</div>
+					<div class="form-group">
+						<label class="col-sm-2 control-label"><span>#{i18n['dw4.importo']}</span></label>
+						<div class="col-sm-3">
+							<h:inputText id="importoPagamento" value="#{pagamento.importoPagamento}" styleClass="#{ component.valid ? '' : 'invalidinput' } form-control currencyField" />
+				        </div>
+					</div>
+				</div>
+			</ui:repeat>
+		</h:panelGroup>
+	</div>
+	
+</ui:composition>
+</html>

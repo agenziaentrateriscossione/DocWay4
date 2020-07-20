@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" 
+	  xmlns:h="http://java.sun.com/jsf/html" 
+	  xmlns:ui="http://java.sun.com/jsf/facelets" 
+	  xmlns:f="http://java.sun.com/jsf/core">
+<ui:composition>
+
+	<label for="templateForm:#{id}" class="#{(!empty offset) ? 'col-sm-offset-' : '' }#{(!empty offset) ? offset : '' } col-sm-#{(!empty labelsize) ? labelsize : '2' } control-label">
+		#{(required eq 'true') ? '* ' : ''}#{label}
+	</label>
+	<div class="col-sm-#{(!empty valuesize) ? valuesize : '2' }">
+		<div class="input-group date" data-date-format="dd/mm/yyyy">
+			<h:inputText id="#{id}" value="#{value}" styleClass="#{ component.valid ? '' : 'invalidinput' } form-control datepicker" onblur="#{ (!empty onblur) ? onblur : ''}">
+				<f:converter converterId="DateConverter"/>
+			</h:inputText>
+			<span class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></span>
+		</div>
+	</div>
+
+</ui:composition>
+</html>

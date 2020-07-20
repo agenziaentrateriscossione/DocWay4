@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" 
+	  xmlns:h="http://java.sun.com/jsf/html" 
+	  xmlns:ui="http://java.sun.com/jsf/facelets" 
+	  xmlns:f="http://java.sun.com/jsf/core">
+<ui:composition>
+
+	<h:panelGroup rendered="#{!bean.customfields.hiddenFields['allegati'] and fn:length(bean.doc.allegati) > 0}">
+		<dt>#{i18n['dw4.attachments']}</dt>
+		<dd>
+			<h:panelGroup rendered="#{fn:length(bean.doc.allegati) > 1 or (fn:length(bean.doc.allegati) == 1 and not(fn:contains(bean.doc.allegati[0].text, ' - ')))}">
+				<span>#{fn:length(bean.doc.allegati)} - </span>
+			</h:panelGroup>
+			<ui:repeat var="allegato" value="#{bean.doc.allegati}">
+				<span>#{allegato.text}<h:panelGroup rendered="#{!empty allegato.pagine}"> (#{allegato.pagine} #{i18n['dw4.pagg']})</h:panelGroup>; </span>
+			</ui:repeat>
+		</dd>
+	</h:panelGroup>
+
+</ui:composition>   
+</html>

@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" 
+	  xmlns:h="http://java.sun.com/jsf/html" 
+	  xmlns:ui="http://java.sun.com/jsf/facelets" 
+	  xmlns:f="http://java.sun.com/jsf/core">
+<ui:composition>
+
+	<h:panelGroup rendered="#{fn:length(bean.messages) == 0 }">
+		<div class="alert alert-info">
+			#{i18n['dw4.nessuna_email_trovata_nella_cartella_in_base_ai_filtri_specificati']}
+		</div>
+	</h:panelGroup>
+	<h:panelGroup rendered="#{fn:length(bean.messages) > 0 }">
+		<table class="table table-hover doc-titles-table webmail-titles-table">
+			<thead>
+				<tr>
+					<th class="webmail-coldata essential" style="width:15%;">
+						<h:panelGroup rendered="#{bean.current_protocol eq 'imap' or bean.current_protocol eq 'imaps'}">
+							<span style="white-space:nowrap;">
+								<h:commandLink action="#{bean.search}" actionListener="#{bean.attrListenerSortHeader}">
+									<f:attribute name="colSort" value="date" />
+									<f:ajax execute="@form" render="@form" />
+									#{i18n['dw4.data_spedizione']}
+								</h:commandLink>
+								<h:panelGroup rendered="#{bean.colSort ne '' and fn:toLowerCase(bean.colSort) eq 'date'}">
+									&#160;<span class="glyphicon #{ bean.ascSort ? 'glyphicon-chevron-up' : 'glyphicon-chevron-down' }" title="#{ bean.ascSort ? i18n['dw4.ordine_crescente'] : i18n['dw4.ordine_decrescente'] }"></span>
+								</h:panelGroup>
+							</span>
+						</h:panelGroup>
+						<h:panelGroup rendered="#{bean.current_protocol ne 'imap' and bean.current_protocol ne 'imaps'}">
+							#{i18n['dw4.data_spedizione']}
+						</h:panelGroup>
+					</th>
+					<th class="webmail-colfrom optional" style="width:25%;">
+						<h:panelGroup rendered="#{bean.current_protocol eq 'imap' or bean.current_protocol eq 'imaps'}">
+							<span style="white-space:nowrap;">
+								<h:commandLink action="#{bean.search}" actionListener="#{bean.attrListenerSortHeader}">
+									<f:attribute name="colSort" value="from" />
+									<f:ajax execute="@form" render="@form" />
+									#{i18n['dw4.mittente']}
+								</h:commandLink>
+								<h:panelGroup rendered="#{bean.colSort ne '' and fn:toLowerCase(bean.colSort) eq 'from'}">
+									&#160;<span class="glyphicon #{ bean.ascSort ? 'glyphicon-chevron-up' : 'glyphicon-chevron-down' }" title="#{ bean.ascSort ? i18n['dw4.ordine_crescente'] : i18n['dw4.ordine_decrescente'] }"></span>
+								</h:panelGroup>
+							</span>
+						</h:panelGroup>
+						<h:panelGroup rendered="#{bean.current_protocol ne 'imap' and bean.current_protocol ne 'imaps'}">
+							#{i18n['dw4.mittente']}
+						</h:panelGroup>
+					</th>
+					<th class="webmail-cologgetto essential">
+						<h:panelGroup rendered="#{bean.current_protocol eq 'imap' or bean.current_protocol eq 'imaps'}">
+							<span style="white-space:nowrap;">
+								<h:commandLink action="#{bean.search}" actionListener="#{bean.attrListenerSortHeader}">
+									<f:attribute name="colSort" value="subject" />
+									<f:ajax execute="@form" render="@form" />
+									#{i18n['dw4.object']}
+								</h:commandLink>
+								<h:panelGroup rendered="#{bean.colSort ne '' and fn:toLowerCase(bean.colSort) eq 'subject'}">
+									&#160;<span class="glyphicon #{ bean.ascSort ? 'glyphicon-chevron-up' : 'glyphicon-chevron-down' }" title="#{ bean.ascSort ? i18n['dw4.ordine_crescente'] : i18n['dw4.ordine_decrescente'] }"></span>
+								</h:panelGroup>
+							</span>
+						</h:panelGroup>
+						<h:panelGroup rendered="#{bean.current_protocol ne 'imap' and bean.current_protocol ne 'imaps'}">
+							#{i18n['dw4.object']}
+						</h:panelGroup>
+					</th>
+					<th class="webmail-coltrasformato optional">
+						#{i18n['dw4.trasformato']}
+					</th>
+				</tr>
+			</thead>
+			<tbody>
+				<ui:repeat var="message" value="#{bean.messages}" varStatus="status">
+					<tr> 
+						<td class="webmail-coldata essential">
+							<h:commandLink action="#{bean.loadMessage}">
+								<f:ajax execute="@form" render="@form" />
+								<h:outputText value="#{message.sentDate}"><f:converter converterId="DateTimeConverter"/></h:outputText>
+							</h:commandLink>
+						</td>
+						<td class="webmail-colfrom optional">
+							<h:commandLink action="#{bean.loadMessage}">
+								<f:ajax execute="@form" render="@form" />
+								<h:outputText value="#{(empty message.from.name) ? message.from.address : message.from.name }" escape="false" />
+							</h:commandLink>
+						</td>
+						<td class="webmail-cologgetto essential">
+							<h:commandLink action="#{bean.loadMessage}">
+								<f:ajax execute="@form" render="@form" />
+								<h:outputText rendered="#{empty message.subject}" value="[#{i18n['dw4.nessun_oggetto']}]" />
+								<h:outputText rendered="#{!empty message.subject}" value="#{message.subject}" escape="false" />
+							</h:commandLink>
+						</td>     
+						<td class="webmail-coltrasformato optional">
+							<h:outputLink rendered="#{message.converted}" value="#{facesContext.externalContext.requestContextPath}/docway/loaddoc.pf?alias=%2Fdoc%2F%40messageId%2F&amp;value=#{message.messageId}" styleClass="openwaitmsg">
+								<span class="glyphicon glyphicon-ok visto-icon" title="#{i18n['dw4.email_trasformata_in_documento']}"></span>
+							</h:outputLink>
+						</td>											
+					</tr>
+				</ui:repeat>
+			</tbody>
+		</table>
+	</h:panelGroup>
+		
+</ui:composition>   
+</html>

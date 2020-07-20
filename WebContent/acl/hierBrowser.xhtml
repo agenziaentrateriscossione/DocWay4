@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core">
+<ui:composition>
+
+	<div class="sidebar-nav">
+		<h:panelGroup id="gerarchiaPanel" layout="block" styleClass="panel panel-default">
+			<div class="panel-heading clearfix">
+      			<h3 class="panel-title pull-left">#{i18n['acl.hierarchy']}</h3>
+				<div class="btn-group btn-group-xs">
+					<h:commandLink id="refreshGerarchia" action="#{hierBrowser.refreshGerarchia}" title="#{i18n['acl.reloadHierarchy']}" styleClass="btn btn-primary openwaitmsg">
+				    	<f:ajax execute="@form" render="leftsideContentForm:gerarchiaPanel" />
+				    	<span class="glyphicon glyphicon-refresh"></span>
+					</h:commandLink>
+					<h:commandLink onclick="if (!owmConfirm('#{i18n['acl.rigeneragerarchiaconfirm']}')) return false;" rendered="#{aclHome.formsAdapter.funzionalitaDisponibili['ins_struint']}"
+								action="#{hierBrowser.generaRelazioniStrutture}" title="#{i18n['acl.createHierarchy']}" styleClass="btn btn-default" >
+				    	<f:ajax execute="@form" render="@form" />
+				    	<span class="glyphicon glyphicon-repeat"></span>
+					</h:commandLink>
+				</div>
+				
+				<div class="btn-group btn-group-xs pull-right">
+					<h:commandLink action="#{hierBrowser.paginaPrecedente}" title="#{i18n['prevPage']}" styleClass="btn btn-default #{(!hierBrowser.formsAdapter.paginaPrecedenteEnabled) ? 'disabled' : ''}">
+						<f:ajax execute="@form" render="leftsideContentForm:gerarchiaPanel" />
+						<span class="glyphicon glyphicon-chevron-left"></span>
+					</h:commandLink>
+					<h:commandLink action="#{hierBrowser.paginaSuccessiva}" title="#{i18n['nextPage']}" styleClass="btn btn-default #{(!hierBrowser.formsAdapter.paginaSuccessivaEnabled) ? 'disabled' : ''}">
+						<f:ajax execute="@form" render="leftsideContentForm:gerarchiaPanel" />
+						<span class="glyphicon glyphicon-chevron-right"></span>
+					</h:commandLink>
+				</div>
+			</div>
+			
+			<div class="panel-body gerarchia-strutture">
+				<ui:repeat value="#{hierBrowser.hiers}" var="hier" varStatus="indice">
+				    <div style="vertical-align:middle; display:block;overflow:hidden;height:18px;white-space:nowrap;
+				    text-overflow: ellipsis; -o-text-overflow: ellipsis; -icab-text-overflow: ellipsis; -khtml-text-overflow: ellipsis; -moz-text-overflow: ellipsis; -webkit-text-overflow: ellipsis;
+				    " id="hierBrowser#{indice.index}" class="hierBrowser" >
+				    <ui:repeat var="brother" value="#{hier.brothers}">
+					    <h:commandLink action="#{hierBrowser.docToggle}" id="brotherLink" rendered="#{brother == 'cbo' or brother == 'cbc' or brother == 'cc' or brother == 'co'}">
+				    		<h:graphicImage height="18" width="18" url="/acl/css/images/btree/#{brother}.png" alt="hier icon" style="vertical-align:middle;"/>
+					    	<f:param name="hier" value="#{hier}"></f:param>
+					    	<f:ajax execute="@form" render=":leftsideContentForm:gerarchiaPanel" />
+					    </h:commandLink>
+				    	<ui:fragment rendered="#{not(brother == 'cbo' or brother == 'cbc' or brother == 'cc' or brother == 'co')}">
+				    		<h:graphicImage height="18" width="18" url="/acl/css/images/btree/#{brother}.png" alt="hier icon" style="vertical-align:middle;"></h:graphicImage>
+				    	</ui:fragment>
+				    </ui:repeat>
+				    <h:commandLink rendered="#{hier.sons}" action="#{hierBrowser.docToggle}">
+					    <h:graphicImage rendered="#{hier.depth == '1' and hier.opened}" height="18" width="18" url="/acl/css/images/btree/ro_icon.png" alt="hier icon" style="vertical-align:middle;"/>
+					    <h:graphicImage rendered="#{hier.depth == '1' and not(hier.opened)}" height="18" width="18" url="/acl/css/images/btree/rc_icon.png" alt="hier icon" style="vertical-align:middle;"/>
+					    <h:graphicImage rendered="#{hier.depth != '1' and hier.sons and not(hier.opened)}" height="18" width="18" url="/acl/css/images/btree/fc_icon.png" alt="hier icon" style="vertical-align:middle;"/>
+					    <h:graphicImage rendered="#{hier.depth != '1' and hier.sons and hier.opened}" height="18" width="18" url="/acl/css/images/btree/fo_icon.png" alt="hier icon" style="vertical-align:middle;"/>
+				    	<f:param name="hier" value="#{hier}"></f:param>
+				    	<f:ajax execute="@form" render="@form" />
+				    </h:commandLink>
+				    <ui:fragment rendered="#{hier.depth == '1'}">
+				    	<h:graphicImage rendered="#{not(hier.sons)}" height="18" width="18" url="/acl/css/images/btree/ra_icon.png" alt="hier icon" style="vertical-align:middle;"/>
+				    </ui:fragment>
+				    <ui:fragment rendered="#{hier.depth != '1'}">
+				    	<h:graphicImage rendered="#{hier.depth != '1' and not(hier.sons)}" height="18" width="18" url="/acl/css/images/btree/l_icon.png" alt="hier icon" style="vertical-align:middle;"/>
+				    </ui:fragment>
+				    
+				    <h:commandLink rendered="#{!hier.virtual}" action="#{hierBrowser.mostraDocumento}" styleClass="openwaitmsg" style="padding-left:2px; #{hier.ghost? 'color: gray;' : ''} #{hierBrowser.selected.ndoc == hier.ndoc ? 'font-weight: bold;' : ''}" title="#{hier.title}">
+				    	<h:outputText value="#{hier.title}" escape="false" />
+				    	<f:param name="hier" value="#{hier}"></f:param>
+				    </h:commandLink>
+				    
+				    <h:outputText rendered="#{hier.virtual}" style="padding-left:2px;font-style:italic;" title="#{hier.title}" value="#{hier.title}" escape="false" />						    
+			        
+				    </div>    
+			    </ui:repeat>
+			</div>
+		</h:panelGroup>
+		
+		<h:inputTextarea value="#{hierBrowser.xml}" rendered="#{aclHome.debugMode}" styleClass="form-control" rows="10" />
+	</div> <!--/.sidebar-nav -->
+
+</ui:composition>
+</html>

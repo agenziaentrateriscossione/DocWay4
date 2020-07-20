@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:c="http://java.sun.com/jsp/jstl/core">
+<ui:composition>
+
+	<!--div class="panel panel-primary smartactions-panel affix-top" data-spy="affix" data-offset-top="60"--> <!-- smart actions con affix -->
+	<div class="panel panel-primary smartactions-panel hidden-print">
+		<div class="panel-heading clearfix">
+			<h3 class="panel-title text-left">#{i18n['dw4.azioni_rapide']}</h3>
+		</div>
+		<div class="panel-body text-left">
+			
+			<ul class="list-inline smartactions-list">
+				<h:panelGroup rendered="#{!bean.doc.cestino}">
+					<h:panelGroup rendered="#{hideModifica ne 'true' and !bean.formsAdapter.funzionalitaDisponibili['docConservato'] and bean.formsAdapter.funzionalitaDisponibili['modifica']}">
+						<li>
+							<h:commandLink styleClass="smartactions-link" action="#{bean.modifyTableDoc}" title="#{i18n['dw4.modify']}">
+								<span class="glyphicons-pro edit smartaction-image" title="#{i18n['dw4.modify']}"></span>
+								<p>#{i18n['dw4.modify']}</p>
+							</h:commandLink>
+						</li>
+					</h:panelGroup>
+					
+					<h:panelGroup rendered="#{bean.formsAdapter.funzionalitaDisponibili['postitaggiunta']}">
+						<li>
+							<h:commandLink styleClass="smartactions-link" action="#{bean.addPostit}" title="#{i18n['dw4.annotazione']}">
+								<f:ajax execute="@form" render="@form" />
+								<span class="glyphicons-pro pushpin smartaction-image" title="#{i18n['dw4.annotazione']}"></span>
+								<p>#{i18n['dw4.annotazione']}</p>
+							</h:commandLink>
+						</li>
+					</h:panelGroup>
+					
+					<h:panelGroup rendered="#{bean.formsAdapter.funzionalitaDisponibili['rpaadd']}">
+						<li>
+							<h:commandLink styleClass="smartactions-link" action="#{bean.addRPA}" title="#{i18n['dw4.proprietarioadd']}">
+								<f:ajax execute="@form" render="@form" />
+								<span class="glyphicons-pro parents smartaction-image" title="#{(empty labelAddRPA) ? i18n['dw4.proprietarioadd'] : labelAddRPA}"></span>
+								<p>#{(empty labelAddRPA) ? i18n['dw4.RPA'] : labelAddRPA}</p>
+							</h:commandLink>
+						</li>
+					</h:panelGroup>
+					
+					<h:panelGroup rendered="#{bean.formsAdapter.funzionalitaDisponibili['ccadd']}">
+						<li>
+							<h:commandLink styleClass="smartactions-link" action="#{bean.addCC}" title="#{i18n['dw4.nuovocc']}">
+								<f:ajax execute="@form" render="@form" />
+								<span class="glyphicons-pro user_add smartaction-image" title="#{(empty labelAddCC) ? i18n['dw4.nuovocc'] : labelAddCC}"></span>
+								<p>#{(empty labelAddCC) ? i18n['dw4.nuovocc'] : labelAddCC}</p>
+							</h:commandLink>
+						</li>
+					</h:panelGroup>
+					
+					<h:panelGroup rendered="#{hideFascicola ne 'true' and !bean.formsAdapter.funzionalitaDisponibili['nascondifascicoli'] and bean.formsAdapter.funzionalitaDisponibili['insdocinfascicolo'] and empty bean.doc.assegnazioneRPA.cod_fasc}">
+						<li>
+							<h:commandLink styleClass="smartactions-link" action="#{bean.insInFasc}" onclick="openCenterPopup('', 'insInFasc')" target="insInFasc">
+								<span class="glyphicons-pro folder_plus smartaction-image" title="#{i18n['dw4.fascicola']}"></span>
+								<p>#{i18n['dw4.fascicola']}</p>
+							</h:commandLink>
+						</li>
+					</h:panelGroup>	
+				</h:panelGroup>
+				
+				<h:panelGroup rendered="#{bean.doc.cestino and bean.formsAdapter.funzionalitaDisponibili['ripristinoDaCestino']}">
+					<li>
+						<h:commandLink styleClass="smartactions-link" action="#{bean.ripristinaDaCestino}">
+							<span class="glyphicons-pro unshare smartaction-image" title="#{i18n['dw4.ripristina_il_documento_dal_cestino']}"></span>
+							<p>#{i18n['dw4.ripristina']}</p>
+						</h:commandLink>
+					</li>
+				</h:panelGroup>
+				
+				<li>
+					<h:commandLink styleClass="smartactions-link" onclick="return printPageContent();">
+						<span class="glyphicons-pro print smartaction-image" title="#{i18n['dw4.print']}"></span>
+						<p>#{i18n['dw4.print']}</p>
+					</h:commandLink>
+				</li>
+			</ul>
+			
+		</div>
+	</div>
+
+</ui:composition>
+</html>

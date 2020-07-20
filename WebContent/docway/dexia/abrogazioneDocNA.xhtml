@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" 
+	  xmlns:h="http://java.sun.com/jsf/html" 
+	  xmlns:ui="http://java.sun.com/jsf/facelets" 
+	  xmlns:f="http://java.sun.com/jsf/core">
+
+	<ui:composition>
+	   <h:panelGroup layout="block" id="abrogazione">
+        <h:panelGroup rendered="#{pageBean.visible}">
+            <!-- Modal -->
+            <div id="abrogazioneModal" class="modal fade in" aria-hidden="false" aria-labelledby="abrogazioneModalLabel" role="dialog" tabindex="-1" style="display: block;">
+            <!--div class="modal fade" id="abrogazioneModal" tabindex="-1" role="dialog" aria-labelledby="abrogazioneModalLabel" aria-hidden="true"-->
+                <div class="modal-dialog modal-lg">
+                    <div class="modal-content jsf-modal">
+                        <div class="modal-header">
+                            <h:commandLink class="close" action="#{pageBean.clearDocument}" value="&#215;">
+                                <f:ajax render="abrogazione"/>
+                            </h:commandLink>
+                            
+                            <h4 class="modal-title" id="abrogazioneModalLabel">#{i18n['dw4.abrogazionedoc']}</h4>
+                        </div>
+                        <div class="modal-body">
+                        
+                            <h:panelGroup rendered="#{not empty facesContext.messageList}" layout="block" styleClass="alert alert-danger">
+                                <h:messages styleClass="" id="validationMessegesabrogazione" />
+                            </h:panelGroup>
+                        
+                            <fieldset>
+                            
+                                <!-- 20150112 fcappelli - rimosso per richiesta cliente -->
+                                <ui:remove>
+                                <div class="form-group">
+                                    <label class="col-sm-3 control-label">#{i18n['dexia.data_emanazione']}</label>
+                                    <div class="col-sm-9">
+                                        <h:outputText value="#{pageBean.docAbrogato.dataEmanazione}"><f:converter converterId="DateConverter"/></h:outputText>
+                                    </div>
+                                </div>
+                                </ui:remove>
+                                
+                                <h:panelGroup rendered="#{!empty pageBean.docAbrogato.oggetto}" layout="block" styleClass="form-group">
+                                    <label class="col-sm-3 control-label">#{i18n['dexia.denominazione']}</label>
+                                    <div class="col-sm-9">#{pageBean.docAbrogato.oggetto}</div>
+                                </h:panelGroup>
+                                <div class="form-group">
+                                    <label class="col-sm-3 control-label">#{i18n['dw4.abrogazionedata']}</label>
+                                    <div class="col-sm-9">
+                                       #{pageBean.userInfo}<br/>
+                                        <h:outputText value="#{pageBean.currDate}"><f:converter converterId="DateConverter"/></h:outputText>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="col-sm-3 control-label">#{i18n['dw4.estremi_del_provvedimento']}</label>
+                                    <div class="col-sm-9">
+                                        <h:inputTextarea id="abrogazione_text" value="#{pageBean.text}" rows="4" cols="120" styleClass="#{ component.valid ? '' : 'invalidinput' } form-control" />
+                                    </div>
+                                </div>
+                            </fieldset>
+                            
+                        </div>
+                        <div class="modal-footer">
+                            <h:commandLink action="#{pageBean.confirmAbrogazione}" styleClass="btn btn-primary openwaitmsg" value="#{i18n['acl.save']}" />
+                            
+                            <h:commandLink styleClass="btn btn-default" action="#{pageBean.clearDocument}"  value="#{i18n['acl.close']}">
+                                <f:ajax render="abrogazione"/>
+                            </h:commandLink>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!--h:outputScript>
+                $('#abrogazioneModal').modal('show');
+            </h:outputScript-->
+        </h:panelGroup>
+    </h:panelGroup>
+	</ui:composition>   
+</html>

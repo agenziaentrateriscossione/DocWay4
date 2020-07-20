@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:c="http://java.sun.com/jsp/jstl/core">
+<ui:composition>
+	
+	<h:panelGroup id="customFieldsHolder" layout="block" styleClass="docedit-customfields-holder">
+		<ui:repeat id="section" var="section" value="#{bean.customfields.sections}" varStatus="sectionStatus">
+			
+			<div class="fieldset">
+				<h:panelGroup rendered="#{!empty section.label}">
+					<div class="legend">
+						#{section.label}
+						
+						<h:panelGroup rendered="#{!empty section.iconclass}">
+							<div class="pull-right">
+								<span class="#{section.iconclass}" title="#{section.label}"></span>
+							</div>
+						</h:panelGroup>
+					</div>
+				</h:panelGroup>
+				
+				<ui:repeat id="field" var="field" value="#{section.fields}" varStatus="fieldStatus">
+					<ui:repeat id="fieldInstance" var="fieldInstance" value="#{field.instances}" varStatus="fieldInstanceStatus">
+						<h:panelGroup rendered="#{!empty field.type and field.type ne 'hidden'}">
+							
+							<h:panelGroup rendered="#{field.type eq 'group'}">
+								<div class="docedit-customfield-group customfield-group-fields-#{(fn:length(fieldInstance.fields) > 1) ? 'multi' : fn:length(fieldInstance.fields)}">
+								
+									<h:panelGroup rendered="#{fn:length(fieldInstance.fields) > 1}"> <!-- pulsanti di gestione di un gruppo di campi con all'interno diversi campi -->
+										
+										<div class="form-group">
+											<label class="col-sm-2 control-label emphasis-title">#{field.label}</label>
+											<h:panelGroup rendered="#{field.repeteable}">
+												<div class="col-sm-2">
+													<!-- pulsanti per gestione gruppi di campi ripetibili: INIZIO -->
+													<div class="input-group">
+														<div class="btn-group">
+															<h:commandLink action="#{field.deleteInstance}" title="#{i18n['dw4.elimina_istanza']}" styleClass="btn btn-default">
+													 			<f:ajax execute="@form" render=":templateForm:customFieldsHolder :templateForm:errormsg"/>
+													 			<span class="glyphicon glyphicon-minus"></span>
+															</h:commandLink>
+															<h:commandLink action="#{field.addInstance}" title="#{i18n['dw4.aggiungi_istanza']}" styleClass="btn btn-default">
+													 			<f:ajax execute="@form" render=":templateForm:customFieldsHolder :templateForm:errormsg"/>
+													 			<span class="glyphicon glyphicon-plus"></span>
+															</h:commandLink>
+															<h:commandLink action="#{field.moveUpInstance}" title="#{i18n['acl.up']}" styleClass="btn btn-default #{(fieldInstanceStatus.index == 0) ? 'disabled' : ''}">
+													 			<f:ajax execute="@form" render=":templateForm:customFieldsHolder :templateForm:errormsg"/>
+													 			<span class="glyphicon glyphicon-chevron-up"></span>
+															</h:commandLink>
+															<h:commandLink action="#{field.moveDownInstance}" title="#{i18n['acl.down']}" styleClass="btn btn-default #{(fieldInstanceStatus.index == fn:length(field.instances)-1) ? 'disabled' : ''}">
+													 			<f:ajax execute="@form" render=":templateForm:customFieldsHolder :templateForm:errormsg"/>
+													 			<span class="glyphicon glyphicon-chevron-down"></span>
+															</h:commandLink>
+														</div>
+													</div>
+													<!-- pulsanti per gestione gruppi di campi ripetibili: FINE -->
+												</div>
+											</h:panelGroup>
+										</div>
+									</h:panelGroup>
+									
+									<ui:repeat id="subfield" var="subfield" value="#{fieldInstance.fields}" varStatus="subfieldStatus">
+										<ui:repeat id="subfieldInstance" var="subfieldInstance" value="#{subfield.instances}" varStatus="subfieldInstanceStatus">
+											<h:panelGroup rendered="#{!empty subfield.type and subfield.type ne 'hidden'}">
+												<div class="form-group">
+													<label for="templateForm:section:#{sectionStatus.index}:field:#{fieldStatus.index}:fieldInstance:#{fieldInstanceStatus.index}:subfield:#{subfieldStatus.index}:subfieldInstance:#{subfieldInstanceStatus.index}:#{subfield.type}field" class="col-sm-2 control-label #{(subfield.required) ? 'required' : ''}">
+														<h:panelGroup rendered="#{!empty subfield.helpmessage}">
+															<span class="popoveritem" data-toggle="popover" data-placement="bottom" data-trigger="hover" data-content="#{subfield.helpmessage}">
+																#{(subfield.required) ? '*' : ''} #{subfield.label}
+																<span class="glyphicon glyphicon-info-sign popoveritem"></span>
+															</span>
+														</h:panelGroup>
+														<h:panelGroup rendered="#{empty subfield.helpmessage}">
+															#{(subfield.required) ? '*' : ''} #{subfield.label}
+														</h:panelGroup>
+													</label>
+													<div class="col-sm-#{subfield.size}">
+														
+														<ui:include src="./docedit@customfields@singlefield.xhtml">
+															<ui:param name="field" value="#{subfield}" />
+															<ui:param name="fieldInstance" value="#{subfieldInstance}" />
+															<ui:param name="groupfieldId" value="templateForm:section:#{sectionStatus.index}:field:#{fieldStatus.index}:fieldInstance:#{fieldInstanceStatus.index}:subfield:#{subfieldStatus.index}:subfieldInstance:#{subfieldInstanceStatus.index}" />
+															<ui:param name="instancesId" value="#{fieldInstanceStatus.index}:#{subfieldInstanceStatus.index}" />
+															<ui:param name="bean" value="#{bean}" />
+														</ui:include>
+														
+													</div>
+													
+													<h:panelGroup rendered="#{fn:length(fieldInstance.fields) == 1}"> <!-- pulsanti di gestione di un gruppo di campi con all'interno un solo campo -->
+														<div class="col-sm-1">
+															<!-- pulsanti per gestione gruppi di campi ripetibili: INIZIO -->
+															<div class="input-group">
+																<div class="btn-group">
+																	<h:commandLink action="#{field.deleteInstance}" title="#{i18n['dw4.elimina_istanza']}" styleClass="btn btn-default">
+															 			<f:ajax execute="@form" render=":templateForm:customFieldsHolder :templateForm:errormsg"/>
+															 			<span class="glyphicon glyphicon-minus"></span>
+																	</h:commandLink>
+																	<h:commandLink action="#{field.addInstance}" title="#{i18n['dw4.aggiungi_istanza']}" styleClass="btn btn-default">
+															 			<f:ajax execute="@form" render=":templateForm:customFieldsHolder :templateForm:errormsg"/>
+															 			<span class="glyphicon glyphicon-plus"></span>
+																	</h:commandLink>
+																</div>
+															</div>
+															<!-- pulsanti per gestione gruppi di campi ripetibili: FINE -->
+														</div>
+													</h:panelGroup>
+												</div>
+											</h:panelGroup>
+											
+											<h:panelGroup rendered="#{subfield.type eq 'hidden'}">
+												<div class="customfields-hidden-field">
+													<h:inputHidden id="hiddenfield" value="#{subfieldInstance.value}" />
+												</div>
+											</h:panelGroup>
+										</ui:repeat>
+									</ui:repeat>
+								
+								</div>
+							</h:panelGroup>
+							<h:panelGroup rendered="#{field.type ne 'group'}">
+								
+								<div class="form-group">
+									<label for="templateForm:section:#{sectionStatus.index}:field:#{fieldStatus.index}:fieldInstance:#{fieldInstanceStatus.index}:#{field.type}field" class="col-sm-2 control-label #{(field.required) ? 'required' : ''}">
+										<h:panelGroup rendered="#{!empty field.helpmessage}">
+											<span class="popoveritem" data-toggle="popover" data-placement="bottom" data-trigger="hover" data-content="#{field.helpmessage}">
+												#{(field.required) ? '*' : ''} #{field.label}
+												<span class="glyphicon glyphicon-info-sign popoveritem"></span>
+											</span>
+										</h:panelGroup>
+										<h:panelGroup rendered="#{empty field.helpmessage}">
+											#{(field.required) ? '*' : ''} #{field.label}
+										</h:panelGroup>
+									</label>
+									<div class="col-sm-#{field.size}">
+										
+										<ui:include src="./docedit@customfields@singlefield.xhtml">
+											<ui:param name="field" value="#{field}" />
+											<ui:param name="fieldInstance" value="#{fieldInstance}" />
+											<ui:param name="groupfieldId" value="templateForm:section:#{sectionStatus.index}:field:#{fieldStatus.index}:fieldInstance:#{fieldInstanceStatus.index}" />
+											<ui:param name="instancesId" value="#{fieldInstanceStatus.index}" />
+											<ui:param name="bean" value="#{bean}" />
+										</ui:include>
+										
+									</div>
+								</div>
+								
+							</h:panelGroup>
+						</h:panelGroup>
+						
+						<h:panelGroup rendered="#{field.type eq 'hidden'}">
+							<div class="customfields-hidden-field">
+								<h:inputHidden id="hiddenfield" value="#{fieldInstance.value}" />
+							</div>
+						</h:panelGroup>
+					</ui:repeat>
+				</ui:repeat>
+			</div>
+		
+		</ui:repeat>
+		
+		<ui:include src="./customfieldslookup.xhtml"> <ui:param name="pageBean" value="#{bean}"/></ui:include>
+	</h:panelGroup>
+
+</ui:composition>
+</html>

@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" 
+	  xmlns:h="http://java.sun.com/jsf/html" 
+	  xmlns:ui="http://java.sun.com/jsf/facelets" 
+	  xmlns:f="http://java.sun.com/jsf/core">
+<ui:composition>
+
+	<h:panelGroup rendered="#{!empty bean.doc.scadenza.data_scadenza}"> 
+		<dt>#{i18n['dw4.data_scadenza']}</dt>
+		<dd>
+			<h:outputText value="#{bean.doc.scadenza.data_scadenza}" />
+			<h:panelGroup rendered="#{!empty bean.doc.scadenza.tipo}">
+				&#160;(#{bean.doc.scadenza.tipo})
+			</h:panelGroup>
+		</dd>
+	</h:panelGroup>
+	
+	<h:panelGroup rendered="#{fn:length(bean.doc.xlink) > 0 and !empty bean.doc.xlink[0].href}">
+		<dt>#{i18n['dw4.link']}</dt>
+		<dd>
+			<ui:repeat var="xlink" value="#{bean.doc.xlink}">
+				<a href="javascript:void(0);" title="#{xlink.href}" onclick="return openUrl('#{xlink.href}');">#{xlink.text}</a><br/>
+			</ui:repeat>
+		</dd>
+	</h:panelGroup>
+	
+	<h:panelGroup rendered="#{!empty bean.doc.extra.codice_progetto}">
+		<dt>#{i18n['dw4.codice_progetto']}</dt>
+		<dd>#{bean.doc.extra.codice_progetto}</dd>
+	</h:panelGroup>
+	<h:panelGroup rendered="#{!empty bean.doc.riferimenti.text}">
+		<dt>#{i18n['dw4.riferimenti']}</dt>
+		<dd>#{bean.doc.riferimenti.text}</dd>
+	</h:panelGroup>
+	<h:panelGroup rendered="#{!empty bean.doc.keywords.text}">
+		<dt>#{i18n['dw4.keywords']}</dt>
+		<dd>#{bean.doc.keywords.text}</dd>
+	</h:panelGroup>
+	<h:panelGroup rendered="#{!empty bean.doc.tipologia.cod and bean.doc.tipo!='varie'}">
+		<dt>#{i18n['acl.tipologia']}</dt>
+		<dd><h:outputText value="#{bean.doc.tipologia.cod}" escape="false" /></dd>
+	</h:panelGroup>
+	<h:panelGroup rendered="#{!empty bean.doc.extra.custom_select_1}"> 
+		<dt>#{i18n['dw4.custom_select_1_label']}</dt>
+		<dd>#{bean.doc.extra.custom_select_1}</dd>
+	</h:panelGroup>
+	<h:panelGroup rendered="#{!empty bean.doc.extra.custom_select_2}">
+		<dt>#{i18n['dw4.custom_select_2_label']}</dt>
+		<dd>#{bean.doc.extra.custom_select_2}</dd>
+	</h:panelGroup>
+
+</ui:composition>   
+</html>

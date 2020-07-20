@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	template="template.xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:c="http://java.sun.com/jsp/jstl/core">
+
+<ui:define name="content">
+	<div class="vociIndice">
+	
+		<div class="sub-header">#{i18n['dw4.voci_di_indice']}</div>
+		
+		<!-- toolbar: inizio -->
+		<div class="btn-toolbar margin-bottom" role="toolbar">
+			<div class="btn-group">
+				<h:commandLink id="saveBtn" action="#{docEditModifyIndiceTitolario.saveDocument}" styleClass="btn btn-primary openwaitmsg">#{i18n['acl.save']}</h:commandLink>
+				<h:commandLink action="#{docEditModifyIndiceTitolario.clearDocument}" styleClass="btn btn-default">#{i18n['acl.back']}</h:commandLink>
+			</div>
+		</div>
+		<!-- toolbar: fine -->
+		
+		<!-- messages: inizio -->
+		<h:panelGroup rendered="#{not empty facesContext.messageList}" layout="block" styleClass="docedit-messages alert alert-danger">
+			<h:messages styleClass="" id="validationMesseges" />
+		</h:panelGroup>
+		<h:inputHidden id="errorFieldIds" value="#{docEditModifyIndiceTitolario.errorFieldIds}" />
+		<script type="text/javascript">
+		$(document).ready(function() {
+			setInvalidInputFields();
+		});
+		</script>
+		<!-- messages: fine -->
+		
+		<!-- scheda edit: inizio -->
+		<div class="row-fluid">
+			<div class="box span12">
+				<div class="box-content">
+				
+					<div class="fieldset">
+						<div class="legend">#{i18n['dw4.mod_voce_indice']}</div>
+						
+						<div class="form-group">
+							<label for="templateForm:voce" class="col-sm-2 control-label requiredField"><span>* #{i18n['dw4.index']}</span></label>
+							<div class="col-sm-9">
+								<h:inputText id="voce" value="#{docEditModifyIndiceTitolario.indice_titolario.voce}" styleClass="#{ component.valid ? '' : 'invalidinput' } form-control" />
+							</div>
+						</div>
+						
+						<div class="form-group">
+							<label for="templateForm:classif_input" class="col-sm-2 control-label requiredField"><span>* #{i18n['dw4.classif']}</span></label>
+							<div class="col-sm-2">
+								<div class="input-group">
+									<h:inputText id="classif_input" value="#{docEditModifyIndiceTitolario.indice_titolario.compilazione_automatica.classif.filtroCod}" styleClass="#{ component.valid ? '' : 'invalidinput' } lookup-field form-control" onblur="executeAction(this);">
+										<f:ajax execute="@form" render="@form" />
+									</h:inputText>
+									
+									<span class="input-group-btn">
+										<h:commandLink title="#{i18n['dw4.titolario_di_classificazione']}" action="#{docEditModifyIndiceTitolario.thVincolatoTitolarioClassificazione}" id="classif_button" styleClass="btn btn-default">
+					   						<f:ajax execute="@form" render="@form"/>
+					   						<span class="glyphicon glyphicon-search"></span>
+					   					</h:commandLink>
+							  		</span>
+								</div>
+							</div>
+							<div class="col-sm-4">
+								<p class="form-control-static">
+									<h:outputText rendered="#{!empty docEditModifyIndiceTitolario.indice_titolario.compilazione_automatica.classif.cod}" value="#{docEditModifyIndiceTitolario.indice_titolario.compilazione_automatica.classif.cod.concat(' - ').concat(docEditModifyIndiceTitolario.indice_titolario.compilazione_automatica.classif.text)}" escape="false"><f:converter converterId="ClassifConverter"/></h:outputText>
+								</p>
+							</div>
+							<label for="templateForm:scarto" class="control-label col-sm-1"><span>#{i18n['dw4.scarto']}</span></label>
+							<div class="col-sm-2">
+								<h:selectOneMenu value="#{docEditModifyIndiceTitolario.indice_titolario.compilazione_automatica.scarto.val}" id="scarto" styleClass="form-control">
+									<f:selectItem itemValue="" itemLabel="#{i18n['dw4.da_assegnare']}" />
+									<f:selectItem itemValue="01" itemLabel="#{i18n['dw4.1_anno']}" />
+									<f:selectItem itemValue="05" itemLabel="#{i18n['dw4.5_anni']}" />
+									<f:selectItem itemValue="10" itemLabel="#{i18n['dw4.10_anni']}" />
+									<f:selectItem itemValue="99" itemLabel="#{i18n['dw4.illimitato']}" />
+								</h:selectOneMenu>
+							</div>
+						</div>
+						
+						<div class="form-group">
+							<label for="templateForm:classif_input" class="col-sm-2 control-label requiredField"><span>* #{i18n['dw4.validita']}</span></label>
+							<div class="col-sm-9">
+								<h:selectManyCheckbox value="#{docEditModifyIndiceTitolario.indice_titolario.arrValidita}" styleClass="radio-selection">
+								   	<f:selectItem itemValue="arrivo" itemLabel="#{i18n['dw4.abbr_arrivo']}" />
+								   	<f:selectItem itemValue="partenza" itemLabel="#{i18n['dw4.abbr_partenza']}" />
+								   	<f:selectItem itemValue="interno" itemLabel="#{i18n['dw4.abbr_uffici']}" />
+								   	<f:selectItem itemValue="varie" itemLabel="#{i18n['dw4.abbr_nonprotocollati']}" />
+								</h:selectManyCheckbox>
+							</div>
+						</div>
+					</div> <!-- /fieldset -->
+					
+					<div class="fieldset">
+						<div class="legend">#{i18n['dw4.oggetti_predefiniti']}</div>
+						
+						<ui:repeat id="docEditOggetti" var="oggetto" value="#{docEditModifyIndiceTitolario.indice_titolario.compilazione_automatica.oggetto}" varStatus="indice">
+							<div class="form-group">
+								<label for="templateForm:classif_input" class="col-sm-2 control-label"><span>#{i18n['dw4.object']}</span></label>
+								<div class="col-sm-9">
+									<div class="input-group">
+										<h:inputText id="oggetto_text" value="#{oggetto.text}" styleClass="#{ component.valid ? '' : 'invalidinput' } form-control" />
+										
+										<div class="input-group-btn">
+											<h:commandLink action="#{docEditModifyIndiceTitolario.indice_titolario.compilazione_automatica.deleteOggetto}" title="#{i18n['dw4.elimina_istanza']}" styleClass="btn btn-default">
+									 			<f:ajax execute="@form" render="@form"/>
+									 			<span class="glyphicon glyphicon-minus"></span>
+											</h:commandLink>
+											<h:commandLink action="#{docEditModifyIndiceTitolario.indice_titolario.compilazione_automatica.addOggetto}" title="#{i18n['dw4.aggiungi_istanza']}" styleClass="btn btn-default">
+								 				<f:ajax execute="@form" render="@form"/>
+								 				<span class="glyphicon glyphicon-plus"></span>
+											</h:commandLink>
+											<h:commandLink action="#{docEditModifyIndiceTitolario.indice_titolario.compilazione_automatica.moveUpOggetto}" title="#{i18n['dw4.sposta_su']}" styleClass="btn btn-default #{(indice.index > 0) ? '' : 'disabled'}">
+							        			<f:ajax execute="@form" render="@form"/>
+							        			<span class="glyphicon glyphicon-chevron-up"></span>
+					        				</h:commandLink>
+					        				<h:commandLink action="#{docEditModifyIndiceTitolario.indice_titolario.compilazione_automatica.moveDownOggetto}" title="#{i18n['dw4.sposta_giu']}" styleClass="btn btn-default #{(fn:length(docEditIndiceTitolario.indice_titolario.compilazione_automatica.oggetto) > (indice.index+1)) ? '' : 'disabled'}">
+							        			<f:ajax execute="@form" render="@form"/>
+							        			<span class="glyphicon glyphicon-chevron-down"></span>
+					        				</h:commandLink>
+								  		</div>
+									</div>
+								</div>
+							</div>
+						</ui:repeat>
+					</div> <!-- /fieldset -->
+					
+					<div class="fieldset">
+	        			<div class="legend">#{i18n['dw4.assegnatari']}</div>
+	        			
+	        			<h:panelGroup id="rpa_Fields" layout="block" styleClass="responsabilita-fields">
+							<ui:include src="./rifinterni.xhtml">
+					        	<ui:param name="rifintType" value="rpa" />
+				        		<ui:param name="editable" value="true" />
+				        		<ui:param name="pageBean" value="#{docEditModifyIndiceTitolario}" />
+				        		<ui:param name="rifintBean" value="#{docEditModifyIndiceTitolario.indice_titolario.compilazione_automatica.rpa}" />
+				        		<ui:param name="refresh" value="templateForm:rpa_Fields templateForm:rifintLookup templateForm:lookup templateForm:errormsg"/>
+				        	</ui:include>
+			        	</h:panelGroup>
+			        	
+			        	<h:panelGroup id="cds_Fields" layout="block" styleClass="responsabilita-fields">
+			        		<ui:repeat id="rifint_cds_list" var="rif" value="#{docEditModifyIndiceTitolario.indice_titolario.compilazione_automatica.cds}" varStatus="indice">
+								<ui:include src="./rifinterni.xhtml">
+						        	<ui:param name="rifintType" value="cds" />
+						        	<ui:param name="indice" value="#{indice.index}" />
+					        		<ui:param name="editable" value="true" />
+					        		<ui:param name="pageBean" value="#{docEditModifyIndiceTitolario}" />
+					        		<ui:param name="rifintBean" value="#{rif}" />
+					        		<ui:param name="refresh" value=":templateForm:cds_Fields :templateForm:rifintLookup :templateForm:lookup :templateForm:errormsg"/>
+					        		<ui:param name="multiple" value="true"/>
+					        	</ui:include>
+					        </ui:repeat>
+						</h:panelGroup>
+						
+						<h:panelGroup id="cc_Fields" layout="block" class="responsabilita-fields" >
+							<h:inputHidden value="#{docEditArrivo.alertForTutti}" id="cc_alertForTutti" />
+							
+							<ui:repeat id="rifint_cc_list" var="rif" value="#{docEditModifyIndiceTitolario.indice_titolario.compilazione_automatica.cc}" varStatus="indice">
+								<ui:include src="./rifinterni.xhtml">
+						        	<ui:param name="rifintType" value="cc" />
+						        	<ui:param name="indice" value="#{indice.index}" />
+					        		<ui:param name="editable" value="true" />
+					        		<ui:param name="pageBean" value="#{docEditModifyIndiceTitolario}" />
+					        		<ui:param name="rifintBean" value="#{rif}" />
+					        		<ui:param name="refresh" value=":templateForm:cc_Fields :templateForm:rifintLookup :templateForm:lookup :templateForm:errormsg"/>
+					        		<ui:param name="multiple" value="true"/>
+					        	</ui:include>
+					        </ui:repeat>
+						</h:panelGroup>
+	        		</div> <!-- /fieldset -->
+	        		
+	        		<h:panelGroup rendered="#{docwayprocHome.formsAdapter.funzionalitaDisponibili['abilitaeXtraWayWorkflow']}">
+		        		<div class="fieldset">
+		        			<div class="legend">#{i18n['dw4.workflow']}</div>
+		        			
+		        			<ui:repeat id="docEditWorkflow" var="workflow" value="#{docEditModifyIndiceTitolario.workflowTitolario.bwf_link}" varStatus="indice">
+		        				<div class="form-group">
+									<label class="col-sm-2 control-label"><span>#{i18n['dw4.flusso_workflow']}</span></label>
+									<div class="col-sm-4">
+										 <ui:include src="./lookupRepeatField.xhtml">
+						        			<ui:param name="id" value="workflow_text" />
+							        		<ui:param name="field" value="#{workflow.label}" />
+							        		<ui:param name="element" value="#{workflow}" />
+							        		<ui:param name="bean" value="#{docEditModifyIndiceTitolario}" />
+							        		<ui:param name="action" value="lookupWorkflow"/>
+							        		<ui:param name="clearaction" value="clearLookupWorkflow"/>
+							        		<ui:param name="title" value="#{i18n['dw4.lookup_workflow']}"/>
+							        		<ui:param name="styleclass" value="form-control"/>
+							        		<ui:param name="refresh" value="@form"/>
+							        	</ui:include>
+							        </div>
+							        <div class="col-sm-1 input-group">
+										<div class="btn-group">
+											<h:commandLink action="#{docEditModifyIndiceTitolario.workflowTitolario.deleteWorkflow}" title="#{i18n['dw4.elimina_istanza']}" styleClass="btn btn-default">
+									 			<f:ajax execute="@form" render="@form" />
+									 			<span class="glyphicon glyphicon-minus"></span>
+											</h:commandLink>
+											
+											<h:commandLink action="#{docEditModifyIndiceTitolario.workflowTitolario.addWorkflow}" title="#{i18n['dw4.aggiungi_istanza']}" styleClass="btn btn-default">
+									 			<f:ajax execute="@form" render="@form" />
+									 			<span class="glyphicon glyphicon-plus"></span>
+											</h:commandLink>
+										</div>
+									</div>
+								</div>
+		        			</ui:repeat>
+		        		</div> <!-- /fieldset -->
+		        	</h:panelGroup>
+				</div>
+			</div>
+		</div>
+		<!-- scheda edit: fine -->
+		
+		<ui:include src="./lookup.xhtml"> <ui:param name="pageBean" value="#{docEditModifyIndiceTitolario}"/></ui:include>
+		<ui:include src="./rifintLookup.xhtml"> <ui:param name="pageBean" value="#{docEditModifyIndiceTitolario}"/></ui:include>
+		<ui:include src="./showthes.xhtml"> <ui:param name="pageBean" value="#{docEditModifyIndiceTitolario}"/></ui:include>
+		
+		<h:inputTextarea value="#{docEditModifyIndiceTitolario.xml}" rendered="#{docEditModifyIndiceTitolario.debugMode}" styleClass="form-control" rows="10" />
+	</div>
+</ui:define>
+
+</ui:composition>

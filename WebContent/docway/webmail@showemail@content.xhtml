@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html" xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:f="http://java.sun.com/jsf/core">
+	<h:head>
+		<title>#{i18n['dw4.page_title']}</title>
+		<link href="#{facesContext.externalContext.requestContextPath}/bootstrap/css/bootstrap.css" rel="stylesheet" type="text/css" />
+		<link href="#{facesContext.externalContext.requestContextPath}/common/css/dashboard.css" rel="stylesheet" type="text/css" />
+		<link href="#{facesContext.externalContext.requestContextPath}/common/css/datepicker.css" rel="stylesheet" type="text/css" />
+		<link href="#{facesContext.externalContext.requestContextPath}/common/css/common.css" rel="stylesheet" type="text/css" />
+		<link href="#{facesContext.externalContext.requestContextPath}/docway/css/docway.css" rel="stylesheet" type="text/css" />
+		<link href="#{facesContext.externalContext.requestContextPath}/docway/taskFormCss/taskform.css" rel="stylesheet" type="text/css" />
+		<link href="#{facesContext.externalContext.requestContextPath}/docway/taskFormCss/skin/jqueryuiskin.css" rel="stylesheet" type="text/css" />
+	</h:head>
+	<h:body style="background:none; background-color:#fff; padding:0; margin:0;">
+	
+		<h:outputText rendered="#{docwayWebmailPreview.message.html}" value="#{docwayWebmailPreview.message.body}" escape="false" />
+		<h:panelGroup rendered="#{!docwayWebmailPreview.message.html}">
+			<div style="white-space: pre-wrap;"><h:outputText value="#{docwayWebmailPreview.message.body}" escape="false"/></div>
+		</h:panelGroup>
+		
+	</h:body>
+</html>

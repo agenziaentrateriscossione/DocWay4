@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" 
+	  xmlns:h="http://java.sun.com/jsf/html" 
+	  xmlns:ui="http://java.sun.com/jsf/facelets" 
+	  xmlns:f="http://java.sun.com/jsf/core">
+<ui:composition>
+	
+	<h:panelGroup rendered="#{fn:length(bean.doc.proposte_da_deliberare) > 0}">
+		<div class="showdoc-section">
+			<div class="title">
+				#{i18n['dw4.proposte_da_deliberare']}
+				<div class="pull-right">
+					<span class="glyphicons-pro notes" title="#{i18n['dw4.proposte_in_odg']}"></span>
+				</div>
+			</div>
+			<ul>
+				<ui:repeat var="proposta_da_deliberare" value="#{bean.doc.proposte_da_deliberare}" varStatus="status">
+					<li>
+						#{i18n['dw4.delibera_n']} #{proposta_da_deliberare.numero_delibera} (#{proposta_da_deliberare.risultato_seduta})
+						<div>#{proposta_da_deliberare.oggetto_prop} </div>
+					</li>
+				</ui:repeat>
+			</ul>
+		</div>
+	</h:panelGroup>
+	
+</ui:composition>
+</html>

@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" 
+	  xmlns:h="http://java.sun.com/jsf/html" 
+	  xmlns:ui="http://java.sun.com/jsf/facelets" 
+	  xmlns:f="http://java.sun.com/jsf/core">
+<ui:composition>
+
+	<h:panelGroup layout="block" id="delegaWF_block">
+		<h:panelGroup id="delegaWF" rendered="#{pageBean.visible}">
+			<!-- Modal -->
+			<div id="delegaWFModal" class="modal fade in" aria-hidden="false" aria-labelledby="delegaWFModalLabel" role="dialog" tabindex="-1" style="display: block;">
+				<div class="modal-dialog">
+					<div class="modal-content jsf-modal">
+						<div class="modal-header">
+							<h:commandLink class="close" action="#{pageBean.clearDocument}" value="&#215;">
+		                    	<f:ajax render="delegaWF_block"/>
+		                   	</h:commandLink>
+							
+							<h4 class="modal-title" id="delegaWFModalLabel">#{i18n['dw4.delega_azione']}</h4>
+						</div>
+						<div class="modal-body">
+						
+							<h:panelGroup rendered="#{not empty facesContext.messageList}" layout="block" styleClass="alert alert-danger">
+								<h:messages styleClass="" id="validationMessegesdelegaWF" />
+							</h:panelGroup>
+							
+							<dl class="dl-hornizontal">
+								<dt>#{i18n['dw4.azione_da_delegare']}</dt>
+								<dd>
+									<h:selectOneMenu value="#{pageBean.selectedTask}">
+										<f:selectItems value="#{pageBean.tasks}" var="option" itemValue="#{option.id}" itemLabel="#{option.label}" />
+									</h:selectOneMenu>
+								</dd>
+							</dl>
+						
+							<table class="table table-striped">
+								<thead>
+									<tr>
+										<th class="personeruolo-matricola optional">#{i18n['acl.code']}</th>
+										<th class="personeruolo-nome essential">#{i18n['acl.surname_name']}</th>
+									</tr>
+								</thead>
+								<tbody>
+									<ui:repeat var="persona" value="#{pageBean.users}" varStatus="status">
+										<tr>
+											<td class="optional">
+												#{persona.matricola}
+											</td>
+											<td class="essential">
+												<h:commandLink action="#{pageBean.delegaTaskWorkflow}" styleClass="openwaitmsg">
+													<h:outputText value="#{persona.nome}" escape="false" />
+												</h:commandLink>
+											</td>
+										</tr>
+									</ui:repeat>
+								</tbody>
+							</table>
+						</div>
+					</div>
+				</div>
+			</div>
+		</h:panelGroup>
+	</h:panelGroup>
+
+</ui:composition>   
+</html>

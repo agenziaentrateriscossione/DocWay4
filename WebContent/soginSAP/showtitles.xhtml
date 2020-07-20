@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	template="#{soginSAPTitles.pageTemplate}"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:c="http://java.sun.com/jsp/jstl/core">
+
+<ui:define name="content">
+
+	<h:panelGroup rendered="#{docwayHome.formsAdapter.funzionalitaDisponibili['abilitaSoginSAP']}">
+	
+		<div class="soginsap">
+			<ui:include src="../docway/showtitles@buttonBar.xhtml"><ui:param name="beanTitles" value="#{soginSAPTitles}"/></ui:include>
+			
+			<h:panelGroup rendered="#{!empty soginSAPTitles.oggetto_fasc}" layout="block" styleClass="titles-oggettofascicolo showdoc-section">
+				<div class="title"><h:commandLink action="#{soginSAPTitles.queryFasc}"><h:outputText value="#{soginSAPTitles.oggetto_fasc}" escape="false" /></h:commandLink></div>
+				<h:panelGroup rendered="#{!empty soginSAPTitles.classif_fasc}">
+					<p>(#{soginSAPTitles.classif_fasc})</p>
+				</h:panelGroup>
+				<h:panelGroup rendered="#{soginSAPTitles.nome_persona_fasc ne '' or soginSAPTitles.nome_uff_fasc ne ''}">
+					<p>#{soginSAPTitles.nome_persona_fasc} <h:panelGroup rendered="#{soginSAPTitles.nome_uff_fasc ne ''}">(#{soginSAPTitles.nome_uff_fasc})</h:panelGroup></p>
+				</h:panelGroup>
+			</h:panelGroup>
+				
+			<div style="#{(empty soginSAPTitles.oggetto_fasc) ? 'margin-top:15px;' : ''}">
+				<ui:include src="./showtitles@docviewtable.xhtml"><ui:param name="beanTitles" value="#{soginSAPTitles}"/></ui:include>
+			</div>
+		</div>
+		
+		<ui:include src="../docway/loadingbar@exportCSV.xhtml"><ui:param name="pageBean" value="#{soginSAPTitles}"/></ui:include>
+		<ui:include src="../docway/loadingbar@removeSelFromFasc.xhtml"><ui:param name="pageBean" value="#{soginSAPTitles}"/></ui:include>
+		<ui:include src="../docway/loadingbar@if.xhtml"><ui:param name="pageBean" value="#{soginSAPTitles}"/></ui:include>
+		<ui:include src="../docway/loadingbar@ritiraBandoSelezione.xhtml"><ui:param name="pageBean" value="#{soginSAPTitles}"/></ui:include>
+		<ui:include src="../docway/rifinterni@RPA.xhtml"><ui:param name="bean" value="#{rifInt}"/></ui:include>
+		<ui:include src="../docway/rifinterni@CC.xhtml"><ui:param name="bean" value="#{rifInt}"/></ui:include>
+		<ui:include src="../docway/lookup.xhtml"> <ui:param name="pageBean" value="#{rifInt}"/></ui:include>
+		<ui:include src="../docway/rifintLookup.xhtml"> <ui:param name="pageBean" value="#{rifInt}"/></ui:include>
+		<ui:include src="../docway/loadingbar@assegnazioneCC.xhtml"><ui:param name="pageBean" value="#{rifInt}"/></ui:include>
+		<ui:include src="../docway/loadingbar@assegnazioneRPA.xhtml"><ui:param name="pageBean" value="#{rifInt}"/></ui:include>
+		<ui:include src="../docway/changeclassifDoc.xhtml"> <ui:param name="pageBean" value="#{changeclassifdoc}"/></ui:include>
+		<ui:include src="../docway/showthes.xhtml"> <ui:param name="pageBean" value="#{changeclassifdoc}"/></ui:include>
+		<ui:include src="../docway/addVaschettaCustom.xhtml"> <ui:param name="pageBean" value="#{soginSAPTitles}"/></ui:include>
+		<ui:include src="../docway/exportCSVAdvanced.xhtml"> <ui:param name="pageBean" value="#{soginSAPTitles}"/></ui:include>
+	
+	</h:panelGroup>
+	<h:panelGroup rendered="#{!docwayHome.formsAdapter.funzionalitaDisponibili['abilitaSoginSAP']}">
+		
+		<div class="alert alert-warning"><h:outputText value="#{i18n['soginSAP.accessoVietato']}" /></div>
+		
+	</h:panelGroup>
+	
+	<h:inputTextarea value="#{soginSAPTitles.xml}" rendered="#{soginSAPTitles.debugMode}" styleClass="form-control" rows="10" />
+</ui:define>
+
+</ui:composition>

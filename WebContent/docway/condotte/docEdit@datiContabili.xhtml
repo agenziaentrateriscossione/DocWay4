@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" 
+	  xmlns:h="http://java.sun.com/jsf/html" 
+	  xmlns:ui="http://java.sun.com/jsf/facelets" 
+	  xmlns:f="http://java.sun.com/jsf/core">
+<ui:composition>
+	
+	<h:panelGroup rendered="#{ !fn:contains(bean.hideDivs, 'dati_contabili,') }" layout="block" styleClass="fieldset">
+		<div class="legend">
+			#{i18n['dw4.dati_contabili']}
+	    				
+	    	<div class="pull-right">
+				<span class="glyphicons-pro notes" title="#{i18n['dw4.dati_contabili']}"></span>
+			</div>
+		</div>
+	    			
+	    <div class="form-group">
+	    	<label for="templateForm:protocollo_iva" class="col-sm-2 control-label"><span>#{i18n['dw4.protocollo_iva']}</span></label>
+			<div class="col-sm-4">
+				<h:inputText id="protocollo_iva" value="#{bean.dati_contabili.protocollo_iva}" styleClass="#{ component.valid ? '' : 'invalidinput' } form-control" />
+	       	</div>
+		</div>
+		
+	    <div class="form-group">
+	    	<label for="templateForm:dc_codfornitore" class="col-sm-2 control-label"><span>#{i18n['dw4.codice_fornitore']}</span></label>
+			<div class="col-sm-3">
+				<h:inputText id="dc_codfornitore" value="#{bean.dati_contabili.fornitore.codice}" styleClass="#{ component.valid ? '' : 'invalidinput' } form-control" />
+	       	</div>
+	    </div>
+	    
+	    <div class="form-group">
+	    	<label for="templateForm:dc_rag_sociale" class="col-sm-2 control-label"><span>#{i18n['dw4.ragione_sociale_fornitore']}</span></label>
+			<div class="col-sm-9">
+				<h:inputText id="dc_rag_sociale" value="#{bean.dati_contabili.fornitore.rag_sociale}" styleClass="#{ component.valid ? '' : 'invalidinput' } form-control" />
+	       	</div>
+	    </div>
+	    
+	    <h:panelGroup rendered="#{fn:length(bean.dati_contabili.scadenze) > 0}" layout="block" id="scadenzeHolder">
+			<ui:repeat id="docEditScadenze" var="scadenza" value="#{bean.dati_contabili.scadenze}" offset="0" varStatus="indice">
+				<div class="form-group">
+					<ui:include src="../dateField.xhtml">
+						<ui:param name="label" value="#{i18n['dw4.scadenza']}" />
+						<ui:param name="id" value="dc_scadenza" />
+						<ui:param name="value" value="#{scadenza.text}" />
+					</ui:include>
+					<div class="col-sm-1 input-group">
+						<div class="btn-group">
+							<h:commandLink action="#{bean.dati_contabili.deleteScadenza}" title="#{i18n['dw4.elimina_istanza']}" styleClass="btn btn-default">
+					 			<f:ajax execute="@form" render=":templateForm:scadenzeHolder :templateForm:errormsg"/>
+					 			<span class="glyphicon glyphicon-minus"></span>
+							</h:commandLink>
+							
+							<h:commandLink action="#{bean.dati_contabili.addScadenza}" title="#{i18n['dw4.aggiungi_istanza']}" styleClass="btn btn-default">
+					 			<f:ajax execute="@form" render=":templateForm:scadenzeHolder :templateForm:errormsg"/>
+					 			<span class="glyphicon glyphicon-plus"></span>
+							</h:commandLink>
+						</div>
+					</div>
+				</div>
+			</ui:repeat>
+		</h:panelGroup>
+		
+		<div class="form-group">
+			<label for="templateForm:dc_note" class="col-sm-2 control-label">#{i18n['acl.notes']}</label>
+			<div class="col-sm-9">
+				<h:inputTextarea id="dc_note" value="#{bean.dati_contabili.note}" rows="4" cols="120" styleClass="form-control" />
+			</div>		
+		</div>
+	</h:panelGroup>
+
+</ui:composition>
+</html>

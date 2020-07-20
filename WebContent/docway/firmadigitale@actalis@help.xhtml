@@ -1,0 +1,28 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	template="#{docwayFirmaDigitale.pageTemplate}"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core">
+	
+<ui:define name="content">
+	<div class="sub-header">#{i18n['dw4.firma_digitale']}</div>
+
+	<!-- toolbar: inizio -->
+	<div class="btn-toolbar margin-bottom" role="toolbar">
+		<div class="btn-group">
+			<h:link outcome="firmadigitale@actalis@applet" styleClass="btn btn-default">#{i18n['torna']}</h:link>
+		</div>
+	</div>
+	<!-- toolbar: fine -->
+	
+	<div class="well">
+		<div style="margin-bottom:10px;">#{i18n['dw4.per_utilizzare_in_maniera_corretta_l_applet_occorre_aver_installato_una_versione_di_JRE_superiore_a']}: <strong>1.6.0</strong></div>
+		<div style="margin-bottom:10px;">#{i18n['dw4.nel_caso_si_utilizzi_una_versione_precedente_di_java_runtime_environment_si_prega_di_installare_l_ultima_versione']}:</div>
+		<a href="http://www.java.com/it/download/">JAVA JRE DOWNLOAD</a>
+	</div>
+	
+	<h:inputTextarea value="#{docwayFirmaDigitale.xml}" rendered="#{docwayFirmaDigitale.debugMode}" styleClass="form-control" rows="10" />
+</ui:define>
+
+</ui:composition>

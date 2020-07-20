@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" 
+	  xmlns:h="http://java.sun.com/jsf/html" 
+	  xmlns:ui="http://java.sun.com/jsf/facelets" 
+	  xmlns:f="http://java.sun.com/jsf/core">
+<ui:composition>
+
+	<table class="table table-hover doc-titles-table">
+		<thead>
+			<tr>
+				<th class="coltipo essential">&#160;</th>
+				<h:panelGroup rendered="#{hidecheckbox != 'true'}">
+					<th class="colcheck essential">
+						<h:selectBooleanCheckbox id="selectAll" title="#{i18n['dw4.seleziona_tutti']}" immediate="true" value="#{beanTitles.selectAll}" valueChangeListener="#{beanTitles.selectAll}">
+							<f:ajax execute="@this" render="@form" />
+						</h:selectBooleanCheckbox>
+					</th>
+				</h:panelGroup>
+				<th class="colinfo optional">#{i18n['dw4.info']}</th>
+				<th class="cologgetto essential">
+					<span style="white-space:nowrap;">
+							#{i18n['dw4.sommario']}
+					</span>
+				</th>
+				<th class="colscad optional">
+					<span style="white-space:nowrap;">
+							#{i18n['dw4.scadenza']}
+					</span>
+				</th>
+				<th class="colnumregsap optional">
+					<span style="white-space:nowrap;">
+						<h:commandLink action="#{beanTitles.sortByCol}" actionListener="#{beanTitles.attrListenerSortHeader}">
+							<f:attribute name="colSort" value="xml(xpart:/doc/extra/soginSAP/docSAP)" />
+							#{i18n['soginSAP.docSap']}
+							<f:ajax event="action" render="@form"/>
+						</h:commandLink>
+						<h:panelGroup rendered="#{beanTitles.xwOrd ne '' and fn:toLowerCase(beanTitles.xwOrd) eq 'xml(xpart:/doc/extra/soginsap/docsap)'}">
+							&#160;<span class="glyphicon #{ beanTitles.ascSort ? 'glyphicon-chevron-up' : 'glyphicon-chevron-down' }" title="#{ beanTitles.ascSort ? i18n['dw4.ordine_crescente'] : i18n['dw4.ordine_decrescente'] }"></span>
+						</h:panelGroup>
+					</span>
+				</th>
+				<ui:remove>
+					<th class="colconservato optional">#{i18n['dw4.conservato']}</th>
+				</ui:remove>
+			</tr>
+		</thead>
+		<tbody>
+			<ui:repeat var="title" value="#{beanTitles.titles}" varStatus="varstatus">
+				<h:panelGroup rendered="#{!(fn:startsWith(title.testo, '|||||||'))}">
+					<tr>
+						<h:panelGroup rendered="#{title.visible != 'false'}">
+							<td class="coltipo essential">
+								<h:panelGroup rendered="#{title.icon ne ''}">
+									<h:commandLink action="#{beanTitles.mostraDocumento}" title="#{fn:toUpperCase(title.dbTable)} - #{i18n['dw4.vai_al_record']}">
+										<span class="doc-tipo-custom #{title.icon} #{(title.split[12]=='annullato=si') ? 'annullato' : ''}" title="#{fn:toUpperCase(title.split[11])} - #{i18n['dw4.vai_al_record']}"></span>
+										<ui:remove>
+											<h:graphicImage url="#{title.split[12]=='annullato=si' ? fn:replace(title.icon, '.png', 'annullato.png') : title.icon}" title="#{fn:toUpperCase(title.split[11])} - #{i18n['dw4.vai_al_record']}" alt="#{fn:toUpperCase(title.dbTable)} - #{i18n['dw4.vai_al_record']}" />
+										</ui:remove>
+									</h:commandLink>
+								</h:panelGroup>
+								<h:panelGroup rendered="#{title.icon eq ''}">
+									<h:commandLink action="#{beanTitles.mostraDocumento}" title="#{fn:toUpperCase(title.dbTable)} - #{i18n['dw4.vai_al_record']}">
+										<span class="doc-tipo-#{title.dbTable} glyphicons-pro #{title.split[12]=='annullato=si' ? 'annullato' : ''}"></span>
+									</h:commandLink>
+								</h:panelGroup>
+							</td>
+							<h:panelGroup rendered="#{hidecheckbox != 'true'}">
+								<td class="colcheck essential">
+									<h:selectBooleanCheckbox value="#{title.select}" valueChangeListener="#{beanTitles.selectTitle}">
+										<f:ajax execute="@this" render="@form"/>
+									</h:selectBooleanCheckbox>
+								</td>
+							</h:panelGroup>
+							<td class="colinfo optional">
+								<ui:include src="../docway/showtitles@docinfo.xhtml">
+									<ui:param name="bean" value="#{beanTitles}" />
+									<ui:param name="title" value="#{title}" />
+									<ui:param name="indice" value="#{varstatus.index}" />
+									<ui:param name="direction" value="#{(!empty beanTitles.languageOrientation and beanTitles.languageOrientation eq 'rtl') ? 'top' : 'right'}" />
+					        	</ui:include>
+							</td>
+							<td class="cologgetto essential">
+								<h:panelGroup rendered="#{!empty title.split[4] or (!beanTitles.formsAdapter.funzionalitaDisponibili['nascondiprotocollo'] and (!empty title.split[1] or !empty title.split[2] or !empty title.split[3])) or title.split[10] eq 'bozza=si'}" layout="block" styleClass="first-row-oggetto">
+									<h:panelGroup rendered="#{title.split[10] eq 'bozza=si'}" styleClass="bozza-titolo">
+										[<h:outputText value="#{i18n['dw4.bozza']}" />]
+									</h:panelGroup>
+									<ui:param name="subject" value="#{(!empty title.split[4] and (beanTitles.lunghezzaMaxSoggetto > 0) and (fn:length(title.split[4]) > beanTitles.lunghezzaMaxSoggetto)) ? fn:substring(title.split[4], 0, beanTitles.lunghezzaMaxSoggetto - 1) : title.split[4]}" />
+									<span class="soggetto-titolo" title="#{title.split[4]}">#{subject} #{(!empty title.split[4] and (beanTitles.lunghezzaMaxSoggetto > 0) and (fn:length(title.split[4]) > beanTitles.lunghezzaMaxSoggetto)) ? '...' : ''}</span>
+									<h:panelGroup rendered="#{!beanTitles.formsAdapter.funzionalitaDisponibili['nascondiprotocollo']}">
+										<span class="protocollo-titolo">
+											<ui:param name="var" value="#{fn:substring(title.split[1], (fn:indexOf(title.split[1], '-')+1), fn:length(title.split[1]))}"/>
+											<h:panelGroup rendered="#{title.split[10] ne 'bozza=si' and !empty var}">
+												<h:panelGroup rendered="#{!empty subject}">
+													<h:outputText value=" - " />
+												</h:panelGroup>
+												#{i18n['dw4.prot_n']}
+												<h:outputText value="#{fn:substring(var, (fn:indexOf(var, '-')+1), fn:length(var))}">
+													<f:converter converterId="NumConverter"/>
+												</h:outputText>
+											</h:panelGroup>
+										</span>
+										<span class="data-titolo">
+											<h:panelGroup rendered="#{!empty subject or !empty title.split[1]}">
+												<h:outputText value=" - " />
+											</h:panelGroup>
+											<h:outputText value="#{title.split[3]}"><f:converter converterId="DateConverter"/></h:outputText>
+										</span>
+										<h:panelGroup rendered="#{!empty title.split[2]}">
+											<span class="repertorio-titolo">
+												<h:panelGroup rendered="#{!empty subject or !empty title.split[1] or !empty title.split[3]}">
+													<h:outputText value=" - " />
+												</h:panelGroup>
+												#{i18n['dw4.rep']} <em>#{title.split[11]} (n.
+												<h:outputText value="#{fn:substring(title.split[2], (fn:indexOf(title.split[2], '-')+5), fn:length(title.split[2]))}" >
+													<f:converter converterId="NumConverter"/>
+												</h:outputText>
+												<h:outputText value="-"/>
+												<h:outputText value="#{fn:substring(title.split[2], (fn:indexOf(title.split[2], '-')+1), (fn:indexOf(title.split[2], '-')+5))}" />
+												)
+												</em>
+											</span>
+										</h:panelGroup>
+									</h:panelGroup>
+								</h:panelGroup>
+								<h:commandLink action="#{beanTitles.mostraDocumento}">
+									<ui:param name="object" value="#{(!empty title.split[5] and (beanTitles.lunghezzaMaxOggetto > 0) and (fn:length(title.split[5]) > beanTitles.lunghezzaMaxOggetto)) ? fn:substring(title.split[5], 0, beanTitles.lunghezzaMaxOggetto - 1) : title.split[5]}" />
+									<div class="second-row-oggetto" title="#{title.split[5]}">
+										<h:panelGroup rendered="#{title.visto == 'true'}">
+											#{object} #{(!empty title.split[5] and (beanTitles.lunghezzaMaxOggetto > 0) and (fn:length(title.split[5]) > beanTitles.lunghezzaMaxOggetto)) ? '...' : ''}
+										</h:panelGroup>
+										<h:panelGroup rendered="#{title.visto != 'true'}">
+											<strong>#{object} #{(!empty title.split[5] and (beanTitles.lunghezzaMaxOggetto > 0) and (fn:length(title.split[5]) > beanTitles.lunghezzaMaxOggetto)) ? '...' : ''}</strong>
+										</h:panelGroup>
+									</div>
+								</h:commandLink>
+							</td>
+							<td class="colscad optional">
+								<div><h:outputText value="#{title.hashSplit['DS']}"><f:converter converterId="DateConverter"/></h:outputText></div>
+							</td>
+							<td class="colnumregsap optional">
+								<h:outputText value="#{title.split[22]}" />
+							</td>
+							<ui:remove>
+								<td class="colconservato optional">
+									<h:panelGroup rendered="#{title.hashSplit['CONSID'] != null and title.hashSplit['CONSID'] ne ''}" layout="block">
+										<span class="visto-icon glyphicon glyphicon-ok normal-size-icon" title="#{i18n['dw4.documento_inviato_in_conservazione']}"></span>
+									</h:panelGroup>
+								</td>
+							</ui:remove>
+						</h:panelGroup>
+						<h:panelGroup rendered="#{title.visible == 'false'}">
+							<td class="coltipo essential">&#160;</td>
+							<h:panelGroup rendered="#{hidecheckbox != 'true'}">
+								<td class="colcheck essential">&#160;</td>
+							</h:panelGroup>
+							<td class="colinfo optional">&#160;</td>
+							<td class="cologgetto essential" colspan="3">
+								<strong>#{title.testo}</strong>
+							</td>
+						</h:panelGroup>
+					</tr>
+				</h:panelGroup>
+				<h:panelGroup rendered="#{fn:startsWith(title.testo, '|||||||')}">
+					<tr>
+						<td class="coltipo essential">
+							<h:commandLink action="#{beanTitles.mostraDocumento}">
+								<f:param name="titolo" value="#{title}"></f:param>
+								<h:graphicImage url="/docway/css/images/icons/folder#{title.split[9]=='aperto'? '': 'closed'}20.png" title="#{i18n['dw4.vai_al_fascicolo']}" alt="#{i18n['dw4.vai_al_fascicolo']}" />
+							</h:commandLink>
+						</td>
+						<h:panelGroup rendered="#{hidecheckbox != 'true'}">
+							<td class="colcheck essential">
+								<h:selectBooleanCheckbox value="#{title.select}" valueChangeListener="#{beanTitles.selectTitle}">
+									<f:ajax execute="@this" render="@form"/>
+								</h:selectBooleanCheckbox>
+							</td>
+						</h:panelGroup>
+						<td class="cologgetto essential" colspan="3">
+							<h:outputText value="#{title.split[7]}"><f:converter converterId="NumFascConverter"/></h:outputText> - «#{title.split[8]}»
+						</td>
+						<td class="optional">&#160;</td>
+					</tr>
+				</h:panelGroup>
+			</ui:repeat>
+		</tbody>
+	</table>
+
+</ui:composition>   
+</html>

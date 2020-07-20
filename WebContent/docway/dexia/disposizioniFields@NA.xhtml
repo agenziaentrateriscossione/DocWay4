@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" 
+	  xmlns:h="http://java.sun.com/jsf/html" 
+	  xmlns:ui="http://java.sun.com/jsf/facelets" 
+	  xmlns:f="http://java.sun.com/jsf/core">
+
+	<ui:composition>
+	   <h:panelGroup rendered="#{fn:length(beanDoc.extra.disposizioni) > 0}" layout="block" id="disposizioniHolder">
+            <ui:repeat id="docEditDisposizioni" var="disposizione" value="#{beanDoc.extra.disposizioni}" offset="0" varStatus="indice">
+                <div class="form-group">
+                    <h:panelGroup rendered="#{ readOnly }">
+                        <label class="col-sm-2 control-label"><span>#{i18n['dexia.disposizione']}</span></label>
+                        <div class="col-sm-4">
+                            <p class="form-control-static">
+                                <h:outputText value="#{disposizione.text}" styleClass="outputField" />
+                            </p>
+                        </div>
+                        <label class="col-sm-2 control-label"><span>#{i18n['dexia.data_emanazione']}</span></label>
+                        <div class="col-sm-4">
+                            <p class="form-control-static">
+                                <h:outputText value="#{disposizione.dataEmanazione}"><f:converter converterId="DateConverter"/></h:outputText>
+                            </p>
+                        </div>
+                    </h:panelGroup>
+                    <h:panelGroup rendered="#{ !readOnly }">
+                            <label class="col-sm-2 control-label requiredField"><span>#{i18n['dexia.disposizione']}</span></label>
+	                        <div class="col-sm-3">
+	                           <h:inputText id="allegatoText" value="#{disposizione.text}" styleClass="form-control" />
+	                        </div>
+                            <ui:include src="../dateField.xhtml">
+                                <ui:param name="label" value="#{i18n['dexia.data_emanazione']}" />
+                                <ui:param name="id" value="dataEmanazioneDoc" />
+                                <ui:param name="value" value="#{disposizione.dataEmanazione}" />
+                                <ui:param name="offset" value="0" />
+                            </ui:include>
+                        <div class="col-sm-1 input-group">
+                            <div class="btn-group">
+                                <h:commandLink action="#{beanDoc.extra.deleteDisposizione}" title="#{i18n['dw4.elimina_istanza']}" styleClass="btn btn-default">
+                                    <f:ajax execute="@form" render="templateForm:disposizioniHolder"/>
+                                    <span class="glyphicon glyphicon-minus"></span>
+                                </h:commandLink>
+                                
+                                <h:commandLink action="#{beanDoc.extra.addDisposizione}" title="#{i18n['dw4.aggiungi_istanza']}" styleClass="btn btn-default">
+                                    <f:ajax execute="@form" render="templateForm:disposizioniHolder"/>
+                                    <span class="glyphicon glyphicon-plus"></span>
+                                </h:commandLink>
+                            </div>
+                        </div>
+                    </h:panelGroup>
+                </div>
+            </ui:repeat>
+        </h:panelGroup>
+        
+	    <ui:remove>
+		<h:panelGroup rendered="#{fn:length(beanDoc.extra.disposizioni) > 0}" layout="block" id="disposizioniHolder">
+			<ui:repeat id="docEditDisposizioni" var="disposizione" value="#{beanDoc.extra.disposizioni}" offset="0" varStatus="indice">
+				<div class="form-group">
+					<h:panelGroup rendered="#{ readOnly }">
+						<label class="col-sm-2 control-label"><span>#{i18n['dexia.disposizione']}</span></label>
+						<div class="col-sm-9">
+                            <p class="form-control-static">
+                                <h:outputText value="#{disposizione.text}" styleClass="outputField" />
+							</p>
+						</div>
+					</h:panelGroup>
+					<h:panelGroup rendered="#{ !readOnly }">
+                        <label class="col-sm-2 control-label requiredField"><span>#{i18n['dexia.disposizione']}</span></label>
+                        <div class="col-sm-4">
+                            <div class="input-group">
+                                <h:inputText id="allegatoText" value="#{disposizione.text}" styleClass="form-control" onblur="checkNumAllegato(this);" />
+                            
+                                <div class="input-group-btn">
+	                                <h:commandLink action="#{beanDoc.extra.deleteDisposizione}" title="#{i18n['dw4.elimina_istanza']}" styleClass="btn btn-default">
+	                                    <f:ajax execute="@form" render=":templateForm:disposizioniHolder :templateForm:errormsg"/>
+	                                    <span class="glyphicon glyphicon-minus"></span>
+	                                </h:commandLink>
+	                                
+	                                <h:commandLink action="#{beanDoc.extra.addDisposizione}" title="#{i18n['dw4.aggiungi_istanza']}" styleClass="btn btn-default">
+	                                    <f:ajax execute="@form" render=":templateForm:disposizioniHolder :templateForm:errormsg"/>
+	                                    <span class="glyphicon glyphicon-plus"></span>
+	                                </h:commandLink>
+	                            </div>
+                            </div>
+						</div>
+					</h:panelGroup>
+				</div>
+			</ui:repeat>
+		</h:panelGroup>
+		</ui:remove>
+
+	</ui:composition>
+</html>

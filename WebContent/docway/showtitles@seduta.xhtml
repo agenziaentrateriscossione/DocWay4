@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+    template="#{showtitlesSeduta.pageTemplate}"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:f="http://java.sun.com/jsf/core">
+
+<ui:define name="content">
+	<!-- toolbar: inizio -->
+	<div class="btn-toolbar delibere-btn-toolbar" role="toolbar">
+		<div class="pull-right">
+			<ui:include src="./ajaxNavigationBar.xhtml"><ui:param name="bean" value="#{showtitlesSeduta}"/><ui:param name="customPage" value="true"/><ui:param name="customPageId" value="titlesId"/></ui:include>
+		</div>
+	</div>
+	<!-- toolbar: fine -->
+
+	<div class="seduta" style="margin-top:15px;">
+		<div id="fixedshowdoc" class="showtitles fixed-showdoc">
+			<table class="table table-hover doc-titles-table">
+				<thead>
+					<tr>
+						<th class="coltipo essential">&#160;</th>
+						<th class="cologgetto essential">
+							#{(!empty showtitlesSeduta.stpTitle) ? showtitlesSeduta.stpTitle : i18n['dw4.sommario']}
+						</th>
+					</tr>
+				</thead>
+				<tbody>
+					<ui:repeat id="titoli" var="title" value="#{showtitlesSeduta.titles}" varStatus="status">
+						<tr>
+							<h:panelGroup rendered="#{title.visible != 'false'}">
+								<td class="coltipo essential">
+									<h:panelGroup rendered="#{title.showSeduta}">
+										<h:commandLink action="#{showtitlesSeduta.mostraDocumento}" title="#{i18n['dw4.vai_alla_seduta']}" styleClass="openwaitmsg">
+											<!-- @TODO VERIFICARE TITOLO SEDUTA -->
+											<f:param name="titolo" value="#{title}"></f:param>
+											<span class="doc-tipo-seduta glyphicons-pro"></span>
+										</h:commandLink>
+									</h:panelGroup>
+									<h:panelGroup rendered="#{title.notShowSeduta}">
+										<h:commandLink title="#{i18n['dw4.seduta_non_disponibile']}" styleClass="doc-tipo-seduta disabled">
+											<span class="doc-tipo-seduta glyphicons-pro"></span>
+										</h:commandLink>
+									</h:panelGroup>
+								</td>
+								<td class="cologgetto essential vertical-align-middle">
+									<h:panelGroup rendered="#{title.showSeduta}">
+										<h:commandLink action="#{showtitlesSeduta.mostraDocumento}" title="#{i18n['dw4.vai_alla_seduta']}" styleClass="openwaitmsg">
+											<!-- @TODO VERIFICARE TITOLO SEDUTA -->
+											<f:param name="titolo" value="#{title}"></f:param>
+											<h:panelGroup rendered="#{!title.sedutaSospesa}">
+												<div>
+													<h:outputText value="#{i18n['dw4.seduta_del']}"></h:outputText> #{title.split[15]} 
+													<em><h:outputText rendered="#{title.straordinaria}" value="(#{i18n['dw4.straordinaria']})"></h:outputText></em>
+												</div>
+											</h:panelGroup>	
+											<h:panelGroup rendered="#{title.sedutaSospesa}">
+												<div>
+													<h:outputText value="#{i18n['dw4.proposte_sospese']}"></h:outputText>
+												</div>
+											</h:panelGroup>	
+										</h:commandLink>
+									</h:panelGroup>
+									<h:panelGroup rendered="#{title.notShowSeduta}" title="#{i18n['dw4.seduta_non_disponibile']}">
+										<h:panelGroup rendered="#{!title.sedutaSospesa}">
+											<div>
+												<h:outputText value="#{i18n['dw4.seduta_del']}"></h:outputText> #{title.split[15]} 
+												<em><h:outputText rendered="#{title.straordinaria}" value="(#{i18n['dw4.straordinaria']})"></h:outputText></em>
+											</div>
+										</h:panelGroup>	
+										<h:panelGroup rendered="#{title.sedutaSospesa}">
+											<div>
+												<h:outputText value="#{i18n['dw4.proposte_sospese']}"></h:outputText>
+											</div>
+										</h:panelGroup>	
+									</h:panelGroup>
+								</td>
+							</h:panelGroup>
+							<h:panelGroup rendered="#{title.visible == 'false'}">
+								<td class="coltipo essential">&#160;</td>
+								<h:panelGroup rendered="#{hidecheckbox != 'true'}">
+									<td class="colcheck essential">&#160;</td>
+								</h:panelGroup>
+								<td class="colinfo optional">&#160;</td>
+								<td class="cologgetto essential" colspan="2">
+									<span class="showtitles-documento-non-visibile">#{title.testo}</span>
+								</td>
+							</h:panelGroup>
+						</tr>
+					</ui:repeat>
+				</tbody>
+			</table>
+		</div>
+	
+		<ui:include src="./rifinterni@RPA.xhtml"><ui:param name="bean" value="#{rifInt}"/></ui:include>
+		<ui:include src="./loadingbar@assegnazioneRPA.xhtml"><ui:param name="pageBean" value="#{rifInt}"/></ui:include>
+		<ui:include src="./lookup.xhtml"> <ui:param name="pageBean" value="#{rifInt}"/></ui:include>
+		<ui:include src="./rifintLookup.xhtml"> <ui:param name="pageBean" value="#{rifInt}"/></ui:include>
+		<ui:include src="./addVaschettaCustom.xhtml"> <ui:param name="pageBean" value="#{showtitlesSeduta}"/></ui:include>
+		<ui:include src="./loadingbar@exportCSV.xhtml"><ui:param name="pageBean" value="#{showtitlesSeduta}"/></ui:include>
+		<ui:include src="./exportCSVAdvanced.xhtml"> <ui:param name="pageBean" value="#{showtitlesSeduta}"/></ui:include>
+		
+		<h:inputTextarea value="#{showtitlesSeduta.xml}" rendered="#{showtitlesSeduta.debugMode}" styleClass="form-control" rows="10" />
+	</div>
+</ui:define>
+
+</ui:composition>

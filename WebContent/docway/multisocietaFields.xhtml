@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" 
+	  xmlns:h="http://java.sun.com/jsf/html" 
+	  xmlns:ui="http://java.sun.com/jsf/facelets" 
+	  xmlns:f="http://java.sun.com/jsf/core">
+
+	<ui:composition>
+	
+		<h:panelGroup rendered="#{fn:length(beanDoc.societaSelect) > 0}" layout="block" id="multisocietaHolder">
+			<div class="form-group">
+				<label class="col-sm-2 control-label"><span>#{i18n['acl.society']}</span></label>
+				<div class="col-sm-9">
+					<h:selectOneMenu id="selectSocieta" value="#{beanDoc.codSocieta}" styleClass="form-control">
+						<f:selectItems value="#{beanDoc.societaSelect}" var="societa" itemValue="#{societa.cod}" itemLabel="#{societa.text}"></f:selectItems>
+					</h:selectOneMenu>
+				</div>
+			</div>
+		</h:panelGroup>
+
+	</ui:composition>
+</html>

@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+    template="#{docwayTitles.pageTemplate}"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:f="http://java.sun.com/jsf/core">
+
+<ui:define name="content">
+	<ui:remove>
+		<h5 class="sub-header">#{i18n['dw4.elenco_risultati']} #{i18n['dw4.from']} #{docwayTitles.firstPosition} #{i18n['dw4.to']} #{docwayTitles.lastPosition} (#{i18n['dw4.on']} #{docwayTitles.count})</h5>
+	</ui:remove>
+	
+	<!-- toolbar: inizio -->
+	<div class="btn-toolbar" role="toolbar">
+		<div class="pull-right">
+			<ui:include src="./ajaxNavigationBar.xhtml"><ui:param name="bean" value="#{docwayTitles}"/><ui:param name="customPage" value="true"/><ui:param name="customPageId" value="titlesId"/></ui:include>
+		</div>
+		<div class="btn-group">
+			<h:panelGroup rendered="#{!docwayTitles.popupPage}">
+				<div class="btn-group">
+					<button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+						#{i18n['dw4.sort']} <span class="caret"></span>
+					</button>
+					<ul class="dropdown-menu">
+						<ui:repeat var="option" value="#{docwayTitles.ordinamentoSelect}" varStatus="indice">
+							<li>
+								<h:commandLink action="#{docwayTitles.sort}" actionListener="#{docwayTitles.attrListenerSortTitles}" styleClass="openwaitmsg">
+									<f:ajax execute="@form" render="@form"/>
+									<f:attribute name="xwOrdIndex" value="#{indice.index}" />
+									
+									<h:panelGroup rendered="#{docwayTitles.xwOrd eq '' or fn:toLowerCase(option.value) ne fn:toLowerCase(docwayTitles.xwOrd)}">
+										<span class="glyphicons-pro unchecked normal-size-icon"></span>
+									</h:panelGroup>
+									<h:panelGroup rendered="#{docwayTitles.xwOrd ne '' and fn:toLowerCase(option.value) eq fn:toLowerCase(docwayTitles.xwOrd)}">
+                                    	<span class="glyphicons-pro check normal-size-icon"></span>
+                                    </h:panelGroup>
+									#{option.label}
+									<h:panelGroup rendered="#{docwayTitles.xwOrd ne '' and option.value ne ';' and fn:toLowerCase(option.value) eq fn:toLowerCase(docwayTitles.xwOrd)}">
+										&#160;<span class="#{ docwayTitles.ascSort ? 'glyphicon glyphicon-chevron-up' : 'glyphicon glyphicon-chevron-down' }" title="#{ docwayTitles.ascSort ? i18n['dw4.ordine_crescente'] : i18n['dw4.ordine_decrescente'] }"></span>
+									</h:panelGroup> 
+								</h:commandLink>
+							</li>
+						</ui:repeat>
+					</ul>
+				</div>
+				<h:commandLink rendered="#{docwayTitles.formsAdapter.funzionalitaDisponibili['queryInSearchHierarchy'] and docwayTitles.formsAdapter.funzionalitaDisponibili['enableVaschettePersonalizzate']}" action="#{docwayTitles.openAddVaschetta}" styleClass="btn btn-default">
+					<f:ajax execute="@form" render="@form" />#{i18n['dw4.nuova_vaschetta']}
+				</h:commandLink>
+				<ui:remove>
+					<h:commandLink action="#{docwayTitles.goToTable}" styleClass="btn btn-default">#{i18n['acl.ricerca']}</h:commandLink>
+					<h:commandLink action="#{docwayTitles.invertOrder}" styleClass="btn btn-default">#{i18n['dw4.invertOrder']}</h:commandLink>
+				</ui:remove>
+			</h:panelGroup>
+		</div>
+	</div>
+	<h:panelGroup rendered="#{!docwayTitles.popupPage}">
+		<div class="btn-toolbar" role="toolbar">
+			<div class="btn-group">
+				<ui:remove> <!-- richiesta eliminazione del pulsante -->
+					<h:commandLink rendered="#{docwayTitles.formsAdapter.funzionalitaDisponibili['menuMode']}" action="#{docwayTitles.raccogli}" onclick="return raccogli(#{docwayTitles.countSelection});" styleClass="btn btn-default">#{i18n['dw4.raccogli']}</h:commandLink>
+				</ui:remove>
+				
+				<h:panelGroup rendered="#{docwayTitles.formsAdapter.funzionalitaDisponibili['abilitaEsportazioneCSVBase'] and docwayTitles.formsAdapter.funzionalitaDisponibili['abilitaEsportazioneCSVAvanzata']}">
+					<div class="btn-group">
+						<button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+							#{i18n['dw4.esportazione_csv']} <span class="caret"></span>
+						</button>
+						<ul class="dropdown-menu">
+							<li><h:commandLink action="#{docwayTitles.exportCSV}" value="#{i18n['dw4.base']}" onclick="return exportCSV(#{docwayTitles.countSelection});" /></li>
+							<li><h:commandLink action="#{docwayTitles.startExportCSVAdvanced}" value="#{i18n['dw4.avanzata']}" onclick="return exportCSV(#{docwayTitles.countSelection});" /></li>
+						</ul>
+					</div>
+				</h:panelGroup>
+				<h:commandLink rendered="#{!docwayTitles.formsAdapter.funzionalitaDisponibili['abilitaEsportazioneCSVBase'] and docwayTitles.formsAdapter.funzionalitaDisponibili['abilitaEsportazioneCSVAvanzata']}" action="#{docwayTitles.startExportCSVAdvanced}" styleClass="btn btn-default" onclick="return exportCSV(#{docwayTitles.countSelection});">#{i18n['dw4.esportazione_csv']}</h:commandLink>
+                <h:commandLink rendered="#{docwayTitles.formsAdapter.funzionalitaDisponibili['abilitaEsportazioneCSVBase'] and !docwayTitles.formsAdapter.funzionalitaDisponibili['abilitaEsportazioneCSVAvanzata']}" action="#{docwayTitles.exportCSV}" styleClass="btn btn-default" onclick="return exportCSV(#{docwayTitles.countSelection});">#{i18n['dw4.esportazione_csv']}</h:commandLink>
+				
+				<h:commandLink rendered="#{docwayTitles.formsAdapter.funzionalitaDisponibili['menuMode']}" action="#{docwayTitles.addRPAFasc}" onclick="return confirmTrasferimento(#{docwayTitles.countSelection});" styleClass="btn btn-default">#{i18n['dw4.trasferisci']}</h:commandLink>
+				<h:commandLink rendered="#{docwayTitles.formsAdapter.funzionalitaDisponibili['menuMode']}" action="#{docwayTitles.openClassifFasc}" onclick="return confirmCambiaClassifDoc(#{docwayTitles.countSelection});" styleClass="btn btn-default" title="#{i18n['dw4.cambiaclassif']}">#{i18n['dw4.changeclassif']}</h:commandLink>
+				
+				<!-- TODO: Stampa elenco -->
+			</div>
+		</div>
+	</h:panelGroup>
+	<!-- toolbar: fine -->
+
+	<div class="fascicolo" style="margin-top:15px;">
+		<div id="fixedshowdoc" class="showtitles fixed-showdoc">
+			<table class="table #{docwayTitles.formsAdapter.funzionalitaDisponibili['mostraGerarchiaFascicoli'] ? '' : 'table-hover'} fasc-titles-table">
+				<thead>
+					<tr>
+						<th class="coltipo #{docwayTitles.formsAdapter.funzionalitaDisponibili['mostraGerarchiaFascicoli'] ? 'colgerarchia' : ''} essential">&#160;</th>
+						<th class="colcheck essential">
+							<h:selectBooleanCheckbox id="selectAll" title="#{i18n['dw4.seleziona_tutti']}" immediate="true" value="#{docwayTitles.selectAll}" valueChangeListener="#{docwayTitles.selectAll}">
+								<f:ajax execute="@this" render="@form" />
+							</h:selectBooleanCheckbox>
+						</th>
+						<th class="cologgetto essential">
+							#{i18n['dw4.numero_e_oggetto']}
+						</th>
+					</tr>
+				</thead>
+				<tbody>
+					<ui:repeat id="titoli" var="titleFasc" value="#{docwayTitles.titles}" varStatus="status">
+						<tr>      
+							<td>
+								<h:panelGroup rendered="#{docwayTitles.formsAdapter.funzionalitaDisponibili['mostraGerarchiaFascicoli']}">
+									<h:panelGroup rendered="#{titleFasc.folderLevel == 2}">
+										<h:graphicImage url="/docway/css/images/btree/c.png" height="20" width="20" rendered="#{!docwayTitles.nextLevel2}" alt="tree image" />
+										<h:graphicImage url="/docway/css/images/btree/cb.png" height="20" width="20" rendered="#{docwayTitles.nextLevel2}" alt="tree image" />
+									</h:panelGroup>
+									<h:panelGroup rendered="#{titleFasc.folderLevel == 3}">
+										<h:graphicImage url="/docway/css/images/btree/bb.png" height="20" width="20" rendered="#{docwayTitles.nextLevel2}" alt="tree image" />
+										<h:graphicImage url="/docway/css/images/spazio.png" height="20" width="20" rendered="#{!docwayTitles.nextLevel2}" alt="tree image" />
+										<h:graphicImage url="/docway/css/images/btree/cb.png" height="20" width="20" rendered="#{docwayTitles.nextLevel3}" alt="tree image" />
+										<h:graphicImage url="/docway/css/images/btree/c.png" height="20" width="20" rendered="#{!docwayTitles.nextLevel3}" alt="tree image" />
+									</h:panelGroup>
+									<h:panelGroup rendered="#{titleFasc.folderLevel == 4}">
+										<h:graphicImage url="/docway/css/images/btree/bb.png" height="20" width="20" rendered="#{docwayTitles.nextLevel2}" alt="tree image" />
+										<h:graphicImage url="/docway/css/images/spazio.png" height="20" width="20" rendered="#{!docwayTitles.nextLevel2}" alt="tree image" />
+										<h:graphicImage url="/docway/css/images/btree/bb.png" height="20" width="20" rendered="#{docwayTitles.nextLevel3}" alt="tree image" />
+										<h:graphicImage url="/docway/css/images/spazio.png" height="20" width="20" rendered="#{!docwayTitles.nextLevel3}" alt="tree image" />
+										<h:graphicImage url="/docway/css/images/btree/cb.png" height="20" width="20" rendered="#{docwayTitles.nextLevel4}" alt="tree image" />
+										<h:graphicImage url="/docway/css/images/btree/c.png" height="20" width="20" rendered="#{!docwayTitles.nextLevel4}" alt="tree image" />
+									</h:panelGroup>
+									<h:commandLink action="#{docwayTitles.showFascContentInFrame}" title="#{i18n['dw4.visualizza_i_documenti_del_fascicolo']}" styleClass="openwaitmsg">
+										<span class="doc-tipo-fascicolo glyphicons-pro #{(titleFasc.split[9] eq 'deposito') ? 'folder_flag' : ((titleFasc.split[9] eq 'chiuso') ? 'folder_closed' : 'folder_open')}"></span>
+									</h:commandLink>
+								</h:panelGroup>
+								<h:panelGroup rendered="#{!docwayTitles.formsAdapter.funzionalitaDisponibili['mostraGerarchiaFascicoli']}">
+									<h:commandLink action="#{docwayTitles.mostraFascicolo}" title="#{i18n['dw4.vai_al_fascicolo']}" styleClass="openwaitmsg">
+										<span class="doc-tipo-fascicolo glyphicons-pro #{(titleFasc.split[9] eq 'deposito') ? 'folder_flag' : ((titleFasc.split[9] eq 'chiuso') ? 'folder_closed' : 'folder_open')}"></span>
+									</h:commandLink>
+								</h:panelGroup>
+							</td>
+							<td>
+								<input id="checkTit#{status.index}" type="checkbox" class="titlescheckbox" checked="#{(titleFasc.select) ? 'cheched' : ''}" onclick="changeSelectionTitles('#{status.index}');" />
+								<h:inputHidden value="#{titleFasc.select}" id="tit" />
+								<h:commandLink id="updateTitoliSelezionatiBtn" action="#{docwayTitles.updateSelectionTitlesFasc}" style="display:none;">
+									<f:ajax execute="@form" render="@form"/>
+								</h:commandLink>
+							</td>
+							<td>
+								<h:commandLink action="#{docwayTitles.mostraFascicolo}" styleClass="openwaitmsg">
+									<h:outputText value="#{titleFasc.split[7]}"><f:converter converterId="NumFascConverter"/></h:outputText> - «#{titleFasc.split[8]}»
+								</h:commandLink>
+							</td>
+						</tr>
+						<h:panelGroup rendered="#{titleFasc.openSubTitles}">
+							<tr class="subtitles">
+								<td class="coltree subtitles-td">&#160;</td>
+								<td class="colsubtitles subtitles-td" colspan="2">
+									<div class="subtitles-holder">
+										<h:panelGroup rendered="#{fn:length(titleFasc.subtitles.titles) > 0}">
+											<div class="btn-toolbar" role="toolbar">
+												<div class="pull-right">
+													<ui:include src="./ajaxNavigationBar.xhtml"><ui:param name="bean" value="#{titleFasc.subtitles}"/><ui:param name="customPage" value="false"/><ui:param name="customPageId" value="subtitlesId"/></ui:include>
+												</div>
+											</div>
+											<ui:include src="./showtitles@docviewtable@#{docwayTitles.mode}.xhtml">
+												<ui:param name="beanTitles" value="#{titleFasc.subtitles}"/>
+												<ui:param name="hidecheckbox" value="true"/>
+											</ui:include> 
+										</h:panelGroup>
+										<h:panelGroup rendered="#{fn:length(titleFasc.subtitles.titles) == 0}">
+											#{i18n['dw4.fascicolo_vuoto']} 
+										</h:panelGroup>
+									</div>
+								</td>
+							</tr>
+						</h:panelGroup>
+					</ui:repeat>
+				</tbody>
+			</table>
+		</div>
+				
+		<ui:include src="./rifinterni@fasc@RPA.xhtml"><ui:param name="bean" value="#{rifIntFasc}"/></ui:include>
+		<ui:include src="./loadingbar@assegnazioneRPA.xhtml"><ui:param name="pageBean" value="#{rifIntFasc}"/></ui:include>
+		<ui:include src="./lookup.xhtml"> <ui:param name="pageBean" value="#{rifIntFasc}"/></ui:include>
+		<ui:include src="./rifintLookup.xhtml"> <ui:param name="pageBean" value="#{rifIntFasc}"/></ui:include>			
+		<ui:include src="./changeclassif.xhtml"> <ui:param name="pageBean" value="#{changeclassif}"/></ui:include>
+		<ui:include src="./showthes.xhtml"> <ui:param name="pageBean" value="#{changeclassif}"/></ui:include>
+		<ui:include src="./addVaschettaCustom.xhtml"> <ui:param name="pageBean" value="#{docwayTitles}"/></ui:include>
+		<ui:include src="./loadingbar@exportCSV.xhtml"><ui:param name="pageBean" value="#{docwayTitles}"/></ui:include>
+		<ui:include src="./exportCSVAdvanced.xhtml"> <ui:param name="pageBean" value="#{docwayTitles}"/></ui:include>
+		
+		<h:inputTextarea value="#{docwayTitles.xml}" rendered="#{docwayTitles.debugMode}" styleClass="form-control" rows="10" />
+	</div>
+</ui:define>
+
+</ui:composition>

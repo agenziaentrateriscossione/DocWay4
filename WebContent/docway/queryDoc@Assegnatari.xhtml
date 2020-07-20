@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" 
+	  xmlns:h="http://java.sun.com/jsf/html" 
+	  xmlns:ui="http://java.sun.com/jsf/facelets" 
+	  xmlns:f="http://java.sun.com/jsf/core"
+	  xmlns:p="http://xmlns.jcp.org/jsf/passthrough">
+<ui:composition>
+
+	<h:panelGroup id="responsabilitaPanel" layout="block">
+		<div class="fieldset">
+			<div class="legend">
+				<h:commandLink action="#{bean.openCloseWidgetResponsabilita}" styleClass="legend-link">
+					<f:ajax render="templateForm:responsabilitaPanel"/>
+					#{i18n['dw4.assegnatari']}
+					<span class="pull-right">
+						<span class="glyphicon #{bean.responsabilita ? 'glyphicon-collapse-up' : 'glyphicon-collapse-down'}"></span>
+					</span>
+				</h:commandLink>
+			</div>
+			
+			<h:panelGroup rendered="#{bean.responsabilita}" id="responsabilitaCPanel" layout="block">
+				<h:panelGroup id="rpa" layout="block" styleClass="form-group">
+					<label for="templateForm:rpanomeuff" class="col-sm-2 control-label">#{i18n['dw4.proprietario']}</label>
+					<div class="col-sm-4">
+						<div class="input-group">
+							<h:panelGroup rendered="#{bean.interno and !bean.arrivo and !bean.partenza and !bean.varie}">
+								<span class="input-group-addon">
+									<h:selectBooleanCheckbox value="#{bean.escludi_our}" id="escludi_our" p:data-toggle="popover" p:data-placement="top" p:data-trigger="hover" p:data-content="#{i18n['dw4.escludi']}" styleClass="#{ component.valid ? '' : 'invalidinput' } popoveritem" />
+						      	</span>
+					      	</h:panelGroup>
+							<h:inputText styleClass="form-control" value="#{bean.rpanomeuff}" id="rpanomeuff" p:placeholder="#{i18n['acl.uff']}" title="#{i18n['acl.uff']}" />
+							<div class="input-group-btn">
+								<h:commandLink title="#{i18n['acl.vocabulary']}" action="#{bean.openIndexUORDoc}" styleClass="btn btn-default">
+									<f:ajax execute="@form" render="@form"/>
+									<span class="glyphicon glyphicon-search"></span>
+								</h:commandLink>
+							</div>
+						</div>
+					</div>
+					<div class="col-sm-5">
+						<div class="input-group">
+							<h:panelGroup rendered="#{bean.interno and !bean.arrivo and !bean.partenza and !bean.varie}">
+								<span class="input-group-addon">
+									<h:selectBooleanCheckbox value="#{bean.escludi_rpa}" id="escludi_rpa" p:data-toggle="popover" p:data-placement="top" p:data-trigger="hover" p:data-content="#{i18n['dw4.escludi']}" styleClass="#{ component.valid ? '' : 'invalidinput' } popoveritem" />
+						      	</span>
+					      	</h:panelGroup>
+							<h:inputText styleClass="form-control" value="#{bean.rpanomepersona}" id="rpanomepersona" p:placeholder="#{i18n['acl.oper']}" title="#{i18n['acl.oper']}" />
+							<div class="input-group-btn">
+								<h:commandLink title="#{i18n['acl.vocabulary']}" action="#{bean.openIndexRPADoc}" styleClass="btn btn-default">
+									<f:ajax execute="@form" render="@form"/>
+									<span class="glyphicon glyphicon-search"></span>
+								</h:commandLink>
+							</div>
+						</div>									
+					</div>
+				</h:panelGroup>
+				<h:panelGroup id="rpam">
+					<h:panelGroup rendered="#{bean.interno and !bean.arrivo and !bean.partenza and !bean.varie}" layout="block" styleClass="form-group">
+						<label for="templateForm:rpamnomeuff" class="col-sm-2 control-label">#{i18n['dw4.proprietariom']}</label>
+						<div class="col-sm-4">
+							<div class="input-group">
+								<h:inputText styleClass="form-control" value="#{bean.rpamnomeuff}" id="rpamnomeuff" p:placeholder="#{i18n['acl.uff']}" title="#{i18n['acl.uff']}" />
+								<div class="input-group-btn">
+									<h:commandLink title="#{i18n['acl.vocabulary']}" action="#{bean.openIndexUORMDoc}" styleClass="btn btn-default">
+										<f:ajax execute="@form" render="@form"/>
+										<span class="glyphicon glyphicon-search"></span>
+									</h:commandLink>
+								</div>
+							</div>
+						</div>
+						<div class="col-sm-5">
+							<div class="input-group">
+								<h:inputText styleClass="form-control" value="#{bean.rpamnomepersona}" id="rpamnomepersona" p:placeholder="#{i18n['acl.oper']}" title="#{i18n['acl.oper']}" />
+								<div class="input-group-btn">
+									<h:commandLink title="#{i18n['acl.vocabulary']}" action="#{bean.openIndexRPAMDoc}" styleClass="btn btn-default">
+										<f:ajax execute="@form" render="@form"/>
+										<span class="glyphicon glyphicon-search"></span>
+									</h:commandLink>
+								</div>
+							</div>									
+						</div>
+					</h:panelGroup>
+				</h:panelGroup>
+				<div class="form-group">
+					<label for="templateForm:cdsnomeuff" class="col-sm-2 control-label">#{i18n['dw4.conferenza_di_servizi']}</label>
+					<div class="col-sm-4">
+						<div class="input-group">
+							<h:inputText styleClass="form-control" value="#{bean.cdsnomeuff}" id="cdsnomeuff" p:placeholder="#{i18n['acl.uff']}" title="#{i18n['acl.uff']}" />
+							<div class="input-group-btn">
+								<h:commandLink title="#{i18n['acl.vocabulary']}" action="#{bean.openIndexCDSUffDoc}" styleClass="btn btn-default">
+									<f:ajax execute="@form" render="@form"/>
+									<span class="glyphicon glyphicon-search"></span>
+								</h:commandLink>
+							</div>
+						</div>
+					</div>
+					<div class="col-sm-5">
+						<div class="input-group">
+							<h:inputText styleClass="form-control" value="#{bean.cdsnomepersona}" id="cdsnomepersona" p:placeholder="#{i18n['acl.oper']}" title="#{i18n['acl.oper']}" />
+							<div class="input-group-btn">
+								<h:commandLink title="#{i18n['acl.vocabulary']}" action="#{bean.openIndexCDSPersonaDoc}" styleClass="btn btn-default">
+									<f:ajax execute="@form" render="@form"/>
+									<span class="glyphicon glyphicon-search"></span>
+								</h:commandLink>
+							</div>
+						</div>									
+					</div>
+				</div>
+				<div class="form-group">
+					<label for="templateForm:opnomeuff" class="col-sm-2 control-label">#{i18n['dw4.operatore_incaricato']}</label>
+					<div class="col-sm-4">
+						<div class="input-group">
+							<h:inputText styleClass="form-control" value="#{bean.opnomeuff}" id="opnomeuff" p:placeholder="#{i18n['acl.uff']}" title="#{i18n['acl.uff']}" />
+							<div class="input-group-btn">
+								<h:commandLink title="#{i18n['acl.vocabulary']}" action="#{bean.openIndexOPUffDoc}" styleClass="btn btn-default">
+									<f:ajax execute="@form" render="@form"/>
+									<span class="glyphicon glyphicon-search"></span>
+								</h:commandLink>
+							</div>
+						</div>
+					</div>
+					<div class="col-sm-5">
+						<div class="input-group">
+							<h:inputText styleClass="form-control" value="#{bean.opnomepersona}" id="opnomepersona" p:placeholder="#{i18n['acl.oper']}" title="#{i18n['acl.oper']}" />
+							<div class="input-group-btn">
+								<h:commandLink title="#{i18n['acl.vocabulary']}" action="#{bean.openIndexOPPersonaDoc}" styleClass="btn btn-default">
+									<f:ajax execute="@form" render="@form"/>
+									<span class="glyphicon glyphicon-search"></span>
+								</h:commandLink>
+							</div>
+						</div>									
+					</div>
+				</div>
+				<div class="form-group">
+					<label for="templateForm:ccnomeuff" class="col-sm-2 control-label">#{i18n['dw4.cc']}</label>
+					<div class="col-sm-4">
+						<div class="input-group">
+							<h:inputText styleClass="form-control" value="#{bean.ccnomeuff}" id="ccnomeuff" p:placeholder="#{i18n['acl.uff']}" title="#{i18n['acl.uff']}" />
+							<div class="input-group-btn">
+								<h:commandLink title="#{i18n['acl.vocabulary']}" action="#{bean.openIndexCCUffDoc}" styleClass="btn btn-default">
+									<f:ajax execute="@form" render="@form"/>
+									<span class="glyphicon glyphicon-search"></span>
+								</h:commandLink>
+							</div>
+						</div>
+					</div>
+					<div class="col-sm-5">
+						<div class="input-group">
+							<h:inputText styleClass="form-control" value="#{bean.ccnomepersona}" id="ccnomepersona" p:placeholder="#{i18n['acl.oper']}" title="#{i18n['acl.oper']}" />
+							<div class="input-group-btn">
+								<h:commandLink title="#{i18n['acl.vocabulary']}" action="#{bean.openIndexCCPersonaDoc}" styleClass="btn btn-default">
+									<f:ajax execute="@form" render="@form"/>
+									<span class="glyphicon glyphicon-search"></span>
+								</h:commandLink>
+							</div>
+						</div>									
+					</div>
+				</div>
+			</h:panelGroup>
+		</div> <!-- /fieldset -->
+	</h:panelGroup>
+
+</ui:composition>
+</html>

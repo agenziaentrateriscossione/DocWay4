@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+    template="#{docEditFascicolo.pageTemplate}"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:c="http://java.sun.com/jsp/jstl/core">
+
+<ui:define name="content">
+	<div class="fascicolo docedit">
+	
+		<!-- toolbar: inizio -->
+		<div class="btn-toolbar" role="toolbar">
+			<div class="btn-group">
+				<h:commandLink id="saveBtn" action="#{docEditFascicolo.saveDocument}" styleClass="btn btn-primary openwaitmsg">#{i18n['acl.save']}</h:commandLink>
+				<h:commandLink action="#{docEditFascicolo.clearDocument}" styleClass="btn btn-default">#{i18n['acl.clear']}</h:commandLink>
+				<h:commandLink rendered="#{docEditFascicolo.popupPage}" onclick="self.close();" styleClass="btn btn-default">#{i18n['acl.close']}</h:commandLink>	
+			</div>
+		</div>
+		<!-- toolbar: fine -->
+		
+		<h5 class="sub-header">
+			<span class="doc-tipo-fascicolo glyphicon glyphicon-folder-open"></span>&#160;
+			<h:outputText value="#{docEditFascicolo.insFascicoloTitle}" escape="false" />
+		</h5>
+	
+		<!-- messages: inizio -->
+		<h:panelGroup rendered="#{not empty facesContext.messageList}" layout="block" styleClass="docedit-messages alert alert-danger">
+			<h:messages styleClass="" id="validationMesseges" />
+		</h:panelGroup>
+		<h:inputHidden id="errorFieldIds" value="#{docEditFascicolo.errorFieldIds}" />
+		<!-- messages: fine -->
+		
+		<script type="text/javascript">
+		$(document).ready(function() {
+			setInvalidInputFields();
+		});
+		</script>
+		
+		<!-- scheda edit: inizio -->
+		<div class="row-fluid" style="margin-top:10px;">
+			<div id="fixedshowdoc" class="box span12 fixed-showdoc">
+				<div class="box-content">
+				
+					<div class="fieldset">
+						<div class="legend">
+							#{i18n['dw4.datifasc']}
+							
+							<div class="pull-right">
+								<span class="glyphicon glyphicon-folder-close" title="#{i18n['dw4.datifasc']}"></span>
+							</div>
+						</div>
+						
+						<div class="form-group">
+							<label for="templateForm:fasc_oggetto" class="col-sm-2 control-label requiredField"><span>* #{i18n['dw4.object']}</span></label>
+							<div class="col-sm-9">
+								<h:inputTextarea id="fasc_oggetto" value="#{docEditFascicolo.fascicolo.oggetto}" rows="4" cols="120" styleClass="#{ component.valid ? '' : 'invalidinput' } form-control" />
+							</div>
+						</div>
+						<h:panelGroup rendered="#{docEditFascicolo.formsAdapter.funzionalitaDisponibili['soggettoFasc']}" layout="block" styleClass="form-group">
+							<label for="templateForm:fasc_soggetto" class="col-sm-2 control-label"><span>#{i18n['dw4.soggetto']}</span></label>
+							<div class="col-sm-9">
+								<h:inputText id="fasc_soggetto" value="#{docEditFascicolo.fascicolo.soggetto}" styleClass="#{ component.valid ? '' : 'invalidinput' } form-control" />
+							</div>
+						</h:panelGroup>
+						
+						<h:panelGroup rendered="#{ docEditFascicolo.hideIfInsInFascWithoutClassifOrSottofasc }" layout="block" styleClass="form-group">
+							<label for="templateForm:voceindice_input" class="col-sm-2 control-label"><span>#{i18n['dw4.index']}</span></label>
+							<div class="col-sm-4">
+								<ui:include src="./lookupField.xhtml">
+					        		<ui:param name="id" value="voceindice" />
+					        		<ui:param name="field" value="#{docEditFascicolo.fascicolo.voce_indice.text}" />
+					        		<ui:param name="bean" value="#{docEditFascicolo}" />
+					        		<ui:param name="action" value="lookupVoceIndice"/>
+					        		<ui:param name="clearaction" value="clearLookupVoceIndice"/>
+					        		<ui:param name="title" value="#{i18n['dw4.lookup_voce_indice']}"/>
+					        		<ui:param name="styleclass" value="form-control"/>
+					        		<ui:param name="refresh" value="templateForm:voceindice_input templateForm:classif_holder templateForm:lookup templateForm:errormsg" />
+					        	</ui:include>
+				        	</div>
+						</h:panelGroup>
+						
+						<h:panelGroup id="classif_holder" layout="block">
+							<ui:include src="./classifFields.xhtml">
+				        		<ui:param name="id" value="classif" />
+				        		<ui:param name="editable" value="#{docEditFascicolo.hideIfInsInFascWithoutClassifOrSottofasc}" />
+				        		<ui:param name="editableRadio" value="#{docEditFascicolo.showIfInsInFascWithClassifAndNotSottofasc and !empty docEditFascicolo.fascicoloSpecialeInfo.classif.cod}" />
+				        		<ui:param name="bean" value="#{docEditFascicolo}" />
+				        		<ui:param name="beanDoc" value="#{docEditFascicolo.fascicolo}" />
+				        		<ui:param name="actionTitolario" value="thVincolatoTitolarioClassificazione"/>
+				        		<ui:param name="actionGerarchia" value="gerarchiaTitolarioClassificazione"/>
+				        		<ui:param name="refresh" value="templateForm:classif_holder templateForm:showthes templateForm:errormsg"/>
+				        	</ui:include>
+				        </h:panelGroup>
+				        
+				        <c:if test="#{!empty docEditFascicolo.personalDirCliente}">
+							<ui:include src="./#{docEditFascicolo.personalDirCliente}docEdit@fascicolo.xhtml">
+								<ui:param name="bean" value="#{docEditFascicolo}" />
+							</ui:include>
+						</c:if>
+					</div> <!-- /fieldset -->
+					
+					<ui:include src="../customfields/docedit@customfields.xhtml">
+						<ui:param name="bean" value="#{docEditFascicolo}" />
+		        	</ui:include>
+					
+					<div class="fieldset">
+	        			<div class="legend">
+	        				#{i18n['dw4.assegnatari']}
+	        				
+	        				<div class="pull-right">
+								<span class="glyphicon glyphicon-user" title="#{i18n['dw4.assegnatari']}"></span>
+							</div>
+	        			</div>
+	        			
+	        			<div class="form-group">
+	        				<label for="templateForm:sendMailRifInterniCheck" class="col-sm-2 control-label">#{i18n['dw4.invia_email_di_notifica']}</label>
+							<div class="col-sm-1">
+								<h:selectBooleanCheckbox value="#{docEditFascicolo.fascicolo.sendMailRifInterni}" id="sendMailRifInterniCheck" />
+							</div>
+	        			</div>
+	        			
+	        			<h:panelGroup id="rpa_Fields" layout="block">
+							<ui:include src="./rifinterni.xhtml">
+					        	<ui:param name="rifintType" value="rpa" />
+				        		<ui:param name="editable" value="#{docEditFascicolo.hideIfInsInFascOrSottofasc}" />
+				        		<ui:param name="pageBean" value="#{docEditFascicolo}" />
+				        		<ui:param name="rifintBean" value="#{docEditFascicolo.fascicolo.assegnazioneRPA}" />
+				        		<ui:param name="refresh" value="templateForm:rpa_Fields templateForm:rifintLookup templateForm:lookup templateForm:errormsg"/>
+				        	</ui:include>
+			        	</h:panelGroup>
+			        	
+			        	<h:panelGroup id="itf_Fields" layout="block">
+				        	<h:panelGroup rendered="#{docEditFascicolo.formsAdapter.funzionalitaDisponibili['add_itf']}">
+								<ui:include src="./rifinterni.xhtml">
+						        	<ui:param name="rifintType" value="itf" />
+					        		<ui:param name="editable" value="true" />
+					        		<ui:param name="pageBean" value="#{docEditFascicolo}" />
+					        		<ui:param name="rifintBean" value="#{docEditFascicolo.fascicolo.assegnazioneITF}" />
+					        		<ui:param name="refresh" value="templateForm:itf_Fields templateForm:rifintLookup templateForm:lookup templateForm:errormsg"/>
+					        	</ui:include>
+					        </h:panelGroup>
+				        </h:panelGroup>
+				        
+				        <h:panelGroup rendered="#{docEditFascicolo.formsAdapter.funzionalitaDisponibili['abilitaCCFascicoli'] and docEditFascicolo.showIfFasc}">
+							<h:panelGroup id="cc_Fields" layout="block">
+								<h:inputHidden value="#{docEditFascicolo.alertForTutti}" id="cc_alertForTutti" />
+								
+								<ui:repeat id="rifint_cc_list" var="rif" value="#{docEditFascicolo.fascicolo.assegnazioneCC}" varStatus="indice">
+									<ui:include src="./rifinterni.xhtml">
+							        	<ui:param name="rifintType" value="cc" />
+							        	<ui:param name="indice" value="#{indice.index}" />
+						        		<ui:param name="editable" value="true" />
+						        		<ui:param name="pageBean" value="#{docEditFascicolo}" />
+						        		<ui:param name="rifintBean" value="#{rif}" />
+						        		<ui:param name="refresh" value=":templateForm:cc_Fields :templateForm:rifintLookup :templateForm:lookup :templateForm:errormsg"/>
+						        		<ui:param name="multiple" value="true"/>
+						        	</ui:include>
+						        </ui:repeat>
+							</h:panelGroup>
+						</h:panelGroup>
+						<h:panelGroup rendered="#{docEditFascicolo.formsAdapter.funzionalitaDisponibili['abilitaCCFascicoli'] and !docEditFascicolo.showIfFasc}">
+							<h:panelGroup id="cc_from_fasc_Fields" layout="block">
+								<ui:repeat id="rifint_cc_from_fasc_list" var="rif" value="#{docEditFascicolo.fascicolo.assegnazioneCC}" varStatus="indice">
+									<ui:include src="./rifinterni.xhtml">
+							        	<ui:param name="rifintType" value="cc" />
+							        	<ui:param name="indice" value="#{indice.index}" />
+						        		<ui:param name="editable" value="false" />
+						        		<ui:param name="pageBean" value="#{docEditFascicolo}" />
+						        		<ui:param name="rifintBean" value="#{rif}" />
+						        		<ui:param name="refresh" value=":templateForm:cc_Fields :templateForm:rifintLookup :templateForm:lookup :templateForm:errormsg"/>
+						        	</ui:include>
+						        </ui:repeat>
+							</h:panelGroup>
+						</h:panelGroup>
+	        		</div> <!-- /fieldset -->
+	        		
+	        		<div class="fieldset">
+	        			<div class="legend">
+	        				#{i18n['dw4.other']}
+	        				
+	        				<div class="pull-right">
+								<span class="glyphicon glyphicon-list-alt" title="#{i18n['dw4.other']}"></span>
+							</div>
+	        			</div>
+	        			
+	        			<div class="form-group">
+			               	<label for="templateForm:note" class="col-sm-2 control-label">#{i18n['acl.notes']}</label>
+			               	<div class="col-sm-9">
+			               		<h:inputTextarea id="note" value="#{docEditFascicolo.fascicolo.note.text}" rows="4" cols="120" styleClass="form-control" />
+			               	</div>		
+						</div>
+	        		</div> <!-- /fieldset -->
+				</div>
+			</div>
+		</div>
+		<!-- scheda edit: fine -->
+	
+		<h:inputTextarea value="#{docEditFascicolo.xml}" rendered="#{docEditFascicolo.debugMode}" styleClass="form-control" rows="10" />
+			
+		<ui:fragment rendered="#{docEditFascicolo.formsAdapter.assignAndClose != null and docEditFascicolo.formsAdapter.assignAndClose == 'true'}">
+			<script type="text/javascript">
+			window.opener.$('#templateForm\\:reloadPage').trigger("click");
+			self.close();
+			</script>
+		</ui:fragment>
+		
+		<ui:include src="./lookup.xhtml"> <ui:param name="pageBean" value="#{docEditFascicolo}"/></ui:include>
+		<ui:include src="./rifintLookup.xhtml"> <ui:param name="pageBean" value="#{docEditFascicolo}"/></ui:include>
+		<ui:include src="./showthes.xhtml"> <ui:param name="pageBean" value="#{docEditFascicolo}"/></ui:include>
+	</div>
+</ui:define>
+
+</ui:composition>

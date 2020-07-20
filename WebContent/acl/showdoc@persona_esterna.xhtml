@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	template="template.xhtml" xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core">
+
+	<ui:define name="content">
+		<div class="persest showdoc">
+
+			<!-- primo livello toolbar: inizio -->
+			<div class="btn-toolbar" role="toolbar">
+				<div class="btn-group pull-right">
+					<ui:include src="./navigationBar.xhtml">
+						<ui:param name="bean" value="#{showdocPersonaEsterna}" />
+					</ui:include>
+				</div>
+
+				<div class="btn-group">
+					<h:commandLink rendered="#{showdocPersonaEsterna.formsAdapter.paginaTitoliEnabled}" action="#{showdocPersonaEsterna.paginaTitoli}" styleClass="btn btn-default openwaitmsg">
+						<span>#{i18n['acl.titles']}</span>
+					</h:commandLink>
+				</div>
+			</div>
+			<!-- primo livello toolbar: fine -->
+
+			<h:panelGroup rendered="#{showdocPersonaEsterna.formsAdapter.funzionalitaDisponibili['ins_persest'] or showdocPersonaEsterna.formsAdapter.funzionalitaDisponibili['canc_persest']}">
+				<!-- secondo livello toolbar: inizio -->
+				<div class="btn-toolbar" role="toolbar">
+					<div class="btn-group">
+						<h:commandLink rendered="#{showdocPersonaEsterna.formsAdapter.funzionalitaDisponibili['ins_persest']}" action="#{showdocPersonaEsterna.modifyTableDoc}" styleClass="btn btn-primary openwaitmsg">
+							<span>#{i18n['acl.modify']}</span>
+						</h:commandLink>
+						<h:commandLink rendered="#{showdocPersonaEsterna.formsAdapter.funzionalitaDisponibili['canc_persest']}" action="#{showdocPersonaEsterna.remove}" onclick="if (!owmConfirm('#{i18n['acl.deleteconfirm']}')) return false;" styleClass="btn btn-danger">
+							<span>#{i18n['acl.delete']}</span>
+						</h:commandLink>
+	
+						<h:commandLink rendered="#{showdocPersonaEsterna.formsAdapter.funzionalitaDisponibili['ins_persest']}" action="#{showdocPersonaEsterna.ripetiNuovo}" styleClass="btn btn-default openwaitmsg">
+							<span>#{i18n['acl.clone']}</span>
+						</h:commandLink>
+					</div>
+				</div>
+				<!-- secondo livello toolbar: fine -->
+			</h:panelGroup>
+
+			<h:panelGroup styleClass="messagesArea" layout="block">
+				<h:messages styleClass="info" id="validationMesseges" />
+			</h:panelGroup>
+
+			<h5 class="sub-header" title="#{showdocPersonaEsterna.persona_esterna.titolo_deferenza} #{showdocPersonaEsterna.persona_esterna.titolo} #{showdocPersonaEsterna.persona_esterna.cognome} #{showdocPersonaEsterna.persona_esterna.nome} #{showdocPersonaEsterna.persona_esterna.secondo_nome}">
+				<span class="persone-esterne glyphicons-pro"></span>&#160;
+				<h:outputText value="#{showdocPersonaEsterna.persona_esterna.titolo_deferenza} #{showdocPersonaEsterna.persona_esterna.titolo} #{showdocPersonaEsterna.persona_esterna.cognome} #{showdocPersonaEsterna.persona_esterna.nome} #{showdocPersonaEsterna.persona_esterna.secondo_nome}" escape="false" />
+			</h5>
+
+			<!-- scheda show: inizio -->
+			<div id="fixedshowdoc" class="fixed-showdoc">
+				<div class="showdoc-section">
+					<div class="title">
+						#{i18n['acl.informazioni_di_base']}
+						<div class="pull-right">
+							<span class="glyphicons-pro old_man" title="#{i18n['acl.informazioni_di_base']}"></span>
+						</div>
+					</div>
+
+					<dl class="dl-horizontal">
+						<dt>#{i18n['acl.aoo']}</dt>
+						<dd>#{showdocPersonaEsterna.persona_esterna.cod_amm}#{showdocPersonaEsterna.persona_esterna.cod_aoo}</dd>
+						
+						<h:panelGroup rendered="#{!empty showdocPersonaEsterna.persona_esterna.matricola}">
+							<dt>#{i18n['acl.cod']}</dt>
+							<dd>#{showdocPersonaEsterna.persona_esterna.matricola}</dd>
+						</h:panelGroup>
+						
+						<dt>#{i18n['acl.name']}</dt>
+						<dd>#{showdocPersonaEsterna.persona_esterna.cognome} #{showdocPersonaEsterna.persona_esterna.nome}</dd>
+					
+						<h:panelGroup rendered="#{! empty showdocPersonaEsterna.persona_esterna.soprannome}">
+							<dt>#{i18n['acl.nickname']}</dt>
+							<dd>#{showdocPersonaEsterna.persona_esterna.soprannome}</dd>
+						</h:panelGroup>
+
+						<h:panelGroup rendered="#{! empty showdocPersonaEsterna.persona_esterna.codice_fiscale}">
+							<dt>#{i18n['acl.cf']}</dt>
+							<dd>#{showdocPersonaEsterna.persona_esterna.codice_fiscale}</dd>
+						</h:panelGroup>
+						
+						<h:panelGroup rendered="#{! empty showdocPersonaEsterna.persona_esterna.partita_iva}">
+							<dt>#{i18n['acl.piva']}</dt>
+							<dd>#{showdocPersonaEsterna.persona_esterna.partita_iva}</dd>
+						</h:panelGroup>
+
+						<h:panelGroup rendered="#{! empty showdocPersonaEsterna.persona_esterna.data_nascita}">
+							<dt>#{i18n['acl.birthdate']}</dt>
+							<dd>#{showdocPersonaEsterna.persona_esterna.data_nascita}</dd>
+						</h:panelGroup>
+
+						<h:panelGroup rendered="#{! empty showdocPersonaEsterna.persona_esterna.luogo_nascita}">
+							<dt>#{i18n['acl.birthtown']}</dt>
+							<dd>#{showdocPersonaEsterna.persona_esterna.luogo_nascita}</dd>
+						</h:panelGroup>
+
+						<h:panelGroup rendered="#{! empty showdocPersonaEsterna.persona_esterna.sesso}">
+							<dt>#{i18n['acl.sex']}</dt>
+							<dd>#{showdocPersonaEsterna.persona_esterna.sesso}</dd>
+						</h:panelGroup>
+					</dl>
+				</div>
+
+				<h:panelGroup rendered="#{fn:length(showdocPersonaEsterna.persona_esterna.responsabilita)>0 or (fn:length(showdocPersonaEsterna.persona_esterna.appartenenza)>0 and !empty showdocPersonaEsterna.persona_esterna.appartenenza[0].nome)}">
+					<div class="showdoc-section">
+						<div class="title">
+							#{i18n['acl.roles-skills']}
+							<div class="pull-right">
+								<span class="glyphicons-pro briefcase" title="#{i18n['acl.roles-skills']}"></span>
+							</div>
+						</div>
+
+						<dl class="dl-horizontal">
+							<ui:repeat var="responsabilita" value="#{showdocPersonaEsterna.persona_esterna.responsabilita}" varStatus="index">
+								<dt>#{index.index == 0 ? i18n['acl.responsabilita'] : '&#160;'}</dt>
+								<dd>
+									<h:commandLink styleClass="openwaitmsg" value="#{responsabilita.nome}" title="#{responsabilita.nome}" action="#{showdocPersonaEsterna.navigateResponsabilita}" rendered="#{! empty responsabilita.physDoc}">
+										<f:param name="responsabilita" value="#{responsabilita}" />
+									</h:commandLink>
+									<h:outputText value="#{responsabilita.nome}" rendered="#{empty responsabilita.physDoc}" />
+								</dd>
+							</ui:repeat>
+
+							<ui:repeat var="appartenenza" value="#{showdocPersonaEsterna.persona_esterna.appartenenza}" varStatus="indice">
+								<dt>#{indice.index == 0 ? i18n['acl.assigned'] : '&#160;'}</dt>
+								<dd>
+									<h:commandLink value="#{appartenenza.nome}" styleClass="openwaitmsg" title="#{appartenenza.nome}" action="#{showdocPersonaEsterna.navigateStructure}">
+										<f:param name="appartenenza" value="#{appartenenza}"></f:param>
+									</h:commandLink>
+									<h:panelGroup rendered="#{appartenenza.qualifica ne ''}">
+	                                	&#160;<span class="outputField">(#{appartenenza.qualifica})</span>
+									</h:panelGroup>
+								</dd>
+							</ui:repeat>
+						</dl>
+					</div>
+				</h:panelGroup>
+
+				<h:panelGroup rendered="#{showdocPersonaEsterna.persona_esterna.recapito.indirizzo.renderIndirizzo or showdocPersonaEsterna.persona_esterna.recapito.renderTelefoni or showdocPersonaEsterna.persona_esterna.recapito.renderEmail or showdocPersonaEsterna.persona_esterna.recapito.renderSitiWeb or showdocPersonaEsterna.persona_esterna.recapito.email_certificata.addr ne ''}">
+					<div class="showdoc-section">
+						<div class="title">
+							#{i18n['acl.workdata']}
+							<div class="pull-right">
+								<span class="glyphicons-pro building" title="#{i18n['acl.workdata']}"></span>
+							</div>
+						</div>
+
+						<ui:include src="./recapito.xhtml">
+							<ui:param name="bean" value="#{showdocPersonaEsterna.persona_esterna.recapito}" />
+						</ui:include>
+					</div>
+				</h:panelGroup>
+
+				<h:panelGroup rendered="#{showdocPersonaEsterna.persona_esterna.recapito_personale.indirizzo.renderIndirizzo or showdocPersonaEsterna.persona_esterna.recapito_personale.renderTelefoni or showdocPersonaEsterna.persona_esterna.recapito_personale.renderEmail or showdocPersonaEsterna.persona_esterna.recapito_personale.renderSitiWeb}">
+					<div class="showdoc-section">
+						<div class="title">
+							#{i18n['acl.personaldata']}
+							<div class="pull-right">
+								<span class="glyphicons-pro home" title="#{i18n['acl.personaldata']}"></span>
+							</div>
+						</div>
+
+						<ui:include src="./recapito.xhtml">
+							<ui:param name="bean" value="#{showdocPersonaEsterna.persona_esterna.recapito_personale}" />
+							<ui:param name="hidecertificata" value="true" />
+						</ui:include>
+					</div>
+				</h:panelGroup>
+
+				<h:panelGroup rendered="#{! empty showdocPersonaEsterna.persona_esterna.competenze.text or ! empty showdocPersonaEsterna.persona_esterna.note.text}">
+					<div class="showdoc-section">
+						<div class="title">
+							#{i18n['dw4.other']}
+							<div class="pull-right">
+								<span class="glyphicon glyphicon-list-alt" title="#{i18n['dw4.other']}"></span>
+							</div>
+						</div>
+
+						<dl class="dl-horizontal">
+							<h:panelGroup rendered="#{! empty showdocPersonaEsterna.persona_esterna.competenze.text}">
+								<dt>#{i18n['acl.skill']}</dt>
+								<dd><pre>#{showdocPersonaEsterna.persona_esterna.competenze.text}</pre></dd>
+							</h:panelGroup>
+
+							<h:panelGroup rendered="#{! empty showdocPersonaEsterna.persona_esterna.note.text}">
+								<dt>#{i18n['acl.notes']}</dt>
+								<dd><pre>#{showdocPersonaEsterna.persona_esterna.note.text}</pre></dd>
+							</h:panelGroup>
+						</dl>
+					</div>
+				</h:panelGroup>
+
+				<ui:include src="./history.xhtml">
+					<ui:param name="bean" value="#{showdocPersonaEsterna.persona_esterna}" />
+				</ui:include>
+			</div>
+		</div>
+
+		<h:inputTextarea value="#{showdocPersonaEsterna.xml}" rendered="#{showdocPersonaEsterna.debugMode}" styleClass="form-control" rows="10" />
+	</ui:define>
+
+</ui:composition>

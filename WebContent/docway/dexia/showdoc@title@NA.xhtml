@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" 
+	  xmlns:h="http://java.sun.com/jsf/html" 
+	  xmlns:ui="http://java.sun.com/jsf/facelets" 
+	  xmlns:f="http://java.sun.com/jsf/core">
+<ui:composition>
+
+	<div class="doc-tipo-#{doc.tipo} showdoc-title clearfix">
+		<div class="row">
+			<div class="col-xs-1">
+				<h:panelGroup rendered="#{empty icon}">
+					<span class="doc-tipo-#{doc.tipo} glyphicons-pro #{(doc.annullato =='si') ? 'annullato' : ''}"></span>
+				</h:panelGroup>
+				<h:panelGroup rendered="#{!empty icon}">
+					<span class="showdoc-custom-title-icon">
+						<span class="doc-tipo-custom #{icon} #{(doc.annullato =='si') ? 'annullato' : ''}" title="#{(!empty doc.repertorio.text) ? doc.repertorio.text : doc.tipo}"></span>
+						<ui:remove>
+							<h:graphicImage url="#{icon}" alt="#{(!empty doc.repertorio.text) ? doc.repertorio.text : doc.tipo}" title="#{(!empty doc.repertorio.text) ? doc.repertorio.text : doc.tipo}" />
+						</ui:remove>
+					</span>
+				</h:panelGroup>
+			</div>
+			<div class="col-xs-10">
+				<div class="showdoc-first-row-title">
+					#{i18n['dexia.norma_aziendale']}
+					<h:outputText value="#{doc.extra.na_codiceNorma}" /> 
+					#{i18n['dw4.del']}
+					
+					<!-- 20150112 fcappelli - rimosso per richiesta cliente -->
+					<ui:remove>
+					<h:outputText rendered="#{doc.extra.na_dataEmanazioneNorma ne ''}" value="#{doc.extra.na_dataEmanazioneNorma}"><f:converter converterId="DateConverter"/></h:outputText>
+					</ui:remove>
+					
+					<h:outputText value="#{doc.creazione.dateLong}" />
+				</div>
+				<div class="showdoc-second-row-title" title="#{doc.oggetto}">
+					<h:outputText value="#{doc.oggetto}" />
+				</div>
+			</div>
+			<div class="col-xs-1">
+			</div>
+		</div>
+	</div>
+					
+</ui:composition>
+</html>

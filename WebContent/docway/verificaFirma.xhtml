@@ -1,0 +1,98 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" 
+	  xmlns:h="http://java.sun.com/jsf/html" 
+	  xmlns:ui="http://java.sun.com/jsf/facelets" 
+	  xmlns:f="http://java.sun.com/jsf/core">
+
+	<ui:composition>
+		<h:panelGroup layout="block" id="verificaFirma">
+			<h:panelGroup layout="block" rendered="#{pageBean.visible}" styleClass="QTPopup">	
+				<div class="popupGrayBg"></div>
+		    	<div class="QTPopupCntnr actions" style="width:950px;">
+		        	<div class="gpBdrLeftTop"></div>
+		            <div class="gpBdrRightTop"></div>
+		            <div class="gpBdrTop"></div>
+		            <div class="gpBdrLeft">
+		            	<div class="gpBdrRight">
+		                	<div class="caption">#{i18n['dw4.verifica_firma']} #{pageBean.fileName}</div>
+		                    <h:commandLink class="closeBtn" title="#{i18n['acl.close']}" action="#{pageBean.close}" >
+		        				<f:ajax render="verificaFirma"/>
+		        			</h:commandLink>
+		                   	
+		                   	<div class="contentPopup">
+								<div class="pageContent">
+									<div class="rightSidePageContent">
+					                <div class="fieldset">
+					                    <div class="formRow Floats_holder">
+					                        <table style="border:none; width:100%;" summary="verifica firma">
+					                            <thead><tr>
+					                                <th class="verificaFirmaTdBoldTable" style="width:25%;">#{i18n['dw4.esito_verifica']}</th>
+					                                <th class="verificaFirmaTdBoldTable" style="width:35%;">#{i18n['dw4.algoritmo_digest']}</th>
+					                                <th class="verificaFirmaTdBoldTable" style="width:55%;">#{i18n['dw4.firmatario']}</th>
+					                                <th class="verificaFirmaTdBoldTable" style="width:55%;">#{i18n['dw4.entecertificatore']}</th>
+					                                <th class="verificaFirmaTdBoldTable" style="width:55%;">#{i18n['dw4.codicefiscale']}</th>
+					                                <th class="verificaFirmaTdBoldTable" style="width:55%;">#{i18n['dw4.statofirmatario']}</th>
+					                                <th class="verificaFirmaTdBoldTable" style="width:55%;">#{i18n['dw4.organizzazione']}</th>
+					                                <th class="verificaFirmaTdBoldTable" style="width:55%;">#{i18n['dw4.datafirma']}</th>
+					                                <th class="verificaFirmaTdBoldTable" style="width:55%;">#{i18n['dw4.scadenzafirma']}</th>
+					                                <th class="verificaFirmaTdBoldTable" style="width:55%;">#{i18n['dw4.firmaannullata']}</th>
+					                            </tr></thead>
+												<tbody>
+													<ui:repeat var="signer" value="#{pageBean.signers}"	varStatus="indice">
+														<h:panelGroup>
+															<tr>
+																<td style="border-top: 1px solid white; padding: 5px 0; margin-top: 5px;" class="verificaFirmaTd">
+																<h:graphicImage url="/docway/css/images/icons/check.png" styleClass="infoicon" title="#{i18n['dw4.firmavalida']}" rendered="#{signer.valid}"/>
+																<h:graphicImage url="/docway/css/images/cancelicon.png" styleClass="infoicon" title="#{i18n['dw4.firmainvalida']}" rendered="#{not signer.valid}"/>
+																</td>
+																<td style="border-top: 1px solid white; padding: 5px 0; margin-top: 5px;" class="verificaFirmaTd">
+																#{signer.alg}
+																</td>
+																<td style="border-top: 1px solid white; padding: 5px 0; margin-top: 5px;" class="verificaFirmaTd">
+																#{signer.name}
+																</td>
+																<td style="border-top: 1px solid white; padding: 5px 0; margin-top: 5px;" class="verificaFirmaTd">
+																#{signer.issuer}
+                                                                </td>
+                                                                <td style="border-top: 1px solid white; padding: 5px 0; margin-top: 5px;" class="verificaFirmaTd">
+                                                                #{signer.cf}
+                                                                </td>
+                                                                <td style="border-top: 1px solid white; padding: 5px 0; margin-top: 5px;" class="verificaFirmaTd">
+                                                                #{signer.country}
+                                                                </td>
+                                                                <td style="border-top: 1px solid white; padding: 5px 0; margin-top: 5px;" class="verificaFirmaTd">
+                                                                #{signer.organization}
+                                                                </td>
+                                                                <td style="border-top: 1px solid white; padding: 5px 0; margin-top: 5px;" class="verificaFirmaTd">
+                                                                <h:outputText value="#{signer.signatureDate}" ><f:converter converterId="DateTimeConverter"/></h:outputText>
+                                                                </td>
+                                                                <td style="border-top: 1px solid white; padding: 5px 0; margin-top: 5px;" class="verificaFirmaTd">
+                                                                <h:outputText value="#{signer.until}" ><f:converter converterId="DateTimeConverter"/></h:outputText>
+                                                                </td>
+                                                                <td style="border-top: 1px solid white; padding: 5px 0; margin-top: 5px;" class="verificaFirmaTd">
+                                                                <h:outputText value="Si" rendered="#{signer.revoked}"/>
+                                                                <h:outputText value="No" rendered="#{not signer.revoked}"/>
+                                                                </td>
+															</tr>
+															<tr>
+															     <td colspan="10" style="border-top: 1px solid white; padding: 5px 0; margin-top: 5px;"></td>
+															</tr>
+														</h:panelGroup>
+													</ui:repeat>
+												</tbody>
+											</table>
+					                    </div>
+					                </div>
+					            </div>
+								</div>
+							</div>
+		                </div>
+		            </div>
+		            <div class="gpBdrLeftBottom"></div>
+		            <div class="gpBdrRightBottom"></div>
+		            <div class="gpBdrBottom"></div>
+		    	</div>
+		    </h:panelGroup>	
+		</h:panelGroup> 
+	</ui:composition>   
+</html>

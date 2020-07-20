@@ -1,0 +1,24 @@
+<jnlp spec="1.0+" codebase="http://localhost:8080/DocWay4/docway/actalisApplet/" href="ellips.jnlp">
+	<information>
+		<title>Ellips</title>
+		<vendor>Actalis</vendor>
+		<homepage href="null"/>
+		<offline-allowed />
+	</information>
+	<security>
+		<all-permissions />
+	</security>
+	
+	<!--<update check="always" policy="always"/>-->
+	<update check="background" />
+
+	<resources>
+		<java href="http://java.sun.com/products/autodl/j2se" version="1.5+" />
+		<jar href="jars/ellips2-full.jar" main="false" />
+		<jar href="jars/bctsp-jdk15-146.jar" main="false" />
+		<jar href="jars/bcprov-jdk15-146.jar" main="false" />
+		<jar href="jars/bcmail-jdk15-146.jar" main="false" />
+	</resources>
+
+	<component-desc />
+</jnlp>

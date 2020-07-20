@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" 
+	  xmlns:h="http://java.sun.com/jsf/html" 
+	  xmlns:ui="http://java.sun.com/jsf/facelets" 
+	  xmlns:f="http://java.sun.com/jsf/core"
+	  xmlns:p="http://xmlns.jcp.org/jsf/passthrough">
+<ui:composition>
+
+	<h:panelGroup id="rifinterniRPAM" layout="block">
+		<h:panelGroup rendered="#{bean.viewAddRPAM}">
+			<!-- Modal -->
+			<div id="rifinterniRpamModal" class="modal fade in" aria-hidden="false" aria-labelledby="rifinterniRpamModalLabel" role="dialog" tabindex="-1" style="display: block;">
+			<!--div class="modal fade" id="rifinterniRpamModal" role="dialog" aria-labelledby="rifinterniRpamModalLabel" aria-hidden="true"-->
+				<div class="modal-dialog modal-lg">
+					<div class="modal-content jsf-modal">
+						<div class="modal-header">
+							<h:commandButton styleClass="close" title="#{i18n['acl.close']}" action="#{bean.closeAddRPAM}" p:data-dismiss="modal"  value="&#215;" >
+			        			<f:ajax render="rifinterniRPAM"/>
+			        		</h:commandButton>
+			        		
+			        		<h4 class="modal-title" id="rifinterniRpamModalLabel">#{i18n['dw4.responsabilita_documento']}</h4>
+						</div>
+						<div class="modal-body">
+							
+							<div id="rpam_Fields">
+								<div class="form-group">
+									<label for="templateForm:rpam_sendMailRifInterniCheck" class="col-sm-2 control-label">#{i18n['dw4.invia_email_di_notifica']}</label>
+									<div class="col-sm-1">
+										<h:selectBooleanCheckbox value="#{bean.doc.sendMailRifInterni}" id="rpam_sendMailRifInterniCheck" styleClass="#{ component.valid ? '' : 'invalidinput' }" />
+									</div>
+								</div>
+								
+								<ui:include src="./rifinterni.xhtml">
+						        	<ui:param name="rifintType" value="rpam" />
+						        	<ui:param name="customLabel" value="#{customLabel}" />
+					        		<ui:param name="editable" value="true" /> <!-- TODO Da verificare in base alle diverse casistiche (hideIfInsInFascOrSottofasc, showIfInsInFascAndNotSottofasc, ecc. ) -->
+					        		<ui:param name="pageBean" value="#{bean}" />
+					        		<ui:param name="rifintBean" value="#{bean.doc.assegnazioneRPAM}" />
+					        		<ui:param name="refresh" value="@form"/>
+					        	</ui:include>
+							</div>
+							
+						</div>
+						<div class="modal-footer">
+							<h:commandButton styleClass="btn btn-primary openwaitmsg" action="#{bean.confirmAddRPAM}" value="#{i18n['acl.save']}" />
+							
+							<h:commandButton styleClass="btn btn-default" title="#{i18n['acl.close']}" action="#{bean.closeAddRPAM}" p:data-dismiss="modal"  value="#{i18n['acl.close']}" >
+			        			<f:ajax render="rifinterniRPAM"/>
+			        		</h:commandButton>
+						</div>
+					</div>
+				</div>
+			</div>
+			<!--script type="text/javascript">
+			$('#rifinterniRpamModal').modal('show');
+			</script-->
+		</h:panelGroup>
+	</h:panelGroup>
+
+</ui:composition>   
+</html>

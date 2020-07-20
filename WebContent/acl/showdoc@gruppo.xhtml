@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+    template="template.xhtml"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:f="http://java.sun.com/jsf/core">
+
+	<ui:define name="content">
+		<div class="gruppo showdoc">
+
+            <!-- primo livello toolbar: inizio -->
+            <div class="btn-toolbar" role="toolbar">
+                <div class="btn-group pull-right">
+                    <ui:include src="./navigationBar.xhtml">
+                        <ui:param name="bean" value="#{showdocGruppo}" />
+                    </ui:include>
+                </div>
+
+                <div class="btn-group">
+                    <h:commandLink rendered="#{showdocGruppo.formsAdapter.paginaTitoliEnabled}" action="#{showdocGruppo.paginaTitoli}"  styleClass="btn btn-default openwaitmsg"><span>#{i18n['acl.titles']}</span></h:commandLink>
+                </div>
+            </div>
+            <!-- primo livello toolbar: fine -->
+            <h:panelGroup rendered="#{showdocGruppo.formsAdapter.funzionalitaDisponibili['ins_gruppi'] or showdocGruppo.formsAdapter.funzionalitaDisponibili['canc_gruppi']}">
+	            <!-- secondo livello toolbar: inizio -->
+				<div class="btn-toolbar" role="toolbar">
+					<div class="btn-group">
+						<h:commandLink rendered="#{showdocGruppo.formsAdapter.funzionalitaDisponibili['ins_gruppi']}" action="#{showdocGruppo.modifyTableDoc}" styleClass="btn btn-primary openwaitmsg"><span>#{i18n['acl.modify']}</span></h:commandLink>
+	                    <h:commandLink rendered="#{showdocGruppo.formsAdapter.funzionalitaDisponibili['canc_gruppi']}" action="#{showdocGruppo.remove}" onclick="if (!owmConfirm('#{i18n['acl.deleteconfirm']}')) return false;" styleClass="btn btn-danger"><span>#{i18n['acl.delete']}</span></h:commandLink>
+					</div>
+				</div>
+				<!-- secondo livello toolbar: fine -->
+			</h:panelGroup>
+            
+            <h:panelGroup styleClass="messagesArea" layout="block">
+                <h:messages styleClass="info" id="validationMesseges" />
+            </h:panelGroup>
+            
+             <h5 class="sub-header" title="#{showdocGruppo.gruppo.nome}">
+                <span class="gruppi glyphicons-pro"></span>&#160;
+                <h:outputText value="#{showdocGruppo.gruppo.nome}" escape="false" />
+            </h5>
+            
+            <!-- scheda show: inizio -->
+            <div id="fixedshowdoc" class="fixed-showdoc">
+                <div class="showdoc-section">
+                    <div class="title">
+                        #{i18n['acl.informazioni_di_base']}
+                        <div class="pull-right">
+                            <span class="glyphicons-pro group" title="#{i18n['acl.informazioni_di_base']}"></span>
+                        </div>
+                    </div>
+
+                    <dl class="dl-horizontal">
+                    	<dt>#{i18n['acl.aoo']}</dt>
+                        <dd>#{showdocGruppo.gruppo.cod_amm}#{showdocGruppo.gruppo.cod_aoo}</dd>
+                        
+                        <dt>#{i18n['acl.cod']}</dt>
+						<dd>#{showdocGruppo.gruppo.id}</dd>
+	                    
+                        <dt>#{i18n['acl.name']}</dt>
+                        <dd>#{showdocGruppo.gruppo.nome}</dd>
+                        
+                        <h:panelGroup rendered="#{!empty showdocGruppo.gruppo.descrizione}">
+	                        <dt>#{i18n['acl.description']}</dt>
+	                        <dd>#{showdocGruppo.gruppo.descrizione}</dd>
+                        </h:panelGroup>
+                        
+                        <h:panelGroup rendered="#{!empty showdocGruppo.gruppo.pers_ass_count and showdocGruppo.gruppo.pers_ass_count != '0'}">
+	                        <dt><h:commandLink action="#{showdocGruppo.viewPerson}" styleClass="openwaitmsg">#{i18n['acl.userassigned']}</h:commandLink></dt>
+	                        <dd>#{showdocGruppo.gruppo.pers_ass_count}</dd>
+                        </h:panelGroup>
+                        
+                        <h:panelGroup rendered="#{!empty showdocGruppo.gruppo.cod_responsabile and (!empty showdocGruppo.gruppo.cognome_responsabile and !empty showdocGruppo.gruppo.nome_responsabile)}">
+                            <dt>#{i18n['acl.director']}</dt>
+                            <dd><h:commandLink styleClass="openwaitmsg" action="#{showdocGruppo.viewResponsabile}" value="#{showdocGruppo.gruppo.cognome_responsabile} #{showdocGruppo.gruppo.nome_responsabile}"/></dd>
+                        </h:panelGroup>
+                    </dl>
+                </div>
+                
+                <h:panelGroup rendered="#{showdocGruppo.formsAdapter.funzionalitaDisponibili['ins_gruppi']}" layout="block">
+		            <ui:include src="./rightsGrManager.xhtml">
+		                <ui:param name="bean" value="#{showdocGruppo.gruppo}" />
+		                <ui:param name="modify" value="false"/>
+		            </ui:include>
+		        </h:panelGroup>
+		        
+		        <ui:include src="./history.xhtml">
+		            <ui:param name="bean" value="#{showdocGruppo.gruppo}"/>
+		        </ui:include>
+            </div>              		       
+	        <!-- scheda show: fine -->
+	        
+    	</div>
+		
+		<h:inputTextarea value="#{showdocGruppo.xml}" styleClass="form-control" rows="10" rendered="#{showdocGruppo.debugMode}"/>
+	</ui:define>
+</ui:composition>

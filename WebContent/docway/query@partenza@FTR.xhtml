@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+    template="#{queryPartenzaFTR.pageTemplate}"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:c="http://java.sun.com/jsp/jstl/core"
+    xmlns:p="http://xmlns.jcp.org/jsf/passthrough">
+
+<ui:define name="content">
+	<div id="advancedSearch" class="offerta submitEnterKey">
+	
+		<!-- toolbar: inizio -->
+		<div class="btn-toolbar docway-toolbar" role="toolbar">
+			<div class="btn-group">
+				<h:commandLink id="advancedSearchBtn" action="#{queryPartenzaFTR.queryPlain}" styleClass="btn btn-primary openwaitmsg" value="#{i18n['acl.search']}" />
+				<ui:remove>
+					<h:commandLink rendered="#{queryPartenzaFTR.formsAdapter.funzionalitaDisponibili['showRefine']}" action="#{queryPartenzaFTR.refine}" value="#{i18n['dw4.refine']}" styleClass="btn btn-default" />
+				</ui:remove>				
+				
+				<h:commandLink action="#{queryPartenzaFTR.resetQuery}" styleClass="btn btn-default" value="#{i18n['acl.clear']}">
+					<f:ajax execute="@form" render="@form" />
+				</h:commandLink>
+			</div>
+		</div>
+		<!-- toolbar: fine -->
+		
+		<h5 class="sub-header">
+			<span class="glyphicon glyphicon-search"></span>&#160;
+			#{i18n['dw4.search_fattura']}
+		</h5>
+		
+		<!-- messages: inizio -->
+		<h:panelGroup rendered="#{not empty facesContext.messageList}" layout="block" styleClass="docedit-messages alert alert-danger">
+			<h:messages styleClass="" id="validationMesseges" />
+		</h:panelGroup>
+		<!-- messages: fine -->
+		
+		<!-- scheda query: inizio -->
+		<div class="row-fluid" style="margin-top:10px;">
+		<div id="fixedshowdoc" class="box span12 fixed-showdoc">
+			<div class="box-content">
+				<div class="fieldset">
+					<div class="legend">#{i18n['acl.freesearch']}</div>
+					
+					<div class="form-group">
+						<label for="templateForm:doc_globale" class="col-sm-2 control-label">#{i18n['dw4.ricerca_full_text']}</label>
+						<div class="col-sm-9">
+							<h:inputText id="doc_globale" styleClass="form-control" value="#{queryPartenzaFTR.custom_globale}"/>
+						</div>
+					</div>
+					<div class="form-group">
+						<div class="col-sm-offset-2 col-sm-9">
+							<h:selectOneRadio value="#{queryPartenzaFTR.radio}" layout="pageDirection" styleClass="radio-selection">
+								<f:selectItem itemValue="1" itemLabel="#{i18n['dw4.globale']}" />
+								<f:selectItem itemValue="2" itemLabel="#{i18n['dw4.globalerecord']}"/>
+								<f:selectItem itemValue="3" itemLabel="#{i18n['dw4.globaleallegati']}"/>
+							</h:selectOneRadio>
+						</div>
+					</div>
+				</div>
+				
+				<h:panelGroup id="datiRepPanel" layout="block">
+					<div class="fieldset">
+						<div class="legend">
+							<h:commandLink action="#{queryPartenzaFTR.openCloseWidgetDatiRepertorio}" styleClass="legend-link">
+								<f:ajax render="templateForm:datiRepPanel"/>
+								#{i18n['dw4.dati_del_repertorio']}
+								<span class="pull-right">
+									<span class="glyphicon #{queryPartenzaFTR.dati_repertorio ? 'glyphicon-collapse-up' : 'glyphicon-collapse-down'}"></span>
+								</span>
+							</h:commandLink>
+						</div>
+						
+						<h:panelGroup rendered="#{queryPartenzaFTR.dati_repertorio}" id="datiRepCPanel" layout="block">
+							<div class="form-group">
+								<label for="templateForm:repertorio_anno" class="col-sm-2 control-label">#{i18n['dw4.anno']}</label>
+								<div class="col-sm-2">
+									<div class="input-group">
+										<h:inputText styleClass="form-control" value="#{queryPartenzaFTR.repertorio_anno}" id="repertorio_anno" />
+										<div class="input-group-btn">
+											<h:commandLink title="#{i18n['acl.vocabulary']}" action="#{queryPartenzaFTR.openIndexAnnoRep}" styleClass="btn btn-default">
+												<f:ajax execute="@form" render="@form"/>
+												<span class="glyphicon glyphicon-search"></span>
+											</h:commandLink>
+										</div>
+									</div>
+								</div>
+								<ui:include src="./rangeField.xhtml">
+									<ui:param name="label" value="#{i18n['dw4.num']}" />
+									<ui:param name="id" value="custom_rep" />
+									<ui:param name="from_value" value="#{queryPartenzaFTR.custom_rep_da}" />
+									<ui:param name="to_value" value="#{queryPartenzaFTR.custom_rep_a}" />
+									<ui:param name="is_date" value="false" />
+									<ui:param name="offset" value="2" />
+								</ui:include>
+							</div>
+							<div class="form-group">
+								<label for="templateForm:doc_ordinetipologia" class="col-sm-2 control-label"><span>#{i18n['dw4.tipol_ordine']}</span></label>
+								<div class="col-sm-3">
+									<div class="input-group">
+										<h:inputText styleClass="form-control" value="#{queryPartenzaFTR.doc_ordinetipologia}" id="doc_ordinetipologia"/>
+										<div class="input-group-btn">
+											<h:commandLink title="#{i18n['acl.vocabulary']}" action="#{queryPartenzaFTR.openIndexDocOrdineTipologia}" styleClass="btn btn-default">
+												<f:ajax execute="@form" render="@form"/>
+												<span class="glyphicon glyphicon-search"></span>
+											</h:commandLink>
+										</div>
+									</div>
+								</div>
+							</div>
+							<div class="form-group">
+								<label for="templateForm:doc_ordineservizio" class="col-sm-2 control-label"><span>#{i18n['dw4.service']}</span></label>
+								<div class="col-sm-3">
+									<div class="input-group">
+										<h:inputText styleClass="form-control" value="#{queryPartenzaFTR.doc_ordineservizio}" id="doc_ordineservizio"/>
+										<div class="input-group-btn">
+											<h:commandLink title="#{i18n['acl.vocabulary']}" action="#{queryPartenzaFTR.openIndexDocOrdineServizio}" styleClass="btn btn-default">
+												<f:ajax execute="@form" render="@form"/>
+												<span class="glyphicon glyphicon-search"></span>
+											</h:commandLink>
+										</div>
+									</div>
+								</div>
+								<label for="templateForm:doc_ordinelicenza" class="col-sm-offset-1 col-sm-2 control-label"><span>#{i18n['dw4.licenza']}</span></label>
+								<div class="col-sm-3">
+									<div class="input-group">
+										<h:inputText styleClass="form-control" value="#{queryPartenzaFTR.doc_ordinelicenza}" id="doc_ordinelicenza"/>
+										<div class="input-group-btn">
+											<h:commandLink title="#{i18n['acl.vocabulary']}" action="#{queryPartenzaFTR.openIndexDocOrdineLicenza}" styleClass="btn btn-default">
+												<f:ajax execute="@form" render="@form"/>
+												<span class="glyphicon glyphicon-search"></span>
+											</h:commandLink>
+										</div>
+									</div>
+								</div>
+							</div>
+							<div class="form-group">
+								<label for="templateForm:doc_ordinecontratto" class="col-sm-2 control-label"><span>#{i18n['dw4.contratto']}</span></label>
+								<div class="col-sm-3">
+									<div class="input-group">
+										<h:inputText styleClass="form-control" value="#{queryPartenzaFTR.doc_ordinecontratto}" id="doc_ordinecontratto"/>
+										<div class="input-group-btn">
+											<h:commandLink title="#{i18n['acl.vocabulary']}" action="#{queryPartenzaFTR.openIndexDocOrdineContratto}" styleClass="btn btn-default">
+												<f:ajax execute="@form" render="@form"/>
+												<span class="glyphicon glyphicon-search"></span>
+											</h:commandLink>
+										</div>
+									</div>
+								</div>
+								<label for="templateForm:doc_ordinealtro" class="col-sm-offset-1 col-sm-2 control-label"><span>#{i18n['dw4.other']}</span></label>
+								<div class="col-sm-3">
+									<div class="input-group">
+										<h:inputText styleClass="form-control" value="#{queryPartenzaFTR.doc_ordinealtro}" id="doc_ordinealtro"/>
+										<div class="input-group-btn">
+											<h:commandLink title="#{i18n['acl.vocabulary']}" action="#{queryPartenzaFTR.openIndexDocOrdineAltro}" styleClass="btn btn-default">
+												<f:ajax execute="@form" render="@form"/>
+												<span class="glyphicon glyphicon-search"></span>
+											</h:commandLink>
+										</div>
+									</div>
+								</div>
+							</div>
+						</h:panelGroup>
+					</div>
+				</h:panelGroup>
+								
+				<h:panelGroup id="bloccoarrivo" layout="block">
+					<h:panelGroup layout="block" styleClass="partenza">
+						<div class="fieldset">
+							<div class="legend">#{i18n['dw4.protpartenza']}</div>
+							
+							<div class="form-group">
+								<label for="templateForm:doc_rifesternirifnome" class="col-sm-2 control-label">#{i18n['dw4.destinatario']}</label>
+								<div class="col-sm-9">
+									<div class="input-group">
+										<h:inputText id="doc_rifesternirifnome" value="#{queryPartenzaFTR.doc_rifesternirifnome}" styleClass="form-control" />
+										<div class="input-group-btn">
+											<h:commandLink title="#{i18n['acl.vocabulary']}" action="#{queryPartenzaFTR.openIndexRifEsterniDoc}" styleClass="btn btn-default">
+												<f:ajax execute="@form" render="@form"/>
+												<span class="glyphicon glyphicon-search"></span>
+									        </h:commandLink>
+								        </div>
+							        </div>
+								</div>
+							</div>
+							<div class="form-group">
+								<label for="templateForm:codice_fiscale" class="col-sm-2 control-label">#{i18n['acl.cf']}</label>
+								<div class="col-sm-3">
+									<div class="input-group">
+										<h:inputText styleClass="form-control" value="#{queryPartenzaFTR.codice_fiscale}" id="codice_fiscale"/>
+										<div class="input-group-btn">
+											<h:commandLink title="#{i18n['acl.vocabulary']}" action="#{queryPartenzaFTR.openIndexCodFiscaleDoc}" styleClass="btn btn-default">
+												<f:ajax execute="@form" render="@form"/>
+												<span class="glyphicon glyphicon-search"></span>
+											</h:commandLink>
+										</div>
+									</div>
+								</div>
+								<label for="templateForm:partita_iva" class="col-sm-offset-1 col-sm-2 control-label">#{i18n['acl.piva']}</label>
+								<div class="col-sm-3">
+									<div class="input-group">
+										<h:inputText styleClass="form-control" value="#{queryPartenzaFTR.partita_iva}" id="partita_iva"/>
+										<div class="input-group-btn">
+											<h:commandLink title="#{i18n['acl.vocabulary']}" action="#{queryPartenzaFTR.openIndexPIvaDoc}" styleClass="btn btn-default">
+												<f:ajax execute="@form" render="@form"/>
+												<span class="glyphicon glyphicon-search"></span>
+											</h:commandLink>
+										</div>
+									</div>
+								</div>
+							</div>
+							<div class="form-group">
+								<label for="templateForm:doc_rifesternirifreferentenominativo" class="col-sm-2 control-label">#{i18n['dw4.corteseattenzione']}</label>
+								<div class="col-sm-4">
+									<div class="input-group">
+										<h:inputText styleClass="form-control" value="#{queryPartenzaFTR.doc_rifesternirifreferentenominativo}" id="doc_rifesternirifreferentenominativo"/>
+										<div class="input-group-btn">
+											<h:commandLink title="#{i18n['acl.vocabulary']}" action="#{queryPartenzaFTR.openIndexFirmatarioDoc}" styleClass="btn btn-default">
+												<f:ajax execute="@form" render="@form"/>
+												<span class="glyphicon glyphicon-search"></span>
+											</h:commandLink>
+										</div>
+									</div>
+								</div>
+								<label for="templateForm:ccCheck" class="col-sm-2 control-label">#{i18n['dw4.cc']}</label>
+								<div class="col-sm-2">
+									<h:selectBooleanCheckbox id="ccCheck" value="#{queryPartenzaFTR.custom_cc}"/>
+								</div>
+								<h:panelGroup rendered="#{!queryPartenzaFTR.partenza or queryPartenzaFTR.arrivo}">
+									<label for="templateForm:doc_rifesternirifreferenteruolo" class="col-sm-2 control-label">#{i18n['acl.role']}</label>
+									<div class="col-sm-3">
+										<div class="input-group">
+											<h:inputText styleClass="form-control" value="#{queryPartenzaFTR.doc_rifesternirifreferenteruolo}" id="doc_rifesternirifreferenteruolo"/>
+											<div class="input-group-btn">
+												<h:commandLink title="#{i18n['acl.vocabulary']}" action="#{queryPartenzaFTR.openIndexRuoloDoc}" styleClass="btn btn-default">
+													<f:ajax execute="@form" render="@form"/>
+													<span class="glyphicon glyphicon-search"></span>
+												</h:commandLink>
+											</div>
+										</div>
+									</div>
+								</h:panelGroup>
+							</div>
+							<h:panelGroup rendered="#{queryPartenzaFTR.partenza and !queryPartenzaFTR.arrivo}" layout="block" styleClass="form-group">
+								<label for="templateForm:doc_rifesternirifreferenteruoloP" class="col-sm-2 control-label">#{i18n['acl.role']}</label>
+								<div class="col-sm-4">
+									<div class="input-group">
+										<h:inputText styleClass="form-control" value="#{queryPartenzaFTR.doc_rifesternirifreferenteruolo}" id="doc_rifesternirifreferenteruoloP"/>
+										<div class="input-group-btn">
+											<h:commandLink title="#{i18n['acl.vocabulary']}" action="#{queryPartenzaFTR.openIndexRuoloDoc}" styleClass="btn btn-default">
+												<f:ajax execute="@form" render="@form"/>
+												<span class="glyphicon glyphicon-search"></span>
+											</h:commandLink>
+										</div>
+									</div>
+								</div>
+							</h:panelGroup>
+							<h:panelGroup rendered="#{(queryPartenzaFTR.arrivo and !queryPartenzaFTR.partenza) or (!queryPartenzaFTR.arrivo and queryPartenzaFTR.partenza)}" layout="block" styleClass="form-group">
+								<ui:include src="./rangeField.xhtml">
+									<ui:param name="label" value="#{i18n['dw4.data_doc']}" />
+									<ui:param name="id" value="range_docrifesternirifdataprot" />
+									<ui:param name="from_value" value="#{queryPartenzaFTR.range_docrifesternirifdataprot_from}" />
+									<ui:param name="to_value" value="#{queryPartenzaFTR.range_docrifesternirifdataprot_to}" />
+									<ui:param name="is_date" value="true" />
+									<ui:param name="offset" value="#{(queryPartenzaFTR.arrivo) ? '1' : ''}" />
+								</ui:include>
+							</h:panelGroup>
+							<div class="form-group">
+								<div class="col-sm-offset-2 col-sm-9">
+									<h:selectBooleanCheckbox id="interopCheck" value="#{queryPartenzaFTR.interoperabilita}"/>
+									<label for="templateForm:interopCheck" class="normal-weight-text">
+										<h:outputText value="#{i18n[queryPartenzaFTR.arrivo and !queryPartenzaFTR.partenza ? 'dw4.interopdoc' : (queryPartenzaFTR.partenza and ! queryPartenzaFTR.arrivo ? 'dw4.interoppartenzadoc' : 'dw4.interoparrivopartenzadoc')]}" />
+									</label>
+								</div>
+							</div>
+						</div> <!-- /fieldset -->
+					</h:panelGroup>
+				</h:panelGroup>
+				
+				<ui:include src="./queryDoc@EstremiProtocollo.xhtml">
+					<ui:param name="bean" value="#{queryPartenzaFTR}"/>
+				</ui:include>
+				
+				<ui:include src="./queryDoc@DatiDoc.xhtml">
+					<ui:param name="bean" value="#{queryPartenzaFTR}"/>
+				</ui:include>
+				
+				<ui:include src="./queryDoc@Workflow.xhtml">
+					<ui:param name="bean" value="#{queryPartenzaFTR}"/>
+				</ui:include>
+				
+				<ui:include src="./queryDoc@Assegnatari.xhtml">
+					<ui:param name="bean" value="#{queryPartenzaFTR}"/>
+				</ui:include>
+				
+				<ui:include src="./queryDoc@InformazioniServizio.xhtml">
+					<ui:param name="bean" value="#{queryPartenzaFTR}"/>
+				</ui:include>
+			</div>
+		</div>
+		</div>
+		<!-- scheda query: fine -->
+		
+		<script type="text/javascript">
+		$(document).ready(function() {
+			// focus su campo globale
+			$('#templateForm\\:doc_globale').focus();
+		});
+		</script>
+
+		<h:inputTextarea value="#{queryPartenzaFTR.xml}" rendered="#{queryPartenzaFTR.debugMode}" styleClass="form-control" rows="10" />
+	</div>
+	
+	<ui:include src="./showindex.xhtml"><ui:param name="pageBean" value="#{queryPartenzaFTR}"/></ui:include>
+</ui:define>
+    
+</ui:composition>    

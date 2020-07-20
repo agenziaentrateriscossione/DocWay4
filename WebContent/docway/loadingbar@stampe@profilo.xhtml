@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" 
+	  xmlns:h="http://java.sun.com/jsf/html" 
+	  xmlns:ui="http://java.sun.com/jsf/facelets" 
+	  xmlns:f="http://java.sun.com/jsf/core"
+	  xmlns:p="http://xmlns.jcp.org/jsf/passthrough">
+<ui:composition>
+
+	<h:panelGroup layout="block" id="loadingbarStampe" styleClass="loadingbar-stampe">
+		<h:panelGroup rendered="#{pageBean.loadingbarActive and !pageBean.loadingbar.error}">
+			<!-- Modal -->
+			<div id="loadingbarStampeModal" class="modal fade in" aria-hidden="false" aria-labelledby="loadingbarStampeModalLabel" role="dialog" tabindex="-1" style="display: block;">
+			<!--div class="modal fade" id="loadingbarStampeModal" tabindex="-1" role="dialog" aria-labelledby="loadingbarStampeModalLabel" aria-hidden="true"-->
+				<div class="modal-dialog">
+					<div class="modal-content jsf-modal">
+						<div class="modal-header">
+							<h:commandButton styleClass="close" action="#{pageBean.loadingbar.close}" value="&#215;" />
+							
+							<h4 class="modal-title" id="loadingbarStampeModalLabel">#{i18n['dw4.report_di_una_selezione_di_documenti']}</h4>
+						</div>
+						<div class="modal-body">
+							
+		        			<div class="well">
+		        				<h:panelGroup rendered="#{pageBean.loadingbar.stopDate eq ''}">
+			        				<div class="loadingbar-message" style="margin-bottom:15px;"><h:outputText value="#{i18n['dw4.elaborazione_dei_documenti_da_stampare_in_corso']}" /></div>
+			        			</h:panelGroup>
+			        			<div class="loadingbar-message loadingbar-startdate"><h:outputText rendered="#{pageBean.loadingbar.startDate ne ''}" value="job started at #{pageBean.loadingbar.startDate}"/></div>
+			        			<div class="loadingbar-message loadingbar-status"><h:outputText value="#{pageBean.loadingbar.status}"/></div>
+			        			<div class="loadingbar-message loadingbar-exceptions"><h:outputText value="#{pageBean.loadingbar.exceptions}"/></div>
+			        			<div class="loadingbar-message loadingbar-progress"><h:outputText rendered="#{pageBean.loadingbar.progress ne 'nDoc=0'}" value="#{pageBean.loadingbar.progress}"/></div>
+			        			<div class="loadingbar-message loadingbar-stopdate"><h:outputText rendered="#{pageBean.loadingbar.stopDate ne ''}" value="job completed at #{pageBean.loadingbar.stopDate}"/></div>
+		        			</div>
+				        	
+		        			<h:panelGroup rendered="#{pageBean.loadingbar.stopDate ne ''}" display="block">
+		        				<h:commandLink style="display:none;" id="generaReportBtn" value="Genera report" immediate="true" actionListener="#{pageBean.loadingbar.generaReport}" />
+			        			<h:outputScript>
+									function generaReportStampe() {
+										$("#templateForm\\:generaReportBtn").trigger("click");
+									}
+									window.setTimeout('generaReportStampe()',2000);
+								</h:outputScript>
+		        			
+			        			<h:panelGroup styleClass="loadingbar-resultmessage" layout="block" style="margin-bottom:20px;">
+			        				<h:outputText value="#{i18n['dw4.generazione_del_report_in_corso_Attendere_prego']}" />
+			        			</h:panelGroup>
+		        			</h:panelGroup>
+				        	
+				        	<div style="margin-top:20px;" class="progress">
+	  							<div class="progress-bar" role="progressbar" aria-valuenow="#{(pageBean.loadingbar.stopDate ne '') ? '100' : pageBean.loadingbar.percentage}" aria-valuemin="0" aria-valuemax="100" style="width: #{(pageBean.loadingbar.stopDate ne '') ? '100' : pageBean.loadingbar.percentage}%;">
+	    							<span class="sr-only">#{(pageBean.loadingbar.stopDate ne '') ? '100' : pageBean.loadingbar.percentage}% Complete</span>
+	  							</div>
+							</div>
+							
+							<h:commandLink style="display:none;" id="refreshStampe" action="#{pageBean.loadingbar.refresh}" >
+		        				<f:ajax execute="@form" render="@form" />
+		        			</h:commandLink>
+							<script type="text/javascript">
+							function refreshStampe() {
+								$("#templateForm\\:refreshStampe").trigger("click");
+							}
+							
+							var completed = #{pageBean.loadingbar.stopDate ne ''};
+							if (!completed) {
+								window.setTimeout('refreshStampe()',2000);
+							}
+							</script>
+							
+							<h:inputTextarea value="#{pageBean.loadingbar.xml}" rendered="#{pageBean.debugMode}" styleClass="form-control" rows="10" />
+						</div>
+						<div class="modal-footer">
+							<h:commandButton styleClass="btn btn-default"
+									action="#{pageBean.loadingbar.close}" value="#{i18n['acl.close']}" />
+						</div>
+					</div>
+				</div>
+			</div>
+			<!--script type="text/javascript">
+			$('#loadingbarStampeModal').modal('show');
+			</script-->
+		</h:panelGroup>
+	</h:panelGroup>
+
+</ui:composition>   
+</html>

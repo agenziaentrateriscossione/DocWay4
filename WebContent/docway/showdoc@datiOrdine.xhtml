@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" 
+	  xmlns:h="http://java.sun.com/jsf/html" 
+	  xmlns:ui="http://java.sun.com/jsf/facelets" 
+	  xmlns:f="http://java.sun.com/jsf/core">
+<ui:composition>
+
+	<div class="showdoc-section">
+		<div class="title">
+			#{titoloBlocco}
+			
+			<div class="pull-right">
+				<span class="glyphicon glyphicon-euro" title="#{titoloBlocco}"></span>
+			</div>
+		</div>
+			
+		<dl class="dl-horizontal">
+			<h:panelGroup rendered="#{fn:length(bean.doc.datiOrdine.tipologia_ordine) > 0}">
+				<dt>#{i18n['acl.tipologia']}</dt>
+				<dd>
+					<ui:repeat id="showdocTipologia" var="tipologia" value="#{bean.doc.datiOrdine.tipologia_ordine}" varStatus="indice">
+						#{tipologia.text}<br/>
+					</ui:repeat>
+				</dd>
+			</h:panelGroup>
+			<dt class="off-totale-label">#{titoloTotale} (&#8364;)</dt>
+			<dd class="off-totale-value"><h:outputText value="#{bean.doc.datiOrdine.totale}"><f:converter converterId="CostConverter"/></h:outputText> (#{bean.doc.datiOrdine.str_totale})</dd>
+		</dl>
+		
+		<div class="table-responsive">
+			<h:panelGroup rendered="#{fn:length(bean.doc.datiOrdine.servizio) > 0 and !empty bean.doc.datiOrdine.servizio[0].text}">
+				<table class="table table-bordered">
+					<thead>
+						<tr>
+							<th class="off-tipo">#{i18n['dw4.services']}</th>
+							<th class="off-costo">#{i18n['dw4.costo']} (&#8364;)</th>
+						</tr>
+					</thead>
+					<tbody>
+						<ui:repeat id="showdocServizio" var="servizio" value="#{bean.doc.datiOrdine.servizio}" varStatus="indice">
+							<tr>
+								<td class="off-tipo"><h:outputText value="#{servizio.text}" /></td>
+								<td class="off-costo"><h:outputText value="#{servizio.costo}" /></td>
+							</tr>
+						</ui:repeat>
+						<tr>
+							<td class="off-tipo totale">#{i18n['dw4.totale']} (&#8364;)</td>
+							<td class="off-costo totale"><h:outputText value="#{bean.doc.datiOrdine.totale_servizio}" ><f:converter converterId="CostConverter"/></h:outputText></td>
+						</tr>
+					</tbody>
+				</table>
+			</h:panelGroup>
+			<h:panelGroup rendered="#{fn:length(bean.doc.datiOrdine.licenza) > 0 and !empty bean.doc.datiOrdine.licenza[0].text}">
+				<table class="table table-bordered">
+					<thead>
+						<tr>
+							<th class="off-tipo">#{i18n['dw4.licenze']}</th>
+							<th class="off-costo">#{i18n['dw4.costo']} (&#8364;)</th>
+						</tr>
+					</thead>
+					<tbody>
+						<ui:repeat id="showdocLicenza" var="licenza" value="#{bean.doc.datiOrdine.licenza}" varStatus="indice">
+							<tr>
+								<td class="off-tipo"><h:outputText value="#{licenza.text}" /></td>
+								<td class="off-costo"><h:outputText value="#{licenza.costo}" /></td>
+							</tr>
+						</ui:repeat>
+						<tr>
+							<td class="off-tipo totale">#{i18n['dw4.totale']} (&#8364;)</td>
+							<td class="off-costo totale"><h:outputText value="#{bean.doc.datiOrdine.totale_licenza}" ><f:converter converterId="CostConverter"/></h:outputText></td>
+						</tr>
+					</tbody>
+				</table>
+			</h:panelGroup>
+			<h:panelGroup rendered="#{fn:length(bean.doc.datiOrdine.contratto) > 0 and !empty bean.doc.datiOrdine.contratto[0].text}">
+				<table class="table table-bordered">
+					<thead>
+						<tr>
+							<th class="off-tipo">#{i18n['dw4.contratti']}</th>
+							<th class="off-costo">#{i18n['dw4.costo']} (&#8364;)</th>
+						</tr>
+					</thead>
+					<tbody>
+						<ui:repeat id="showdocContratto" var="contratto" value="#{bean.doc.datiOrdine.contratto}" varStatus="indice">
+							<tr>
+								<td class="off-tipo"><h:outputText value="#{contratto.text}" /></td>
+								<td class="off-costo"><h:outputText value="#{contratto.costo}" /></td>
+							</tr>
+						</ui:repeat>
+						<tr>
+							<td class="off-tipo totale">#{i18n['dw4.totale']} (&#8364;)</td>
+							<td class="off-costo totale"><h:outputText value="#{bean.doc.datiOrdine.totale_contratto}" ><f:converter converterId="CostConverter"/></h:outputText></td>
+						</tr>
+					</tbody>
+				</table>
+			</h:panelGroup>
+			<h:panelGroup rendered="#{fn:length(bean.doc.datiOrdine.altro) > 0 and !empty bean.doc.datiOrdine.altro[0].text}">
+				<table class="table table-bordered">
+					<thead>
+						<tr>
+							<th class="off-tipo">#{i18n['dw4.other']}</th>
+							<th class="off-costo">#{i18n['dw4.costo']} (&#8364;)</th>
+						</tr>
+					</thead>
+					<tbody>
+						<ui:repeat id="showdocAltro" var="altro" value="#{bean.doc.datiOrdine.altro}" varStatus="indice">
+							<tr>
+								<td class="off-tipo"><h:outputText value="#{altro.text}" /></td>
+								<td class="off-costo"><h:outputText value="#{altro.costo}" /></td>
+							</tr>
+						</ui:repeat>
+						<tr>
+							<td class="off-tipo totale">#{i18n['dw4.totale']} (&#8364;)</td>
+							<td class="off-costo totale"><h:outputText value="#{bean.doc.datiOrdine.totale_altro}" ><f:converter converterId="CostConverter"/></h:outputText></td>
+						</tr>
+					</tbody>
+				</table>
+			</h:panelGroup>
+		</div>
+	</div>
+
+</ui:composition>
+</html>

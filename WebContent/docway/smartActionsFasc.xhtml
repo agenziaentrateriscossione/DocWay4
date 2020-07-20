@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:c="http://java.sun.com/jsp/jstl/core">
+<ui:composition>
+
+	<!--div class="panel panel-primary smartactions-panel affix-top" data-spy="affix" data-offset-top="60"--> <!-- smart actions con affix -->
+	<div class="panel panel-primary smartactions-panel hidden-print">
+		<div class="panel-heading clearfix">
+			<h3 class="panel-title text-left">#{i18n['dw4.azioni_rapide']}</h3>
+		</div>
+		<div class="panel-body text-left">
+			
+			<ul class="list-inline smartactions-list">
+				<h:panelGroup rendered="#{empty bean.physDoc_infasc and bean.bAssegnaLinkFasc!='true' and bean.formsAdapter.funzionalitaDisponibili['modifica']}">
+					<li>
+						<h:commandLink styleClass="smartactions-link" action="#{bean.modifyTableDoc}" title="#{i18n['dw4.modify']}">
+							<span class="glyphicons-pro edit smartaction-image" title="#{i18n['dw4.modify']}"></span>
+							<p>#{i18n['dw4.modify']}</p>
+						</h:commandLink>
+					</li>
+				</h:panelGroup>
+				
+				<h:panelGroup rendered="#{bean.formsAdapter.funzionalitaDisponibili['modifica']}">
+					<li>
+						<h:commandLink styleClass="smartactions-link" action="#{bean.addRPA}" title="#{i18n['dw4.trasferisci']}">
+							<f:ajax execute="@form" render="@form" />
+							<span class="glyphicons-pro parents smartaction-image" title="#{i18n['dw4.trasferisci']}"></span>
+							<p>#{i18n['dw4.trasferisci']}</p>
+						</h:commandLink>
+					</li>
+				</h:panelGroup>
+				
+				<h:panelGroup rendered="#{bean.formsAdapter.funzionalitaDisponibili['abilitaCCFascicoli']}">
+					<li>
+						<h:commandLink styleClass="smartactions-link" action="#{bean.addCC}" title="#{i18n['dw4.nuovocc']}">
+							<f:ajax execute="@form" render="@form" />
+							<span class="glyphicons-pro user_add smartaction-image" title="#{i18n['dw4.nuovocc']}"></span>
+							<p>#{i18n['dw4.nuovocc']}</p>
+						</h:commandLink>
+					</li>
+				</h:panelGroup>
+				
+				<li>
+					<h:commandLink styleClass="smartactions-link" onclick="return printPageContent();">
+						<span class="glyphicons-pro print smartaction-image" title="#{i18n['dw4.print']}"></span>
+						<p>#{i18n['dw4.print']}</p>
+					</h:commandLink>
+				</li>
+				
+				<ui:remove>
+					<h:panelGroup rendered="#{smartActionsAvailable eq 'false'}">
+						<li><span class="label label-primary">#{i18n['dw4.nessuna_azione_disponibile']}</span></li>
+					</h:panelGroup>
+				</ui:remove>
+			</ul>
+			
+		</div>
+	</div>
+
+</ui:composition>
+</html>

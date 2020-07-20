@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" 
+	  xmlns:h="http://java.sun.com/jsf/html" 
+	  xmlns:ui="http://java.sun.com/jsf/facelets" 
+	  xmlns:f="http://java.sun.com/jsf/core"
+	  xmlns:p="http://xmlns.jcp.org/jsf/passthrough">
+<ui:composition>
+	
+	<h:panelGroup layout="block" id="sollecitomsg">
+		<h:panelGroup rendered="#{pageBean.visibleInvioSollecito}">
+			<!-- Modal -->
+			<div id="errorModal" class="modal fade in" aria-hidden="false" aria-labelledby="errorModalLabel" role="dialog" tabindex="-1" style="display: block;">
+			<!--div class="modal fade" id="errorModal" tabindex="-1" role="dialog" aria-labelledby="errorModalLabel" aria-hidden="true"-->
+				<div class="modal-dialog">
+					<div class="modal-content jsf-modal">
+						<div class="modal-header">
+							<h:commandButton class="close" action="#{pageBean.hideInviaSollecito}" value="&#215;">
+		                    	<f:ajax render="sollecitomsg"/>
+							</h:commandButton>
+							
+							<h4 class="modal-title" id="errorModalLabel">
+		                		<ui:fragment>#{i18n['apv.invio_sollecito']}</ui:fragment>
+							</h4>
+						</div>
+						<div class="modal-body">
+							<h:panelGroup>
+								<h:panelGroup layout="block" styleClass="well">
+									<h:outputText
+											rendered="#{pageBean.invioSollecitoSentOK}"
+											value="#{i18n['apv.sollecito_inviato_con_successo']}" />
+										<h:outputText
+											rendered="#{!pageBean.invioSollecitoSentOK}"
+											value="#{i18n['apv.errore_nell_invio_del_sollecito']}" />
+								</h:panelGroup>
+							</h:panelGroup>
+							
+							<h:inputTextarea value="#{pageBean.xml}" rendered="#{pageBean.debugMode}" styleClass="form-control" rows="10"/>
+						</div>
+						<div class="modal-footer">
+							<h:commandButton class="btn btn-default" action="#{pageBean.hideInviaSollecito}" value="#{i18n['acl.close']}">
+		                    	<f:ajax render="sollecitomsg"/>
+							</h:commandButton>
+						</div>
+					</div>
+				</div>
+			</div>
+			<!--h:outputScript>
+				$('#errorModal').modal('show');
+			</h:outputScript-->
+		</h:panelGroup>
+	</h:panelGroup>
+
+</ui:composition>	
+</html>

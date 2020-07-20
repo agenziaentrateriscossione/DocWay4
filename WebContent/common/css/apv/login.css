@@ -1,0 +1,18 @@
+a {color: #990033;}
+a:hover, a:focus {color:#bc4555;}
+
+.btn-primary {
+background-image: -webkit-linear-gradient(top, #bc4555 0%, #990033 100%);
+background-image: linear-gradient(to bottom, #bc4555 0%, #990033 100%);
+filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ffbc4555', endColorstr='#ff990033', GradientType=0);
+border-color: #990033;
+}
+
+.btn-primary:hover, .btn-primary:focus {background-color: #990033;}
+
+.form-control:focus {
+  border-color: #990033;
+  outline: 0;
+  -webkit-box-shadow: inset 0 1px 1px rgba(0,0,0,.075), 0 0 8px rgba(153, 0, 51, 0.6);
+  box-shadow: inset 0 1px 1px rgba(0,0,0,.075), 0 0 8px rgba(153, 0, 51, 0.6);
+}

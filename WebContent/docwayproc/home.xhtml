@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	template="template.xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://xmlns.jcp.org/jsf/passthrough">
+
+<ui:define name="content">
+	<div id="advancedSearch" class="submitEnterKey">
+		<div class="sub-header">#{i18n['dw4.voci_di_indice']}</div>
+	
+		<!-- toolbar: inizio -->
+		<div class="btn-toolbar margin-bottom" role="toolbar">
+			<div class="btn-group">
+				<h:commandLink id="advancedSearchBtn" action="#{docwayprocHome.queryPlain}" styleClass="btn btn-primary openwaitmsg">#{i18n['acl.search']}</h:commandLink>
+				<h:commandLink action="#{docwayprocHome.clearForm}" styleClass="btn btn-default">#{i18n['acl.clear']}</h:commandLink>
+			</div>
+			<h:panelGroup rendered="#{docwayprocHome.formsAdapter.funzionalitaDisponibili['insertVI']}" layout="block" styleClass="btn-group">
+				 <h:commandLink action="#{docwayprocMenu.insTableDocIndiceTitolario}" styleClass="btn btn-default">#{i18n['nuovo']}</h:commandLink>
+			</h:panelGroup>
+		</div>
+		<!-- toolbar: fine -->
+	
+		<!-- messages: inizio -->
+		<h:panelGroup rendered="#{not empty facesContext.messageList}" layout="block" styleClass="docedit-messages alert alert-danger">
+			<h:messages styleClass="" id="validationMesseges" />
+		</h:panelGroup>
+		<!-- messages: fine -->
+	
+		<!-- scheda query: inizio -->
+		<div class="row-fluid">
+			<div class="box span12">
+				<div class="box-content">
+					<div class="fieldset">
+						<div class="legend">#{i18n['acl.ricerca']}</div>
+						
+						<div class="form-group">
+							<label for="templateForm:ind_globale" class="col-sm-2 control-label">#{i18n['dw4.ricerca_full_text']}</label>
+							<div class="col-sm-9">
+								<h:inputText id="ind_globale" styleClass="form-control" value="#{docwayprocHome.search_globale}"/>
+							</div>
+						</div>
+						<div class="form-group">
+							<label for="templateForm:search_tit_voce" class="col-sm-2 control-label">#{i18n['dw4.voce']}</label>
+							<div class="col-sm-9">
+								<div class="input-group">
+									<h:inputText id="search_tit_voce" value="#{docwayprocHome.search_tit_voce}" styleClass="form-control" />
+									<div class="input-group-btn">
+										<h:commandLink title="#{i18n['acl.vocabulary']}" action="#{docwayprocHome.openIndexTitVoce}" styleClass="btn btn-default">
+											<f:ajax execute="@form" render="@form"/>
+											<span class="glyphicon glyphicon-search"></span>
+								        </h:commandLink>
+							        </div>
+						        </div>
+							</div>
+						</div>
+						<div class="form-group">
+							<label for="templateForm:search_uor" class="col-sm-2 control-label">#{i18n['dw4.proprietario']}</label>
+							<div class="col-sm-4">
+								<div class="input-group">
+									<h:inputText styleClass="form-control" value="#{docwayprocHome.search_uor}" id="search_uor" p:placeholder="#{i18n['acl.uff']}" title="#{i18n['acl.uff']}" />
+									<div class="input-group-btn">
+										<h:commandLink title="#{i18n['acl.vocabulary']}" action="#{docwayprocHome.openIndexUor}" styleClass="btn btn-default">
+											<f:ajax execute="@form" render="@form"/>
+											<span class="glyphicon glyphicon-search"></span>
+										</h:commandLink>
+									</div>
+								</div>									
+							</div>
+							<div class="col-sm-5">
+								<div class="input-group">
+									<h:inputText styleClass="form-control" value="#{docwayprocHome.search_rpa}" id="search_rpa" p:placeholder="#{i18n['acl.oper']}" title="#{i18n['acl.oper']}" />
+									<div class="input-group-btn">
+										<h:commandLink title="#{i18n['acl.vocabulary']}" action="#{docwayprocHome.openIndexRpa}" styleClass="btn btn-default">
+											<f:ajax execute="@form" render="@form"/>
+											<span class="glyphicon glyphicon-search"></span>
+										</h:commandLink>
+									</div>
+								</div>
+							</div>
+						</div>
+						
+						<div class="form-group">
+							<label for="templateForm:ordinamento" class="col-sm-2 control-label">#{i18n['dw4.ordinamento']}</label>
+							<div class="col-sm-3">
+								<h:selectOneMenu id="ordinamento" value="#{docwayprocHome.ordinamento}" styleClass="form-control">
+									<f:selectItems value="#{docwayprocHome.ordinamentoIndiceTitolario_select.options}" var="option" itemValue="#{option.value}" itemLabel="#{option.label}"/>
+									<f:ajax execute="@form" render="@form"/>
+								</h:selectOneMenu>
+							</div>
+						</div>
+					</div> <!-- /fieldset -->
+				</div>
+			</div>
+			
+			<ui:include src="./showindex.xhtml"><ui:param name="pageBean" value="#{docwayprocHome}"/></ui:include>
+			
+			<h:inputTextarea value="#{docwayprocHome.xml}" rendered="#{docwayprocHome.debugMode}" styleClass="form-control" rows="10" />
+		</div>
+		<!-- scheda query: fine -->
+		
+		<script type="text/javascript">
+		$(document).ready(function() {
+			// focus su campo globale
+			$('#templateForm\\:ind_globale').focus();
+		});
+		</script>
+		
+	</div>
+</ui:define>
+
+</ui:composition>

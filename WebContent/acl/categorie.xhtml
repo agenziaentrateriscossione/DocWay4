@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" 
+	  xmlns:h="http://java.sun.com/jsf/html" 
+	  xmlns:ui="http://java.sun.com/jsf/facelets" 
+	  xmlns:f="http://java.sun.com/jsf/core"
+	  xmlns:p="http://xmlns.jcp.org/jsf/passthrough" >
+<ui:composition>
+	
+	<h:panelGroup rendered="#{!empty organo.categorie}" layout="block" id="categorie">
+		<div class="fieldset">
+			<div class="legend">
+             #{bean.categorieLabel}
+             <div class="pull-right">
+                 <span class="glyphicons-pro tag" title="#{bean.categorieLabel}"></span>
+             </div>
+         </div>
+			
+			<ui:repeat id="categoria" var="categoria" value="#{organo.categorie}" varStatus="indice">
+				<div class="form-group">
+					<label class="col-sm-2 control-label">#{bean.categoriaLabel}</label>
+					<div class="col-sm-1">
+						<h:inputText id="cod" rendered="#{!readOnly}" p:placeholder="#{i18n['acl.cod']}" value="#{categoria.cod}" styleClass="form-control" />
+						<h:panelGroup rendered="#{readOnly}">
+							<p class="form-control-static">
+								<h:outputText value="#{categoria.cod}" />
+							</p>
+						</h:panelGroup>
+					</div>
+
+					<div class="col-sm-4">
+						<h:inputText id="nome" value="#{categoria.nome}" p:placeholder="#{i18n['acl.name']}" rendered="#{!readOnly}" styleClass="form-control" />
+						<h:panelGroup rendered="#{readOnly}">
+							<p class="form-control-static">
+								<h:outputText value="#{categoria.nome}" />
+							</p>
+						</h:panelGroup>
+					</div>
+					
+					<div class="col-sm-2">
+						<h:panelGroup rendered="#{!readOnly}">
+							<h:selectOneMenu value="#{categoria.tipo}" class="form-control">
+			            		<f:selectItem itemValue="proposta" itemLabel="#{i18n['dw4.proposta']}"/>
+			            		<f:selectItem itemValue="comunicazione" itemLabel="#{bean.comunicazioneMinLabel}"/>
+		            		</h:selectOneMenu>
+		            	</h:panelGroup>
+		            	<h:panelGroup rendered="#{readOnly}">
+							<p class="form-control-static">
+								<h:outputText value="#{categoria.tipo}" />
+							</p>
+						</h:panelGroup>
+            		</div>
+            		
+            		<h:panelGroup rendered="#{!readOnly}">
+            		<div class="col-sm-2">
+	            		<div class="input-group">
+							<div class="btn-group">
+								<h:commandLink action="#{organo.deleteCategoria}" title="#{i18n['dw4.elimina_istanza']}" styleClass="btn btn-default">
+						 			<f:ajax execute="@form" render=":templateForm:categorie :templateForm:errormsg"/>
+						 			<span class="glyphicon glyphicon-minus"></span>
+								</h:commandLink>
+								<h:commandLink action="#{organo.addCategoria}" title="#{i18n['dw4.aggiungi_istanza']}" styleClass="btn btn-default">
+						 			<f:ajax execute="@form" render=":templateForm:categorie :templateForm:errormsg"/>
+						 			<span class="glyphicon glyphicon-plus"></span>
+								</h:commandLink>
+								<h:commandLink action="#{organo.moveUpCategoria}" title="#{i18n['dw4.sposta_su']}" styleClass="btn btn-default #{(indice.index) > 0 ? '' : 'disabled'}">
+				       				<f:ajax execute="@form" render=":templateForm:categorie :templateForm:errormsg"/>
+				        			<span class="glyphicon glyphicon-chevron-up"></span>
+				       			</h:commandLink>
+				       			<h:commandLink action="#{organo.moveDownCategoria}" title="#{i18n['dw4.sposta_giu']}" styleClass="btn btn-default #{fn:length(organo.categorie) > (indice.index+1) ? '' : 'disabled'}">
+				       				<f:ajax execute="@form" render=":templateForm:categorie :templateForm:errormsg"/>
+				        			<span class="glyphicon glyphicon-chevron-down"></span>
+				       			</h:commandLink>
+							</div>
+						</div>
+					</div>
+					</h:panelGroup>
+					
+				</div>
+			</ui:repeat>
+		</div> <!-- /fieldset -->
+	</h:panelGroup>
+
+</ui:composition>
+</html>

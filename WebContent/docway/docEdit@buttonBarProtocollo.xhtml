@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:f="http://java.sun.com/jsf/core">
+<ui:composition>
+
+	<div class="btn-toolbar" role="toolbar">
+		<div class="btn-group">
+			<h:commandLink id="saveBtn" action="#{bean.saveDocument}" 
+						onclick="return customCheckForm();" styleClass="btn btn-primary openwaitmsg">
+				#{(bean.formsAdapter.funzionalitaDisponibili['abilitaBozze'] and bean.formsAdapter.funzionalitaDisponibili['mostraPulsanteSalvaBozzaInInserimento'] and !bean.formsAdapter.funzionalitaDisponibili['disabilitaBozzeInInserimento']) ? i18n['dw4.protocolla'] : i18n['acl.save']}
+			</h:commandLink>
+			
+			<h:commandLink rendered="#{bean.formsAdapter.funzionalitaDisponibili['abilitaBozze'] and bean.formsAdapter.funzionalitaDisponibili['mostraPulsanteSalvaBozzaInInserimento'] and !bean.formsAdapter.funzionalitaDisponibili['disabilitaBozzeInInserimento']}"
+							id="saveBozzaBtn" 
+							onclick="return salvaDocInBozza();" styleClass="btn btn-default" >
+				#{i18n['dw4.salva_bozza']}
+			</h:commandLink>
+			
+			<h:commandLink action="#{bean.clearDocument}" 
+						onclick="IwxRuntime.Client.resetJobIWX();" styleClass="btn btn-default">
+				#{i18n['acl.clear']}
+			</h:commandLink>	
+		</div>
+	</div>
+
+</ui:composition>
+</html>

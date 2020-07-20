@@ -1,0 +1,1343 @@
+.fullscreen-logo .application-logo {
+	height: 45px;
+	padding-left: 5px;
+}
+
+.resizescreen-logo .application-logo {
+	height: 40px;
+	padding-left: 5px;
+	background-color: #fff;
+    border-radius: 5px;
+}
+
+@media (max-width: 988px) {
+	li.showhide-vaschette {
+		display: none;
+	}
+}
+
+.doc-titles-table .coltipo, .doc-titles-table .colcheck, .doc-titles-table .colinfo, .fasc-titles-table .coltipo, .fasc-titles-table .colcheck, .fasc-titles-table .colinfo {
+	width: 40px;
+	vertical-align: middle;
+}
+
+.doc-titles-table .coltipo.colgerarchia, .fasc-titles-table .coltipo.colgerarchia {
+	width: 120px;
+}
+
+.doc-titles-table .colscad {
+	width: 100px;
+	vertical-align: middle;
+}
+
+.doc-titles-table .cologgetto .soggetto-titolo, .doc-titles-table .cologgetto .second-row-oggetto, .fasc-titles-table .cologgetto .soggetto-titolo, .fasc-titles-table .cologgetto .second-row-oggetto {
+	text-transform: uppercase;
+}
+
+.showtitles .doc-titles-table .cologgetto .second-row-oggetto.doc-in-cestino, .showtitles .fasc-titles-table .cologgetto .second-row-oggetto.doc-in-cestino {
+	text-decoration: line-through;
+	color: #bf0c0c;
+}
+
+.doc-titles-table .cologgetto .bozza-titolo, .fasc-titles-table .cologgetto .bozza-titolo {
+	font-weight: bold;
+}
+
+.doc-titles-table a .glyphicon, .doc-titles-table a .glyphicons-pro, .fasc-titles-table a .glyphicon, .fasc-titles-table a .glyphicons-pro {
+	font-size: 18px;
+}
+
+.table.doc-titles-table thead tr th, .table.doc-titles-table-extended thead tr th {
+	vertical-align: middle;
+}
+
+.table.doc-titles-table a .title-list-mode-icon, .table.doc-titles-table a:hover .title-list-mode-icon, .table.doc-titles-table a:visited .title-list-mode-icon,
+.table.doc-titles-table-extended a .title-list-mode-icon, .table.doc-titles-table-extended a:hover .title-list-mode-icon, .table.doc-titles-table-extended a:visited .title-list-mode-icon {
+	color: #000;
+	font-size: 16px;
+	padding: 4px;
+	border-radius: 4px;
+	background-color: #fff;
+	margin-bottom: 0;
+}
+
+.table.doc-titles-table-extended thead tr th.coltipo, .table.doc-titles-table-extended thead tr th.colcheck, .table.doc-titles-table-extended thead tr th.colinfo  {
+	width: 40px;
+}
+
+.table.doc-titles-table-extended thead tr th.colprot, .table.doc-titles-table-extended thead tr th.colconservato {
+	width: 100px;
+}
+
+.table.doc-titles-table-extended thead tr th.coldata, .table.doc-titles-table-extended thead tr th.colscad {
+	width: 110px;
+}
+
+.table.doc-titles-table-extended thead tr th.colsoggetto {
+	width: 15%;
+}
+
+.table.doc-titles-table-extended tbody tr td.cologgetto .first-row-oggetto {
+	font-style: italic;
+}
+
+.table.doc-titles-table-extended tbody tr td.cologgetto .second-row-oggetto {
+	text-transform: uppercase;
+}
+
+.versions-titles-table a .glyphicon, .versions-titles-table a .glyphicons-pro {
+	font-size: 12px;
+}
+
+.doc-titles-table a .glyphicon, .doc-titles-table a .glyphicons-pro, .fasc-titles-table a .glyphicon, .fasc-titles-table a .glyphicons-pro {
+	color: #fff; 
+	border-radius: 4px;
+    padding: 4px;
+}
+
+.doc-titles-table a .glyphicon.glyphicon-info-sign {
+	color: #3f88c7;
+}
+
+.doc-titles-table a .glyphicon.glyphicon-exclamation-sign {
+	color: #bf0c0c;
+}
+
+.doc-titles-table > tbody > tr:hover > td a .glyphicon.glyphicon-info-sign, .doc-titles-table > tbody > tr:hover > td a .glyphicon.glyphicon-exclamation-sign {
+	color: #fff;
+}
+
+.versions-titles-table > tbody > tr:hover > td a .glyphicon.glyphicon-info-sign {
+	color: #3f88c7;
+}
+
+.doc-titles-table a .glyphicon-folder-open, .doc-titles-table a .glyphicon-folder-close, .fasc-titles-table a .glyphicon-folder-open, .fasc-titles-table a .glyphicon-folder-close,
+.doc-titles-table a .glyphicons-pro.folder_open, .doc-titles-table a .glyphicons-pro.folder_closed, .doc-titles-table a .glyphicons-pro.folder_flag, 
+.fasc-titles-table a .glyphicons-pro.folder_open, .fasc-titles-table a .glyphicons-pro.folder_closed, .fasc-titles-table a .glyphicons-pro.folder_flag {
+	color: #fff; 
+	border-radius: 4px;
+    padding: 4px;
+    background-color: #7262ac;
+}
+
+.fasc-titles-table a .glyphicons-pro.folder_flag, .showdoc-title .doc-tipo-fascicolo.folder_flag {
+	color: #f9c802;
+}
+
+.doc-titles-table a .glyphicon-inbox {
+	color: #fff; 
+	border-radius: 4px;
+    padding: 4px;
+    background-color: #735949;
+}
+
+.doc-titles-table .glyphicon.doc-tipo-partenza, .showdoc-title .glyphicon.doc-tipo-partenza, .partenza .sub-header .glyphicon, 
+.doc-titles-table .glyphicons-pro.doc-tipo-partenza, .showdoc-title .glyphicons-pro.doc-tipo-partenza, .partenza .sub-header .glyphicons-pro {
+	background-color: #6d9a10;
+}
+
+.doc-titles-table .glyphicon.doc-tipo-arrivo, .doc-titles-table .glyphicon.doc-tipo-differito, .arrivo .sub-header .glyphicon, .showdoc-title .glyphicon.doc-tipo-arrivo, .showdoc-title .glyphicon.doc-tipo-differito,
+.doc-titles-table .glyphicons-pro.doc-tipo-arrivo, .doc-titles-table .glyphicons-pro.doc-tipo-differito, .arrivo .sub-header .glyphicons-pro, .showdoc-title .glyphicons-pro.doc-tipo-arrivo, .showdoc-title .glyphicons-pro.doc-tipo-differito {
+	background-color: #2470aa;
+}
+
+.doc-titles-table .glyphicon.doc-tipo-varie, .showdoc-title .glyphicon.doc-tipo-varie, .varie .sub-header .glyphicon,
+.doc-titles-table .glyphicons-pro.doc-tipo-varie, .showdoc-title .glyphicons-pro.doc-tipo-varie, .varie .sub-header .glyphicons-pro {
+	background-color: #6a6a6b;
+}
+
+.doc-titles-table .glyphicon.doc-tipo-interno, .showdoc-title .glyphicon.doc-tipo-interno, .interno .sub-header .glyphicon,
+.doc-titles-table .glyphicons-pro.doc-tipo-interno, .showdoc-title .glyphicons-pro.doc-tipo-interno, .interno .sub-header .glyphicons-pro {
+	background-color: #ab599f;
+}
+
+.showdoc-title.doc-tipo-partenza, .partenza .sub-header {
+	background-color: #bddfbd;
+}
+
+.showdoc-title.doc-tipo-arrivo, .showdoc-title.doc-tipo-differito, .arrivo .sub-header {
+	background-color: #d3e7f5;
+}
+
+.showdoc-title.doc-tipo-varie, .varie .sub-header {
+	background-color: #d4d8df;
+}
+
+.showdoc-title.doc-tipo-interno, .interno .sub-header {
+	background-color: #f2e6f0;
+}
+
+.partenza .showdoc-section .title .pull-right .glyphicon, .partenza.docedit .fieldset .legend .pull-right .glyphicon,
+.partenza .showdoc-section .title .pull-right .glyphicons-pro, .partenza.docedit .fieldset .legend .pull-right .glyphicons-pro {
+	color: #6d9a10;
+}
+
+.arrivo .showdoc-section .title .pull-right .glyphicon, .arrivo.docedit .fieldset .legend .pull-right .glyphicon,
+.arrivo .showdoc-section .title .pull-right .glyphicons-pro, .arrivo.docedit .fieldset .legend .pull-right .glyphicons-pro {
+	color: #2470aa;
+}
+
+.varie .showdoc-section .title .pull-right .glyphicon, .varie.docedit .fieldset .legend .pull-right .glyphicon,
+.varie .showdoc-section .title .pull-right .glyphicons-pro, .varie.docedit .fieldset .legend .pull-right .glyphicons-pro {
+	color: #6a6a6b;
+}
+
+.interno .showdoc-section .title .pull-right .glyphicon, .interno.docedit .fieldset .legend .pull-right .glyphicon,
+.interno .showdoc-section .title .pull-right .glyphicons-pro, .interno.docedit .fieldset .legend .pull-right .glyphicons-pro {
+	color: #ab599f;
+}
+
+.fascicolo .showdoc-section .title .pull-right .glyphicon, .fascicolo.docedit .fieldset .legend .pull-right .glyphicon,
+.fascicolo .showdoc-section .title .pull-right .glyphicons-pro, .fascicolo.docedit .fieldset .legend .pull-right .glyphicons-pro {
+	color: #e0ddec;
+	opacity: 0.5;
+}
+
+.raccoglitore .showdoc-section .title .pull-right .glyphicon, .raccoglitore.docedit .fieldset .legend .pull-right .glyphicon,
+.raccoglitore .showdoc-section .title .pull-right .glyphicons-pro, .raccoglitore.docedit .fieldset .legend .pull-right .glyphicons-pro {
+	color: #e4d7cd;
+}
+
+.titVistaGerarchica-container {
+	margin-top: 25px;
+}
+
+.swfupload {
+	position: absolute;
+	z-index: 1;
+}
+
+.iwx-box {
+	border: 1px solid #ccc;
+	border-radius: 4px;
+	background-color: #f5f5f5;
+}
+
+.iwx-box.hidden {
+	border: none;
+	background: none;
+}
+
+.iwx-buttons {
+	padding: 5px 2px;
+}
+
+.iwx-version {
+	font-size: 0.9em;
+	text-align: right;
+	line-height: 22px;
+	padding: 5px 2px;
+}
+
+.iwx-image-select {
+	font-size: 11px !important;
+}
+
+.iwx-image-select.form-control {
+	width: auto;
+	display: inline;
+}
+
+.iwx-error-logs {
+	font-size: 0.9em;
+	max-height: 100px;
+	width: 100%;
+	overflow: auto;
+}
+.iwx-error-logs div {
+	padding: 2px 5px;
+}
+.iwx-error-logs div.error {
+	color: #af1a1a;
+}
+
+.iwx-button-bar .glyphicon, .iwx-button-bar .glyphicons-pro {
+	font-size: 14px;
+}
+
+.iwx-button-bar .glyphicons-pro.repeat {
+	font-weight: bold;
+}
+
+.iwx-process-messages {
+	margin-top: 10px;
+	border: 1px solid #ccc;
+	border-radius: 4px;
+	padding: 5px;
+}
+
+.iwx-process-message {
+	font-weight: bold;
+}
+.iwx-process-message.iwx-process-message-info {
+	color: #31b0d5;
+}
+.iwx-process-message.iwx-process-message-warning {
+	color: #ec971f;
+}
+.iwx-process-message.iwx-process-message-error {
+	color: #c9302c;
+}
+
+.endsection {
+	margin-bottom: 25px !important;
+}
+
+.scannerButton {
+	display: inline;
+}
+
+.arrivo legend, .arrivo .fieldset .legend {
+	background-color: #d3e7f5;
+}
+/*.arrivo .showdoc-section .title {
+	background-color: #d3e7f5;
+}*/
+.arrivo .emphasis-title {
+	color: #2470aa;
+}
+
+.partenza legend, .partenza .fieldset .legend {
+	background-color: #bddfbd;
+}
+/*.partenza .showdoc-section .title {
+	background-color: #bddfbd;
+}*/
+.partenza .emphasis-title {
+	color: #4c7a5c;
+}
+
+.interno legend, .interno .fieldset .legend {
+	background-color: #f2e6f0;
+}
+/*.interno .showdoc-section .title {
+	background-color: #f2e6f0;
+}*/
+.interno .emphasis-title {
+	color: #ad4882;
+}
+
+.varie legend, .varie .fieldset .legend {
+	background-color: #d4d8df;
+}
+/*.varie .showdoc-section .title {
+	background-color: #d4d8df;
+}*/
+.varie .emphasis-title {
+	color: #515151;
+}
+
+.repertorio legend, .repertorio .fieldset .legend {
+	background-color: #ffe8bb;
+}
+/*.repertorio .showdoc-section .title {
+	background-color: #ffe8bb;
+}*/
+.repertorio .emphasis-title {
+	color: #866318;
+}
+
+.fascicolo legend, .fascicolo .fieldset .legend {
+	background-color: #e0ddec;
+}
+/*.fascicolo .showdoc-section .title {
+	background-color: #e0ddec;
+}*/
+.fascicolo .emphasis-title {
+	color: #7262ac;
+}
+
+.raccoglitore legend, .raccoglitore .fieldset .legend {
+	background-color: #e4d7cd;
+}
+/*.raccoglitore .showdoc-section .title {
+	background-color: #e4d7cd;
+}*/
+.raccoglitore .emphasis-title {
+	color: #735949;
+}
+
+/*.offerta legend, .offerta .fieldset .legend, .offerta .sub-header {
+	background-color: #eaea88;
+}
+.offerta .emphasis-title {
+	color: #7d7e08;
+}
+
+.offerta .showdoc-title {
+	background-color: #eaea88;
+}
+.offerta .showdoc-section .title .pull-right .glyphicon, .offerta .showdoc-section .title .pull-right .glyphicons-pro, 
+.offerta.docedit .fieldset .legend .pull-right .glyphicon, .offerta.docedit .fieldset .legend .pull-right .glyphicons-pro {
+	color: #eaea88;
+	opacity: 0.65;
+}*/
+
+.off-tipo {
+	width: 75%;
+}
+
+.off-costo {
+	width: 25%;
+	text-align: right;
+}
+
+.off-tipo.totale, .off-costo.totale {
+	font-weight: bold;
+}
+
+.off-totale-label .off-totale-value {
+	font-size: 1.3em;
+}
+
+.off-totale-value {
+	font-weight: bold;
+}
+
+.docedit .fieldset .legend {
+	background-color: transparent;
+	border: none;
+}
+
+.repertorio-inline-item {
+	width: 300px;	
+}
+
+.soginsapRep-inline-item {
+	width: 450px;	
+}
+
+.optstampa-inline-item {
+	width: 450px;	
+}
+
+.news-details.well, .fixes-details.well {
+	background-image: none;
+	background-color: #eee8aa;
+    margin: 2px 0;
+    padding: 5px;
+}
+
+.contenuto-doc {
+	margin-top: 20px;
+}
+
+.alert-danger.documento-annullato, .alert-success.documento-conservato {
+	background-image: none;
+	background-color: transparent;
+	color: #000;
+	border-width: 2px;
+}
+
+.documento-oggetto dd {
+	font-weight: bold;
+}
+
+.table td.resp-type {
+	width: 165px;
+	text-align: right;
+	font-weight: normal;
+	text-transform: uppercase;
+}
+
+.table td.resp-name {
+	padding-left: 15px;
+}
+
+.table td.resp-cmds {
+	width: 100px;
+}
+
+.table td.resp-vars {
+	width: 35px;
+}
+
+.table td.resp-date {
+	width: 180px;
+}
+
+.workflow-history-table td.workflow-history-first {
+	width: 165px;
+	text-align: right;
+	font-weight: normal;
+	text-transform: uppercase;
+}
+
+.workflow-history-table td.workflow-history-task {
+	padding-left: 15px;
+}
+
+.workflow-history-table td.workflow-history-date {
+	width: 150px;
+}
+
+@media screen and (max-width: 768px) {
+	.table td.resp-type {
+		width: auto;
+		text-align: left;
+		font-weight: normal;
+	}
+	
+	.table td.resp-name {
+		padding-left: 5px;
+	}
+	
+	.workflow-history-table td.workflow-history-first {
+		width: auto;
+		text-align: left;
+		font-weight: normal;
+	}
+	
+	.workflow-history-table td.workflow-history-task {
+		padding-left: 5px;
+	}
+}
+
+.glyphicon-remove, .glyphicon-ban-circle, .glyphicon-minus-sign {
+	color: #bf0c0c;
+}
+
+.glyphicon-plus-sign {
+	color: #528f4d;
+}
+
+.documenti-informatici .col-md-6 {
+	margin-top: 10px;
+}
+
+.documenti-informatici .media, .documenti-informatici .media-body {
+	overflow: visible;
+}
+
+.documenti-informatici .media-heading-label {
+	text-transform: uppercase;
+}
+
+.documenti-informatici .media-heading-text {
+	font-size: 1.2em;
+}
+
+.documenti-informatici .media-body {
+	margin-left: 75px;
+}
+
+.documenti-informatici .popover {
+	max-width: 750px;
+	font-size: 13px;
+}
+
+.daFirmareLink, .daFirmareLink:hover, .glyphicons-pro.pen.firma-digitale-btn {
+	color: #bc102d;
+}
+
+.documenti-informatici .file-firmato, .versions-titles-table .file-firmato {
+	font-style: italic;
+}
+
+.documenti-informatici .file-prenotato {
+	font-weight: bold;
+	text-decoration: underline;
+}
+
+.documenti-informatici .info-btn {
+	color: #428bca;
+}
+
+.documenti-informatici .metadati-btn {
+	color: #ff7402;
+}
+
+.documenti-informatici  .file-info-holder, .documenti-informatici  .metadata-holder {
+	margin: 5px 5px 5px 0;
+	background-color: #fff;
+	border: 1px solid #ddd;
+	border-radius: 4px;
+}
+
+.documenti-informatici  .file-info-holder .fileinfo-icon {
+	width: 10px;
+}
+
+.documenti-informatici  .metadata-holder {
+	font-size: 11px;
+}
+
+.documenti-informatici  .metadata-holder .filemeta-label {
+	text-transform: uppercase;
+	width: 120px;
+}
+
+.glyphicon.checkin-icon {
+	color: #007300;
+}
+
+.glyphicon.firmato-icon {
+	color: #ff6602;
+}
+
+.glyphicon.fileprenotato-icon {
+	color: #c32222;
+}
+
+.glyphicon.fileprenotatomio-icon {
+	color: #007300;
+}
+
+.glyphicon-file.pdf {
+	color: #84070e;
+}
+
+.glyphicon-file.xml {
+	color: #2a6496;
+}
+
+.glyphicon-envelope.pec, .glyphicons-pro.message_new.pec {
+	color: #811800;
+}
+
+.dl-horizontal .workflow-instance {
+	margin-bottom: 20px;
+}
+
+.workflow-title {
+	font-size: 13px;
+}
+
+.glyphicon-flag.workflow-concluso {
+	color: #5cb85c;
+}
+
+.glyphicon-flag.workflow-annullato {
+	color: #d9534f;
+}
+
+.glyphicon-remove.workflow-annullare {
+    color: #d9534f;
+}
+
+.glyphicon-cog.workflow-attivo {
+	color: #5bc0de;
+}
+
+.workflow-task-label {
+	font-weight: bolder;
+}
+
+pre {
+	word-break: normal;
+	white-space: pre-line;
+	max-height: 200px;
+}
+
+.smartactions-panel .panel-body {
+	padding: 5px;
+}
+
+.list-inline.smartactions-list > li {
+	text-align: center;
+    width: 80px;
+    padding: 10px 0;
+}
+
+.sidebar .panel .badge {
+	width: 38px;
+	font-weight: normal;
+	border-radius: 4px;
+}
+
+.sidebar .panel .badge.selection-item {
+	margin-left: 3px;
+}
+
+.sidebar .panel .badge.FTRAPAPSCAD {
+	background-color: #b04d4d;
+}
+
+.sidebar .vaschetta-link > a {
+	display: block;
+	padding: 3px;
+	border-radius: 4px;
+}
+
+.sidebar .vaschetta-link > a:hover {
+	text-decoration: none;
+	background-color: #eeeeee;
+}
+
+.sidebar .vaschetta-link > a.disabled, .sidebar .vaschetta-link > a.disabled:hover, .sidebar .vaschetta-link > a.disabled:focus {
+	color: #ccc;
+	background-color: transparent;
+	cursor: not-allowed;
+}
+
+.panel-body.scrivania-personale .vaschetta-con-select {
+	padding: 1px 0;
+}
+
+.panel-body.scrivania-personale .vaschetta-link > a {
+	padding: 2px 3px;
+}
+
+.sidebar .ufficio-selector {
+	margin-bottom: 10px;
+}
+
+.sidebar hr {
+	margin: 3px 0;
+}
+
+.showdoc-first-row-title, .showdoc-second-row-title {
+	display: block;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    vertical-align: middle;
+    white-space: nowrap;
+}
+
+.showdoc-title .showdoc-title-soggetto, .showdoc-title .showdoc-second-row-title {
+	text-transform: uppercase;
+}
+
+.showdoc-title-bozza {
+	font-weight: bold;
+}
+
+.showdoc-title .glyphicon, .showdoc-title .glyphicons-pro {
+	font-size: 40px;
+}
+
+.showdoc-title .glyphicon.titles-cestino, .showdoc-title .glyphicons-pro.titles-cestino {
+	font-size: 35px;
+	padding: 5px;
+}
+
+.showdoc-title .glyphicon.doc-tipo-fascicolo, .fascicolo .sub-header .glyphicon, .showdoc-title .glyphicons-pro.doc-tipo-fascicolo, .fascicolo .sub-header .glyphicons-pro {
+	background-color: #7262AC;
+}
+
+.showdoc-title .glyphicon.doc-tipo-fascicolo, .sub-header .glyphicon.doc-tipo-fascicolo, .showdoc-title .glyphicons-pro.doc-tipo-fascicolo, .sub-header .glyphicons-pro.doc-tipo-fascicolo {
+	padding: 5px;
+}
+
+.showdoc-title .glyphicon.doc-tipo-fascicolo, .showdoc-title .glyphicons-pro.doc-tipo-fascicolo {
+	font-size: 35px;
+	padding: 8px;
+}
+
+.showdoc-title.doc-tipo-fascicolo, .fascicolo .sub-header {
+	background-color: #e0ddec;
+}
+
+.showdoc-title .glyphicon.doc-tipo-raccoglitore, .raccoglitore .sub-header .glyphicon {
+	background-color: #735949;
+}
+
+.showdoc-title .glyphicon.doc-tipo-raccoglitore, .sub-header .glyphicon.doc-tipo-raccoglitore {
+	padding: 5px;
+}
+
+.showdoc-title.doc-tipo-raccoglitore, .raccoglitore .sub-header {
+	background-color: #e4d7cd;
+}
+
+.showdoc-title .showdoc-row-subtitle {
+	font-size: 12px;
+}
+
+/*
+.showdoc-title .showdoc-custom-title-icon {
+	background-color: #999999;
+    border-radius: 4px;
+    line-height: 50px;
+    padding: 10px;
+    white-space: nowrap;
+}
+
+.showdoc-title .showdoc-custom-title-icon img {
+	height: 22px;
+}
+*/
+
+.showdoc-title .glyphicon-saved, .showdoc-title .glyphicon-lock {
+	font-size: 20px;
+}
+
+.showdoc-title .glyphicon-lock.riservato {
+	/*color: #ffff00;*/
+}
+
+.showdoc-title .glyphicon-lock.segreto {
+	color: #ffa500;	
+}
+
+.showdoc-title .glyphicon-lock.segretissimo {
+	color: #ff0000;	
+}
+
+.showdoc-title .popover {
+	min-width: 200px;
+	max-width: 750px;
+	font-size: 13px;
+}
+
+.showdoc-section .table-condensed {
+	margin-bottom: 5px;
+}
+
+.showdoc-section .table-condensed td {
+	border: none;
+	padding: 3px 3px 3px 15px;
+}
+
+.data-prot-differito {
+	color: #007300;
+}
+
+.visto-icon {
+	color: #007300;
+}
+
+.differito-icon {
+	color: #2470aa;
+}
+
+.attach-icon {
+	color: #696969;
+}
+
+.image-icon {
+	color: #a52a2a;
+}
+
+.fascicolo-icon {
+	color: #d2691e;
+}
+
+.fascicolo-minuta-icon {
+	color: #ff6347;
+}
+
+.link-icon {
+	color: #daa520;
+}
+
+.annullato-icon, .cestino-icon {
+	color: #bf0c0c;
+}
+
+.oggetto-documento-value {
+	font-weight: bold;
+	text-transform: uppercase;	
+}
+
+.subtitles-td {
+	background-color: #fff;
+}
+
+/*tr.subtitles:hover > td.subtitles-td {
+	background-color: #fff;
+	color: #000;
+}
+
+.table-hover > tbody > tr.subtitles:hover > td.subtitles-td a {
+	color: #3f88c7;
+}
+
+.table-hover > tbody > tr.subtitles:hover > td.subtitles-td a:hover, .table-hover > tbody > tr.subtitles:hover .btn-toolbar a:hover {
+	color: #fff;
+}*/
+
+.subtitles-holder .table-hover > tbody > tr:hover > td a {
+	color: #fff;
+}
+
+.subtitles-holder .btn-toolbar a .glyphicon, .subtitles-holder .btn-toolbar a .glyphicons-pro {
+	font-size: 10px;
+	color: #fff;
+}
+
+.subtitles-holder .btn-toolbar a:hover {
+	color: #fff;
+}
+
+.table > thead > tr > th {
+	padding-bottom: 5px;
+}
+
+.sidebar .vaschette-custom .btn {
+	 padding: 1px 4px;
+	 margin-top: -2px;
+} 
+
+.sidebar .vaschette-custom .dropdown-menu > li > a {
+	padding: 2px 6px;
+}
+
+.navbar-nav .openclose-vaschette-link {
+	border-right: 1px solid #fff;
+}
+
+.navbar-nav .openclose-vaschette-link .glyphicon, .navbar-nav .openclose-vaschette-link .glyphicons-pro {
+	color: #ddd;	
+}
+
+.adm-command {
+	margin: 5px 0;
+}
+
+.table.gerarchia-fascicoli-table {
+	width: auto;
+}
+
+.gerarchia-fascicoli .glyphicon-folder-open, .gerarchia-fascicoli .glyphicon-folder-close,
+.gerarchia-fascicoli .glyphicons-pro.folder_open, .gerarchia-fascicoli .glyphicons-pro.folder_closed, .gerarchia-fascicoli .glyphicons-pro.folder_flag {
+	color: #7262ac;
+}
+
+.gerarchia-fascicoli .fascicolo-selezionato {
+	background-color: #e0ddec;
+	border-radius: 4px;
+	padding: 2px;
+}
+
+.fasc-collocazione-archivio {
+	text-transform: uppercase;	
+}
+
+.glyphicon-folder-open.webmail-folder-default {
+	color: #b22222;
+}
+
+.webmail .btn-toolbar {
+	margin-top: 10px;
+}
+
+.anteprima-email-oggetto {
+	font-weight: bold;
+}
+
+.webmail-content-iframe {
+	border: 1px solid #CCCCCC;
+    margin: 5px 0;
+    padding: 5px;
+    width: 100%;
+    height: 350px;
+    overflow: auto;
+}
+
+.notif-diff-section-content {
+	margin: 5px;
+	padding: 5px;	
+}
+
+.vaschetta-error {
+	color: red;	
+}
+
+.docinfo-table.table {
+	margin-bottom: 0;
+}
+
+.docinfo-table.table tr td {
+	border: 0;
+}
+
+.doc-bozza-label, .doc-annullato-label {
+	font-weight: bold;
+	text-transform: uppercase;
+} 
+
+.annullato-modal .well {
+	border: 1px solid #a94341;
+}
+
+.annullato-modal .well h5 {
+	text-transform: uppercase;	
+}
+
+.showdoc-title .glyphicons-pro.doc-tipo-arrivo, .showdoc-title .glyphicons-pro.doc-tipo-differito, .showdoc-title .glyphicons-pro.doc-tipo-partenza, .showdoc-title .glyphicons-pro.doc-tipo-interno, .showdoc-title .glyphicons-pro.doc-tipo-custom {
+	font-size: 33px;
+	padding: 6px;
+}
+
+.showdoc-title .stati-doc-holder .glyphicon, .showdoc-title .stati-doc-holder .glyphicons-pro {
+	font-size: 16px;
+}
+
+.stati-doc-holder dt .glyphicon, .stati-doc-holder dt .glyphicons-pro, 
+.dl-notifiche-fattura dd .glyphicon, .dl-notifiche-fattura dd .glyphicons-pro,
+.dl-registro-fatture dt .glyphicon, .dl-registro-fatture dt .glyphicons-pro {
+	padding: 3px;
+	border-radius: 4px;
+	color: #fff;
+}
+
+.stati-doc-holder .doc-annullato, .stati-doc-holder .doc-abrogato, .stati-doc-holder .ftrpap-decorrenza-termini, .stati-doc-holder .ftrpaa-trasmissione-impossibile,
+.stati-doc-holder .ftrpaa-notifica-scarto, 
+.dl-notifiche-fattura .ftrpap-decorrenza-termini, .dl-notifiche-fattura .ftrpap-esito-committente-EC02, .dl-notifiche-fattura .ftrpap-scarto-esito-committente, 
+.dl-notifiche-fattura .ftrpaa-notifica-scarto, .dl-notifiche-fattura .ftrpaa-trasmissione-impossibile, .dl-notifiche-fattura .ftrpap-esito-committente-EC02,
+.stati-doc-holder .doc-cestino {
+	background-color: #bf0c0c;
+}
+
+.dl-registro-fatture .registro-fatture-error {
+	background-color: #bc430b;
+}
+
+.stati-doc-holder .doc-segnatura, .stati-doc-holder .doc-conservato, .stati-doc-holder .ftrpap-esito-committente, .stati-doc-holder .ftrpaa-fattura-send, 
+.dl-notifiche-fattura .ftrpap-esito-committente-EC01, .dl-notifiche-fattura .ftrpaa-fattura-send, .dl-notifiche-fattura .ftrpaa-ricevuta-consegna, 
+.dl-notifiche-fattura .ftrpap-esito-committente-EC01, .stati-doc-holder .doc-alboExt-pubblicato {
+	background-color: #007300;
+}
+
+.stati-doc-holder .doc-riservato, .stati-doc-holder .doc-personale, .stati-doc-holder .doc-bozza {
+	background-color: #000;
+}
+
+.stati-doc-holder .doc-segreto, .dl-notifiche-fattura .ftrpaa-mancata-consegna {
+	background-color: #ff4500;
+}
+
+.stati-doc-holder .ftrpap-attesa-esito-committente,
+.stati-doc-holder .doc-alboExt-attesa-pubblicazione {
+	background-color: #ffc300;
+}
+
+.stati-doc-holder .doc-segretissimo {
+	background-color: #bf0c0c;
+}
+
+.stati-doc-holder .doc-visibilita-custom {
+	background-color: #4d4d4d;
+}
+
+.stati-doc-holder .doc-differito, .stati-doc-holder .split-email-doc {
+	background-color: #2470aa;
+}
+
+.stati-doc-holder .file-prenotato {
+	background-color: #ffa500;
+}
+
+.stati-doc-holder .archivio-deposito, .stati-doc-holder .archivio-deposito-minuta {
+	background-color: #f9c802;
+}
+
+.docinfo-table .visibilita-icon.doc-riservato {
+	color: #000;
+}
+
+.docinfo-table .visibilita-icon.doc-segreto {
+	color: #ff4500;
+}
+
+.docinfo-table .visibilita-icon.doc-segretissimo {
+	color: #bf0c0c;
+}
+
+.docinfo-table .visibilita-icon.doc-visibilita-custom {
+	color: #4d4d4d; 
+}
+
+.docinfo-table .archivio-deposito-icon {
+	color: #f9c802;
+}
+
+.docinfo-table .doc-conservato-icon {
+	color: #005b04;
+}
+
+.stati-doc-holder .label-doc-cestino {
+	font-weight: bold;
+	color: #bf0c0c;
+}
+
+/*############################### ICONE PER REPERTORI PERSONALIZZATI - INIZIO ###############################*/
+
+.doc-titles-table .doc-tipo-custom, .showdoc-title .doc-tipo-custom {
+	background-color: #999;
+}
+
+.doc-tipo-custom.offerta, .doc-tipo-custom.fattura {
+	background-color: #6d9a10;
+}
+
+.doc-tipo-custom.ordine {
+	background-color: #2470aa;
+}
+
+/*############################### ICONE PER REPERTORI PERSONALIZZATI - FINE ###############################*/
+
+pre.postit {
+	background-color: #fcffa1;
+}
+
+.img-thumbnail.media-object {
+	background-color: transparent;
+	border: none;
+}
+
+.filetype.img-thumbnail.media-object {
+	font-size: 50px;
+	color: #444;
+}
+
+.glyphicons-pro.pen.firma-digitale {
+	color: #ff6347;
+}
+
+.doc-tipo-custom.fatturapa-passiva {
+	background-color: #2470AA;
+}
+
+.doc-tipo-custom.fatturapa-attiva {
+	background-color: #6D9A10;
+}
+
+.dati-fattura-section .glyphicon.glyphicon-info-sign {
+	color: #3f88c7;
+}
+
+.ftrpa-linea-prezzoTot {
+	width: 20%;
+	text-align: right;	
+}
+
+.ftrpa-riepilogo-imponibile, .ftrpa-riepilogo-imposta, .ftrpa-riepilogo-aliquotaiva, .ftrpa-riepilogo-totale {
+	width: 25%;	
+}
+
+.table.doc-partenza-destinatari, .table.doc-arrivo-mittente {
+	width: auto;
+}
+
+.table.doc-partenza-destinatari .dest-btns-ws, .table.doc-partenza-destinatari .dest-btns-email, .table.doc-partenza-destinatari .dest-btns-email-disabled, .table.doc-partenza-destinatari .dest-descr,
+.table.doc-arrivo-mittente .mitt-btns-email, .table.doc-arrivo-mittente .mitt-descr {
+	padding: 0; 
+}
+
+.table.doc-partenza-destinatari .dest-btns-ws {
+	width: 60px; 
+}
+
+.table.doc-partenza-destinatari .dest-btns-email {
+	width: 80px; 
+}
+
+.table.doc-arrivo-mittente .mitt-btns-email, .table.doc-partenza-destinatari .dest-btns-email-disabled {
+	width: 30px; 
+}
+
+dt.oggetto-documento-label, dd.oggetto-documento-value {
+	padding-bottom: 10px;
+    padding-top: 10px;	
+}
+
+.input-group-addon.firma-digitale-addon, .input-group-addon.addon-with-icon {
+	padding: 1px 6px 0 6px;
+}
+
+.input-group-addon.firma-digitale-addon label, .input-group-addon.addon-with-icon label {
+	margin-bottom: 0;	
+}
+
+.btn .glyphicons-pro.floppy_open.iwx-images-apply-changes {
+	color: red;	
+}
+
+.btn.disabled .glyphicons-pro.floppy_open.iwx-images-apply-changes {
+	color: grey;	
+}
+
+.engineeringSignatureContainer {
+	width:100%;
+}
+
+.engineeringSignatureContainer .signatureframe {
+	border: 1px solid #ccc;
+	width:100%;
+}
+
+.workflow-task-action {
+	font-weight: bold;
+}
+
+.workflow-task-error {
+	color: red;
+}
+
+.table-striped .personeruolo-matricola {
+	width: 15%;
+}
+
+.table-striped .personeruolo-nome {
+	width: 50%;
+}
+
+.table-striped .personeruolo-email {
+	width: 35%;
+}
+
+.showtitles-documento-non-visto {
+	font-weight: bold;
+}
+
+.showtitles-documento-non-visibile {
+	font-weight: bold;
+}
+
+.fattura-accettata-label, .fattura-rifiutata-label {
+	text-transform: uppercase;
+	font-weight: bold;
+}
+
+.fattura-accettata-label {
+	color: #007300;
+}
+
+.fattura-rifiutata-label {
+	color: #bf0c0c;
+}
+
+.label-registro-fatture-error {
+	color: #bc430b;
+}
+
+.spesa-rilevante-a-fini-iva {
+	font-style: italic;
+}
+
+.fatturapa-invio-info {
+	font-weight: bold;
+}
+
+dl.dl-horizontal.dl-notifiche-fattura {
+	margin-bottom: 15px;
+}
+
+.space-span {
+	display: inline-block;
+	width: 22px;
+}
+
+.tree-c-span {
+	display: inline-block;
+	width: 22px;
+	background-image: url('images/btree/c.png');
+}
+
+.tree-cb-span {
+	display: inline-block;
+	width: 22px;
+	background-image: url('images/btree/cb.png');
+}
+
+/* DOCWAY DELIBERE  */
+.showdoc-title .glyphicons-pro.doc-tipo-seduta {
+	font-size: 33px;
+	padding: 6px;
+}
+
+.doc-titles-table .glyphicon.doc-tipo-seduta, .seduta .sub-header .glyphicon, .showdoc-title .glyphicon.doc-tipo-seduta, .showdoc-title .glyphicon.doc-tipo-seduta,
+.doc-titles-table .glyphicons-pro.doc-tipo-seduta, .seduta .sub-header .glyphicons-pro, .showdoc-title .glyphicons-pro.doc-tipo-seduta, .showdoc-title .glyphicons-pro.doc-tipo-seduta {
+	background-color: #008040;
+} 
+ 
+.doc-tipo-seduta.disabled{
+	color: #ccc;
+	background-color: #999999 !important;
+	cursor: not-allowed;
+}
+
+.vertical-align-middle{
+	vertical-align: middle !important;
+}
+
+.btn-toolbar.delibere-btn-toolbar{
+	margin:0 0 15px 0;
+}
+
+.showdoc-title.doc-tipo-seduta, .seduta .sub-header {
+	background-color: #b0ffb0;
+}
+
+.show-odg-table .width-5{
+	width:	5%;
+}
+
+.show-odg-table .width-10{
+	width: 10%;
+}
+
+.show-odg-table .width-20{
+	width: 20%;
+}
+
+.show-odg-table .width-30{
+	width: 30%;
+}
+
+.show-odg-table .width-55{
+	width: 55%;
+}
+
+.show-odg-table .width-70{
+	width: 70%;
+}
+
+.show-odg-table.width-100{
+	width: 100%;
+}
+
+.showdoc-section .table-bordered td.check-col, .showdoc-section .table-bordered th.check-col{
+	text-align: center;
+}
+
+.showdoc-section .table-bordered td{
+	vertical-align: middle;
+}
+
+.showdoc-section .table-bordered td.check-col > table{
+	width: 100%;
+}
+
+.radioTable td label{
+	display:none;
+}
+
+.radioTable td input[type="radio"]{
+	padding-right:5px;
+}
+
+.radioTable{
+	width: 100%;
+	text-align: center;	
+}
+
+.tipoRicerca td{
+	padding-right: 20px;
+}
+
+.tipoRicerca td label{
+	padding-left: 5px;
+}
+
+.azioni-col .btn-group input[type=submit]{
+	width: 100%;
+	border: none;
+}
+
+.withoutSmartActions{
+	padding: 0px 10px;
+}
+
+.alert-conservazione-title {
+	border-bottom: 1px solid #30708f;	
+}
+
+pre.estremi-annullamento {
+	border: none;
+	margin: 0;
+	padding: 0;
+	font-size: 1em;
+}

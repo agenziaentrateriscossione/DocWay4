@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+    template="#{queryPartenzaDCPP.pageTemplate}"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:c="http://java.sun.com/jsp/jstl/core"
+    xmlns:p="http://xmlns.jcp.org/jsf/passthrough">
+
+<ui:define name="content">
+
+	<div id="advancedSearch" class="submitEnterKey">
+  		<!-- toolbar: inizio -->
+		<div class="btn-toolbar docway-toolbar" role="toolbar">
+			<div class="btn-group">
+				<h:commandLink id="advancedSearchBtn" action="#{queryPartenzaDCPP.queryPlain}" styleClass="btn btn-primary openwaitmsg" value="#{i18n['acl.search']}" />
+				<ui:remove>
+					<h:commandLink rendered="#{queryPartenzaDCPP.formsAdapter.funzionalitaDisponibili['showRefine']}" action="#{queryPartenzaDCPP.refine}" value="#{i18n['dw4.refine']}" styleClass="btn btn-default" />
+				</ui:remove>				
+				
+				<h:commandLink action="#{queryPartenzaDCPP.resetQuery}" styleClass="btn btn-default" value="#{i18n['acl.clear']}">
+					<f:ajax execute="@form" render="@form" />
+				</h:commandLink>
+			</div>
+		</div>
+		<!-- toolbar: fine -->
+  	
+  		<h5 class="sub-header">
+			<span class="glyphicon glyphicon-search"></span>&#160;
+			#{i18n['dw4.search_documentazione_di_ciclo_passivo']}
+		</h5>
+		
+		<!-- messages: inizio -->
+		<h:panelGroup rendered="#{not empty facesContext.messageList}" layout="block" styleClass="docedit-messages alert alert-danger">
+			<h:messages styleClass="" id="validationMesseges" />
+		</h:panelGroup>
+		<!-- messages: fine -->
+
+		<!-- scheda query: inizio -->
+		<div class="row-fluid" style="margin-top:10px;">
+		<div id="fixedshowdoc" class="box span12 fixed-showdoc">
+			<div class="box-content ">
+				
+				<div class="fieldset">
+					<div class="legend">#{i18n['acl.freesearch']}</div>
+					
+					<div class="form-group">
+						<label for="templateForm:doc_globale" class="col-sm-2 control-label">#{i18n['dw4.ricerca_full_text']}</label>
+						<div class="col-sm-9">
+							<h:inputText id="doc_globale" styleClass="form-control" value="#{queryPartenzaDCPP.custom_globale}"/>
+						</div>
+					</div>
+					<div class="form-group">
+						<div class="col-sm-offset-2 col-sm-9">
+							<h:selectOneRadio value="#{queryPartenzaDCPP.radio}" layout="pageDirection" styleClass="radio-selection">
+								<f:selectItem itemValue="1" itemLabel="#{i18n['dw4.globale']}" />
+								<f:selectItem itemValue="2" itemLabel="#{i18n['dw4.globalerecord']}"/>
+								<f:selectItem itemValue="3" itemLabel="#{i18n['dw4.globaleallegati']}"/>
+							</h:selectOneRadio>
+						</div>
+					</div>
+				</div>
+				
+				<h:panelGroup id="datiRepPanel" layout="block">
+					<div class="fieldset">
+						<div class="legend">
+							<h:commandLink action="#{queryPartenzaDCPP.openCloseWidgetDatiRepertorio}" styleClass="legend-link">
+								<f:ajax render="templateForm:datiRepPanel"/>
+								#{i18n['dw4.dati_del_repertorio']}
+								<span class="pull-right">
+									<span class="glyphicon #{queryPartenzaDCPP.dati_repertorio ? 'glyphicon-collapse-up' : 'glyphicon-collapse-down'}"></span>
+								</span>
+							</h:commandLink>
+						</div>
+						
+						<div class="form-group">
+							<label for="templateForm:dcp_numeronav" class="col-sm-2 control-label">#{i18n['dw4.numero_nav']}</label>
+							<div class="col-sm-3">
+								<h:inputText styleClass="form-control" value="#{queryPartenzaDCPP.dcp_numeronav}" id="dcp_numeronav"/>
+							</div>
+							<label for="templateForm:dcp_tipologiadocumento" class="col-sm-2 col-sm-offset-1 control-label">#{i18n['acl.tipologia']}</label>
+							<div class="col-sm-3">
+								<h:selectOneMenu id="dcp_tipologiadocumento" value="#{queryPartenzaDCPP.dcp_tipologiadocumento}" styleClass="form-control">
+									<f:selectItems value="#{queryPartenzaDCPP.tipologiaDocumentazioneSelect}" var="option" itemValue="#{option.value}" itemLabel="#{option.value}"/>
+								</h:selectOneMenu>
+							</div>
+						</div>
+						<div class="form-group">
+							<label for="templateForm:doc_rifesternirifnome" class="col-sm-2 control-label">#{i18n['dw4.fornitore']}</label>
+							<div class="col-sm-9">
+								<div class="input-group">
+									<h:inputText styleClass="form-control" value="#{queryPartenzaDCPP.doc_rifesternirifnome}" id="doc_rifesternirifnome"/>
+									<div class="input-group-btn">
+										<h:commandLink title="#{i18n['acl.vocabulary']}" action="#{queryPartenzaDCPP.openIndexRifEsterniDoc}" styleClass="btn btn-default">
+											<f:ajax execute="@form" render="@form"/>
+											<span class="glyphicon glyphicon-search"></span>
+										</h:commandLink>
+									</div>
+								</div>
+							</div>
+						</div>
+						<div class="form-group">
+							<label for="templateForm:codice_fiscale" class="col-sm-2 control-label">#{i18n['acl.cf']}</label>
+							<div class="col-sm-3">
+								<div class="input-group">
+									<h:inputText styleClass="form-control" value="#{queryPartenzaDCPP.codice_fiscale}" id="codice_fiscale"/>
+									<div class="input-group-btn">
+										<h:commandLink title="#{i18n['acl.vocabulary']}" action="#{queryPartenzaDCPP.openIndexCodFiscaleDoc}" styleClass="btn btn-default">
+											<f:ajax execute="@form" render="@form"/>
+											<span class="glyphicon glyphicon-search"></span>
+										</h:commandLink>
+									</div>
+								</div>
+							</div>
+							<label for="templateForm:partita_iva" class="col-sm-2 col-sm-offset-1 control-label">#{i18n['acl.piva']}</label>
+							<div class="col-sm-3">
+								<div class="input-group">
+									<h:inputText styleClass="form-control" value="#{queryPartenzaDCPP.partita_iva}" id="partita_iva"/>
+									<div class="input-group-btn">
+										<h:commandLink title="#{i18n['acl.vocabulary']}" action="#{queryPartenzaDCPP.openIndexPIvaDoc}" styleClass="btn btn-default">
+											<f:ajax execute="@form" render="@form"/>
+											<span class="glyphicon glyphicon-search"></span>
+										</h:commandLink>
+									</div>
+								</div>
+							</div>
+						</div>
+						<div class="form-group">
+							<label for="templateForm:dcp_numeronav" class="col-sm-2 control-label">#{i18n['dw4.stato_nav']}</label>
+							<div class="col-sm-3">
+								<h:selectOneMenu id="dcp_statonav" value="#{queryPartenzaDCPP.dcp_statonav}" styleClass="form-control">
+									<f:selectItem itemValue="" itemLabel="" />
+									<f:selectItem itemValue="Da inviare" itemLabel="Da inviare" />
+									<f:selectItem itemValue="Inviata" itemLabel="Inviata" />
+								</h:selectOneMenu>
+							</div>
+						</div>
+						
+						<div class="form-group" style="margin-top:25px;">
+							<label for="templateForm:repertorio_anno" class="col-sm-2 control-label">#{i18n['dw4.anno']}</label>
+							<div class="col-sm-2">
+								<div class="input-group">
+									<h:inputText styleClass="form-control" value="#{queryPartenzaDCPP.repertorio_anno}" id="repertorio_anno" />
+									<div class="input-group-btn">
+										<h:commandLink title="#{i18n['acl.vocabulary']}" action="#{queryPartenzaDCPP.openIndexAnnoRep}" styleClass="btn btn-default">
+											<f:ajax execute="@form" render="@form"/>
+											<span class="glyphicon glyphicon-search"></span>
+										</h:commandLink>
+									</div>
+								</div>
+							</div>
+							<ui:include src="../rangeField.xhtml">
+								<ui:param name="label" value="#{i18n['dw4.numero_repertorio']}" />
+								<ui:param name="id" value="custom_rep" />
+								<ui:param name="from_value" value="#{queryPartenzaDCPP.custom_rep_da}" />
+								<ui:param name="to_value" value="#{queryPartenzaDCPP.custom_rep_a}" />
+								<ui:param name="is_date" value="false" />
+								<ui:param name="offset" value="2" />
+							</ui:include>
+						</div>
+						
+						<div class="form-group">
+							<label for="templateForm:custom_numeri_rep" class="col-sm-2 control-label"><span>#{i18n['dw4.numeri_di_repertorio']}</span></label>
+							<div class="col-sm-9">
+								<h:inputText styleClass="form-control" value="#{queryPartenzaDCPP.custom_numeri_rep}" id="custom_numeri_rep" p:placeholder="#{i18n['dw4.separare_i_valori_da_virgola']}" title="#{i18n['dw4.separare_i_valori_da_virgola']}" />
+							</div>
+						</div>
+					</div>
+				</h:panelGroup>
+				
+				<ui:include src="../queryDoc@EstremiProtocollo.xhtml">
+					<ui:param name="bean" value="#{queryPartenzaDCPP}"/>
+				</ui:include>
+				
+				<ui:include src="../queryDoc@DatiDoc.xhtml">
+					<ui:param name="bean" value="#{queryPartenzaDCPP}"/>
+				</ui:include>
+				
+				<ui:include src="../queryDoc@Workflow.xhtml">
+					<ui:param name="bean" value="#{queryGlobale}"/>
+				</ui:include>
+				
+				<ui:include src="../queryDoc@Assegnatari.xhtml">
+					<ui:param name="bean" value="#{queryPartenzaDCPP}"/>
+				</ui:include>
+				
+				<ui:include src="../queryDoc@InformazioniServizio.xhtml">
+					<ui:param name="bean" value="#{queryPartenzaDCPP}"/>
+				</ui:include>				
+			</div>
+		</div>
+		</div>
+		<!-- scheda query fine -->
+		
+		<script type="text/javascript">
+		$(document).ready(function() {
+			// focus su campo globale
+			$('#templateForm\\:doc_globale').focus();
+		});
+		</script>
+
+		<h:inputTextarea value="#{queryPartenzaDCPP.xml}" rendered="#{queryPartenzaDCPP.debugMode}" styleClass="form-control" rows="10" />
+	</div>
+	
+	<ui:include src="../showindex.xhtml"><ui:param name="pageBean" value="#{queryPartenzaDCPP}"/></ui:include>
+</ui:define>
+    
+</ui:composition>    

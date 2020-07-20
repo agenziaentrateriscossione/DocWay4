@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:f="http://java.sun.com/jsf/core">
+<ui:composition>
+
+	<!-- primo livello toolbar: inizio -->
+	<div class="btn-toolbar" role="toolbar">
+		<div class="btn-group pull-right">
+			<ui:include src="./navigationBar.xhtml"><ui:param name="bean" value="#{bean}"/><ui:param name="customPage" value="true"/><ui:param name="customPageId" value="showdocId"/></ui:include>
+		</div>
+		
+		<div class="btn-group">
+			<h:commandLink rendered="#{bean.formsAdapter.paginaTitoliEnabled}" action="#{bean.paginaTitoli}"  styleClass="btn btn-default openwaitmsg">#{i18n['acl.titles']}</h:commandLink>
+			<!-- @TODO controllare se serve -->
+			<h:commandLink rendered="#{!bean.popupPage and !empty qPersonalView}" action="#{docwaymenu.gotoTableQSpecificPersonalView(bean.doc.tipo, qPersonalView)}"  styleClass="btn btn-default openwaitmsg">#{i18n['acl.ricerca']}</h:commandLink>
+		</div>
+	</div>
+	<!-- primo livello toolbar: fine -->
+	
+	<!-- secondo livello toolbar: inizio -->
+	<div class="btn-toolbar" role="toolbar">
+		<h:panelGroup rendered="#{bean.formsAdapter.funzionalitaDisponibili['defaultMasch']}">
+			<div class="btn-group">
+				<!-- TODO action hxp-doc-action-modifytabledoc-->
+				<h:commandLink rendered="#{bean.formsAdapter.funzionalitaDisponibili['modifica']}" title="#{i18n['dw4.modifica_la_seduta']}" action="#{bean.modifyTableDoc}" styleClass="btn btn-default openwaitmsg">#{i18n['dw4.modifica']}</h:commandLink>
+				<h:commandLink rendered="#{bean.formsAdapter.funzionalitaDisponibili['rimuovidoc']}" title="#{i18n['dw4.elimina_la_seduta']}" action="#{bean.rimuoviDoc}" styleClass="btn btn-default openwaitmsg" onclick="if(!owmConfirm('#{i18n['dw4.deleteconfirm_documento']}'))return false;">#{i18n['dw4.cancella']}</h:commandLink>
+				
+				<h:panelGroup rendered="#{bean.formsAdapter.funzionalitaDisponibili['odg'] or bean.formsAdapter.funzionalitaDisponibili['invio_odg']}" layout="block" styleClass="btn-group">
+					<button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+						#{i18n['dw4.odg']} <span class="caret"></span>
+					</button>
+					<ul class="dropdown-menu">
+						<li><h:commandLink rendered="#{bean.formsAdapter.funzionalitaDisponibili['odg']}" title="#{i18n['dw4.ordine_del_giorno']}" action="#{bean.downloadModelloOdg}">#{i18n['dw4.ordine_del_giorno']}</h:commandLink></li>
+						<!-- TODO DA CONTROLLARE hxp-custom-inviaModelloALista-modelloODG -->
+						<li><h:commandLink rendered="#{bean.formsAdapter.funzionalitaDisponibili['invio_odg']}" title="#{i18n['dw4.invia_odg_alla_lista']}" action="#{bean.invioModelloOdg}" onclick="if(!owmConfirm('#{i18n['dw4.conferma_invio_odg']}'))return false;">#{i18n['dw4.invio_OdG']}</h:commandLink></li>				
+					</ul>
+				</h:panelGroup>
+				
+				<h:panelGroup rendered="#{bean.formsAdapter.funzionalitaDisponibili['modello_risultati'] or bean.formsAdapter.funzionalitaDisponibili['invio_risultati'] or bean.formsAdapter.funzionalitaDisponibili['risultati']}" layout="block" styleClass="btn-group">
+					<button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+						#{i18n['dw4.risultati']} <span class="caret"></span>
+					</button>
+					<ul class="dropdown-menu">
+						<li><h:commandLink rendered="#{bean.formsAdapter.funzionalitaDisponibili['modello_risultati']}" title="#{i18n['dw4.modello_dei_risultati']}" action="#{bean.downloadModelloRisultati}">#{i18n['dw4.modello_dei_risultati']}</h:commandLink></li>
+						<li><h:commandLink rendered="#{bean.formsAdapter.funzionalitaDisponibili['invio_risultati']}" title="#{i18n['dw4.invia_modello_risultati']}" action="#{bean.invioModelloRisultati}" onclick="if(!owmConfirm('#{i18n['dw4.conferma_invio_odg']}'))return false;">#{i18n['dw4.invia_modello_risultati']}</h:commandLink></li>
+						<li><h:commandLink rendered="#{bean.formsAdapter.funzionalitaDisponibili['risultati']}" title="#{i18n['dw4.comunicazione_dei_risultati']}" action="#{bean.risultatiSeduta}" styleClass="openwaitmsg">#{i18n['dw4.risultati']}</h:commandLink></li>
+					</ul>
+				</h:panelGroup>
+								
+				<h:commandLink rendered="#{bean.formsAdapter.funzionalitaDisponibili['presentiAssenti']}" styleClass="btn btn-default openwaitmsg" action="#{bean.presentiAssenti}">#{i18n['dw4.componenti']}</h:commandLink>
+				<h:commandLink rendered="#{bean.formsAdapter.funzionalitaDisponibili['produciDelibere']}" styleClass="btn btn-default openwaitmsg" action="#{bean.produciDelibere}">#{i18n['dw4.delibere']}</h:commandLink>
+				
+				<h:panelGroup rendered="#{bean.formsAdapter.funzionalitaDisponibili['modelloVerbale'] or bean.formsAdapter.funzionalitaDisponibili['invio_verbale'] or bean.formsAdapter.funzionalitaDisponibili['produciVerbale']}" layout="block" styleClass="btn-group">
+					<button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+						#{i18n['dw4.verbale']} <span class="caret"></span>
+					</button>
+					<ul class="dropdown-menu">
+						<li><h:commandLink rendered="#{bean.formsAdapter.funzionalitaDisponibili['modelloVerbale']}" action="#{bean.downloadModelloVerbale}" title="#{i18n['dw4.modello_verbale']}">#{i18n['dw4.modello_verbale']}</h:commandLink></li>
+						<li><h:commandLink rendered="#{bean.formsAdapter.funzionalitaDisponibili['invio_verbale']}" action="#{bean.invioModelloVerbale}" onclick="if(!owmConfirm('#{i18n['dw4.conferma_invio_odg']}'))return false;">#{i18n['dw4.invia_modello_verbale']}</h:commandLink></li>
+						<li><h:commandLink rendered="#{bean.formsAdapter.funzionalitaDisponibili['produciVerbale']}" action="#{bean.produciVerbale}" styleClass="openwaitmsg">#{i18n['dw4.verbale']}</h:commandLink></li>
+					</ul>
+				</h:panelGroup>
+			</div>
+		</h:panelGroup>
+		
+		<h:panelGroup rendered="#{bean.formsAdapter.funzionalitaDisponibili['maschRis']}">
+			<div class="btn-group">
+				<h:commandLink styleClass="btn btn-default openwaitmsg" action="#{bean.tornaDaRisultati}">#{i18n['torna']}</h:commandLink>
+				<h:commandLink styleClass="btn btn-default openwaitmsg" action="#{bean.pulisciRisultati}">#{i18n['dw4.clear']}</h:commandLink>
+				<h:commandLink styleClass="btn btn-default openwaitmsg" action="#{bean.confermaRisultati}">#{i18n['dw4.conferma']}</h:commandLink>
+			</div>
+		</h:panelGroup>
+		
+		<h:panelGroup rendered="#{bean.formsAdapter.funzionalitaDisponibili['maschComp']}">
+			<div class="btn-group">
+				<h:commandLink styleClass="btn btn-default openwaitmsg" action="#{bean.tornaDaRisultati}">#{i18n['torna']}</h:commandLink>
+				<h:commandLink styleClass="btn btn-default openwaitmsg" action="#{bean.confermaComponenti}">#{i18n['dw4.conferma']}</h:commandLink>
+			</div>
+		</h:panelGroup>
+		
+		<h:panelGroup rendered="#{bean.formsAdapter.funzionalitaDisponibili['maschDelib']}">
+			<div class="btn-group">
+				<h:commandLink styleClass="btn btn-default openwaitmsg" action="#{bean.tornaDaRisultati}">#{i18n['torna']}</h:commandLink>
+				<h:commandLink styleClass="btn btn-default openwaitmsg" action="#{bean.confermaDelibera}" >#{i18n['dw4.conferma']}</h:commandLink>
+			</div>
+		</h:panelGroup>
+	</div>
+	<!-- secondo livello toolbar: fine -->
+	
+</ui:composition>
+</html>

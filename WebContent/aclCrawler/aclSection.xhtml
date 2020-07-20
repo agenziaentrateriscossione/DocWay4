@@ -1,0 +1,86 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+          "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:f="http://java.sun.com/jsf/core" 
+      xmlns:h="http://java.sun.com/jsf/html">
+      
+<ui:composition>
+
+<div class="fieldset">
+   <div class="legend">#{rightSection.title}</div>
+   
+   <div class="row">
+       <div class="col-sm-4">
+            <ui:repeat var="group" value="#{sectionObj.groups['0']}">
+                <h:panelGroup layout="block" styleClass="legend" rendered="#{group.title ne ''}">#{group.title}</h:panelGroup>
+                
+			     <ui:repeat var="right" value="#{group.rights}">
+                <div class="row">
+                    <div class="col-sm-11">
+                    <h:commandButton image="#{right['image']}" rendered="#{!readOnly and !right['nonBoolean']}" action="#{group.changeRightStatus}">
+                        <f:ajax execute="@this" render="@form"/>
+                    </h:commandButton>
+                    <h:graphicImage value="css/images/checked.gif" rendered="#{readOnly and right['checked'] eq 'true'}" alt="V"/>
+                    <h:graphicImage value="css/images/unchecked.gif" rendered="#{readOnly and right['checked'] eq 'false' and right['text'] eq ''}" alt="X"/>
+                    
+                    <h:outputText value="#{right['label']}" rendered="#{!readOnly and !right['nonBoolean']}" styleClass="margin-left-5"/>
+                    <h:outputText value="#{right['label']}" rendered="#{readOnly}" styleClass="margin-left-5"/>
+                    <h:outputText value="#{right['text']}"     rendered="#{readOnly and right['checked'] eq 'false' and right['text'] ne ''}" styleClass="margin-left-5"/>
+                    </div>
+	            </div>
+                </ui:repeat>
+                
+            </ui:repeat>
+       </div>
+       
+       <div class="col-sm-4">
+        <ui:repeat var="group" value="#{sectionObj.groups['1']}">
+            <h:panelGroup layout="block" styleClass="legend" rendered="#{group.title ne ''}">#{group.title}</h:panelGroup>
+            
+            <ui:repeat var="right" value="#{group.rights}">
+            <div class="row">
+                <div class="col-sm-11">
+                    <h:commandButton image="#{right['image']}" rendered="#{!readOnly and !right['nonBoolean']}" action="#{group.changeRightStatus}">
+                        <f:ajax execute="@this" render="@form"/>
+                    </h:commandButton>
+                    <h:graphicImage value="css/images/checked.gif" rendered="#{readOnly and right['checked'] eq 'true'}" alt="V"/>
+                    <h:graphicImage value="css/images/unchecked.gif" rendered="#{readOnly and right['checked'] eq 'false' and right['text'] eq ''}" alt="X"/>
+                    
+                    <h:outputText value="#{right['label']}" rendered="#{!readOnly and !right['nonBoolean']}" styleClass="margin-left-5"/>
+                    <h:outputText value="#{right['label']}" rendered="#{readOnly}" styleClass="margin-left-5"/>
+                    <h:outputText value="#{right['text']}"     rendered="#{readOnly and right['checked'] eq 'false' and right['text'] ne ''}" styleClass="margin-left-5"/>
+                </div>
+            </div>
+            </ui:repeat>
+            
+        </ui:repeat>
+       </div>
+       
+       <div class="col-sm-4">
+        <ui:repeat var="group" value="#{sectionObj.groups['2']}">
+                <h:panelGroup layout="block" styleClass="legend" rendered="#{group.title ne ''}">#{group.title}</h:panelGroup>
+                
+                <ui:repeat var="right" value="#{group.rights}">
+                 <div class="row">
+	                 <div class="col-sm-11">
+	                    <h:commandButton image="#{right['image']}" rendered="#{!readOnly and !right['nonBoolean']}" action="#{group.changeRightStatus}">
+	                        <f:ajax execute="@this" render="@form"/>
+	                    </h:commandButton>
+	                    <h:graphicImage value="css/images/checked.gif" rendered="#{readOnly and right['checked'] eq 'true'}" alt="V"/>
+	                    <h:graphicImage value="css/images/unchecked.gif" rendered="#{readOnly and right['checked'] eq 'false' and right['text'] eq ''}" alt="X"/>
+	                    
+	                    <h:outputText value="#{right['label']}" rendered="#{!readOnly and !right['nonBoolean']}" styleClass="margin-left-5"/>
+	                    <h:outputText value="#{right['label']}" rendered="#{readOnly}" styleClass="margin-left-5"/>
+	                    <h:outputText value="#{right['text']}"     rendered="#{readOnly and right['checked'] eq 'false' and right['text'] ne ''}" styleClass="margin-left-5"/>
+	                </div>
+                </div>
+                </ui:repeat>
+                
+            </ui:repeat>
+       </div>
+   </div>
+</div>
+
+</ui:composition>
+</html>

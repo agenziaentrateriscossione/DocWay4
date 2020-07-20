@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+    template="#{queryArrivoFTRPAP.pageTemplate}"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:c="http://java.sun.com/jsp/jstl/core"
+    xmlns:p="http://xmlns.jcp.org/jsf/passthrough">
+
+<ui:define name="content">
+	<div id="advancedSearch" class="offerta submitEnterKey">
+	
+		<!-- toolbar: inizio -->
+		<div class="btn-toolbar docway-toolbar" role="toolbar">
+			<div class="btn-group">
+				<h:commandLink id="advancedSearchBtn" action="#{queryArrivoFTRPAP.queryPlain}" styleClass="btn btn-primary openwaitmsg" value="#{i18n['acl.search']}" />
+				<ui:remove>
+					<h:commandLink rendered="#{queryArrivoFTRPAP.formsAdapter.funzionalitaDisponibili['showRefine']}" action="#{queryArrivoFTRPAP.refine}" value="#{i18n['dw4.refine']}" styleClass="btn btn-default" />
+				</ui:remove>				
+				
+				<h:commandLink action="#{queryArrivoFTRPAP.resetQuery}" styleClass="btn btn-default" value="#{i18n['acl.clear']}">
+					<f:ajax execute="@form" render="@form" />
+				</h:commandLink>
+			</div>
+		</div>
+		<!-- toolbar: fine -->
+		
+		<h5 class="sub-header">
+			<span class="glyphicon glyphicon-search"></span>&#160;
+			#{i18n['dw4.fatture_passive_ricerca']}
+		</h5>
+		
+		<!-- messages: inizio -->
+		<h:panelGroup rendered="#{not empty facesContext.messageList}" layout="block" styleClass="docedit-messages alert alert-danger">
+			<h:messages styleClass="" id="validationMesseges" />
+		</h:panelGroup>
+		<!-- messages: fine -->
+		
+		<!-- scheda query: inizio -->
+		<div class="row-fluid" style="margin-top:10px;">
+		<div id="fixedshowdoc" class="box span12 fixed-showdoc">
+			<div class="box-content">
+				<div class="fieldset">
+					<div class="legend">#{i18n['acl.freesearch']}</div>
+					
+					<div class="form-group">
+						<label for="templateForm:doc_globale" class="col-sm-2 control-label">#{i18n['dw4.ricerca_full_text']}</label>
+						<div class="col-sm-9">
+							<h:inputText id="doc_globale" styleClass="form-control" value="#{queryArrivoFTRPAP.custom_globale}"/>
+						</div>
+					</div>
+					<div class="form-group">
+						<div class="col-sm-offset-2 col-sm-9">
+							<h:selectOneRadio value="#{queryArrivoFTRPAP.radio}" layout="pageDirection" styleClass="radio-selection">
+								<f:selectItem itemValue="1" itemLabel="#{i18n['dw4.globale']}" />
+								<f:selectItem itemValue="2" itemLabel="#{i18n['dw4.globalerecord']}"/>
+								<f:selectItem itemValue="3" itemLabel="#{i18n['dw4.globaleallegati']}"/>
+							</h:selectOneRadio>
+						</div>
+					</div>
+				</div>
+				
+				<h:panelGroup id="datiRepPanel" layout="block">
+					<div class="fieldset">
+						<div class="legend">
+							<h:commandLink action="#{queryArrivoFTRPAP.openCloseWidgetDatiRepertorio}" styleClass="legend-link">
+								<f:ajax render="templateForm:datiRepPanel"/>
+								#{i18n['dw4.dati_fattura']}
+								<span class="pull-right">
+									<span class="glyphicon #{queryArrivoFTRPAP.dati_repertorio ? 'glyphicon-collapse-up' : 'glyphicon-collapse-down'}"></span>
+								</span>
+							</h:commandLink>
+						</div>
+						
+						<h:panelGroup rendered="#{queryArrivoFTRPAP.dati_repertorio}" id="datiRepCPanel" layout="block">
+							<div class="form-group">
+								<ui:remove>
+									<label for="templateForm:ftrp_tipodoc" class="col-sm-2 control-label">#{i18n['dw4.tipodoc_fattura']}</label>
+									<div class="col-sm-2">
+										<h:selectOneMenu id="ftrp_tipodoc" value="#{queryArrivoFTRPAP.ftr_tipodocumento}" styleClass="form-control">
+											<f:selectItems value="#{queryArrivoFTRPAP.tipodocumento_list}" var="option" itemValue="#{option.value}" itemLabel="#{option.label}"></f:selectItems>
+										</h:selectOneMenu>
+									</div>
+								</ui:remove>
+								<label for="templateForm:ftrp_numero" class="col-sm-2 control-label">#{i18n['dw4.numero_fattura']}</label>
+								<div class="col-sm-2">
+									<h:inputText id="ftrp_numero" value="#{queryArrivoFTRPAP.ftr_numero}" styleClass="form-control" />
+								</div>
+								<ui:include src="../rangeField.xhtml">
+									<ui:param name="label" value="#{i18n['dw4.data_fattura']}" />
+									<ui:param name="id" value="range_ftrp_data_doc" />
+									<ui:param name="from_value" value="#{queryArrivoFTRPAP.ftr_data_from}" />
+									<ui:param name="to_value" value="#{queryArrivoFTRPAP.ftr_data_to}" />
+									<ui:param name="is_date" value="true" />
+									<ui:param name="offset" value="2" />
+								</ui:include>
+							</div>
+							<div class="form-group">
+								<label for="templateForm:ftr_oggettofornitura" class="col-sm-2 control-label">#{i18n['dw4.oggetto_fornitura']}</label>
+								<div class="col-sm-9">
+									<h:inputText id="ftr_oggettofornitura" value="#{queryArrivoFTRPAP.ftr_oggettofornitura}" styleClass="form-control" />
+								</div>
+							</div>
+							<div class="form-group">
+								<ui:include src="../rangeField.xhtml">
+									<ui:param name="label" value="#{i18n['dw4.data_scadenza']}" />
+									<ui:param name="id" value="range_ftrp_datascadenza_doc" />
+									<ui:param name="from_value" value="#{queryArrivoFTRPAP.ftr_datascadenza_from}" />
+									<ui:param name="to_value" value="#{queryArrivoFTRPAP.ftr_datascadenza_to}" />
+									<ui:param name="is_date" value="true" />
+								</ui:include>
+								<label for="templateForm:ftrp_codcup" class="col-sm-1 control-label">#{i18n['dw4.codice_cup']}</label>
+								<div class="col-sm-2">
+									<h:inputText id="ftrp_codcup" value="#{queryArrivoFTRPAP.ftr_codcup}" styleClass="form-control" />
+								</div>
+								<label for="templateForm:ftrp_codcig" class="col-sm-1 control-label">#{i18n['dw4.codice_cig']}</label>
+								<div class="col-sm-2">
+									<h:inputText id="ftrp_codcig" value="#{queryArrivoFTRPAP.ftr_codcig}" styleClass="form-control" />
+								</div>
+							</div>
+							<div class="form-group" style="margin-top:25px;">
+								<label for="templateForm:ftrp_descrlinea" class="col-sm-2 control-label">
+									<span class="popoveritem" data-toggle="popover" data-placement="bottom" data-trigger="hover" data-content="#{i18n['dw4.descrizione_voce_info']}">
+										#{i18n['dw4.descrizione_voce']}
+										<span class="glyphicon glyphicon-info-sign popoveritem"></span>
+									</span>
+								</label>
+								<div class="col-sm-9">
+									<h:inputText id="ftrp_descrlinea" value="#{queryArrivoFTRPAP.ftr_descrlinea}" styleClass="form-control" />
+								</div>
+							</div>
+							<div class="form-group">
+								<label for="templateForm:ftrp_numddt" class="col-sm-2 control-label">#{i18n['dw4.numero_ddt']}</label>
+								<div class="col-sm-2">
+									<h:inputText id="ftrp_numddt" value="#{queryArrivoFTRPAP.ftr_numddt}" styleClass="form-control" />
+								</div>
+								<ui:include src="../rangeField.xhtml">
+									<ui:param name="label" value="#{i18n['dw4.data_ddt']}" />
+									<ui:param name="id" value="range_ftrp_data_ddt" />
+									<ui:param name="from_value" value="#{queryArrivoFTRPAP.ftr_dataddt_from}" />
+									<ui:param name="to_value" value="#{queryArrivoFTRPAP.ftr_dataddt_to}" />
+									<ui:param name="is_date" value="true" />
+									<ui:param name="offset" value="2" />
+								</ui:include>
+							</div>
+							<ui:remove>
+								<div class="form-group">
+									<label for="templateForm:ftrp_codcommessaPA" class="col-sm-2 control-label">#{i18n['dw4.cod_commessa']}</label>
+									<div class="col-sm-2">
+										<h:inputText id="ftrp_codcommessaPA" value="#{queryArrivoFTRPAP.ftr_codcommessaPA}" styleClass="form-control" />
+									</div>
+								</div>
+								<div class="form-group">
+									<label for="templateForm:ftrp_codcupPA" class="col-sm-2 control-label">#{i18n['dw4.codice_cup']}</label>
+									<div class="col-sm-2">
+										<h:inputText id="ftrp_codcupPA" value="#{queryArrivoFTRPAP.ftr_codcupPA}" styleClass="form-control" />
+									</div>
+								</div>
+								<div class="form-group">
+									<label for="templateForm:ftrp_codcigPA" class="col-sm-2 control-label">#{i18n['dw4.codice_cig']}</label>
+									<div class="col-sm-2">
+										<h:inputText id="ftrp_codcigPA" value="#{queryArrivoFTRPAP.ftr_codcigPA}" styleClass="form-control" />
+									</div>
+								</div>
+							</ui:remove>
+							<div class="form-group">
+								<label class="col-sm-2 control-label">#{i18n['dw4.stato_fatturaPA']}</label>
+								<div class="col-sm-9">
+									<span class="margin-right-20" style="white-space:nowrap;">
+										<h:selectBooleanCheckbox value="#{queryArrivoFTRPAP.ftr_attesainvio}" id="ftr_attesainvio" />
+										<label for="templateForm:ftr_attesainvio" class="normal-weight-text">#{i18n['dw4.attesa_di_notifica']}</label>
+									</span>
+								</div>
+							</div>
+							<div class="form-group">
+								<label class="col-sm-2 control-label">#{i18n['acl.notify']}</label>
+								<div class="col-sm-9">
+									<span class="margin-right-20" style="white-space:nowrap;">
+										<h:selectBooleanCheckbox value="#{queryArrivoFTRPAP.ftr_ec01}" id="ftr_ec01" />
+										<label for="templateForm:ftr_ec01" class="normal-weight-text">#{i18n['dw4.esito_committente_accettazione']}</label>
+									</span>
+									<span class="margin-right-20" style="white-space:nowrap;">
+										<h:selectBooleanCheckbox value="#{queryArrivoFTRPAP.ftr_ec02}" id="ftr_ec02" />
+										<label for="templateForm:ftr_ec02" class="normal-weight-text">#{i18n['dw4.esito_committente_rifiuto']}</label>
+									</span>
+									<span class="margin-right-20" style="white-space:nowrap;">
+										<h:selectBooleanCheckbox value="#{queryArrivoFTRPAP.ftr_se}" id="ftr_se" />
+										<label for="templateForm:ftr_se" class="normal-weight-text">#{i18n['dw4.scarto_esito_committente']}</label>
+									</span>
+									<span class="margin-right-20" style="white-space:nowrap;">
+										<h:selectBooleanCheckbox value="#{queryArrivoFTRPAP.ftr_dt}" id="ftr_dt" />
+										<label for="templateForm:ftr_dt" class="normal-weight-text">#{i18n['dw4.decorrenza_termini']}</label>
+									</span>
+								</div>
+							</div>
+							
+							<div class="form-group" style="margin-top:25px;">
+								<label for="templateForm:repertorio_anno" class="col-sm-2 control-label">#{i18n['dw4.anno']}</label>
+								<div class="col-sm-2">
+									<div class="input-group">
+										<h:inputText styleClass="form-control" value="#{queryArrivoFTRPAP.repertorio_anno}" id="repertorio_anno" />
+										<div class="input-group-btn">
+											<h:commandLink title="#{i18n['acl.vocabulary']}" action="#{queryArrivoFTRPAP.openIndexAnnoRep}" styleClass="btn btn-default">
+												<f:ajax execute="@form" render="@form"/>
+												<span class="glyphicon glyphicon-search"></span>
+											</h:commandLink>
+										</div>
+									</div>
+								</div>
+								<ui:include src="../rangeField.xhtml">
+									<ui:param name="label" value="#{i18n['dw4.numero_repertorio']}" />
+									<ui:param name="id" value="custom_rep" />
+									<ui:param name="from_value" value="#{queryArrivoFTRPAP.custom_rep_da}" />
+									<ui:param name="to_value" value="#{queryArrivoFTRPAP.custom_rep_a}" />
+									<ui:param name="is_date" value="false" />
+									<ui:param name="offset" value="2" />
+								</ui:include>
+							</div>
+							
+							<div class="form-group">
+								<label for="templateForm:custom_numeri_rep" class="col-sm-2 control-label"><span>#{i18n['dw4.numeri_di_repertorio']}</span></label>
+								<div class="col-sm-9">
+									<h:inputText styleClass="form-control" value="#{queryArrivoFTRPAP.custom_numeri_rep}" id="custom_numeri_rep" p:placeholder="#{i18n['dw4.separare_i_valori_da_virgola']}" title="#{i18n['dw4.separare_i_valori_da_virgola']}" />
+								</div>
+							</div>
+						</h:panelGroup>
+					</div>
+				</h:panelGroup>
+				
+				<h:panelGroup id="bloccoarrivo" layout="block">
+					<h:panelGroup layout="block" styleClass="arrivo">
+						<div class="fieldset">
+							<div class="legend">#{i18n['dw4.protarrivo']}</div>
+							
+							<div class="form-group">
+								<label for="templateForm:doc_rifesternirifnome" class="col-sm-2 control-label">#{i18n['dw4.mittente']}</label>
+								<div class="col-sm-9">
+									<div class="input-group">
+										<h:inputText id="doc_rifesternirifnome" value="#{queryArrivoFTRPAP.doc_rifesternirifnome}" styleClass="form-control" />
+										<div class="input-group-btn">
+											<h:commandLink title="#{i18n['acl.vocabulary']}" action="#{queryArrivoFTRPAP.openIndexRifEsterniDoc}" styleClass="btn btn-default">
+												<f:ajax execute="@form" render="@form"/>
+												<span class="glyphicon glyphicon-search"></span>
+									        </h:commandLink>
+								        </div>
+							        </div>
+								</div>
+							</div>
+							<div class="form-group">
+								<label for="templateForm:codice_fiscale" class="col-sm-2 control-label">#{i18n['acl.cf']}</label>
+								<div class="col-sm-3">
+									<div class="input-group">
+										<h:inputText styleClass="form-control" value="#{queryArrivoFTRPAP.codice_fiscale}" id="codice_fiscale"/>
+										<div class="input-group-btn">
+											<h:commandLink title="#{i18n['acl.vocabulary']}" action="#{queryArrivoFTRPAP.openIndexCodFiscaleDoc}" styleClass="btn btn-default">
+												<f:ajax execute="@form" render="@form"/>
+												<span class="glyphicon glyphicon-search"></span>
+											</h:commandLink>
+										</div>
+									</div>
+								</div>
+								<label for="templateForm:partita_iva" class="col-sm-offset-1 col-sm-2 control-label">#{i18n['acl.piva']}</label>
+								<div class="col-sm-3">
+									<div class="input-group">
+										<h:inputText styleClass="form-control" value="#{queryArrivoFTRPAP.partita_iva}" id="partita_iva"/>
+										<div class="input-group-btn">
+											<h:commandLink title="#{i18n['acl.vocabulary']}" action="#{queryArrivoFTRPAP.openIndexPIvaDoc}" styleClass="btn btn-default">
+												<f:ajax execute="@form" render="@form"/>
+												<span class="glyphicon glyphicon-search"></span>
+											</h:commandLink>
+										</div>
+									</div>
+								</div>
+							</div>
+							<div class="form-group">
+								<label for="templateForm:doc_rifesternirifreferentenominativo" class="col-sm-2 control-label">#{i18n['dw4.firmatario']}</label>
+								<div class="col-sm-4">
+									<div class="input-group">
+										<h:inputText styleClass="form-control" value="#{queryArrivoFTRPAP.doc_rifesternirifreferentenominativo}" id="doc_rifesternirifreferentenominativo"/>
+										<div class="input-group-btn">
+											<h:commandLink title="#{i18n['acl.vocabulary']}" action="#{queryArrivoFTRPAP.openIndexFirmatarioDoc}" styleClass="btn btn-default">
+												<f:ajax execute="@form" render="@form"/>
+												<span class="glyphicon glyphicon-search"></span>
+											</h:commandLink>
+										</div>
+									</div>
+								</div>
+								<h:panelGroup rendered="#{!queryArrivoFTRPAP.partenza or queryArrivoFTRPAP.arrivo}">
+									<label for="templateForm:doc_rifesternirifreferenteruolo" class="col-sm-2 control-label">#{i18n['acl.role']}</label>
+									<div class="col-sm-3">
+										<div class="input-group">
+											<h:inputText styleClass="form-control" value="#{queryArrivoFTRPAP.doc_rifesternirifreferenteruolo}" id="doc_rifesternirifreferenteruolo"/>
+											<div class="input-group-btn">
+												<h:commandLink title="#{i18n['acl.vocabulary']}" action="#{queryArrivoFTRPAP.openIndexRuoloDoc}" styleClass="btn btn-default">
+													<f:ajax execute="@form" render="@form"/>
+													<span class="glyphicon glyphicon-search"></span>
+												</h:commandLink>
+											</div>
+										</div>
+									</div>
+								</h:panelGroup>
+							</div>
+							<h:panelGroup rendered="#{(queryArrivoFTRPAP.arrivo and !queryArrivoFTRPAP.partenza) or (!queryArrivoFTRPAP.arrivo and queryArrivoFTRPAP.partenza)}" layout="block" styleClass="form-group">
+								<label for="templateForm:doc_rifestrenirifnprot" class="col-sm-2 control-label">#{i18n['dw4.protmittente']}</label>
+								<div class="col-sm-3">
+									<div class="input-group">
+										<h:inputText styleClass="form-control" value="#{queryArrivoFTRPAP.doc_rifestrenirifnprot}" id="doc_rifestrenirifnprot"/>
+										<div class="input-group-btn">
+											<h:commandLink title="#{i18n['acl.vocabulary']}" action="#{queryArrivoFTRPAP.openIndexNumeroDoc}" styleClass="btn btn-default">
+												<f:ajax execute="@form" render="@form"/>
+												<span class="glyphicon glyphicon-search"></span>
+											</h:commandLink>
+										</div>
+									</div>
+								</div>
+								<ui:include src="../rangeField.xhtml">
+									<ui:param name="label" value="#{i18n['dw4.data_doc']}" />
+									<ui:param name="id" value="range_docrifesternirifdataprot" />
+									<ui:param name="from_value" value="#{queryArrivoFTRPAP.range_docrifesternirifdataprot_from}" />
+									<ui:param name="to_value" value="#{queryArrivoFTRPAP.range_docrifesternirifdataprot_to}" />
+									<ui:param name="is_date" value="true" />
+									<ui:param name="offset" value="#{(queryArrivoFTRPAP.arrivo) ? '1' : ''}" />
+								</ui:include>
+							</h:panelGroup>
+							<div class="form-group">
+								<div class="col-sm-offset-2 col-sm-9">
+									<h:selectBooleanCheckbox id="interopCheck" value="#{queryArrivoFTRPAP.interoperabilita}"/>
+									<label for="templateForm:interopCheck" class="normal-weight-text">
+										<h:outputText value="#{i18n[queryArrivoFTRPAP.arrivo and !queryArrivoFTRPAP.partenza ? 'dw4.interopdoc' : (queryArrivoFTRPAP.partenza and ! queryArrivoFTRPAP.arrivo ? 'dw4.interoppartenzadoc' : 'dw4.interoparrivopartenzadoc')]}" />
+									</label>
+								</div>
+							</div>
+						</div> <!-- /fieldset -->
+					</h:panelGroup>
+				</h:panelGroup>
+				
+				<ui:include src="../queryDoc@EstremiProtocollo.xhtml">
+					<ui:param name="bean" value="#{queryArrivoFTRPAP}"/>
+				</ui:include>
+				
+				<ui:include src="../queryDoc@DatiDoc.xhtml">
+					<ui:param name="bean" value="#{queryArrivoFTRPAP}"/>
+				</ui:include>
+				
+				<ui:include src="../queryDoc@Workflow.xhtml">
+					<ui:param name="bean" value="#{queryArrivoFTRPAP}"/>
+				</ui:include>
+				
+				<ui:include src="../queryDoc@Assegnatari.xhtml">
+					<ui:param name="bean" value="#{queryArrivoFTRPAP}"/>
+				</ui:include>
+								
+				<ui:include src="../queryDoc@InformazioniServizio.xhtml">
+					<ui:param name="bean" value="#{queryArrivoFTRPAP}"/>
+				</ui:include>
+			</div>
+		</div>
+		</div>
+		<!-- scheda query: fine -->
+		
+		<script type="text/javascript">
+		$(document).ready(function() {
+			// focus su campo globale
+			$('#templateForm\\:doc_globale').focus();
+		});
+		</script>
+
+		<h:inputTextarea value="#{queryArrivoFTRPAP.xml}" rendered="#{queryArrivoFTRPAP.debugMode}" styleClass="form-control" rows="10" />
+	</div>
+	
+	<ui:include src="../showindex.xhtml"><ui:param name="pageBean" value="#{queryArrivoFTRPAP}"/></ui:include>
+</ui:define>
+    
+</ui:composition>    

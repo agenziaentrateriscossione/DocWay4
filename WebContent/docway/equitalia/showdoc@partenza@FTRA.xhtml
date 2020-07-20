@@ -1,0 +1,205 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+    template="../#{showdocPartenzaFTRA.pageTemplate}"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:f="http://java.sun.com/jsf/core">
+
+<ui:define name="content">
+	<div class="partenza">
+	
+		<!-- toolbar: inizio -->
+		<ui:include src="../buttonBar.xhtml">
+			<ui:param name="bean" value="#{showdocPartenzaFTRA}"/>
+			<ui:param name="qPersonalView" value="#{showdocPartenzaFTRA.personalView}" /> <!-- attiva il pulsante di ricerca specifico per il repertorio -->
+		</ui:include>
+		
+		<h:panelGroup rendered="#{!showdocPartenzaFTRA.doc.cestino and showdocPartenzaFTRA.formsAdapter.funzionalitaDisponibili['disableSegnatura'] and showdocPartenzaFTRA.formsAdapter.funzionalitaDisponibili['sendToDynamicsNav']}">
+			<div class="btn-toolbar hidden-print" role="toolbar">
+				<div class="btn-group">
+					<h:commandLink action="#{showdocPartenzaFTRA.sendToDynamicsNav}" onclick="if (!owmConfirm('#{i18n['dw4.convermare_invi_nav']}')) return false;" title="#{i18n['dw4.invia_a_microsoft_dynamics_nav']}" styleClass="btn btn-primary">
+						#{i18n['dw4.invia_a_nav']}
+					</h:commandLink>
+				</div>
+			</div>
+		</h:panelGroup>
+		<!-- toolbar: fine -->
+		
+		<!-- scheda show: inizio -->
+		<div class="contenuto-doc row clearfix">
+			<h:panelGroup rendered="#{!showdocPartenzaFTRA.popupPage}">
+				<div class="col-xs-12 col-sm-2 col-md-2 col-lg-2 col-sm-push-10 col-md-push-10 col-lg-push-10 text-right">
+					<!-- azioni rapide: inizio -->
+					
+					<ui:include src="../smartActions.xhtml">
+						<ui:param name="bean" value="#{showdocPartenzaFTRA}"/>
+					</ui:include>
+					
+					<!-- azioni rapide: fine -->
+				</div>
+			</h:panelGroup>
+			<div class="col-xs-12 #{(showdocPartenzaFTRA.popupPage) ? 'col-sm-12 col-md-12 col-lg-12' : 'col-sm-10 col-md-10 col-lg-10 col-sm-pull-2 col-md-pull-2 col-lg-pull-2'}">
+				<!-- contenuto doc: inizio -->
+				
+				<h:panelGroup rendered="#{empty showdocPartenzaFTRA.doc.non_disponibile.estremi}">
+					<ui:include src="../showdoc@title.xhtml">
+						<ui:param name="doc" value="#{showdocPartenzaFTRA.doc}"/>
+					</ui:include>
+					
+					<ui:include src="../showdoc@annullato.xhtml"><ui:param name="bean" value="#{showdocPartenzaFTRA}"/></ui:include>
+					<ui:include src="../showdoc@conservazione.xhtml"><ui:param name="bean" value="#{showdocPartenzaFTRA}"/></ui:include>
+					
+					<div id="fixedshowdoc" class="fixed-showdoc">
+						<ui:include src="../showdoc@statidoc.xhtml">
+							<ui:param name="bean" value="#{showdocPartenzaFTRA}"/>
+						</ui:include>
+						
+						<div class="showdoc-section">
+							<div class="title">
+								#{i18n['dw4.datidoc']}
+								
+								<div class="pull-right">
+									<span class="glyphicon glyphicon-envelope" title="#{i18n['dw4.datidoc']}"></span>
+								</div>
+							</div>
+							<dl class="dl-horizontal">
+								<h:panelGroup rendered="#{!empty showdocPartenzaFTRA.doc.registro_emergenza.num_regem}">
+									<dt>&#160;</dt>
+									<dd>N. <h:outputText value="#{fn:substringAfter(fn:substringAfter(showdocPartenzaFTRA.doc.registro_emergenza.num_regem, '-'), '-')}"><f:converter converterId="NumConverter"/></h:outputText>/#{showdocPartenzaFTRA.doc.registro_emergenza.anno_regem} #{i18n['dw4.del_registro_di_emergenza']}</dd>
+								</h:panelGroup>
+								<h:panelGroup rendered="#{!empty showdocPartenzaFTRA.doc.num_prot and showdocPartenzaFTRA.doc.num_prot ne '.'}">
+									<dt>#{i18n['dw4.protocollo_n']}</dt>
+									<dd><h:outputText value="#{fn:substringAfter(fn:substringAfter(showdocPartenzaFTRA.doc.num_prot, '-'), '-')}"><f:converter converterId="NumConverter"/></h:outputText> #{i18n['dw4.del']} <h:outputText value="#{showdocPartenzaFTRA.doc.data_prot}"><f:converter converterId="DateConverter"/></h:outputText> (#{showdocPartenzaFTRA.doc.num_prot})</dd>
+								</h:panelGroup>
+								<h:panelGroup rendered="#{!empty showdocPartenzaFTRA.doc.repertorio.cod and (empty hideDatiRepertorio or hideDatiRepertorio ne 'true')}">
+									<h:panelGroup rendered="#{!empty showdocPartenzaFTRA.doc.extra.tipo_repertorio}">
+										<dt>#{i18n['dw4.tipodocumento']}</dt>
+										<dd>#{showdocPartenzaFTRA.doc.extra.tipo_repertorio}</dd>
+									</h:panelGroup>
+									<h:panelGroup rendered="#{!empty showdocPartenzaFTRA.doc.repertorio.text}">
+										<dt>#{i18n['dw4.repertorio']}</dt>
+										<dd>
+											#{showdocPartenzaFTRA.doc.repertorio.text}
+											<h:panelGroup rendered="#{!empty showdocPartenzaFTRA.doc.repertorio.numero and showdocPartenzaFTRA.doc.repertorio.numero ne '.'}">
+												(#{i18n['dw4.rep_n']} <h:outputText value="#{showdocPartenzaFTRA.doc.repertorio.numero}"><f:converter converterId="NumRepConverter"/></h:outputText>)
+											</h:panelGroup>
+										</dd>
+									</h:panelGroup>
+								</h:panelGroup>
+								
+								<h:panelGroup rendered="#{!empty showdocPartenzaFTRA.doc.rif_esterni[0].n_prot}">
+									<dt>#{i18n['dw4.numero_fattura']}</dt>
+									<dd>#{showdocPartenzaFTRA.doc.rif_esterni[0].n_prot}</dd>
+								</h:panelGroup>
+								<h:panelGroup rendered="#{!empty showdocPartenzaFTRA.doc.rif_esterni[0].data_prot}">
+									<dt>#{i18n['dw4.data_fattura']}</dt>
+									<dd>#{showdocPartenzaFTRA.doc.rif_esterni[0].data_prot}</dd>
+								</h:panelGroup>
+								
+								<ui:include src="../showdoc@rifesterni@partenza.xhtml">
+									<ui:param name="bean" value="#{showdocPartenzaFTRA}"/>
+								</ui:include>
+								
+								<h:panelGroup rendered="#{!empty showdocPartenzaFTRA.extraFTRA.stato_invio_nav}">
+									<dt>#{i18n['dw4.stato_nav']}</dt>
+									<dd><strong>#{showdocPartenzaFTRA.extraFTRA.stato_invio_nav}</strong></dd>
+								</h:panelGroup>
+								<h:panelGroup rendered="#{!empty showdocPartenzaFTRA.extraFTRA.numero_nav}">
+									<dt>#{i18n['dw4.numero_nav']}</dt>
+									<dd>#{showdocPartenzaFTRA.extraFTRA.numero_nav}</dd>
+								</h:panelGroup>
+								
+								<h:panelGroup rendered="#{!empty showdocPartenzaFTRA.doc.data_reale}">
+									<dt>#{i18n['dw4.data_doc']}</dt>
+									<dd><h:outputText value="#{showdocPartenzaFTRA.doc.data_reale}"><f:converter converterId="DateConverter"/></h:outputText></dd>
+								</h:panelGroup>
+								
+								<h:panelGroup rendered="#{!empty showdocPartenzaFTRA.doc.oggetto}">
+									<dt class="oggetto-documento-label">#{(!empty labelOggetto) ? labelOggetto : i18n['dw4.object']}</dt>
+									<dd class="oggetto-documento-value">#{showdocPartenzaFTRA.doc.oggetto}</dd>
+								</h:panelGroup>
+								
+								<h:panelGroup rendered="#{!empty showdocPartenzaFTRA.doc.mezzo_trasmissione.cod}">
+									<dt>#{i18n['dw4.mezzotrasmissione']}</dt>
+									<dd>#{showdocPartenzaFTRA.doc.mezzo_trasmissione.cod}</dd>
+								</h:panelGroup>
+								
+								<ui:include src="../showdoc@allegati.xhtml">
+									<ui:param name="bean" value="#{showdocPartenzaFTRA}"/>
+								</ui:include>
+								
+								<ui:include src="../showdoc@corpoEmail.xhtml">
+									<ui:param name="bean" value="#{showdocPartenzaFTRA}"/>
+								</ui:include>
+							</dl>
+						</div>
+						
+						<ui:include src="../showdoc@datiarchivio.xhtml">
+							<ui:param name="bean" value="#{showdocPartenzaFTRA}"/>
+						</ui:include>
+						
+						<ui:include src="../aspects.xhtml">
+							<ui:param name="bean" value="#{showdocPartenzaFTRA}"/>
+						</ui:include>
+						
+						<ui:include src="../showdoc@responsabilita.xhtml">
+							<ui:param name="bean" value="#{showdocPartenzaFTRA}"/>
+						</ui:include>
+						
+						<ui:include src="../showdoc@xwfiles.xhtml">
+							<ui:param name="bean" value="#{showdocPartenzaFTRA}"/>
+						</ui:include>
+						
+						<ui:include src="../showdoc@workflow.xhtml">
+							<ui:param name="bean" value="#{showdocPartenzaFTRA}"/>
+						</ui:include>
+						
+						<ui:include src="../showdoc@postit.xhtml">
+							<ui:param name="bean" value="#{showdocPartenzaFTRA}"/>
+						</ui:include>
+						
+						<ui:include src="../showdoc@datialtro.xhtml">
+							<ui:param name="bean" value="#{showdocPartenzaFTRA}"/>
+						</ui:include>					
+						
+						<ui:include src="../history.xhtml">
+							<ui:param name="bean" value="#{showdocPartenzaFTRA.doc}"/>
+							<ui:param name="viewbean" value="#{showdocPartenzaFTRA}"/>
+							<ui:param name="visible" value="#{showdocPartenzaFTRA.formsAdapter.funzionalitaDisponibili['showHistory']}" />
+						</ui:include>
+					</div>
+					
+				</h:panelGroup>
+				<h:panelGroup rendered="#{!empty showdocPartenzaFTRA.doc.non_disponibile.estremi}">
+				
+					<ui:include src="../showdoc@docnondisponibile.xhtml">
+						<ui:param name="bean" value="#{showdocPartenzaFTRA}"/>
+					</ui:include>
+					
+				</h:panelGroup>
+				
+				<h:inputTextarea value="#{showdocPartenzaFTRA.xml}" rendered="#{showdocPartenzaFTRA.debugMode}" styleClass="form-control" rows="10" />	
+				
+				<!-- contenuto doc: fine -->
+			</div>
+		</div>
+		<!-- scheda show: fine -->
+			
+		<ui:include src="../postit.xhtml"><ui:param name="pageBean" value="#{docwayPostit}"/></ui:include>
+		<ui:include src="../verificaFirma.xhtml"><ui:param name="pageBean" value="#{docwayVerificaFirma}"/></ui:include>
+		<ui:include src="../annullamentoDoc.xhtml"><ui:param name="pageBean" value="#{docwayAnnullamentoDoc}"/></ui:include>
+		<ui:include src="../doc_response@openChkinPage.xhtml"><ui:param name="pageBean" value="#{docwayCheckinAttach}"/></ui:include>
+		<ui:include src="../selectRaccoglitori.xhtml"><ui:param name="bean" value="#{showdocPartenzaFTRA}"/><ui:param name="current" value="#{showdocPartenzaFTRA.doc}"/></ui:include>
+		<ui:include src="../rifinterni@RPA.xhtml"><ui:param name="bean" value="#{rifInt}"/></ui:include>
+		<ui:include src="../rifinterni@OP.xhtml"><ui:param name="bean" value="#{rifInt}"/></ui:include>
+		<ui:include src="../rifinterni@CC.xhtml"><ui:param name="bean" value="#{rifInt}"/></ui:include>
+		<ui:include src="../rifinterni@CDS.xhtml"><ui:param name="bean" value="#{rifInt}"/></ui:include>
+		<ui:include src="../lookup.xhtml"> <ui:param name="pageBean" value="#{rifInt}"/></ui:include>
+		<ui:include src="../rifintLookup.xhtml"> <ui:param name="pageBean" value="#{rifInt}"/></ui:include>
+		<ui:include src="../show@task@vars.xhtml"><ui:param name="bean" value="#{docwayWfTaskVars}"/></ui:include>
+		<ui:include src="../showPersoneRuolo.xhtml"><ui:param name="bean" value="#{docwayShowPersoneRuolo}"/></ui:include>
+		
+	</div>
+</ui:define>
+	
+</ui:composition>

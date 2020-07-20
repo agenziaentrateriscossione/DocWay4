@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" 
+	  xmlns:h="http://java.sun.com/jsf/html" 
+	  xmlns:ui="http://java.sun.com/jsf/facelets" 
+	  xmlns:f="http://java.sun.com/jsf/core"
+	  xmlns:p="http://xmlns.jcp.org/jsf/passthrough">
+<ui:composition>
+
+	<h:panelGroup id="motivazioneRifiutoEC">
+		<h:panelGroup rendered="#{showdocArrivoFTRPAP.motivazioneRifiutoEsitoCommittenteOpened}">
+			<!-- Modal -->
+			<div id="motivazioneRifiutoECModal" class="modal fade in" aria-hidden="false" aria-labelledby="motivazioneRifiutoECModalLabel" role="dialog" tabindex="-1" style="display: block;">
+			<!--div class="modal fade" id="motivazioneRifiutoECModal" tabindex="-1" role="dialog" aria-labelledby="motivazioneRifiutoECModalLabel" aria-hidden="true"-->
+				<div class="modal-dialog">
+					<div class="modal-content jsf-modal">
+						<div class="modal-header">
+							<h:commandLink class="close" action="#{showdocArrivoFTRPAP.closePopupMotivazioneRifiuto}" p:data-dismiss="modal" value="&#215;">
+		                    	<f:ajax render="@form"/>
+		                   	</h:commandLink>
+							
+							<h4 class="modal-title" id="motivazioneRifiutoECModalLabel">#{i18n['dw4.motivazione_rifiuto']}</h4>
+						</div>
+						<div class="modal-body">
+						
+							<fieldset>	
+								<div class="form-group">
+									<label for="templateForm:notificaCommittenteMotivazioneRifiuto" class="col-sm-3 control-label">#{i18n['dw4.eventuale_motivazione']}</label>
+									<div class="col-sm-9">
+										<h:inputTextarea id="notificaCommittenteMotivazioneRifiuto" value="#{showdocArrivoFTRPAP.notificaEsitoCommittente.motivazioneRifiuto}" rows="4" cols="120" p:maxlength="255" styleClass="#{ component.valid ? '' : 'invalidinput' } form-control" />
+									</div>
+								</div>
+							</fieldset>
+							
+						</div>
+						<div class="modal-footer">
+							<h:commandLink styleClass="btn btn-primary" action="#{showdocArrivoFTRPAP.sendEsitoCommittenteNegativo}" value="#{i18n['dw4.invia_rifiuto']}" onclick="if (!owmConfirm('#{i18n['dw4.invio_esito_committente_fattura_confirm']}')) return false;">
+								<f:ajax execute="@form" render="@form"/>
+							</h:commandLink>
+							<h:commandLink styleClass="btn btn-default" action="#{showdocArrivoFTRPAP.closePopupMotivazioneRifiuto}" p:data-dismiss="modal" value="#{i18n['acl.close']}">
+		                    	<f:ajax render="@form"/>
+		                   	</h:commandLink>
+						</div>
+					</div>
+				</div>
+			</div>
+			<!--h:outputScript>
+				$('#motivazioneRifiutoECModal').modal('show');
+			</h:outputScript-->
+		</h:panelGroup>
+	</h:panelGroup>
+
+</ui:composition>	
+</html>

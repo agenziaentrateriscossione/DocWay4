@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml" 
+	xmlns:h="http://java.sun.com/jsf/html" 
+	xmlns:ui="http://java.sun.com/jsf/facelets" 
+	xmlns:f="http://java.sun.com/jsf/core">
+
+<h:head>
+	<title>#{i18n['dw4.page_title']}</title>
+	
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<h:panelGroup rendered="#{fn:containsIgnoreCase(header['User-Agent'], 'Trident/7.0;')}"> <!-- TODO identifica correttamente IE11?  -->
+		<!-- Pare ci sia un bug su IE11 per la quale non funziona la registrazione di funzioni su eventi (addEventListener/attachEvent) -->
+		<meta http-equiv="X-UA-Compatible" content="IE=9" />
+	</h:panelGroup>
+	<h:panelGroup rendered="#{!fn:containsIgnoreCase(header['User-Agent'], 'Trident/7.0;')}">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+	</h:panelGroup>
+
+	<!-- javascript -->
+	<script type="text/javascript" src="#{facesContext.externalContext.requestContextPath}/common/js/jquery.js?ver=#{docwayHome.versioneDocway}"></script>
+	<script type="text/javascript" src="#{facesContext.externalContext.requestContextPath}/common/js/jquery.formatCurrency-1.4.0.js?ver=#{docwayHome.versioneDocway}"></script>
+	<script type="text/javascript" src="#{facesContext.externalContext.requestContextPath}/bootstrap/js/bootstrap.js?ver=#{docwayHome.versioneDocway}"></script>
+	<script type="text/javascript" src="#{facesContext.externalContext.requestContextPath}/common/js/bootstrap-datepicker.js?ver=#{docwayHome.versioneDocway}"></script>
+	<script type="text/javascript" src="#{facesContext.externalContext.requestContextPath}/common/js/docs.js?ver=#{docwayHome.versioneDocway}"></script>
+	<script type="text/javascript" src="#{facesContext.externalContext.requestContextPath}/common/js/iwx.core.js?ver=#{docwayHome.versioneDocway}"></script>
+	<script type="text/javascript" src="#{facesContext.externalContext.requestContextPath}/docway/js/iwx.runtime.js?ver=#{docwayHome.versioneDocway}"></script>
+	<script type="text/javascript" src="#{facesContext.externalContext.requestContextPath}/docway/js/swfupload/swfupload.js?ver=#{docwayHome.versioneDocway}"></script>
+	<script type="text/javascript" src="#{facesContext.externalContext.requestContextPath}/docway/js/swfupload/swfupload.queue.js?ver=#{docwayHome.versioneDocway}"></script>
+	<script type="text/javascript" src="#{facesContext.externalContext.requestContextPath}/docway/js/jquery.swfupload.js?ver=#{docwayHome.versioneDocway}"></script>
+	<script type="text/javascript" src="#{facesContext.externalContext.requestContextPath}/common/js/base64.js?ver=#{docwayHome.versioneDocway}"></script>
+	<script type="text/javascript"><!-- var clientconfig = #{docwayHome.clientconfig.json} //--></script>
+	<script type="text/javascript" src="#{facesContext.externalContext.requestContextPath}/common/js/common.js?ver=#{docwayHome.versioneDocway}"></script>
+	<script type="text/javascript" src="#{facesContext.externalContext.requestContextPath}/docway/js/docway.js?ver=#{docwayHome.versioneDocway}"></script>
+
+	<!-- styles -->
+	<link href="#{facesContext.externalContext.requestContextPath}/bootstrap/css/bootstrap.css?ver=#{docwayHome.versioneDocway}" rel="stylesheet" type="text/css" />
+	<h:panelGroup rendered="#{docwayHome.languageOrientation eq 'rtl'}">
+		<link href="#{facesContext.externalContext.requestContextPath}/bootstrap/css/bootstrap-rtl.css?ver=#{docwayHome.versioneDocway}" rel="stylesheet" type="text/css" />
+	</h:panelGroup>
+	
+	<link href="#{facesContext.externalContext.requestContextPath}/glyphicons/css/glyphicons.css?ver=#{docwayHome.versioneDocway}" rel="stylesheet" type="text/css" />
+	<link href="#{facesContext.externalContext.requestContextPath}/glyphicons/css/filetypes.css?ver=#{docwayHome.versioneDocway}" rel="stylesheet" type="text/css" />
+	<link href="#{facesContext.externalContext.requestContextPath}/common/css/dashboard.css?ver=#{docwayHome.versioneDocway}" rel="stylesheet" type="text/css" />
+	<link href="#{facesContext.externalContext.requestContextPath}/common/css/datepicker.css?ver=#{docwayHome.versioneDocway}" rel="stylesheet" type="text/css" />
+	
+	<link href="#{facesContext.externalContext.requestContextPath}/common/css/common.css?ver=#{docwayHome.versioneDocway}" rel="stylesheet" type="text/css" />
+	<link href="#{facesContext.externalContext.requestContextPath}/docway/css/docway.css?ver=#{docwayHome.versioneDocway}" rel="stylesheet" type="text/css" />
+	<link href="#{facesContext.externalContext.requestContextPath}/dwrep/css/dwrep.css?ver=#{docwayHome.versioneDocway}" rel="stylesheet" type="text/css" />
+	<h:panelGroup rendered="#{docwayHome.languageOrientation eq 'rtl'}">
+		<link href="#{facesContext.externalContext.requestContextPath}/common/css/rtl.css?ver=#{docwayHome.versioneDocway}" rel="stylesheet" type="text/css" />
+	</h:panelGroup>
+	<link href="#{facesContext.externalContext.requestContextPath}/docway/taskFormCss/taskform.css?ver=#{docwayHome.versioneDocway}" rel="stylesheet" type="text/css" />
+	<link href="#{facesContext.externalContext.requestContextPath}/docway/taskFormCss/skin/jqueryuiskin.css?ver=#{docwayHome.versioneDocway}" rel="stylesheet" type="text/css" />
+	
+	<h:panelGroup rendered="#{!empty docwayHome.customDirCss}">
+		<link href="#{facesContext.externalContext.requestContextPath}/docway/css/#{docwayHome.customDirCss}/docway.css?ver=#{docwayHome.versioneDocway}" rel="stylesheet" type="text/css" />
+	</h:panelGroup>
+	
+	<h:panelGroup rendered="#{docwayHome.formsAdapter.funzionalitaDisponibili['abilitaSoginSAP']}">
+		<link href="#{facesContext.externalContext.requestContextPath}/soginSAP/css/soginSAP.css?ver=#{docwayHome.versioneDocway}"  />
+		<script type="text/javascript" src="#{facesContext.externalContext.requestContextPath}/soginSAP/js/soginSAP.js?ver=#{docwayHome.versioneDocway}"></script>
+	</h:panelGroup>
+	
+	<!--h:outputScript name="jsf.js" library="javax.faces"/-->
+</h:head>
+<h:body styleClass="#{docwayHome.languageOrientation}">
+
+	<!-- header: inizio -->
+	<div class="navbar navbar-default navbar-fixed-top" role="navigation">
+		<h:form id="menuForm">
+			<div class="container-fluid">
+				<div class="navbar-header">
+					<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target=".navbar-collapse">
+						<span class="sr-only">Toggle navigation</span>
+						<span class="icon-bar"></span>
+						<span class="icon-bar"></span>
+						<span class="icon-bar"></span>
+					</button>
+					<!--h:commandLink action="show@dwrep_home" styleClass="navbar-brand">
+						<img class="application-logo single-line-header" src="#{facesContext.externalContext.requestContextPath}/common/css/#{(!empty dwrepHome.customDirCss) ? dwrepHome.customDirCss.concat('/') : ''}images/logo/docway-small.png" alt="docway dwrep" />
+					</h:commandLink-->
+				</div>
+				<div style="height: 1px;" class="navbar-collapse collapse">
+					<ul class="nav navbar-nav">
+						<li>
+							<h:commandLink action="show@dwrep_home" styleClass="app-menu-item">
+								<span class="glyphicon glyphicon-home navbar-menu-icon"></span>
+								Home
+							</h:commandLink>
+						</li>
+						<h:panelGroup rendered="#{dwrepHome.formsAdapter.funzionalitaDisponibili['inserimento_dwrep']}">
+							<li class="dropdown">
+								<a data-toggle="dropdown" class="dropdown-toggle" href="#">
+									<span class="glyphicon glyphicon-plus navbar-menu-icon"></span>
+									#{i18n['acl.insert']} <b class="caret"></b>
+								</a>
+								<ul class="dropdown-menu">
+									<ui:repeat var="titoloRepertorio" value="#{dwrepHome.listof_rep}" varStatus="status">
+										<h:panelGroup rendered="#{ !fn:contains(dwrepHome.excludeInsertRepertori, titoloRepertorio.codice.concat(',')) }"> <!-- repertori per i quali l'inserimento NON deve essere attivo -->
+											<ui:repeat var="tabella" value="#{titoloRepertorio.list_tabelle}">
+												<li>
+													<h:commandLink action="#{dwrepHome.insTableRepertorioSpecifico}" actionListener="#{dwrepHome.attrListenerSelectPersonalView}" >
+														#{titoloRepertorio.descrizione} #{tabella.text}
+														<f:attribute name="tipoTabella" value="#{tabella.tipo}" />
+														<f:attribute name="textTabella" value="#{tabella.text}" />
+														<f:param name="titoloRepertorio" value="#{titoloRepertorio}"></f:param>
+													</h:commandLink>
+												</li>	
+											</ui:repeat>
+										</h:panelGroup>
+									</ui:repeat>
+								</ul>
+							</li>
+						</h:panelGroup>
+						<h:panelGroup rendered="#{dwrepHome.formsAdapter.funzionalitaDisponibili['ricerca_dwrep']}">
+							<h:panelGroup rendered="#{fn:length(dwrepHome.listof_personalView) > 0 || dwrepHome.showRicercaGenerica}">
+								<li class="dropdown">
+									<a data-toggle="dropdown" class="dropdown-toggle" href="#">
+										<span class="glyphicon glyphicon-search navbar-menu-icon"></span>
+										#{i18n['acl.advancedsearch']} <b class="caret"></b>
+									</a>
+									<ul class="dropdown-menu">
+										<ui:repeat var="personalView" value="#{dwrepHome.listof_personalView}" varStatus="status">
+											<ui:repeat var="tabella" value="#{personalView.list_tabelle}">
+												<li>
+													<h:commandLink action="#{dwrepHome.gotoTableQRepertorioSpecifico}" actionListener="#{dwrepHome.attrListenerSelectPersonalView}" >
+														#{personalView.descrizione} #{tabella.text}
+														<f:attribute name="tipoTabella" value="#{tabella.tipo}" />
+														<f:attribute name="textTabella" value="#{tabella.text}" />
+														<f:param name="personalView" value="#{personalView}"></f:param>
+													</h:commandLink>
+												</li>	
+											</ui:repeat>
+										</ui:repeat>
+										<li>
+											<h:commandLink rendered="#{dwrepHome.showRicercaGenerica}" action="#{dwrepHome.gotoTableQRicercaGenerica}">
+												#{i18n['dw4.ricerca_generica']}
+											</h:commandLink>
+										</li>
+									</ul>
+								</li>
+							</h:panelGroup>
+						</h:panelGroup>
+					</ul>
+					<ul class="nav navbar-nav navbar-right">
+						<li class="dropdown">
+					        <a data-toggle="dropdown" class="dropdown-toggle #{(dwrepHome.accessoADM) ? 'user-login-adm' : ''}" title="#{userBean.userInfo}" href="#">
+					        	<span class="glyphicon glyphicon-user navbar-menu-icon"></span>
+					        	#{fn:substring(userBean.userInfo,0, fn:indexOf(userBean.userInfo, '('))} <b class="caret"></b>
+					        </a>
+							<ul class="dropdown-menu">
+								<li><h:commandLink action="#{userBean.logout}" value="#{i18n['dw4.esci']}" /></li>
+							</ul>
+						</li>
+					</ul>
+				</div>
+			</div>
+		</h:form>
+	</div>
+	<!-- header: fine -->
+
+	<div class="container-fluid">
+		<div class="row">
+	
+			<div class="col-sm-12 col-md-12 main single-line-header">
+			
+				<h:form id="templateForm" class="form-horizontal">
+				
+					<ui:insert name="content"/>
+					<ui:include src="../docway/errormsg.xhtml"/>
+					<ui:include src="../docway/msg.xhtml"/>
+					<ui:include src="../docway/reloadmsg.xhtml"/>
+				</h:form>
+				
+			</div>
+			
+			<ui:include src="../docway/waitmsg.xhtml"/>
+			<a href="#" class="back-to-top"><span class="glyphicon glyphicon-chevron-up"></span></a>
+			
+			<input type="hidden" id="globalFocusFieldAfterAjax" value="" />	
+		</div>
+	</div>
+	
+</h:body>
+</html>

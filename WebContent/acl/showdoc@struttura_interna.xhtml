@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+    template="template.xhtml"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:f="http://java.sun.com/jsf/core">
+
+	<ui:define name="content">
+        <div class="strutint showdoc">
+
+			<!-- primo livello toolbar: inizio -->
+			<div class="btn-toolbar" role="toolbar">
+				<div class="btn-group pull-right">
+					<ui:include src="./navigationBar.xhtml">
+						<ui:param name="bean" value="#{showdocStrutturaInterna}" />
+					</ui:include>
+				</div>
+
+				<div class="btn-group">
+					<h:commandLink rendered="#{showdocStrutturaInterna.formsAdapter.paginaTitoliEnabled}" action="#{showdocStrutturaInterna.paginaTitoli}" styleClass="btn btn-default">#{i18n['acl.titles']}</h:commandLink>
+				</div>
+			</div>
+			<!-- primo livello toolbar: fine -->
+
+			<!-- secondo livello toolbar: inizio -->
+			<div class="btn-toolbar" role="toolbar">
+				<div class="btn-group">
+					<h:panelGroup rendered="#{!empty(showdocStrutturaInterna.struttura_interna.nrecord) and showdocStrutturaInterna.struttura_interna.nrecord ne '.'}">
+						<h:commandLink rendered="#{showdocStrutturaInterna.formsAdapter.funzionalitaDisponibili['ins_struint']}" action="#{showdocStrutturaInterna.modifyTableDoc}" styleClass="btn btn-primary openwaitmsg">#{i18n['acl.modify']}</h:commandLink>
+						<h:commandLink rendered="#{showdocStrutturaInterna.formsAdapter.funzionalitaDisponibili['canc_struint'] and (empty showdocStrutturaInterna.struttura_interna.pers_ass_count or showdocStrutturaInterna.struttura_interna.pers_ass_count == '0')}" action="#{showdocStrutturaInterna.remove}" onclick="if (!owmConfirm('#{i18n['acl.deleteconfirm']}')) return false;" styleClass="btn btn-danger">#{i18n['acl.delete']}</h:commandLink>
+					</h:panelGroup>
+					
+					<h:panelGroup rendered="#{!empty(showdocStrutturaInterna.struttura_interna.nrecord) and showdocStrutturaInterna.struttura_interna.nrecord ne '.'}">
+						<h:panelGroup rendered="#{showdocStrutturaInterna.formsAdapter.funzionalitaDisponibili['ins_persint']}">
+							<h:commandLink action="#{showdocStrutturaInterna.insTableDocPersonaInterna}" styleClass="btn btn-default openwaitmsg">#{i18n['acl.insertuser']}</h:commandLink>
+						</h:panelGroup>
+						<h:panelGroup rendered="#{showdocStrutturaInterna.formsAdapter.funzionalitaDisponibili['ins_struint']}">
+							<h:commandLink action="#{showdocStrutturaInterna.ripetiNuovo}" styleClass="btn btn-default openwaitmsg">#{i18n['acl.clone']}</h:commandLink>
+						</h:panelGroup>
+
+						<h:panelGroup layout="block" styleClass="btn-group">
+							<button type="button" class="btn btn-default dropdown-toggle"
+								data-toggle="dropdown">
+								#{i18n['acl.hierarchy']} <span class="caret"></span>
+							</button>
+							<ul class="dropdown-menu">
+								<li><h:commandLink action="#{showdocStrutturaInterna.apriGerarchia}" styleClass="openwaitmsg">#{i18n['acl.view']}</h:commandLink></li>
+
+								<h:panelGroup rendered="#{showdocStrutturaInterna.formsAdapter.funzionalitaDisponibili['ins_struint']}">
+									<li><h:commandLink action="#{showdocStrutturaInterna.relSetRoot}" onclick="if (!owmConfirm('#{i18n['acl.assignrootconfirm']}')) return false;">#{i18n['acl.defineroot']}</h:commandLink></li>
+									<li><h:commandLink action="#{showdocStrutturaInterna.insChild}" styleClass="openwaitmsg">#{i18n['acl.insertchild']}</h:commandLink></li>
+								</h:panelGroup>
+
+								<h:panelGroup rendered="#{showdocStrutturaInterna.formsAdapter.funzionalitaDisponibili['ins_struint'] and showdocStrutturaInterna.nodoCopiato}">
+									<li><h:commandLink action="#{showdocStrutturaInterna.incollaComeFiglio}" styleClass="openwaitmsg">#{i18n['acl.pasteaschild']}</h:commandLink></li>
+								</h:panelGroup>
+
+								<h:panelGroup rendered="#{showdocStrutturaInterna.formsAdapter.funzionalitaDisponibili['ins_struint'] and showdocStrutturaInterna.enableFrat}">
+									<li><h:commandLink action="#{showdocStrutturaInterna.insFratPrima}" styleClass="openwaitmsg">#{i18n['acl.insertbrotherbefore']}</h:commandLink></li>
+									<li><h:commandLink action="#{showdocStrutturaInterna.insFratDopo}" styleClass="openwaitmsg">#{i18n['acl.insertbrotherafter']}</h:commandLink></li>
+									<li><h:commandLink action="#{showdocStrutturaInterna.estraDaGerarchia}" styleClass="openwaitmsg">#{i18n['acl.extracthierarchy']}</h:commandLink></li>
+								</h:panelGroup>
+
+								<h:panelGroup rendered="#{showdocStrutturaInterna.formsAdapter.funzionalitaDisponibili['ins_struint'] and showdocStrutturaInterna.enableCopy}">
+									<li><h:commandLink action="#{showdocStrutturaInterna.copiaNodo}" styleClass="openwaitmsg">#{i18n['acl.copy']}</h:commandLink></li>
+								</h:panelGroup>
+							</ul>
+						</h:panelGroup>
+					</h:panelGroup>
+				</div>
+			</div>
+
+            <h:panelGroup rendered="#{!empty(showdocStrutturaInterna.struttura_interna.nrecord) and showdocStrutturaInterna.struttura_interna.nrecord ne '.'}">
+				<h5 class="sub-header" title="#{showdocStrutturaInterna.struttura_interna.nome}">
+					<span class="strutture-interne glyphicons-pro"></span>&#160;
+					<h:outputText value="#{showdocStrutturaInterna.struttura_interna.nome}" escape="false" />
+				</h5>
+				
+				<!-- scheda show: inizio -->
+				<div id="fixedshowdoc" class="fixed-showdoc">
+					<div class="showdoc-section">
+						<div class="title">
+							#{i18n['acl.informazioni_di_base']}
+							<div class="pull-right">
+								<span class="glyphicons-pro building" title="#{i18n['acl.informazioni_di_base']}"></span>
+							</div>
+						</div>
+						
+						<dl class="dl-horizontal">
+							<dt>#{i18n['acl.aoo']}</dt>
+							<dd>#{showdocStrutturaInterna.struttura_interna.cod_amm}#{showdocStrutturaInterna.struttura_interna.cod_aoo}</dd>
+							
+						   <dt>#{i18n['acl.cod']}</dt>
+	                       <dd>#{showdocStrutturaInterna.struttura_interna.cod_uff}</dd>
+	                       
+	                       <dt>#{i18n['acl.name']}</dt>
+	                       <dd>#{showdocStrutturaInterna.struttura_interna.nome}</dd>
+	                       
+	                       <h:panelGroup rendered="#{!empty showdocStrutturaInterna.struttura_interna.nome_responsabile or ! empty showdocStrutturaInterna.struttura_interna.cognome_responsabile}">
+		                       <dt>#{i18n['acl.director']}</dt>
+		                       <dd><h:commandLink styleClass="openwaitmsg" action="#{showdocStrutturaInterna.viewResponsabile}" value="#{showdocStrutturaInterna.struttura_interna.cognome_responsabile} #{showdocStrutturaInterna.struttura_interna.nome_responsabile}"/></dd>
+	                       </h:panelGroup>
+	                       
+	                       <h:panelGroup rendered="#{!empty showdocStrutturaInterna.struttura_interna.tipologia}">
+		                       <dt>#{i18n['acl.tipologia']}</dt>
+		                       <dd>#{showdocStrutturaInterna.struttura_interna.tipologia}</dd>
+	                       </h:panelGroup>
+	                       
+	                       <h:panelGroup rendered="#{!empty showdocStrutturaInterna.struttura_interna.pers_ass_count and showdocStrutturaInterna.struttura_interna.pers_ass_count != '0'}">
+		                       <dt><h:commandLink styleClass="openwaitmsg" action="#{showdocStrutturaInterna.viewPerson}">#{i18n['acl.persone_assegnate']}</h:commandLink></dt>
+		                       <dd>#{showdocStrutturaInterna.struttura_interna.pers_ass_count}</dd>
+	                       </h:panelGroup>
+	                       
+	                       <h:panelGroup rendered="#{!empty showdocStrutturaInterna.struttura_interna.multisocieta}">
+		                       <dt>#{i18n['acl.multisocieta']}</dt>
+		                       <dd><pre>#{showdocStrutturaInterna.struttura_interna.multisocieta}</pre></dd>
+	                       </h:panelGroup>
+	                       
+						   <h:panelGroup rendered="#{!empty showdocStrutturaInterna.struttura_interna.emailSdI}">
+		                       <dt>
+		                       		<span data-content="#{i18n['acl.indirizzo_email_del_sistema_di_interscambio_al_quale_inviare_le_fatturepa_attive']}" data-trigger="hover" data-placement="top" data-toggle="popover" class="popoveritem">
+		                       			#{i18n['acl.email_sdi']} <span class="glyphicon glyphicon-info-sign popoveritem"></span>
+		                       		</span>
+		                       </dt>
+		                       <dd>#{showdocStrutturaInterna.struttura_interna.emailSdI}</dd>
+	                       </h:panelGroup>
+						</dl>
+					</div>
+	                
+	                <h:panelGroup rendered="#{showdocStrutturaInterna.struttura_interna.indirizzo.renderIndirizzo or showdocStrutturaInterna.struttura_interna.renderTelefoni or showdocStrutturaInterna.struttura_interna.renderSitiWeb or showdocStrutturaInterna.struttura_interna.renderEmail or !empty showdocStrutturaInterna.struttura_interna.email_certificata.addr}">
+	                    <div class="showdoc-section">
+	                        <div class="title">#{i18n['acl.recapito']}
+	                            <div class="pull-right">
+	                                <span class="glyphicons-pro address_book" title="#{i18n['acl.recapito']}"></span>
+	                            </div>
+	                        </div>
+	
+	                        <ui:include src="./recapito.xhtml">
+	                            <ui:param name="bean" value="#{showdocStrutturaInterna.struttura_interna}"/>
+	                        </ui:include>
+	                    </div>
+	                </h:panelGroup>    
+	
+					<h:panelGroup rendered="#{!empty showdocStrutturaInterna.struttura_interna.competenze.text or !empty showdocStrutturaInterna.struttura_interna.note.text}">
+						<div class="showdoc-section">
+							<div class="title">#{i18n['dw4.other']}
+								<div class="pull-right">
+									<span class="glyphicon glyphicon-list-alt" title="#{i18n['dw4.other']}"></span>
+								</div>
+							</div>
+	
+							<dl class="dl-horizontal">
+								<h:panelGroup rendered="#{!empty showdocStrutturaInterna.struttura_interna.competenze.text}">
+									<dt>#{i18n['acl.skill']}</dt>
+									<dd><pre>#{showdocStrutturaInterna.struttura_interna.competenze.text}</pre></dd>
+								</h:panelGroup>
+								
+								<h:panelGroup rendered="#{!empty showdocStrutturaInterna.struttura_interna.note.text}">
+									<dt>#{i18n['acl.notes']}</dt>
+									<dd><pre>#{showdocStrutturaInterna.struttura_interna.note.text}</pre></dd>
+								</h:panelGroup>
+							</dl>
+						</div>
+					</h:panelGroup>
+					
+					<ui:include src="./history.xhtml">
+	                    <ui:param name="bean" value="#{showdocStrutturaInterna.struttura_interna}"/>
+	                </ui:include>
+					
+				</div>
+				<!-- scheda show: fine -->
+			</h:panelGroup>
+
+		</div>
+		
+		<h:panelGroup rendered="#{empty(showdocStrutturaInterna.struttura_interna.nrecord) or showdocStrutturaInterna.struttura_interna.nrecord eq '.'}">
+			<div class="alert alert-warning margin-top-30">
+                #{i18n['acl.documento_non_disponibile']}
+	       </div>
+		</h:panelGroup>
+		
+		<h:inputTextarea value="#{showdocStrutturaInterna.xml}" style="width:95%;height:100px;" rendered="#{showdocStrutturaInterna.debugMode}"/>
+	</ui:define>
+
+</ui:composition>    

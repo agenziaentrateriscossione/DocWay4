@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	template="#{dwrepHome.pageTemplate}"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core">
+
+<ui:define name="content">
+
+	<h:panelGroup rendered="#{empty dwrepHome.repCodes}">
+		<div class="alert alert-info">#{i18n['dw4.nessun_repertorio_specificato']}</div>
+	</h:panelGroup>
+
+	<h:panelGroup rendered="#{!empty dwrepHome.repCodes}">
+		
+		<ui:remove>
+			<div class="sub-header">#{i18n['dw4.ricerca_su_repertori']}</div>
+		</ui:remove>
+		
+		<div id="advancedSearch" class="submitEnterKey">
+		
+			<!-- toolbar: inizio -->
+			<div class="btn-toolbar margin-bottom" role="toolbar">
+				<div class="btn-group">
+					<h:commandLink id="advancedSearchBtn" action="#{dwrepHome.search}" styleClass="btn btn-primary openwaitmsg">#{i18n['acl.search']}</h:commandLink>
+				</div>
+			</div>
+			<!-- toolbar: fine -->
+			
+			<!-- scheda query: inizio -->
+			<div class="row-fluid">
+				<div class="box span12">
+					<div class="box-content">
+						<div class="fieldset">
+							<div class="legend">#{i18n['dw4.ricerca_su_repertori']}</div>
+							
+							<div class="form-group">
+								<label for="templateForm:freesearchfield" class="col-sm-2 control-label">#{i18n['dw4.ricerca_full_text']}</label>
+								<div class="col-sm-9">
+									<h:inputText id="freesearchfield" styleClass="form-control" value="#{dwrepHome.searchTerms}" />
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<script type="text/javascript">
+			$(document).ready(function() {
+				// focus su campo di ricerca libero
+				$('#templateForm\\:freesearchfield').focus();
+			});
+			</script>
+			<!-- scheda query: fine -->
+		</div>
+		
+		<ui:remove>
+			<h:panelGroup rendered="#{fn:length(dwrepHome.listof_rep) > 0}">
+				<div class="sub-header" style="margin-top:25px;">#{i18n['dw4.inserimento_di_repertori']}</div>
+			
+				<div class="list-group">
+					<ui:repeat var="titoloRepertorio" value="#{dwrepHome.listof_rep}" varStatus="status">
+						<ui:repeat var="tabella" value="#{titoloRepertorio.list_tabelle}">
+							
+							<h:commandLink styleClass="list-group-item" action="#{dwrepHome.insTableRepertorioSpecifico}" actionListener="#{dwrepHome.attrListenerSelectPersonalView}">
+								<span class="glyphicon glyphicon-pencil normal-size-icon"></span>
+							
+								#{titoloRepertorio.descrizione} #{tabella.text}
+								<f:attribute name="tipoRepertorio" value="#{tabella.tipo}" />
+								<f:attribute name="textTabella" value="#{tabella.text}" />
+								<f:param name="titoloRepertorio" value="#{titoloRepertorio}"></f:param>
+							</h:commandLink>
+							
+						</ui:repeat>
+					</ui:repeat>
+				</div>
+			</h:panelGroup>
+		</ui:remove>
+		
+	</h:panelGroup>
+	
+	<h:inputTextarea value="#{dwrepHome.xml}" rendered="#{dwrepHome.debugMode}" styleClass="form-control" rows="10" />
+</ui:define>
+	
+</ui:composition>

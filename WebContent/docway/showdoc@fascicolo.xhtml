@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+    template="#{showdocFascicolo.pageTemplate}"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:c="http://java.sun.com/jsp/jstl/core">
+
+<ui:define name="content">
+	<div class="fascicolo">
+		
+		<ui:remove>
+			<h5 class="sub-header">#{i18n['dw4.view_fascicolo']}</h5>
+		</ui:remove>
+		
+		<!-- toolbar: inizio -->
+		<ui:include src="./buttonBarFasc.xhtml">
+			<ui:param name="bean" value="#{showdocFascicolo}"/>
+		</ui:include>
+		<!-- toolbar: fine -->
+
+		<!-- scheda show: inizio -->
+		<div class="contenuto-doc row clearfix">
+			<h:panelGroup rendered="#{!showdocFascicolo.popupPage}">
+				<div class="col-xs-12 col-sm-2 col-md-2 col-lg-2 col-sm-push-10 col-md-push-10 col-lg-push-10 text-right">
+					<!-- azioni rapide: inizio -->
+					
+					<ui:include src="./smartActionsFasc.xhtml">
+						<ui:param name="bean" value="#{showdocFascicolo}"/>
+					</ui:include>
+					
+					<!-- azioni rapide: fine -->
+				</div>
+			</h:panelGroup>
+			<div class="col-xs-12 #{(showdocFascicolo.popupPage) ? 'col-sm-12 col-md-12 col-lg-12' : 'col-sm-10 col-md-10 col-lg-10 col-sm-pull-2 col-md-pull-2 col-lg-pull-2'}">
+				<!-- contenuto fascicolo: inizio -->
+				
+				<!-- titolo del fascicolo: inizio -->
+				<div class="showdoc-title doc-tipo-fascicolo clearfix">
+					<div class="row">
+						<div class="col-xs-1">
+							<span class="doc-tipo-fascicolo glyphicons-pro #{(showdocFascicolo.fascicolo.stato == 'deposito') ? 'folder_flag' : ((showdocFascicolo.fascicolo.stato == 'chiuso') ? 'folder_closed' : 'folder_open')}"></span>
+						</div>
+						<div class="col-xs-11">
+							<div class="showdoc-first-row-title">
+								<h:outputText value="#{showdocFascicolo.fascicolo.numero}" styleClass="showdoc-title-numfasc"><f:converter converterId="NumFascConverter" /></h:outputText>
+								<h:panelGroup rendered="#{showdocFascicolo.fascicolo.soggetto ne ''}">
+									&#160;-&#160; 
+									<span class="showdoc-title-soggetto" title="#{showdocFascicolo.fascicolo.soggetto}">#{showdocFascicolo.fascicolo.soggetto}</span>
+								</h:panelGroup>
+							</div>
+							<div class="showdoc-second-row-title" title="#{showdocFascicolo.fascicolo.oggetto}">
+								#{showdocFascicolo.fascicolo.oggetto}
+							</div>
+						</div>
+					</div>
+				</div>
+				<!-- titolo del fascicolo: fine -->
+				
+				<div id="fixedshowdoc" class="fixed-showdoc">
+					<ui:include src="./showdoc@gerarchiafascicoli.xhtml">
+						<ui:param name="bean" value="#{showdocFascicolo}" />
+					</ui:include>
+					
+					<ui:include src="./showdoc@statifasc.xhtml">
+						<ui:param name="bean" value="#{showdocFascicolo}" />
+					</ui:include>
+					
+					<!-- dati del fascicolo: inizio -->
+					<div class="showdoc-section">
+						<div class="title">
+							#{i18n['dw4.datifasc']}
+							
+							<div class="pull-right">
+								<span class="glyphicon glyphicon-folder-close" title="#{i18n['dw4.datifasc']}"></span>
+							</div>
+						</div>
+						<dl class="dl-horizontal">
+							<ui:remove>
+								<h:panelGroup rendered="#{!empty showdocFascicolo.level}">
+									<dt>#{i18n['dw4.livello']}</dt>
+									<dd>#{showdocFascicolo.level}</dd>
+								</h:panelGroup>
+							</ui:remove>
+							<h:panelGroup rendered="#{!empty showdocFascicolo.fascicolo.soggetto}">
+								<dt>#{i18n['dw4.soggetto']}</dt>
+								<dd>#{showdocFascicolo.fascicolo.soggetto}</dd>
+							</h:panelGroup>
+							<h:panelGroup rendered="#{fn:length(showdocFascicolo.fascicolo.gerarchiaFascicolo) &lt; 2}">
+								<dt>#{i18n['dw4.num']}</dt>
+								<dd><h:outputText value="#{showdocFascicolo.fascicolo.numero}"><f:converter converterId="NumFascConverter" /></h:outputText></dd>
+								<dt>#{i18n['dw4.object']}</dt>
+								<dd>#{showdocFascicolo.fascicolo.oggetto}</dd>
+							</h:panelGroup>
+							<dt>#{i18n['dw4.opendate']}</dt>
+							<dd><h:outputText value="#{showdocFascicolo.fascicolo.creazione.dateLong}" /></dd>
+							<h:panelGroup rendered="#{showdocFascicolo.fascicolo.stato == 'chiuso'}">
+								<dt>#{i18n['dw4.closedate']}</dt>
+								<dd>
+									<h:outputText value="#{showdocFascicolo.fascicolo.chiusura.dateLong}">
+										<f:converter converterId="DateConverter"/>	
+									</h:outputText>
+								</dd>
+							</h:panelGroup>
+							<h:panelGroup rendered="#{!empty showdocFascicolo.fascicolo.codiceFascicoloCustom}">
+                                <dt>#{i18n['dw4.tipologia_fascicolo']}</dt>
+                                <dd>
+                                    <h:outputText value="#{showdocFascicolo.fascicolo.descrizioneFascicoloCustom}"/>
+                                </dd>
+                            </h:panelGroup>
+						</dl>
+						
+						<c:if test="#{!empty showdocFascicolo.personalDirCliente}">
+							<ui:include src="./#{showdocFascicolo.personalDirCliente}showdoc@fascicolo.xhtml">
+								<ui:param name="bean" value="#{showdocFascicolo}" />
+							</ui:include>
+			        	</c:if>
+					</div>
+					<!-- dati del fascicolo: fine -->
+					
+					<!-- dati di archivio: inizio -->
+					<div class="showdoc-section">
+						<div class="title">
+							#{i18n['dw4.archivio']}
+							
+							<div class="pull-right">
+								<span class="glyphicon glyphicon-inbox" title="#{i18n['dw4.archivio']}"></span>
+							</div>
+						</div>
+						<dl class="dl-horizontal">
+							<dt>#{i18n['dw4.classif']}</dt>
+							<dd>
+								<h:outputText value="#{showdocFascicolo.fascicolo.classif.text}"><f:converter converterId="ClassifConverter"/></h:outputText>
+								<h:panelGroup rendered="#{!empty showdocFascicolo.fascicolo.scarto}">
+									<h:outputText value=" (#{i18n['dw4.scarto']} "/> 
+									<h:outputText value="#{i18n['dw4.illimitato']}" rendered="#{showdocFascicolo.fascicolo.scarto == '99'}"/>
+									<h:outputText value="#{i18n['dw4.1_anno']}"  rendered="#{showdocFascicolo.fascicolo.scarto == '01'}"/>
+									<h:outputText value="#{i18n['dw4.5_anni']}" rendered="#{showdocFascicolo.fascicolo.scarto == '05'}"/>
+									<h:outputText value="#{i18n['dw4.10_anni']}" rendered="#{showdocFascicolo.fascicolo.scarto == '10'}"/>
+									<h:outputText value=")"/>
+								</h:panelGroup>
+							</dd>
+							<h:panelGroup rendered="#{showdocFascicolo.fascicolo.motiv_ogg_div ne ''}">
+								<dt>&#160;</dt>
+								<dd><pre>#{showdocFascicolo.fascicolo.motiv_ogg_div}</pre></dd>
+							</h:panelGroup>
+							<h:panelGroup rendered="#{!empty showdocFascicolo.fascicolo.nuovo_repertorio.cod}">
+								<dt>#{i18n['dw4.repnuovo']}</dt>
+								<dd>
+									<h:commandLink action="#{showdocFascicolo.navigateNuovoRep}">
+										<h:outputText value="#{showdocFascicolo.fascicolo.nuovo_repertorio.cod}" >
+											<f:converter converterId="NumFascConverter"/>	
+										</h:outputText>
+									</h:commandLink>
+								</dd>
+							</h:panelGroup>
+							<h:panelGroup rendered="#{!empty showdocFascicolo.fascicolo.repertorio_precedente.cod}">
+								<dt>#{i18n['dw4.repprec']}</dt>
+								<dd>
+									<h:commandLink styleClass="blacklink" action="#{showdocFascicolo.navigateRepPrecedente}">
+										<h:outputText value="#{showdocFascicolo.fascicolo.repertorio_precedente.cod}" >
+											<f:converter converterId="NumFascConverter"/>	
+										</h:outputText>
+									</h:commandLink>
+								</dd>
+							</h:panelGroup>
+							<h:panelGroup rendered="#{showdocFascicolo.formsAdapter.funzionalitaDisponibili['enableRaccoglitori'] and fn:length(showdocFascicolo.fascicolo.contenuto_in) > 0}">
+								<dt>#{i18n['dw4.contenutoin']}</dt>
+								<dd>
+									<ui:repeat var="contenuto" value="#{showdocFascicolo.fascicolo.contenuto_in}">
+										<h:panelGroup rendered="#{!empty contenuto.cod}">
+											<h:commandLink value="#{contenuto.text}" action="#{showdocFascicolo.navigateToRac}" />
+											&#160;
+											<h:panelGroup rendered="#{showdocFascicolo.formsAdapter.funzionalitaDisponibili['raccoglitorigestione'] and showdocFascicolo.formsAdapter.funzionalitaDisponibili['disableSegnatura']}">
+												<span class="btn-group">
+													<h:commandLink action="#{showdocFascicolo.removeFromRac}" title="#{i18n['dw4.removeFromRac']}" styleClass="btn btn-default btn-xs">
+														<span class="glyphicon glyphicon-remove"></span>
+													</h:commandLink>
+												</span>
+											</h:panelGroup>
+											<br/>
+										</h:panelGroup>
+									</ui:repeat>
+								</dd>
+							</h:panelGroup>
+							<h:panelGroup rendered="#{showdocFascicolo.fascicolo.archiviato}">
+								<dt>#{i18n['dw4.collocazione']}</dt>
+								<dd class="fasc-collocazione-archivio">#{i18n['dw4.archivio']}</dd>
+							</h:panelGroup>
+							<dt>#{i18n['dw4.docs']}</dt>
+							<dd>
+								<h:panelGroup rendered="#{showdocFascicolo.formsAdapter.funzionalitaDisponibili['showdocsinfasc'] and showdocFascicolo.fascicolo.doc_contenuti.numero != 0}">
+									<h:commandLink action="#{showdocFascicolo.fascContent}"><strong>#{showdocFascicolo.fascicolo.doc_contenuti.numero}</strong></h:commandLink>
+								</h:panelGroup>
+								<h:panelGroup rendered="#{!showdocFascicolo.formsAdapter.funzionalitaDisponibili['showdocsinfasc'] or showdocFascicolo.fascicolo.doc_contenuti.numero == 0}">
+									#{showdocFascicolo.fascicolo.doc_contenuti.numero}
+								</h:panelGroup>
+							</dd>
+							<h:panelGroup rendered="#{!empty showdocFascicolo.fascicolo.doc_contenuti.primo_doc_prot}">
+								<dt>#{i18n['dw4.primodoc']}</dt>
+								<dd>#{i18n['dw4.prot_n']} #{showdocFascicolo.fascicolo.doc_contenuti.primo_doc_prot} #{i18n['dw4.del']} #{showdocFascicolo.fascicolo.doc_contenuti.primo_doc_data_prot}</dd>
+							</h:panelGroup>
+							<h:panelGroup rendered="#{!empty showdocFascicolo.fascicolo.doc_contenuti.ultimo_doc_prot}">
+								<dt>#{i18n['dw4.ultimodoc']}</dt>
+								<dd>#{i18n['dw4.prot_n']} #{showdocFascicolo.fascicolo.doc_contenuti.ultimo_doc_prot} #{i18n['dw4.del']} #{showdocFascicolo.fascicolo.doc_contenuti.ultimo_doc_data_prot}</dd>
+							</h:panelGroup>
+							<h:panelGroup rendered="#{fn:length(showdocFascicolo.fascicolo.link_interni) > 0}">
+								<dt>#{i18n['dw4.collegamenti']}</dt>
+								<dd>
+									<ui:repeat var="link_interno" value="#{showdocFascicolo.fascicolo.link_interni}">
+										<h:panelGroup rendered="#{!empty link_interno.href}">
+											<h:commandLink action="#{showdocFascicolo.navigateInternalLink}">
+												#{link_interno.text}
+											</h:commandLink>
+											&#160;
+											<h:panelGroup rendered="#{link_interno.remove =='true'}">
+												<span class="btn-group">
+													<h:commandLink action="#{showdocFascicolo.removeInternalLink}" title="#{i18n['dw4.removeLink']}" onclick="if (!owmConfirm('#{i18n['dw4.rimuovi_collegamento_procedere_con_l_operazione']}')) return false;" styleClass="btn btn-default btn-xs">
+														<span class="glyphicon glyphicon-remove"></span>
+													</h:commandLink>
+												</span>
+											</h:panelGroup>
+											<br/>
+										</h:panelGroup>
+									</ui:repeat>
+								</dd>
+							</h:panelGroup>
+						</dl>
+					</div>
+					<!-- dati di archivio: fine -->
+					
+					<ui:include src="../customfields/showdoc@customfields.xhtml">
+						<ui:param name="bean" value="#{showdocFascicolo}"/>
+		        	</ui:include>
+					
+					<ui:include src="./showdoc@fasc@responsabilita.xhtml">
+						<ui:param name="bean" value="#{showdocFascicolo}"/>
+					</ui:include>
+					
+					<h:panelGroup rendered="#{!empty showdocFascicolo.fascicolo.note.text}">
+						<!-- dati altro: inizio -->
+						<div class="showdoc-section">
+							<div class="title">
+								#{i18n['dw4.other']}
+								
+								<div class="pull-right">
+									<span class="glyphicon glyphicon-list-alt" title="#{i18n['dw4.other']}"></span>
+								</div>
+							</div>
+							
+							<dl class="dl-horizontal">
+								<h:panelGroup rendered="#{!empty showdocFascicolo.fascicolo.note.text}">
+									<dt>#{i18n['acl.notes']}</dt>
+									<dd><pre>#{showdocFascicolo.fascicolo.note.text}</pre></dd>
+								</h:panelGroup>
+							</dl>
+						</div>
+						<!-- dati altro: fine -->
+					</h:panelGroup>
+					
+					<ui:include src="./history.xhtml">
+						<ui:param name="bean" value="#{showdocFascicolo.fascicolo}"/>
+						<ui:param name="viewbean" value="#{showdocFascicolo}"/>
+						<ui:param name="visible" value="#{showdocFascicolo.formsAdapter.funzionalitaDisponibili['showHistory']}" />
+					</ui:include>
+				</div>
+				
+				<!-- contenuto fascicolo: fine -->
+			</div>
+		</div>
+		<!-- scheda show: fine -->
+		
+		<ui:include src="./rifinterni@fasc@RPA.xhtml"><ui:param name="bean" value="#{rifIntFasc}"/></ui:include>
+		<ui:include src="./rifinterni@fasc@CC.xhtml"><ui:param name="bean" value="#{rifIntFasc}"/></ui:include>
+		<ui:include src="./loadingbar@assegnazioneRPA.xhtml"><ui:param name="pageBean" value="#{rifIntFasc}"/></ui:include>
+		<ui:include src="./loadingbar@assegnazioneCCfasc.xhtml"><ui:param name="pageBean" value="#{rifIntFasc}"/></ui:include>
+		<ui:include src="./loadingbar@aggiornamentoCCfasc.xhtml"><ui:param name="pageBean" value="#{showdocFascicolo}"/></ui:include>
+		<ui:include src="./lookup.xhtml"> <ui:param name="pageBean" value="#{rifIntFasc}"/></ui:include>
+		<ui:include src="./rifintLookup.xhtml"> <ui:param name="pageBean" value="#{rifIntFasc}"/></ui:include>
+		<ui:include src="./changeclassif.xhtml"> <ui:param name="pageBean" value="#{changeclassif}"/></ui:include>
+		<ui:include src="./loadingbar@ripristinaClassif.xhtml"> <ui:param name="pageBean" value="#{showdocFascicolo}"/></ui:include>
+		<ui:include src="./loadingbar@if.xhtml"><ui:param name="pageBean" value="#{showdocFascicolo}"/></ui:include>
+		<ui:include src="./showthes.xhtml"> <ui:param name="pageBean" value="#{changeclassif}"/></ui:include>
+		<ui:include src="./showPersoneRuolo.xhtml"><ui:param name="bean" value="#{docwayShowPersoneRuolo}"/></ui:include>
+		
+		<h:inputTextarea value="#{showdocFascicolo.xml}" rendered="#{showdocFascicolo.debugMode}" styleClass="form-control" rows="10" />
+	</div>
+
+	<ui:fragment rendered="#{showdocFascicolo.close and empty showdocFascicolo.numFasc}">
+		<script type="text/javascript">
+		window.opener.$('#templateForm\\:reloadPage').trigger("click");
+		self.close();
+		</script>
+	</ui:fragment>
+	<ui:fragment rendered="#{showdocFascicolo.close and ! empty showdocFascicolo.numFasc}">
+		<script type="text/javascript">
+		window.opener.$('#templateForm\\:numFascCollegato').val('#{showdocFascicolo.numFasc}');
+		window.opener.$('#templateForm\\:assegnaFascicoloCollegato').trigger("click");
+		self.close();
+		</script>
+	</ui:fragment>
+</ui:define>
+
+</ui:composition>

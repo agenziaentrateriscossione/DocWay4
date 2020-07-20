@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:f="http://java.sun.com/jsf/core"
+    template="#{docwayFirmaDigitaleEngineering.pageTemplate}">
+
+	<ui:define name="content">
+		<h:panelGroup rendered="#{empty docwayFirmaDigitaleEngineering.files}">
+			
+			<div class="sub-header">#{i18n['dw4.selezionare_il_file_da_firmare']}</div>
+			
+			<!-- toolbar: inizio -->
+			<div class="btn-toolbar margin-bottom" role="toolbar">
+				<div class="btn-group">
+					<h:commandLink rendered="#{docwayFirmaDigitaleEngineering.popupPage}" onclick="top.close();" styleClass="btn btn-default">#{i18n['acl.close']}</h:commandLink>
+				</div>
+			</div>
+			<!-- toolbar: fine -->
+			
+			
+			<h:inputTextarea value="#{docwayFirmaDigitaleEngineering.xml}" rendered="#{docwayFirmaDigitale.debugMode}" styleClass="form-control" rows="10" />
+			
+		</h:panelGroup>
+		
+		<h:panelGroup rendered="#{!empty docwayFirmaDigitaleEngineering.files}" layout="block">
+		
+		    <div class="sub-header">#{i18n['dw4.selezionare_il_file_da_firmare']}</div>
+		    
+		    <!-- toolbar: inizio -->
+            <div class="btn-toolbar margin-bottom" role="toolbar">
+                <div class="btn-group">
+                    <h:commandLink rendered="#{docwayFirmaDigitaleEngineering.popupPage}" onclick="top.close();" styleClass="btn btn-default">#{i18n['acl.close']}</h:commandLink>
+                </div>
+            </div>
+            <!-- toolbar: fine -->
+		    
+		    <ui:remove>
+			    <div class="list-group">
+	                <ui:repeat var="file" value="#{docwayFirmaDigitaleEngineering.files}">
+	                    <h:outputText value="#{file.name} (#{file.mime})"/>
+	                </ui:repeat>
+	            </div>
+            </ui:remove>
+		
+			<div id="signatureContainer" class="engineeringSignatureContainer"></div>
+	
+			<script type="text/javascript">
+			
+			var signatureManager = new ES.SignatureManager('#{docwayFirmaDigitaleEngineering.url}', '#{docwayFirmaDigitaleEngineering.urlRiconsegna}', 'call_firma', 'signatureContainer', 'signatureframe');
+			//var signatureManager = new ES.SignatureManager('https://login-coll.avepa.it/FirmaWeb/servlet/AdapterHTTP', 'http://opera-sviluppo.3di.it/EngineeringSignature/signatureService', 'call_firma', 'signatureContainer', 'signatureframe');
+			
+			signatureManager.init('#{docwayFirmaDigitaleEngineering.user}');
+			
+			signatureManager.setCallback(function(err, success) {
+			    
+			    /* codice utente */
+			    window.opener.$('#templateForm\\:reloadPage').trigger('click');
+			    window.close();
+			    /* ************* */
+			    
+			    signatureManager.reset();
+			});
+			
+			<ui:repeat var="file" value="#{docwayFirmaDigitaleEngineering.files}">
+			 signatureManager.addAttachment('#{docwayFirmaDigitaleEngineering.nRecord}', '#{file.id}', '#{file.name}', '#{file.mime}', '#{docwayFirmaDigitaleEngineering.tipoRiconsegna}', '#{userBean.login}', '#{userBean.matricola}');
+			</ui:repeat>
+			
+			signatureManager.sign();
+			
+		    </script>
+		    
+	      	<h:inputTextarea value="#{docwayFirmaDigitaleEngineering.xml}" rendered="#{docwayFirmaDigitale.debugMode}" styleClass="form-control" rows="10" />
+		</h:panelGroup>
+	</ui:define>
+	
+</ui:composition>

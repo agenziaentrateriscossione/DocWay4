@@ -1,0 +1,37 @@
+<jnlp spec="1.0+" codebase="http://localhost:8080/DocWay4/docway/actalisApplet/" href="sign.jnlp">
+	<information>
+		<title>SignApplet</title>
+		<vendor>Actalis</vendor>
+		<offline-allowed />
+	</information>
+	<security>
+		<all-permissions />
+	</security>
+  
+	<!--<update check="always" policy="always"/>-->
+	<update check="background" />
+	
+	<resources>
+		<java href="http://java.sun.com/products/autodl/j2se" version="1.5+" />	
+		<jar href="jars/applet-sign.jar" main="true" />
+		<jar href="jars/applet-resources.jar" main="false" />   
+		<jar href="jars/xmlrpc-1-2-patched.jar" main="false" />
+		<jar href="jars/jpcsc.jar" main="false" /> 	
+		<extension name="Ellips" href="ellips.jnlp" /> 
+	</resources>
+
+	<resources os="Windows">
+		<nativelib href="jars/win-nativelibs.jar" />	
+		<nativelib href="jars/win-hid-nativelibs.jar" />			 
+	</resources>
+		
+	<resources os="Linux">
+		<nativelib href="jars/linux-nativelibs.jar" />
+	</resources>
+	
+	<resources os="Mac OS X">
+		<nativelib href="jars/mac-nativelibs.jar" />
+	</resources>
+
+	<applet-desc name="SignApplet" main-class="it.actalis.applet.Sign.class" width="320" height="140" /> <!-- width , height are overridden by applet tag -->
+</jnlp>

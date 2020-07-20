@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:f="http://java.sun.com/jsf/core">
+<ui:composition>
+
+	<!-- primo livello toolbar: inizio -->
+	<div class="btn-toolbar" role="toolbar">
+		<div class="btn-group pull-right">
+			<ui:include src="./navigationBar.xhtml"><ui:param name="bean" value="#{bean}"/><ui:param name="customPage" value="true"/><ui:param name="customPageId" value="showdocId"/></ui:include>
+		</div>
+		
+		<div class="btn-group">
+			<h:commandLink rendered="#{bean.formsAdapter.paginaTitoliEnabled}" action="#{bean.paginaTitoli}"  styleClass="btn btn-default openwaitmsg">#{i18n['acl.titles']}</h:commandLink>
+			
+			<h:commandLink rendered="#{!bean.popupPage and !empty qPersonalView}" action="#{docwaymenu.gotoTableQSpecificPersonalView(bean.doc.tipo, qPersonalView)}"  styleClass="btn btn-default openwaitmsg">#{i18n['acl.ricerca']}</h:commandLink>
+			
+			<ui:remove>
+				<h:panelGroup rendered="#{bean.embeddedApp ne 'dwrep'}">
+					<h:commandLink rendered="#{!bean.verificaDuplicati}" action="#{docwaymenu.gotoTableQGlobale}" styleClass="btn btn-default">#{i18n['acl.ricerca']}</h:commandLink>
+				</h:panelGroup>
+			</ui:remove>
+		</div>
+	</div>
+	<!-- primo livello toolbar: fine -->
+	
+	<!-- secondo livello toolbar: inizio -->
+	<div class="btn-toolbar" role="toolbar">
+		<div class="btn-group">
+			
+			<h:panelGroup rendered="#{!bean.verificaDuplicati}">
+				<h:panelGroup rendered="#{bean.formsAdapter.funzionalitaDisponibili['enableSegnatura']}" layout="block" styleClass="btn-group">
+					<button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+						#{i18n['dw4.segnatura']} <span class="caret"></span>
+					</button>
+					<ul class="dropdown-menu">
+						<li><h:commandLink id="salvaSegnatura" action="#{bean.salvaSegnatura}">#{i18n['dw4.segnaturamanuale']}</h:commandLink></li>
+						<h:panelGroup rendered="#{!bean.enableIW or empty bean.testoStampaSegnatura}">
+							<li><!-- stampa segnatura senza IWX --><h:commandLink action="#{bean.stampaSegnatura(true)}" onclick="openCenterPopup('', 'printSignature', 600, 400)" target="printSignature">#{i18n['dw4.stampasegnatura']}</h:commandLink></li>
+						</h:panelGroup>
+						<h:panelGroup rendered="#{bean.enableIW and !empty bean.testoStampaSegnatura}">
+							<li><!-- stampa segnatura con IWX --><a href="#" onclick="stampaSegnaturaIWX('#{bean.doc.tipo}', 'true');" onkeypress="stampaSegnaturaIWX('#{bean.doc.tipo}', 'true');">#{i18n['dw4.stampasegnatura']}</a></li>
+						</h:panelGroup>
+					</ul>
+				</h:panelGroup>
+			
+				<h:panelGroup rendered="#{bean.formsAdapter.funzionalitaDisponibili['disableSegnatura']}">
+					<div class="btn-group">
+						<button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+							#{i18n['dw4.azioni_sul_doc']} <span class="caret"></span>
+						</button>
+						
+						<ui:param name="azioniSuDoc_blocco2" value="#{bean.formsAdapter.funzionalitaDisponibili['postitaggiunta'] or bean.formsAdapter.funzionalitaDisponibili['modifica'] or (bean.formsAdapter.funzionalitaDisponibili['annulladoc'] and (empty hideAnnulla or hideAnnulla ne 'true')) or bean.formsAdapter.funzionalitaDisponibili['rimuovidoc']}" />
+						
+						<ul class="dropdown-menu">
+						
+							<h:panelGroup rendered="#{bean.formsAdapter.funzionalitaDisponibili['postitaggiunta']}" ><li><h:commandLink action="#{bean.addPostit}"><f:ajax execute="@form" render="@form" />#{i18n['dw4.annotazione']}</h:commandLink></li></h:panelGroup>
+							<h:panelGroup rendered="#{bean.formsAdapter.funzionalitaDisponibili['modifica']}" ><li><h:commandLink action="#{bean.modifyTableDoc}">#{i18n['dw4.modify']}</h:commandLink></li></h:panelGroup>
+							<h:panelGroup rendered="#{bean.formsAdapter.funzionalitaDisponibili['annulladoc'] and (empty hideAnnulla or hideAnnulla ne 'true')}" ><li><h:commandLink action="#{bean.annullaDoc}"><f:ajax execute="@form" render="@form" />#{i18n['dw4.annullaDoc']}</h:commandLink></li></h:panelGroup>
+							<h:panelGroup rendered="#{bean.formsAdapter.funzionalitaDisponibili['rimuovidoc']}" ><li><h:commandLink action="#{bean.rimuoviDoc}" onclick="if (!owmConfirm('#{i18n['dw4.deleteconfirm_documento']}')) return false;">#{i18n['dw4.rimuoviDoc']}</h:commandLink></li></h:panelGroup>
+							
+							<h:panelGroup rendered="#{azioniSuDoc_blocco2}">
+								<li class="divider"></li>
+							</h:panelGroup>
+								
+							<li><h:commandLink action="#{bean.reload}" id="reloadPage">#{i18n['dw4.reload_doc']}</h:commandLink></li>
+							<h:panelGroup rendered="#{bean.formsAdapter.funzionalitaDisponibili['improntacheck'] and ((fn:length(bean.doc.files) > 0 and !empty bean.doc.files[0].name) or (fn:length(bean.doc.immagini) > 0 and !empty bean.doc.immagini[0].name))}">
+								<li><h:commandLink action="#{bean.checkImpronta}"><f:ajax execute="@form" render="@form" />#{i18n['dw4.impronta']}</h:commandLink></li>
+							</h:panelGroup>
+						</ul>
+					</div>
+					
+					<h:panelGroup rendered="#{bean.formsAdapter.funzionalitaDisponibili['ripetiinfascicolo'] or bean.formsAdapter.funzionalitaDisponibili['ripetinuovoinfascicolo'] or bean.formsAdapter.funzionalitaDisponibili['richiestaPubblicazioneInAlboOnline']}">
+						<div class="btn-group">
+							<button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+								#{i18n['dw4.new']} <span class="caret"></span>
+							</button>
+							
+							<ui:param name="new_blocco2" value="#{bean.formsAdapter.funzionalitaDisponibili['ripetinuovoinfascicolo'] or bean.formsAdapter.funzionalitaDisponibili['ripetiinfascicolo']}" />
+							<ui:param name="new_blocco3" value="#{bean.formsAdapter.funzionalitaDisponibili['richiestaPubblicazioneInAlboOnline']}" />
+							
+							<ul class="dropdown-menu">
+
+							<h:panelGroup rendered="#{new_blocco2}">
+								<h:panelGroup rendered="#{bean.formsAdapter.funzionalitaDisponibili['ripetinuovoinfascicolo']}"><li><h:commandLink value="#{i18n['dw4.newinfasc']}" action="#{bean.nuovoInFasc}" /></li></h:panelGroup>
+								<h:panelGroup rendered="#{bean.formsAdapter.funzionalitaDisponibili['ripetiinfascicolo']}" ><li><h:commandLink value="#{i18n['dw4.cloneinfasc']}" action="#{bean.ripetiNuovoInFasc}" /></li></h:panelGroup>
+								
+								<h:panelGroup rendered="#{new_blocco3}">
+									<li class="divider"></li>
+								</h:panelGroup>
+							</h:panelGroup>
+															
+								<h:panelGroup rendered="#{bean.formsAdapter.funzionalitaDisponibili['richiestaPubblicazioneInAlboOnline']}" ><li><h:commandLink action="#{bean.richiestaPubblicazioneInAlboOnline}" title="#{i18n['dw4.richiesta_di_pubblicazione_dell_albo_online']}">#{i18n['dw4.richiestaPubblicazioneInAlboOnline']}</h:commandLink></li></h:panelGroup>
+							</ul>
+						</div>
+					</h:panelGroup>
+					
+					<div class="btn-group">
+						<button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+							#{i18n['dw4.link']} <span class="caret"></span>
+						</button>
+						<ul class="dropdown-menu">
+							<li><h:commandLink value="#{i18n['dw4.copylink']}" action="#{bean.copyLink}" /></li>
+							<li><h:commandLink rendered="#{bean.formsAdapter.funzionalitaDisponibili['pasteLink']}" action="#{bean.pasteLink}" onclick="if (!owmConfirm('#{i18n['dw4.incolla_collegamento_procedere_con_l_operazione']}')) return false;">#{i18n['dw4.pastelink']}</h:commandLink></li>
+						</ul>
+					</div>
+			
+					<h:panelGroup rendered="#{(empty bean.doc.fasc_rpa.num and bean.formsAdapter.funzionalitaDisponibili['rpaadd']) or bean.formsAdapter.funzionalitaDisponibili['ccadd']}">
+						<div class="btn-group">
+							<button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+								#{i18n['dw4.assegnazioni']} <span class="caret"></span>
+							</button>
+							<ul class="dropdown-menu">
+								<h:panelGroup rendered="#{empty bean.doc.fasc_rpa.num and bean.formsAdapter.funzionalitaDisponibili['rpaadd']}"><li><h:commandLink value="#{(empty labelAddProprietario) ? i18n['dw4.proprietarioadd'] : labelAddProprietario}" action="#{bean.addRPA}"><f:ajax execute="@form" render="@form" /></h:commandLink></li></h:panelGroup>                    
+								<h:panelGroup rendered="#{bean.formsAdapter.funzionalitaDisponibili['ccadd']}"><li><h:commandLink value="#{i18n['dw4.nuovocc']}" action="#{bean.addCC}"><f:ajax execute="@form" render="@form" /></h:commandLink></li></h:panelGroup>
+							</ul>
+						</div>
+					</h:panelGroup>
+			
+					<h:panelGroup rendered="#{ (bean.formsAdapter.funzionalitaDisponibili['insdocinfascicolo'] and empty bean.doc.assegnazioneRPA.cod_fasc) or (bean.formsAdapter.funzionalitaDisponibili['insdocinfascicolominuta'] and (!empty bean.doc.minuta.classif or bean.formsAdapter.funzionalitaDisponibili['docClassifEreditabile']) and empty bean.doc.assegnazioneRPAM.cod_fasc) or bean.formsAdapter.funzionalitaDisponibili['raccoglitorigestione']}" >
+						<div class="btn-group">
+							<button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+								#{i18n['dw4.archivio']} <span class="caret"></span>
+							</button>
+							<ul class="dropdown-menu">
+								<li><h:commandLink rendered="#{bean.formsAdapter.funzionalitaDisponibili['insdocinfascicolo'] and empty bean.doc.assegnazioneRPA.cod_fasc}" action="#{bean.insInFasc}" onclick="openCenterPopup('', 'insInFasc')" target="insInFasc">#{i18n['dw4.inserisci_in_fascicolo']}</h:commandLink></li>
+								<li><h:commandLink rendered="#{bean.formsAdapter.funzionalitaDisponibili['insdocinfascicolominuta'] and (!empty bean.doc.minuta.classif or bean.formsAdapter.funzionalitaDisponibili['docClassifEreditabile']) and empty bean.doc.assegnazioneRPAM.cod_fasc}" action="#{bean.insInFascMinuta}" onclick="openCenterPopup('', 'insInFascMinuta')" target="insInFascMinuta">#{i18n['dw4.inserisci_minuta_in_fascicolo']}</h:commandLink></li>
+								<li><h:commandLink rendered="#{bean.formsAdapter.funzionalitaDisponibili['raccoglitorigestione']}" action="#{bean.insInRaccoglitore}" onclick="openCenterPopup('', 'insInRac')" target="insInRac">#{i18n['dw4.inserisci_in_raccoglitore']}</h:commandLink></li>
+							</ul>
+						</div>
+					</h:panelGroup>
+						
+					<h:panelGroup rendered="#{bean.formsAdapter.funzionalitaDisponibili['enableWorkflow'] and bean.formsAdapter.funzionalitaDisponibili['workflow'] and bean.formsAdapter.funzionalitaDisponibili['abilitaeXtraWayWorkflow'] and fn:length(bean.listofWorkflows) > 0}">
+						<div class="btn-group">
+							<button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+								#{i18n['dw4.workflow']} <span class="caret"></span>
+							</button>
+							<ul class="dropdown-menu">
+								<ui:repeat var="workflow" value="#{bean.listofWorkflows}">
+									<li><h:commandLink action="#{bean.avviaWorkflow}" title="#{i18n['dw4.assegna_workflow']}" onclick="if (!owmConfirm('#{i18n['dw4.workflowconfirm']}')) return false;">#{workflow.label}</h:commandLink></li>
+								</ui:repeat>
+							</ul>
+						</div>
+					</h:panelGroup>
+					
+					<h:panelGroup rendered="#{bean.formsAdapter.funzionalitaDisponibili['stampaInfo']}">
+						<div class="btn-group">
+							<button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+								#{i18n['dw4.print']} <span class="caret"></span>
+							</button>
+							<ul class="dropdown-menu">
+								<h:panelGroup rendered="#{bean.formsAdapter.funzionalitaDisponibili['stampaInfo']}">
+									<h:panelGroup rendered="#{!bean.enableIW or empty bean.testoStampaInfo}">
+										<li><!-- stampa info senza IWX --><h:commandLink value="#{i18n['dw4.stampaInfo']}" action="#{bean.stampaInfo}" onclick="openCenterPopup('', 'printInfo')" target="printInfo"/></li>
+									</h:panelGroup>
+									<h:panelGroup rendered="#{bean.enableIW and !empty bean.testoStampaInfo}">
+										<li><!-- stampa info con IWX --><a href="#" onclick="stampaInfoIWX('#{bean.doc.tipo}');" onkeypress="stampaInfoIWX('#{bean.doc.tipo}');">#{i18n['dw4.stampaInfo']}</a></li>
+									</h:panelGroup>
+								</h:panelGroup>
+							</ul>
+						</div>
+					</h:panelGroup>
+					
+				</h:panelGroup>
+			</h:panelGroup>
+		</div>
+		
+		<!-- pulsanti definiti nella gestione degli addons : inizio -->
+		<h:panelGroup rendered="#{!bean.verificaDuplicati}">
+			<ui:include src="./buttons.xhtml">
+				<ui:param name="bean" value="#{bean}" />
+			</ui:include>
+		</h:panelGroup>
+		<!-- pulsanti definiti nella gestione degli addons : fine -->
+	</div>
+	
+	<!-- stampa info e segnatura con IWX -->
+	<h:inputHidden rendered="#{bean.enableIW and !empty bean.testoStampaInfo}" id="testoStampaInfo" value="#{bean.testoStampaInfo}" />
+	<h:inputHidden rendered="#{bean.enableIW and !empty bean.testoStampaSegnatura}" id="testoStampaSegnatura" value="#{bean.testoStampaSegnatura}" />
+	
+	<h:panelGroup rendered="#{bean.uniservLink ne ''}">
+		<a href="#" id="callUniservLinkBtn" onclick="openCenterPopup('#{bean.uniservLink}', 'uniservPopup', 800, 600);" style="visibility:hidden;"></a>
+		<script type="text/javascript">
+		$('#callUniservLinkBtn').trigger('click');
+		</script>
+	</h:panelGroup>
+	
+	<h:inputHidden id="numFascCollegato" value="#{bean.numFascCollegato}" />
+	<h:commandLink style="display:none;" id="assegnaFascicoloCollegato" action="#{bean.assegnaFascicoloCollegato}">
+		<f:ajax execute="@form" render="@form" />
+	</h:commandLink>
+	<!-- secondo livello toolbar: fine -->
+	
+	<h:panelGroup rendered="#{bean.popupPage and bean.verificaDuplicati}">
+		<!-- toolbar verifica duplicati: inizio -->
+		<div class="alert alert-info" style="margin-top:15px;">
+			<p><h:outputText style="font-size:1.1em;" value="#{i18n['dw4.rilevata_la_presenza_di_documenti_con_gli_stessi_estremi']}" /></p>
+	  		
+	  		<div class="btn-toolbar" role="toolbar">
+		  		<h:commandLink onclick="confermaDuplicato();" styleClass="btn btn-success">#{i18n['dw4.continua']}</h:commandLink>
+				<h:commandLink onclick="annullaDuplicato();" styleClass="btn btn-danger">#{i18n['dw4.abbandona']}</h:commandLink>
+			</div>
+		</div>
+		<!-- toolbar verifica duplicati: fine -->
+	</h:panelGroup>
+
+</ui:composition>
+</html>

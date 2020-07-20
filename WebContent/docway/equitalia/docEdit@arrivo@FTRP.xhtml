@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+    template="../#{docEditArrivoFTRP.pageTemplate}"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:c="http://java.sun.com/jsp/jstl/core">
+
+<ui:define name="content">
+	<div class="arrivo docedit">
+	
+		<!-- toolbar: inizio -->
+		<ui:include src="../docEdit@buttonBarProtocollo.xhtml">
+			<ui:param name="bean" value="#{docEditArrivoFTRP}"/>
+		</ui:include>
+		<!-- toolbar: fine -->
+		
+		<h5 class="sub-header">
+			<span class="doc-tipo-arrivo glyphicons-pro"></span>&#160;
+			<h:outputText value="#{docEditArrivoFTRP.docEditTitle}" escape="false" />
+		</h5>
+	
+		<!-- messages: inizio -->
+		<h:panelGroup rendered="#{not empty facesContext.messageList}" layout="block" styleClass="docedit-messages alert alert-danger">
+			<h:messages styleClass="" id="validationMesseges" />
+		</h:panelGroup>
+		<h:inputHidden id="errorFieldIds" value="#{docEditArrivoFTRP.errorFieldIds}" />
+		<!-- messages: fine -->
+		
+		<script type="text/javascript">
+		function customCheckForm() {
+			if (!controlloWarningSeSenzaAllegato(#{docEditArrivoFTRP.warningSeNessunAllegato}, "#{i18n['dw4.non_e_stato_indicato_alcun_documento_informatico_Continuare_con_la_registrazione']}"))
+				return false;
+			
+			if (!controlloDuplicatiInSalvataggio('#{docEditArrivoFTRP.funzDispVerificaDuplicati}'))
+				return false;
+			
+			displayOpenwaitmsg();
+			return true;
+		}
+		
+		$(document).ready(function() {
+			apriPopupVerificaDuplicatiDoc();
+			
+			setInvalidInputFields();
+		});
+		
+		$(window).load(function() {
+			jsf.ajax.addOnEvent(function(data) { 
+				if (data.status == 'success') {
+					if (data.source.id == 'templateForm:existsDuplicatiBtn') 
+						apriPopupVerificaDuplicatiDoc();
+				}
+			});
+
+		});
+		</script>
+		
+		<!-- scheda edit: inizio -->
+		<div class="row-fluid" style="margin-top:10px;">
+		<div id="fixedshowdoc" class="box span12 fixed-showdoc">
+			<div class="box-content">
+			
+				<div class="fieldset">
+					<div class="legend">
+						#{i18n['dw4.datidoc']}
+						
+						<div class="pull-right">
+							<span class="glyphicon glyphicon-envelope" title="#{i18n['dw4.datidoc']}"></span>
+						</div>
+					</div>
+					
+					<h:panelGroup rendered="#{docEditArrivoFTRP.formsAdapter.funzionalitaDisponibili['abilitaBozze'] and !docEditArrivoFTRP.formsAdapter.funzionalitaDisponibili['disabilitaBozzeInInserimento']}">
+						<div class="form-group" style="#{(docEditArrivoFTRP.formsAdapter.funzionalitaDisponibili['mostraPulsanteSalvaBozzaInInserimento']) ? 'display:none;' : ''}">
+							<label for="templateForm:docBozza" class="col-sm-2 control-label"><span>#{i18n['dw4.bozza']}</span></label>
+							<div class="col-sm-3">
+								<h:selectBooleanCheckbox id="docBozza" immediate="true" value="#{docEditArrivoFTRP.doc.bozza}" valueChangeListener="#{docEditArrivoFTRP.doc.setNotificaAfterBozza}">
+									<f:ajax execute="@this" render="templateForm:sendMailRifInterniCheck" />
+								</h:selectBooleanCheckbox>
+							</div>
+						</div>
+					</h:panelGroup>
+					
+					<ui:include src="../multisocietaFields.xhtml">
+						<ui:param name="beanDoc" value="#{docEditArrivoFTRP.doc}" />
+		        	</ui:include>
+		        	
+		        	<h:panelGroup rendered="#{fn:length(docEditArrivoFTRP.doc.repTipologiaSelect) > 0}">
+						<div class="form-group">	
+							<label for="templateForm:repTipoDocumento" class="col-sm-2 control-label"><span>#{i18n['dw4.tipodocumento']}</span></label>
+							<div class="col-sm-5">
+								<h:selectOneMenu id="repTipoDocumento" value="#{docEditArrivoFTRP.doc.extra.tipo_repertorio}" styleClass="form-control">
+									<f:selectItems value="#{docEditArrivoFTRP.doc.repTipologiaSelect}" var="tipologia" itemValue="#{tipologia.text}" itemLabel="#{tipologia.text}"></f:selectItems>
+								</h:selectOneMenu>
+							</div>
+						</div>
+					</h:panelGroup>
+					
+					<ui:include src="../docEditProtPregFields.xhtml">
+						<ui:param name="bean" value="#{docEditArrivoFTRP}" />
+		        	</ui:include>
+		        	
+		        	<div class="form-group">
+		        		<label class="col-sm-2 control-label"><span>#{i18n['dw4.sigla_strutt']}</span></label>
+		        		<div class="col-sm-1">
+		        			<p class="form-control-static"><h:outputText value="#{docEditArrivoFTRP.doc.cod_amm_aoo}" /></p>
+		        		</div>
+		        		<label class="col-sm-2 control-label"><span>#{i18n['dw4.anno']}</span></label>
+		        		<div class="col-sm-1">
+		        			<p class="form-control-static"><h:outputText value="#{docEditArrivoFTRP.doc.anno}" /></p>
+		        		</div>
+		        		<label for="templateForm:mezzoTrasmissioneDoc" class="col-sm-2 control-label"><span>#{i18n['dw4.a_mezzo']}</span></label>
+		        		<div class="col-sm-3">
+		        			<h:selectOneMenu id="mezzoTrasmissioneDoc" value="#{docEditArrivoFTRP.doc.mezzo_trasmissione.cod}" valueChangeListener="#{docEditArrivoFTRP.checkMezzo}" styleClass="form-control">
+								<f:ajax execute="@this" render="templateForm:docRaccomandata" />
+								<f:selectItems value="#{docEditArrivoFTRP.doc.mezzoTrasmissioneSelect}" var="option" itemValue="#{option.value}" itemLabel="#{option.label}"></f:selectItems>
+							</h:selectOneMenu>
+		        		</div>
+		        	</div>
+		        	
+		        	<h:panelGroup id="docRaccomandata" layout="block">
+						<h:panelGroup rendered="#{docEditArrivoFTRP.formsAdapter.funzionalitaDisponibili['abilitaRaccomandate'] and docEditArrivoFTRP.showRaccomandataFields}" layout="block" styleClass="form-group">
+							<label for="templateForm:numraccomandata_input" class="col-sm-2 control-label"><span>#{i18n['dw4.num_raccomandata']}</span></label>
+							<div class="col-sm-4">
+								<ui:include src="../lookupField.xhtml">
+					        		<ui:param name="id" value="numraccomandata" />
+					        		<ui:param name="field" value="#{docEditArrivoFTRP.doc.numero_raccomandata[0].text}" />
+					        		<ui:param name="bean" value="#{docEditArrivoFTRP}" />
+					        		<ui:param name="action" value="lookupNumRaccomandata"/>
+					        		<ui:param name="clearaction" value="clearLookupNumRaccomandata"/>
+					        		<ui:param name="title" value="#{i18n['dw4.lookup_raccomandata']}"/>
+					        		<ui:param name="styleclass" value="form-control"/>
+					        		<ui:param name="refresh" value="templateForm:numraccomandata_input templateForm:lookup templateForm:errormsg"/>
+					        	</ui:include>
+				        	</div>
+						</h:panelGroup>
+					</h:panelGroup>
+					
+					<div class="form-group">
+						<label for="templateForm:nomeMittente_input" class="col-sm-2 control-label requiredField"><span>* #{i18n['dw4.fornitore']}</span></label>
+						<div class="col-sm-4">
+							<ui:include src="../lookupRepeatField.xhtml">
+			        			<ui:param name="id" value="nomeMittente" />
+			        			<ui:param name="field" value="#{docEditArrivoFTRP.doc.rif_esterni[0].nome}" />
+				        		<ui:param name="element" value="#{docEditArrivoFTRP.doc.rif_esterni[0]}" />
+				        		<ui:param name="bean" value="#{docEditArrivoFTRP}" />
+				        		<ui:param name="action" value="lookupMittente"/>
+				        		<ui:param name="clearaction" value="clearLookupMittente"/>
+				        		<ui:param name="title" value="#{i18n['dw4.lookup_fornitore']}"/>
+				        		<ui:param name="styleclass" value="#{ component.valid ? '' : 'invalidinput' } form-control"/>
+				        		<ui:param name="refresh" value="@form"/>
+				        		<ui:param name="notConstraint" value="#{docEditArrivoFTRP.formsAdapter.funzionalitaDisponibili['mittenteNonVincolato']}"/>
+				        	</ui:include>
+				        </div>
+				        <h:panelGroup rendered="#{docEditArrivoFTRP.formsAdapter.funzionalitaDisponibili['abilitaGestioneSAP']}" >
+							<label for="templateForm:codsap_mittente" class="col-sm-3 control-label"><span>#{i18n['acl.sapcod']}</span></label>
+							<div class="col-sm-2">
+								<h:inputText id="codsap_mittente" value="#{docEditArrivoFTRP.doc.rif_esterni[0].cod_SAP}" styleClass="form-control" disabled="true" readonly="true" />
+							</div>
+						</h:panelGroup>
+					</div>
+					
+					<h:panelGroup rendered="#{empty docEditArrivoFTRP.hideDivs or not fn:contains(docEditArrivoFTRP.hideDivs, 'indirizzo_fax')}">
+						<h:panelGroup rendered="#{docEditArrivoFTRP.formsAdapter.funzionalitaDisponibili['abilitaLookupFaxArrivo']}">
+							<div class="form-group">
+								<label class="col-sm-2 control-label"><span>#{i18n['acl.fax']}</span></label>
+								<div class="col-sm-2">
+									<h:panelGroup rendered="#{docEditArrivoFTRP.formsAdapter.funzionalitaDisponibili['abilitaLookupFaxArrivo']}">
+										<ui:include src="../lookupRepeatField.xhtml">
+						        			<ui:param name="id" value="fax" />
+							        		<ui:param name="field" value="#{docEditArrivoFTRP.doc.rif_esterni[0].fax}" />
+							        		<ui:param name="element" value="#{docEditArrivoFTRP.doc.rif_esterni[0]}" />
+							        		<ui:param name="bean" value="#{docEditArrivoFTRP}" />
+							        		<ui:param name="action" value="lookupFax"/>
+							        		<ui:param name="clearaction" value="clearLookupFax"/>
+							        		<ui:param name="title" value="#{i18n['dw4.lookup_fax']}"/>
+							        		<ui:param name="styleclass" value="form-control"/>
+							        		<ui:param name="refresh" value="templateForm:nomeMittente_input templateForm:address templateForm:emailCert templateForm:email templateForm:fax_input templateForm:piva templateForm:cf templateForm:lookup templateForm:errormsg"/>
+							        	</ui:include>
+									</h:panelGroup>
+								</div>
+							</div>
+						</h:panelGroup>
+						<h:panelGroup rendered="#{!empty docEditArrivoFTRP.doc.rif_esterni[0].cod}">
+							<div class="form-group">
+								<label for="templateForm:address" class="col-sm-2 control-label"><span>#{i18n['acl.address']}</span></label>
+								<div class="col-sm-4">
+									<h:inputText id="address" value="#{docEditArrivoFTRP.doc.rif_esterni[0].indirizzo}" styleClass="form-control" disabled="true" readonly="true" />
+								</div>
+							</div>
+							<div class="form-group">
+								<label class="col-sm-2 control-label"><span>#{i18n['dw4.email_cert']}</span></label>
+								<div class="col-sm-2">
+									<h:inputText id="emailCert" value="#{docEditArrivoFTRP.doc.rif_esterni[0].email_certificata}" styleClass="form-control" disabled="true" readonly="true" />
+								</div>
+								<label class="col-sm-1 control-label"><span>#{i18n['acl.email']}</span></label>
+								<div class="col-sm-2">
+									<h:inputText id="email" value="#{docEditArrivoFTRP.doc.rif_esterni[0].email}" styleClass="form-control" disabled="true" readonly="true" />
+								</div>
+								<h:panelGroup rendered="#{!docEditArrivoFTRP.formsAdapter.funzionalitaDisponibili['abilitaLookupFaxArrivo']}">
+									<label class="col-sm-1 control-label"><span>#{i18n['acl.fax']}</span></label>
+									<div class="col-sm-3">
+										<h:inputText id="fax" value="#{docEditArrivoFTRP.doc.rif_esterni[0].fax}" styleClass="form-control" />
+									</div>
+								</h:panelGroup>
+							</div>
+							<div class="form-group">
+								<label class="col-sm-2 control-label"><span>#{i18n['dw4.piva']}</span></label>
+								<div class="col-sm-2">
+									<h:inputText id="piva" value="#{docEditArrivoFTRP.doc.rif_esterni[0].partita_iva}" styleClass="readonlyinput form-control" disabled="true" readonly="true" />
+								</div>
+								<label class="col-sm-1 control-label"><span>#{i18n['dw4.cf']}</span></label>
+								<div class="col-sm-2">
+									<h:inputText id="cf" value="#{docEditArrivoFTRP.doc.rif_esterni[0].codice_fiscale}" styleClass="readonlyinput form-control" disabled="true" readonly="true" />
+								</div>
+							</div>
+						</h:panelGroup>
+					</h:panelGroup>
+					
+					<div class="form-group">
+						<ui:include src="../dateField.xhtml">
+							<ui:param name="label" value="#{i18n['dw4.data_fattura']}" />
+							<ui:param name="id" value="dataProtMittente" />
+							<ui:param name="value" value="#{docEditArrivoFTRP.doc.rif_esterni[0].data_prot}" />
+							<ui:param name="required" value="true" />
+							<ui:param name="onblur" value="#{ (docEditArrivoFTRP.formsAdapter.funzionalitaDisponibili['verificaDuplicati']) ? 'verificaDuplicatiDocMittente();' : ''}" />
+						</ui:include>
+						<label for="templateForm:protMittente" class="col-sm-2 col-sm-offset-3 control-label requiredField"><span>* #{i18n['dw4.numero_fattura']}</span></label>
+						<div class="col-sm-2">
+							<h:inputText id="protMittente" value="#{docEditArrivoFTRP.doc.rif_esterni[0].n_prot}" styleClass="#{ component.valid ? '' : 'invalidinput' } form-control" onblur="#{ (docEditArrivoFTRP.formsAdapter.funzionalitaDisponibili['verificaDuplicati']) ? 'verificaDuplicatiDocMittente();' : ''}" />
+						</div>
+						
+						<h:commandLink id="existsDuplicatiBtn" action="#{docEditArrivoFTRP.verificaDuplicatiDoc}" actionListener="#{docEditArrivoFTRP.attrListenerVerificaDuplicati}" style="display:none;">
+							<f:attribute name="tipoVerificaDuplicati" value="exists" />
+							<f:ajax execute="@form" render="templateForm:duplicatiDocPresenti templateForm:duplicatoVerificato templateForm:errormsg templateForm:nomeMittenteInit templateForm:dataProtMittenteInit templateForm:numProtMittenteInit" />
+						</h:commandLink>
+						<h:commandLink id="apriPopupDuplicatiBtn" action="#{docEditArrivoFTRP.verificaDuplicatiDoc}" actionListener="#{docEditArrivoFTRP.attrListenerVerificaDuplicati}" style="display:none;" onclick="openCenterPopup('', 'popupVerificaDuplicati')" target="popupVerificaDuplicati">
+							<f:attribute name="tipoVerificaDuplicati" value="popup" />
+						</h:commandLink>
+						
+						<h:inputHidden id="nomeMittenteInit" value="#{docEditArrivoFTRP.nomeMittenteInitValue}" />
+						<h:inputHidden id="dataProtMittenteInit" value="#{docEditArrivoFTRP.dataProtMittenteInitValue}" />
+						<h:inputHidden id="numProtMittenteInit" value="#{docEditArrivoFTRP.numProtMittenteInitValue}" />
+						
+						<h:inputHidden id="duplicatiDocPresenti" value="#{docEditArrivoFTRP.duplicatiPresenti}" />
+						<h:inputHidden id="duplicatoVerificato" value="#{docEditArrivoFTRP.duplicatoVerificato}" />
+					</div>
+					
+					<div class="form-group">
+						<ui:include src="../dateField.xhtml">
+							<ui:param name="label" value="#{i18n['dw4.data_ricezione']}" />
+							<ui:param name="id" value="dataRicezioneDoc" />
+							<ui:param name="value" value="#{docEditArrivoFTRP.extraFTRP.data_ricezione}" />
+							<ui:param name="required" value="true" />
+						</ui:include>
+						<label for="templateForm:numeroCigDoc" class="col-sm-2 col-sm-offset-3 control-label requiredField"><span>* #{i18n['dw4.numero_cig']}</span></label>
+						<div class="col-sm-2">
+							<h:inputText id="numeroCigDoc" value="#{docEditArrivoFTRP.extraFTRP.numero_cig}" styleClass="#{ component.valid ? '' : 'invalidinput' } form-control" />
+						</div>
+					</div>
+					<div class="form-group">
+						<label for="templateForm:importoDoc" class="col-sm-2 control-label requiredField"><span>* #{i18n['dw4.importo']} (Euro)</span></label>
+						<div class="col-sm-3">
+							<h:inputText id="importoDoc" value="#{docEditArrivoFTRP.extraFTRP.importo}" styleClass="#{ component.valid ? '' : 'invalidinput' } form-control" />
+						</div>
+						<label for="templateForm:importoDoc" class="col-sm-2 col-sm-offset-1 control-label requiredField"><span>* #{i18n['dw4.tipodocumento']}</span></label>
+						<div class="col-sm-3">
+							<h:selectOneMenu id="tipoDocumentoDoc" value="#{docEditArrivoFTRP.extraFTRP.tipo_documento}" styleClass="#{ component.valid ? '' : 'invalidinput' } form-control">
+								<f:selectItem itemValue="" itemLabel="" />
+								<f:selectItem itemValue="Fatture" itemLabel="Fatture" />
+								<f:selectItem itemValue="Note di credito" itemLabel="Note di credito" />
+							</h:selectOneMenu>
+						</div>
+					</div>
+					
+					<div class="form-group endsection">
+						<label for="templateForm:statoRichiestaDoc" class="col-sm-2 control-label requiredField"><span>* #{i18n['dw4.stato_della_richiesta']}</span></label>
+						<div class="col-sm-3">
+							<h:selectOneMenu id="statoRichiestaDoc" value="#{docEditArrivoFTRP.extraFTRP.stato_richiesta}" styleClass="#{ component.valid ? '' : 'invalidinput' } form-control">
+								<f:selectItem itemValue="Da autorizzare" itemLabel="Da autorizzare" />
+								<f:selectItem itemValue="Autorizzo" itemLabel="Autorizzo" />
+								<f:selectItem itemValue="Non autorizzo" itemLabel="Non autorizzo" />
+								<f:selectItem itemValue="In sospeso" itemLabel="In sospeso" />
+							</h:selectOneMenu>
+						</div>
+					</div>
+					
+					<h:panelGroup rendered="#{ !docEditArrivoFTRP.customfields.hiddenFields['voceindice'] and docEditArrivoFTRP.copyIfNotRipetiInFascicolo }">
+						<div class="form-group">
+							<label for="templateForm:voceindice_input" class="col-sm-2 control-label"><span>#{i18n['dw4.index']}</span></label>
+							<div class="col-sm-4">
+								<ui:include src="../lookupField.xhtml">
+					        		<ui:param name="id" value="voceindice" />
+					        		<ui:param name="field" value="#{docEditArrivoFTRP.doc.voce_indice.text}" />
+					        		<ui:param name="bean" value="#{docEditArrivoFTRP}" />
+					        		<ui:param name="action" value="lookupVoceIndice"/>
+					        		<ui:param name="clearaction" value="clearLookupVoceIndice"/>
+					        		<ui:param name="title" value="#{i18n['dw4.lookup_voce_indice']}"/>
+					        		<ui:param name="styleclass" value="form-control"/>
+					        		<ui:param name="refresh" value="templateForm:voceindice_input templateForm:doc_oggetto templateForm:classif_holder templateForm:lookup templateForm:errormsg" />
+					        	</ui:include>
+				        	</div>
+						</div>
+					</h:panelGroup>
+					
+					<div class="form-group">
+						<label for="templateForm:doc_oggetto" class="col-sm-2 control-label requiredField"><span>* #{i18n['dw4.object']}</span></label>
+						<div class="col-sm-9">
+							<h:inputTextarea id="doc_oggetto" value="#{docEditArrivoFTRP.doc.oggetto}" rows="4" cols="120" styleClass="#{ component.valid ? '' : 'invalidinput' } form-control" />
+						</div>
+					</div>
+					
+					<ui:include src="../allegatiFields.xhtml">
+						<ui:param name="bean" value="#{docEditArrivoFTRP}" />
+		        		<ui:param name="beanDoc" value="#{docEditArrivoFTRP.doc}" />
+		        	</ui:include>
+		        	
+		        	<h:panelGroup id="classif_holder" layout="block">
+						<ui:include src="../classifFields.xhtml">
+			        		<ui:param name="id" value="classif" />
+			        		<ui:param name="editable" value="#{ docEditArrivoFTRP.copyIfNotRipetiInFascicolo }" />
+			        		<ui:param name="bean" value="#{docEditArrivoFTRP}" />
+			        		<ui:param name="beanDoc" value="#{docEditArrivoFTRP.doc}" />
+			        		<ui:param name="actionTitolario" value="thVincolatoTitolarioClassificazione"/>
+			        		<ui:param name="actionGerarchia" value="gerarchiaTitolarioClassificazione"/>
+			        		<ui:param name="refresh" value="templateForm:classif_holder templateForm:showthes templateForm:errormsg"/>
+			        		<ui:param name="readOnlyConservazione" value="true" />
+			        		<ui:param name="optionalField" value="#{docEditArrivoFTRP.formsAdapter.funzionalitaDisponibili['docClassifEreditabile']}" />
+			        	</ui:include>
+		        	</h:panelGroup>
+				</div> <!-- /fieldset -->
+				
+				<h:panelGroup rendered="#{docEditArrivoFTRP.protocolloDifferito}">
+					<div class="fieldset">
+						<div class="legend">
+							#{i18n['dw4.informazioni_amministrative_circa_il_differimento_dei_termini']}
+							
+							<div class="pull-right">
+								<span class="glyphicon glyphicon-calendar" title="#{i18n['dw4.informazioni_amministrative_circa_il_differimento_dei_termini']}"></span>
+							</div>
+						</div>
+						
+						<div class="form-group">
+							<ui:include src="../dateField.xhtml">
+								<ui:param name="label" value="#{i18n['dw4.dataarrivo']}" />
+								<ui:param name="required" value="true" />
+								<ui:param name="id" value="dataArrivoProtDifferito" />
+								<ui:param name="value" value="#{docEditArrivoFTRP.doc.prot_differito.data_arrivo}" />
+							</ui:include>
+						</div>
+						<div class="form-group">
+							<label for="templateForm:motivazioneProtDifferito" class="col-sm-2 control-label">* #{i18n['dw4.motivazione']}</label>
+							<div class="col-sm-9">
+								<h:inputTextarea id="motivazioneProtDifferito" value="#{docEditArrivoFTRP.doc.prot_differito.text}" rows="4" cols="120" styleClass="#{ component.valid ? '' : 'invalidinput' } form-control" />
+							</div>
+						</div>
+					</div> <!-- /fieldset -->
+				</h:panelGroup>
+				
+				<ui:include src="../scadenzaFields.xhtml">
+					<ui:param name="bean" value="#{docEditArrivoFTRP}" />
+	        		<ui:param name="beanDoc" value="#{docEditArrivoFTRP.doc}" />
+	        	</ui:include>
+	        	
+	        	<ui:include src="../docEdit@rifinterni@doc.xhtml">
+					<ui:param name="bean" value="#{docEditArrivoFTRP}" />
+	        	</ui:include>
+	        	
+	        	<ui:include src="../docInformaticiFields.xhtml">
+					<ui:param name="bean" value="#{docEditArrivoFTRP}" />
+	        		<ui:param name="beanDoc" value="#{docEditArrivoFTRP.doc}" />
+	        		<ui:param name="enableFiles" value="#{docEditArrivoFTRP.docInformaticiEnabled and docEditArrivoFTRP.formsAdapter.funzionalitaDisponibili['addFile']}" />
+	        		<ui:param name="enableImages" value="#{docEditArrivoFTRP.docInformaticiEnabled and docEditArrivoFTRP.formsAdapter.funzionalitaDisponibili['addImg']}" />
+	        		<ui:param name="enableFileAgentPDF" value="true" />
+	        		<ui:param name="enableImageAgentPDF" value="true" />
+	        	</ui:include>
+			</div>
+		</div>
+		</div>
+		<!-- scheda edit: fine -->
+		
+		<h:inputTextarea value="#{docEditArrivoFTRP.xml}" rendered="#{docEditArrivoFTRP.debugMode}" styleClass="form-control" rows="10" />	
+		
+		<ui:include src="../lookup.xhtml"> <ui:param name="pageBean" value="#{docEditArrivoFTRP}"/></ui:include>
+		<ui:include src="../rifintLookup.xhtml"> <ui:param name="pageBean" value="#{docEditArrivoFTRP}"/></ui:include>
+		<ui:include src="../showthes.xhtml"> <ui:param name="pageBean" value="#{docEditArrivoFTRP}"/></ui:include>
+	</div>
+</ui:define>
+
+</ui:composition>

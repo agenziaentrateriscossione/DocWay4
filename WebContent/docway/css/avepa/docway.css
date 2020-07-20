@@ -1,0 +1,29 @@
+a { color: #358C4D; }
+a:hover, a:focus { color: #078C2C; }
+
+.navbar-default { background-color: #004017; }
+
+.btn-toolbar .btn-primary { background-color: #004017; }
+.btn-toolbar .btn-primary:hover { background-color: #004C17; }
+
+.btn-toolbar .btn-default { background-color: #358C4D; }
+.btn-toolbar .btn-default:hover{ background-color:#4F895F; }
+
+.btn-primary { background-color: #004017; border-color: #004017; }
+.btn-primary:hover { background-color: #004C17; border-color: #004017; }
+
+.table-hover > tbody > tr:hover > td, .table-hover > tbody > tr:hover > td.danger { background-color: #004017; }
+
+.form-control:focus {
+	border-color: #358C4D;
+	outline: 0;
+	-webkit-box-shadow: inset 0 1px 1px rgba(0,0,0,.075), 0 0 8px rgba(131, 172, 58, 0.6);
+	box-shadow: inset 0 1px 1px rgba(0,0,0,.075), 0 0 8px rgba(131, 172, 58, 0.6);
+}
+
+.smartactions-panel { border-color: #868686; }
+.smartactions-panel > .panel-heading { color: #ffffff; background-color: #868686; border-color: #868686; }
+a.smartactions-link { color:#004017; }
+a.smartactions-link:hover, a.smartactions-link:focus { color:#004017; }
+
+.alert-info { background-color: #DEF5B5; border-color: #B7D68D; color: #004017; }

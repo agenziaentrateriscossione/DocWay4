@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" 
+	  xmlns:h="http://java.sun.com/jsf/html" 
+	  xmlns:ui="http://java.sun.com/jsf/facelets" 
+	  xmlns:f="http://java.sun.com/jsf/core">
+<ui:composition>
+
+	<h:panelGroup layout="block" id="pubblicaAlboExt_block">
+		<h:panelGroup id="pubblicaAlboExt" rendered="#{pageBean.visible}">
+			<!-- Modal -->
+			<div id="pubblicaAlboExtModal" class="modal fade in" aria-hidden="false" aria-labelledby="pubblicaAlboExtModalLabel" role="dialog" tabindex="-1" style="display: block;">
+				<div class="modal-dialog">
+					<div class="modal-content jsf-modal">
+						<div class="modal-header">
+							<h:commandLink class="close" action="#{pageBean.clearDocument}" value="&#215;">
+		                    	<f:ajax render="pubblicaAlboExt_block"/>
+		                   	</h:commandLink>
+							
+							<h4 class="modal-title" id="pubblicaAlboExtModalLabel">#{i18n['dw4.albo_online']}</h4>
+						</div>
+						<div class="modal-body">
+						
+							<h:panelGroup rendered="#{not empty facesContext.messageList}" layout="block" styleClass="alert alert-danger">
+								<h:messages styleClass="" id="validationMessegesPubblicaALboExt" />
+							</h:panelGroup>
+						
+							<fieldset>
+								<div class="form-group">
+									<ui:include src="./dateField.xhtml">
+										<ui:param name="label" value="#{i18n['dw4.data_pubblicazione']}" />
+										<ui:param name="labelsize" value="4"></ui:param>
+										<ui:param name="required" value="true"></ui:param>
+										<ui:param name="id" value="dataPubblicazione" />
+										<ui:param name="value" value="#{pageBean.dataPubblicazione}" />
+										<ui:param name="valuesize" value="4"></ui:param>
+									</ui:include>
+								</div>
+								
+								<div class="form-group">
+									<ui:include src="./dateField.xhtml">
+										<ui:param name="label" value="#{i18n['dw4.data_defissione']}" />
+										<ui:param name="labelsize" value="4"></ui:param>
+										<ui:param name="id" value="dataDefissione" />
+										<ui:param name="value" value="#{pageBean.dataDefissione}" />
+										<ui:param name="valuesize" value="4"></ui:param>
+									</ui:include>
+								</div>
+							</fieldset>
+							
+						</div>
+						<div class="modal-footer">
+							<h:commandLink action="#{pageBean.pubblicaAlboExt}" styleClass="btn btn-primary openwaitmsg" value="#{i18n['dw4.pubblica']}">
+								<f:ajax execute="@form" render="@form"/>
+							</h:commandLink>
+							
+							<h:commandLink styleClass="btn btn-default" action="#{pageBean.clearDocument}"  value="#{i18n['acl.close']}">
+		                    	<f:ajax render="pubblicaAlboExt_block"/>
+		                   	</h:commandLink>
+						</div>
+					</div>
+				</div>
+			</div>
+		</h:panelGroup>
+	</h:panelGroup>
+
+</ui:composition>   
+</html>

@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" 
+	  xmlns:h="http://java.sun.com/jsf/html" 
+	  xmlns:ui="http://java.sun.com/jsf/facelets" 
+	  xmlns:f="http://java.sun.com/jsf/core"
+	  xmlns:p="http://xmlns.jcp.org/jsf/passthrough">
+<ui:composition>
+
+	<h:panelGroup id="informazioniPanel" layout="block">
+		<div class="fieldset">
+			<div class="legend">
+				<h:commandLink action="#{bean.openCloseWidgetInformazioni}" styleClass="legend-link">
+					<f:ajax render="templateForm:informazioniPanel"/>
+					#{i18n['acl.servicesinformation']}
+					<span class="pull-right">
+						<span class="glyphicon #{bean.responsabilita ? 'glyphicon-collapse-up' : 'glyphicon-collapse-down'}"></span>
+					</span>
+				</h:commandLink>
+			</div>
+			
+			<h:panelGroup rendered="#{bean.informazioni_servizio}" id="informazioniCPanel" layout="block">
+				<div class="form-group">
+					<ui:include src="./rangeField.xhtml">
+						<ui:param name="label" value="#{i18n['dw4.data_creazione']}" />
+						<ui:param name="id" value="range_docstoriacreazionedata" />
+						<ui:param name="from_value" value="#{bean.range_docstoriacreazionedata_from}" />
+						<ui:param name="to_value" value="#{bean.range_docstoriacreazionedata_to}" />
+						<ui:param name="is_date" value="true" />
+					</ui:include>
+					<ui:include src="./rangeField.xhtml">
+						<ui:param name="label" value="#{i18n['dw4.id']}" />
+						<ui:param name="id" value="rangenum_docnrecord" />
+						<ui:param name="from_value" value="#{bean.rangenum_docnrecord_from}" />
+						<ui:param name="to_value" value="#{bean.rangenum_docnrecord_to}" />
+						<ui:param name="is_date" value="false" />
+						<ui:param name="offset" value="1" />
+					</ui:include>
+				</div>
+				<div class="form-group">
+					<label for="templateForm:doc_storiacreazioneoper" class="col-sm-2 control-label">#{i18n['dw4.creazione-per']}</label>
+					<div class="col-sm-5">
+						<div class="input-group">
+							<h:inputText styleClass="form-control" value="#{bean.doc_storiacreazioneoper}" id="doc_storiacreazioneoper" p:placeholder="#{i18n['acl.oper']}" title="#{i18n['acl.oper']}" />
+							<div class="input-group-btn">
+								<h:commandLink title="#{i18n['acl.vocabulary']}" action="#{bean.openIndexCreazionePersonaDoc}" styleClass="btn btn-default">
+									<f:ajax execute="@form" render="@form"/>
+									<span class="glyphicon glyphicon-search"></span>
+								</h:commandLink>
+							</div>
+						</div>									
+					</div>
+					<div class="col-sm-4">
+						<div class="input-group">
+							<h:inputText styleClass="form-control" value="#{bean.doc_storiacreazioneuffoper}" id="doc_storiacreazioneuffoper" p:placeholder="#{i18n['acl.uff']}" title="#{i18n['acl.uff']}" />
+							<div class="input-group-btn">
+								<h:commandLink title="#{i18n['acl.vocabulary']}" action="#{bean.openIndexCreazioneUffDoc}" styleClass="btn btn-default">
+									<f:ajax execute="@form" render="@form"/>
+									<span class="glyphicon glyphicon-search"></span>
+								</h:commandLink>
+							</div>
+						</div>
+					</div>
+				</div>
+				<h:panelGroup rendered="#{!bean.formsAdapter.funzionalitaDisponibili['nascondiprotocollo']}" layout="block" styleClass="form-group">
+					<label for="templateForm:doc_storiaprotocollazioneoper" class="col-sm-2 control-label">#{i18n['dw4.protocollazione-per']}</label>
+					<div class="col-sm-5">
+						<div class="input-group">
+							<h:inputText styleClass="form-control" value="#{bean.doc_storiaprotocollazioneoper}" id="doc_storiaprotocollazioneoper" p:placeholder="#{i18n['acl.oper']}" title="#{i18n['acl.oper']}" />
+							<div class="input-group-btn">
+								<h:commandLink title="#{i18n['acl.vocabulary']}" action="#{bean.openIndexProtocollazionePersonaDoc}" styleClass="btn btn-default">
+									<f:ajax execute="@form" render="@form"/>
+									<span class="glyphicon glyphicon-search"></span>
+								</h:commandLink>
+							</div>
+						</div>									
+					</div>
+					<div class="col-sm-4">
+						<div class="input-group">
+							<h:inputText styleClass="form-control" value="#{bean.doc_storiaprotocollazioneuffoper}" id="doc_storiaprotocollazioneuffoper" p:placeholder="#{i18n['acl.uff']}" title="#{i18n['acl.uff']}" />
+							<div class="input-group-btn">
+								<h:commandLink title="#{i18n['acl.vocabulary']}" action="#{bean.openIndexProtocollazioneUffDoc}" styleClass="btn btn-default">
+									<f:ajax execute="@form" render="@form"/>
+									<span class="glyphicon glyphicon-search"></span>
+								</h:commandLink>
+							</div>
+						</div>
+					</div>
+				</h:panelGroup>
+				<div class="form-group">
+					<label for="templateForm:umnomepersona" class="col-sm-2 control-label">#{i18n['acl.lastmodify']}</label>
+					<div class="col-sm-5">
+						<div class="input-group">
+							<h:inputText styleClass="form-control" value="#{bean.umnomepersona}" id="umnomepersona" p:placeholder="#{i18n['acl.oper']}" title="#{i18n['acl.oper']}" />
+							<div class="input-group-btn">
+								<h:commandLink title="#{i18n['acl.vocabulary']}" action="#{bean.openIndexUMPersonaDoc}" styleClass="btn btn-default">
+									<f:ajax execute="@form" render="@form"/>
+									<span class="glyphicon glyphicon-search"></span>
+								</h:commandLink>
+							</div>
+						</div>									
+					</div>
+					<div class="col-sm-4">
+						<div class="input-group">
+							<h:inputText styleClass="form-control" value="#{bean.umnomeuff}" id="umnomeuff" p:placeholder="#{i18n['acl.uff']}" title="#{i18n['acl.uff']}" />
+							<div class="input-group-btn">
+								<h:commandLink title="#{i18n['acl.vocabulary']}" action="#{bean.openIndexUMUffDoc}" styleClass="btn btn-default">
+									<f:ajax execute="@form" render="@form"/>
+									<span class="glyphicon glyphicon-search"></span>
+								</h:commandLink>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="form-group">
+					<label for="templateForm:ordinamentoDocs" class="col-sm-2 control-label">#{i18n['dw4.ordinamento']}</label>
+					<div class="col-sm-3">
+						<h:selectOneMenu id="ordinamentoDocs" value="#{bean.ordinamento}" styleClass="form-control">
+							<f:selectItems value="#{bean.ordinamento_select.options}" var="option" itemValue="#{option.value}" itemLabel="#{option.label}"/>
+							<f:ajax execute="@form" render="@form"/>
+						</h:selectOneMenu>
+					</div>
+				</div>
+			</h:panelGroup>
+		</div> <!-- /fieldset -->
+	</h:panelGroup>
+
+</ui:composition>
+</html>

@@ -1,0 +1,55 @@
+@CHARSET "UTF-8";
+
+.task_form_panel_body {
+}
+
+.task_form_container {
+	width: 100%;
+}
+
+.task_form_entry {
+}
+
+.task_form_radio {
+}
+
+.task_form_radio_horizontal {
+}
+
+.task_form_table_cell { 
+}
+
+.task_form_table_row_data {
+}
+
+.task_form_text {   
+}
+
+.task_form_message {
+}
+
+.task_form_popup_tooltip_icon {
+    float: left;
+}
+
+.task_form_popup_tooltip_img {
+    background-image: url("tooltip.gif");
+    background-size: contain;
+    cursor: pointer;
+    height: 12px;
+    margin-top: 4px;
+    width: 12px;
+}
+
+.task_form_field_sub_title {
+    color: #6E6969;
+    margin-left: 33%;
+    text-align: left;
+    width: 52%;
+}
+
+.form-actions {
+    margin: 0;
+    background-color: transparent;
+    text-align: center;
+}

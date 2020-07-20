@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:f="http://java.sun.com/jsf/core">
+<ui:composition>
+
+	<div class="hidden-print">
+		<!-- primo livello toolbar: inizio -->
+		<div class="btn-toolbar" role="toolbar">
+			<div class="btn-group pull-right">
+				<ui:include src="./navigationBar.xhtml"><ui:param name="bean" value="#{bean}"/><ui:param name="customPage" value="true"/><ui:param name="customPageId" value="showdocId"/></ui:include>
+			</div>
+			
+			<div class="btn-group">
+				<h:commandLink rendered="#{bean.formsAdapter.paginaTitoliEnabled}" action="#{bean.paginaTitoli}"  styleClass="btn btn-default openwaitmsg">#{i18n['acl.titles']}</h:commandLink>
+				
+				<h:panelGroup rendered="#{!bean.popupPage and !empty qFascicoloSpeciale}">
+					<h:commandLink action="#{docwayHome.gotoTableQFascicoloSpeciale}" styleClass="btn btn-primary openwaitmsg">
+						<f:param name="idFascSpeciale" value="#{qFascicoloSpeciale}" />
+						#{i18n['acl.ricerca']}
+					</h:commandLink>
+				</h:panelGroup>
+				
+				<h:commandLink rendered="#{! empty bean.physDoc_infasc and bean.bAssegnaLinkFasc=='true' and bean.classif_cod_infasc!=''}" action="#{bean.closeInsInFasc}" styleClass="btn btn-default">#{i18n['torna']}</h:commandLink>
+			</div>
+		</div>
+		<!-- primo livello toolbar: fine -->
+		
+		<!-- secondo livello toolbar: inizio -->
+		<div class="btn-toolbar" role="toolbar">
+			<div class="btn-group">
+				<h:commandLink rendered="#{bean.formsAdapter.funzionalitaDisponibili['showassignfasc']}" action="#{bean.assignFasc}" styleClass="btn btn-primary openwaitmsg">#{i18n['dw4.assegna']}</h:commandLink>
+				<h:commandLink rendered="#{bean.formsAdapter.funzionalitaDisponibili['assegnaFascicoloCollegato']}" action="#{bean.assegnaFascicoloCollegato}" styleClass="btn btn-primary openwaitmsg">#{i18n['dw4.assegna']}</h:commandLink>
+				<h:commandLink rendered="#{bean.formsAdapter.funzionalitaDisponibili['showassignfascall']}" action="#{bean.doAssignFascAll}" styleClass="btn btn-primary openwaitmsg" onclick="if (!confirm('Confermare assegnazione di ' + #{bean.contaDocumentiRaccolti} + ' documenti?')) return false;">#{i18n['dw4.assegnatutti']}</h:commandLink>
+				
+				<h:panelGroup rendered="#{!bean.popupPage}">
+					<div class="btn-group">
+						<button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+							#{i18n['dw4.azioni_sul_fasc']} <span class="caret"></span>
+						</button>
+						<ul class="dropdown-menu">
+							<h:panelGroup rendered="#{empty bean.physDoc_infasc and bean.bAssegnaLinkFasc!='true'}">
+								<h:panelGroup rendered="#{bean.formsAdapter.funzionalitaDisponibili['modifica']}"><li><h:commandLink action="#{bean.modifyTableDoc}">#{i18n['acl.modify']}</h:commandLink></li></h:panelGroup>
+								<h:panelGroup rendered="#{bean.formsAdapter.funzionalitaDisponibili['rimuovifascicolo']}"><li><h:commandLink action="#{bean.remove}" onclick="if (!owmConfirm('#{i18n['dw4.deleteconfirm_fascicolo']}')) return false;">#{i18n['acl.delete']}</h:commandLink></li></h:panelGroup>
+							</h:panelGroup>
+							
+							<h:panelGroup rendered="#{empty bean.physDoc_infasc and bean.bAssegnaLinkFasc!='true' and (bean.formsAdapter.funzionalitaDisponibili['modifica'] or bean.formsAdapter.funzionalitaDisponibili['rimuovifascicolo'])}">
+								<li class="divider"></li>
+							</h:panelGroup>
+							<li><h:commandLink action="#{bean.reload}">#{i18n['dw4.reload']}</h:commandLink></li>
+							<li><a href="#" onclick="return printPageContent();" onkeypress="return printPageContent();">#{i18n['dw4.stampa_fascicolo']}</a></li>
+						</ul>
+					</div>
+					
+					<h:panelGroup rendered="#{bean.formsAdapter.funzionalitaDisponibili['nuovoinfascicolo'] and ((bean.formsAdapter.funzionalitaDisponibili['fascicoliinserimento']) or (bean.formsAdapter.funzionalitaDisponibili['sottofascicoloinserimento'] and bean.level >= 1))}">
+						<div class="btn-group">
+							<button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+								#{i18n['dw4.new']} <span class="caret"></span>
+							</button>
+							<ul class="dropdown-menu">
+								<h:panelGroup rendered="#{bean.formsAdapter.funzionalitaDisponibili['fascicoliinserimento']}"><li><h:commandLink value="#{i18n['dw4.new']}" action="#{docwaymenu.insTableDocFascicolo}" /></li></h:panelGroup>
+								<h:panelGroup rendered="#{empty bean.physDoc_infasc and bean.bAssegnaLinkFasc!='true'}">
+									<h:panelGroup rendered="#{bean.formsAdapter.funzionalitaDisponibili['fascicoliinserimento']}"><li><h:commandLink value="#{i18n['dw4.clone']}" action="#{bean.ripetiNuovo}" /></li></h:panelGroup>
+								</h:panelGroup>
+								<h:panelGroup rendered="#{bean.formsAdapter.funzionalitaDisponibili['sottofascicoloinserimento'] and bean.level >= 1}">
+									<h:panelGroup rendered="#{bean.formsAdapter.funzionalitaDisponibili['fascicoliinserimento']}">
+										<li class="divider"></li>
+									</h:panelGroup>
+									<h:panelGroup rendered="#{bean.level == 1}"><li><h:commandLink value="#{i18n['dw4.sottofascicolo']}" action="#{bean.insSottofascicolo}" /></li></h:panelGroup>
+									<h:panelGroup rendered="#{bean.level == 2}"><li><h:commandLink value="#{i18n['dw4.inserto']}" action="#{bean.insSottofascicolo}" /></li></h:panelGroup>
+									<h:panelGroup rendered="#{bean.level >= 3}"><li><h:commandLink value="#{i18n['dw4.annesso']}" action="#{bean.insSottofascicolo}" /></li></h:panelGroup>
+								</h:panelGroup>
+							</ul>
+						</div>
+					</h:panelGroup>
+					
+					<h:panelGroup rendered="#{empty bean.physDoc_infasc and bean.bAssegnaLinkFasc!='true' and hideNuovoDoc ne 'true'}">
+						<h:panelGroup rendered="#{bean.formsAdapter.funzionalitaDisponibili['nuovoinfascicolo'] and ((bean.formsAdapter.funzionalitaDisponibili['insArrivo']) or (bean.formsAdapter.funzionalitaDisponibili['insPartenza']) or (bean.formsAdapter.funzionalitaDisponibili['insInterno']) or (bean.formsAdapter.funzionalitaDisponibili['insVarie']) or (bean.formsAdapter.funzionalitaDisponibili['insRepertorio']))}">
+							<div class="btn-group">
+								<button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+									#{i18n['dw4.newdoc']} <span class="caret"></span>
+								</button>
+								<ul class="dropdown-menu">
+									<h:panelGroup rendered="#{bean.formsAdapter.funzionalitaDisponibili['insArrivo']}"><li><h:commandLink value="#{i18n['dw4.abbr_arrivo']}" action="#{bean.insArrivo}" /></li></h:panelGroup>
+									<h:panelGroup rendered="#{bean.formsAdapter.funzionalitaDisponibili['insPartenza']}"><li><h:commandLink value="#{i18n['dw4.abbr_partenza']}" action="#{bean.insPartenza}" /></li></h:panelGroup>
+									<h:panelGroup rendered="#{bean.formsAdapter.funzionalitaDisponibili['insInterno']}"><li><h:commandLink value="#{i18n['dw4.abbr_uffici']}" action="#{bean.insInterno}" /></li></h:panelGroup>
+									<h:panelGroup rendered="#{bean.formsAdapter.funzionalitaDisponibili['insVarie']}"><li><h:commandLink value="#{i18n['dw4.abbr_nonprotocollato']}" action="#{bean.insVarie}" /></li></h:panelGroup>
+									<h:panelGroup rendered="#{bean.formsAdapter.funzionalitaDisponibili['insRepertorio']}">
+										<li class="divider"></li>
+										<li><h:commandLink value="#{i18n['dw4.repertori']}" action="#{bean.insRepertorio}" /></li>
+									</h:panelGroup>
+								</ul>
+							</div>
+						</h:panelGroup>
+					</h:panelGroup>
+					
+					<h:panelGroup rendered="#{empty bean.physDoc_infasc and bean.bAssegnaLinkFasc!='true'}">
+						<div class="btn-group">
+							<button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+								#{i18n['dw4.link']} <span class="caret"></span>
+							</button>
+							<ul class="dropdown-menu">
+								<li><h:commandLink value="#{i18n['dw4.copylink']}" action="#{bean.copyLink}" /></li>
+								<h:panelGroup rendered="#{bean.formsAdapter.funzionalitaDisponibili['pasteLink']}"><li><h:commandLink action="#{bean.pasteLink}" onclick="if (!owmConfirm('#{i18n['dw4.incolla_collegamento_procedere_con_l_operazione']}')) return false;">#{i18n['dw4.pastelink']}</h:commandLink></li></h:panelGroup>
+							</ul>
+						</div>
+					</h:panelGroup>
+					
+					<h:panelGroup rendered="#{bean.formsAdapter.funzionalitaDisponibili['abilitaCCFascicoli'] or bean.formsAdapter.funzionalitaDisponibili['modifica']}" layout="block" styleClass="btn-group">
+						<button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+							#{i18n['dw4.assegnazioni']} <span class="caret"></span>
+						</button>
+						<ul class="dropdown-menu">
+							<h:panelGroup rendered="#{bean.formsAdapter.funzionalitaDisponibili['abilitaCCFascicoli']}"><li><h:commandLink action="#{bean.addCC}">#{i18n['dw4.nuovocc']}</h:commandLink></li></h:panelGroup>
+							<h:panelGroup rendered="#{bean.formsAdapter.funzionalitaDisponibili['modifica']}"><li><h:commandLink action="#{bean.addRPA}">#{i18n['dw4.trasferisci']}</h:commandLink></li></h:panelGroup>
+						</ul>
+					</h:panelGroup>
+					
+					<h:panelGroup rendered="#{(bean.formsAdapter.funzionalitaDisponibili['showdocsinfasc']) or (bean.formsAdapter.funzionalitaDisponibili['deposito'] and !empty bean.archivioDepositoUrl) or (empty bean.physDoc_infasc and bean.bAssegnaLinkFasc!='true' and bean.formsAdapter.funzionalitaDisponibili['raccoglitorigestione']) or (bean.fascicolo.stato=='aperto' and bean.formsAdapter.funzionalitaDisponibili['fascicoloarchivia']) or (bean.fascicolo.stato=='chiuso' and bean.formsAdapter.funzionalitaDisponibili['fascicoloapri']) or (bean.formsAdapter.funzionalitaDisponibili['showchangeclassif']) or (bean.formsAdapter.funzionalitaDisponibili['showrestoreclassif'])}" layout="block" styleClass="btn-group">
+						<button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+							#{i18n['dw4.archivio']} <span class="caret"></span>
+						</button>
+						<ul class="dropdown-menu">
+							<h:panelGroup rendered="#{bean.formsAdapter.funzionalitaDisponibili['showdocsinfasc']}">
+								<li><h:commandLink action="#{bean.fascContent}">#{i18n['dw4.documenti_contenuti']}</h:commandLink></li>
+								<h:panelGroup rendered="#{(empty bean.physDoc_infasc and bean.bAssegnaLinkFasc!='true' and bean.formsAdapter.funzionalitaDisponibili['raccoglitorigestione']) or (bean.fascicolo.stato=='aperto' and bean.formsAdapter.funzionalitaDisponibili['fascicoloarchivia']) or (bean.fascicolo.stato=='chiuso' and bean.formsAdapter.funzionalitaDisponibili['fascicoloapri']) or (bean.formsAdapter.funzionalitaDisponibili['showchangeclassif']) or (bean.formsAdapter.funzionalitaDisponibili['showrestoreclassif'])}">
+									<li class="divider"></li>
+								</h:panelGroup>
+							</h:panelGroup>
+							<h:panelGroup rendered="#{empty bean.physDoc_infasc and bean.bAssegnaLinkFasc!='true' and bean.formsAdapter.funzionalitaDisponibili['raccoglitorigestione']}"><li><h:commandLink action="#{bean.insInRaccoglitore}" onclick="openCenterPopup('', 'insInRac')" target="insInRac">#{i18n['dw4.inserisci_in_raccoglitore']}</h:commandLink></li></h:panelGroup>
+							<h:panelGroup rendered="#{bean.fascicolo.stato=='aperto' and bean.formsAdapter.funzionalitaDisponibili['fascicoloarchivia']}"><li><h:commandLink action="#{bean.archiviaFascicolo}" title="#{i18n['dw4.archivio_di_deposito_Chiusura_il_fascicolo']}">#{i18n['dw4.archivia_chiudi_fascicolo']}</h:commandLink></li></h:panelGroup>
+							<h:panelGroup rendered="#{bean.fascicolo.stato=='chiuso' and bean.formsAdapter.funzionalitaDisponibili['fascicoloapri']}"><li><h:commandLink action="#{bean.apriFascicolo}" title="#{i18n['dw4.riapertura_del_fascicolo']}">#{i18n['dw4.riapri_fascicolo']}</h:commandLink></li></h:panelGroup>
+							<h:panelGroup rendered="#{bean.formsAdapter.funzionalitaDisponibili['deposito'] and !empty bean.archivioDepositoUrl}">
+								<li><a onclick="if (!confirm('#{i18n['dw4.procedere_con_il_versamento_del_fascicolo_in_archivio_di_deposito']}')) return false;" href="#{bean.archivioDepositoUrl}?id=#{bean.fascicolo.nrecord}" title="#{i18n['dw4.versa_il_fascicolo_nell_archivio_di_deposito']}" target="archiviodeposito">#{i18n['dw4.versa_il_fascicolo_nell_archivio_di_deposito']}</a></li>
+							</h:panelGroup>
+							<h:panelGroup rendered="#{bean.formsAdapter.funzionalitaDisponibili['showchangeclassif']}"><li><h:commandLink action="#{bean.changeclassif}">#{i18n['dw4.cambiaclassif']}</h:commandLink></li></h:panelGroup>
+							<h:panelGroup rendered="#{bean.formsAdapter.funzionalitaDisponibili['showrestoreclassif']}"><li><h:commandLink action="#{bean.restoreclassif}" onclick="if (!owmConfirm('#{i18n['dw4.confermare_il_ripristino_della_classificazione_per_il_fascicolo_corrente']}')) return false;">#{i18n['dw4.restoreclassif']}</h:commandLink></li></h:panelGroup>
+						</ul>
+					</h:panelGroup>
+				</h:panelGroup>
+			</div>
+		</div>
+		<!-- secondo livello toolbar: fine -->
+	</div>
+
+</ui:composition>
+</html>

@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+    template="template.xhtml"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:f="http://java.sun.com/jsf/core">
+
+	<ui:define name="content">
+        <div class="strutint docedit">
+            <!-- toolbar: inizio -->
+	        <div class="btn-toolbar margin-bottom" role="toolbar">
+	            <div class="btn-group">
+	                <h:commandLink id="saveBtn" action="#{docEditModifyStrutturaInterna.saveDocument}" styleClass="btn btn-primary openwaitmsg">#{i18n['acl.save']}</h:commandLink>
+	                <h:commandLink action="#{docEditModifyStrutturaInterna.clearDocument}" styleClass="btn btn-default">#{i18n['acl.back']}</h:commandLink>
+	            </div>
+	        </div>
+	        <!-- toolbar: fine -->
+        
+	        <h5 class="sub-header">
+	            <span class="strutture-interne glyphicons-pro"></span>&#160;
+	            <h:outputText value="#{i18n['acl.mod_struint']}" escape="false" />
+	        </h5>
+        
+	        <!-- messages: inizio -->
+	        <h:panelGroup rendered="#{not empty facesContext.messageList}" layout="block" styleClass="docedit-messages alert alert-danger">
+	            <h:messages styleClass="" id="validationMesseges" />
+	        </h:panelGroup>
+	        <!-- messages: fine -->
+	        
+	        <script type="text/javascript">
+			$(document).ready(function() {
+				// disabilita link esterni al form per rilascio del lock sul documento
+				disableNoTemplateFormLinks("#{i18n['dw4.abbandona_alert_msg']}");
+			});
+			</script>
+	        
+	        <!-- scheda edit: inizio -->
+			<div class="row-fluid" style="margin-top: 10px;">
+				<div id="fixedshowdoc" class="box span12 fixed-showdoc">
+					<div class="box-content">
+
+						<div class="fieldset">
+							<div class="legend">
+								#{i18n['acl.informazioni_di_base']}
+								<div class="pull-right">
+									<span class="glyphicons-pro building" title="#{i18n['acl.informazioni_di_base']}"></span>
+								</div>
+							</div>
+							
+							<div class="form-group">
+								<label class="col-sm-2 control-label"><span>#{i18n['acl.cod_structure']}</span></label>
+								<div class="col-sm-3">
+	                            <h:outputText value="#{docEditModifyStrutturaInterna.struttura_interna.cod_uff}" styleClass="form-control"/>
+	                            </div>
+							</div>
+							
+							<div class="form-group">
+							    <label class="col-sm-2 control-label requiredField"><span>* #{i18n['acl.description']}</span></label>
+							    <div class="col-sm-3">
+                                <h:inputText id="struint_nome" value="#{docEditModifyStrutturaInterna.struttura_interna.nome}" styleClass="#{ component.valid ? '' : 'invalidinput' } form-control"/>
+                                </div>
+							</div>
+							
+							<div class="form-group">
+                                <label class="col-sm-2 control-label requiredField"><span>#{i18n['acl.cod_amm']}</span></label>
+                                <div class="col-sm-2">
+	                                <h:inputText id="struint_codamm" value="#{docEditModifyStrutturaInterna.struttura_interna.cod_amm}" readonly="true" styleClass="#{ component.valid ? '' : 'invalidinput' } form-control" />
+                                </div>
+                                <label class="col-sm-2 control-label requiredField"><span>#{i18n['acl.cod_aoo']}</span></label>
+                                <div class="col-sm-2">
+				                    <h:inputText id="struint_codaoo" value="#{docEditModifyStrutturaInterna.struttura_interna.cod_aoo}" readonly="true" styleClass="#{ component.valid ? '' : 'invalidinput' } form-control" />
+			                    </div>
+                            </div>
+                            
+                            <h:panelGroup rendered="#{docEditModifyStrutturaInterna.formsAdapter.funzionalitaDisponibili['multiSocieta']}">
+                            <div class="form-group">
+                                <label class="col-sm-2 control-label"><span>#{i18n['acl.multisocieta']}</span></label>
+                                <div class="col-sm-9">
+                                    <h:inputTextarea value="#{docEditModifyStrutturaInterna.struttura_interna.multisocieta}" rows="4" cols="120" styleClass="form-control"/>
+                                </div>
+                            </div>
+                            </h:panelGroup>
+                            
+						</div> <!-- fieldset -->
+						
+						<div class="fieldset">
+						  <div class="legend">
+                              #{i18n['acl.recapito']}
+                              <div class="pull-right">
+                                  <span class="glyphicons-pro address_book" title="#{i18n['acl.recapito']}"></span>
+                              </div>
+                          </div>
+                          
+                          <div class="form-group">
+                            <label class="col-sm-2 control-label"><span>#{i18n['acl.street']}</span></label>
+                            <div class="col-sm-9">
+                                <h:inputText value="#{docEditModifyStrutturaInterna.struttura_interna.indirizzo.indirizzo}" styleClass="form-control" />
+                            </div>
+                          </div>
+                          
+                          <div class="form-group">
+                            <label for="templateForm:demsi_indirizzocomune_input" class="col-sm-2 control-label">#{i18n['acl.town']}</label>
+                            <div class="col-sm-5">
+                                <ui:include src="./lookupField.xhtml">
+                                    <ui:param name="id" value="demsi_indirizzocomune" />
+			                        <ui:param name="field" value="#{docEditModifyStrutturaInterna.struttura_interna.indirizzo.comune}" />
+			                        <ui:param name="bean" value="#{docEditModifyStrutturaInterna}" />
+			                        <ui:param name="action" value="lookupComune"/>
+			                        <ui:param name="clearaction" value="clearLookupComune"/>
+			                        <ui:param name="title" value="Lookup Comune"/>
+			                        <ui:param name="styleclass" value="form-control"/>
+			                        <ui:param name="refresh" value="templateForm:demsi_indirizzocomune_input templateForm:demsi_indirizzocap_input templateForm:demsi_indirizzoprov templateForm:demsi_indirizzonazione templateForm:lookup templateForm:errormsg"/>
+                                </ui:include>
+                            </div>
+                            <label for="templateForm:demsi_indirizzocap_input" class="col-sm-2 control-label">#{i18n['acl.zip']}</label>
+                            <div class="col-sm-2">
+                                <ui:include src="./lookupField.xhtml">
+                                    <ui:param name="id" value="demsi_indirizzocap" />
+			                        <ui:param name="field" value="#{docEditModifyStrutturaInterna.struttura_interna.indirizzo.cap}" />
+			                        <ui:param name="bean" value="#{docEditModifyStrutturaInterna}" />
+			                        <ui:param name="action" value="lookupCap"/>
+			                        <ui:param name="clearaction" value="clearLookupCap"/>
+			                        <ui:param name="title" value="Lookup Cap"/>
+			                        <ui:param name="styleclass" value="form-control"/>
+			                        <ui:param name="refresh" value="templateForm:demsi_indirizzocomune_input templateForm:demsi_indirizzocap_input templateForm:demsi_indirizzoprov templateForm:demsi_indirizzonazione templateForm:lookup templateForm:errormsg"/>
+                                </ui:include>
+                            </div>
+                          </div>
+                          
+	                         <div class="form-group">
+	                            <label for="templateForm:demsi_indirizzoprov" class="col-sm-2 control-label">#{i18n['acl.province']}</label>
+	                            <div class="col-sm-2">
+	                                <h:inputText value="#{docEditModifyStrutturaInterna.struttura_interna.indirizzo.prov}" styleClass="form-control" id="demsi_indirizzoprov" maxlength="2"/>
+	                            </div>
+	                            <label for="templateForm:demsi_indirizzonazione" class="col-sm-2 control-label">#{i18n['acl.state']}</label>
+	                            <div class="col-sm-5">
+	                                <h:inputText value="#{docEditModifyStrutturaInterna.struttura_interna.indirizzo.nazione}" styleClass="form-control" id="demsi_indirizzonazione"/>
+	                            </div>
+                            </div>
+                            
+                            <ui:include src="./phones.xhtml"> <ui:param name="pageBean" value="#{docEditModifyStrutturaInterna.struttura_interna}"/></ui:include>
+                            <ui:include src="./emails.xhtml"> <ui:param name="pageBean" value="#{docEditModifyStrutturaInterna.struttura_interna}"/></ui:include>
+                            <ui:include src="./websites.xhtml"> <ui:param name="pageBean" value="#{docEditModifyStrutturaInterna.struttura_interna}"/></ui:include>
+                          
+						</div> <!-- fieldset -->
+						
+						<div class="fieldset">
+                          <div class="legend">
+                              #{i18n['acl.posta_elettronica_certificata']}
+                              <div class="pull-right">
+                                  <span class="glyphicon glyphicon-envelope" title="#{i18n['acl.posta_elettronica_certificata']}"></span>
+                              </div>
+                          </div>
+
+							<div class="form-group">
+								<label for="templateForm:strutint_pec_email" class="col-sm-2 control-label">#{i18n['acl.email']}</label>
+								<div class="col-sm-9">
+									<h:inputText id="strutint_pec_email" value="#{docEditModifyStrutturaInterna.struttura_interna.email_certificata.addr}" styleClass="form-control" />
+								</div>
+							</div>
+							<div class="form-group">
+								<label for="templateForm:strutint_pec_login" class="col-sm-2 control-label">#{i18n['acl.login']}</label>
+								<div class="col-sm-4">
+									<h:inputText id="strutint_pec_login" value="#{docEditModifyStrutturaInterna.struttura_interna.email_certificata.login}" styleClass="form-control" />
+								</div>
+								<label for="templateForm:strutint_pec_pwd" class="col-sm-1 control-label">#{i18n['acl.password']}</label>
+								<div class="col-sm-4">
+									<h:inputSecret id="strutint_pec_pwd" value="#{docEditModifyStrutturaInterna.struttura_interna.email_certificata.password}" redisplay="true" styleClass="form-control" />
+								</div>
+							</div>
+
+						</div> <!-- fieldset -->
+						
+						<h:panelGroup rendered="#{docEditModifyStrutturaInterna.abilitaFatturePA}" layout="block" styleClass="fieldset">
+						  <div class="legend">
+                              #{i18n['dw4.fatturaPA']}
+                              <div class="pull-right">
+                                  <span class="glyphicons-pro euro" title="#{i18n['dw4.fatturaPA']}"></span>
+                              </div>
+                          </div>
+
+							<div class="form-group">
+								<label for="templateForm:strutint_email_sdi" class="col-sm-2 control-label">
+									<span data-content="#{i18n['acl.indirizzo_email_del_sistema_di_interscambio_al_quale_inviare_le_fatturepa_attive']}" data-trigger="hover" data-placement="top" data-toggle="popover" class="popoveritem">
+										#{i18n['acl.email_sdi']} <span class="glyphicon glyphicon-info-sign popoveritem"></span>
+									</span>
+								</label>
+								<div class="col-sm-9">
+									<h:inputText id="strutint_email_sdi" value="#{docEditModifyStrutturaInterna.struttura_interna.emailSdI}" styleClass="form-control" />
+								</div>
+							</div>
+						</h:panelGroup> <!-- fieldset -->
+						
+						<div class="fieldset">
+                          <div class="legend">
+                              #{i18n['dw4.other']}
+                              <div class="pull-right">
+                                  <span class="glyphicon glyphicon-list-alt" title="#{i18n['dw4.other']}"></span>
+                              </div>
+                          </div>
+                          
+                          <div class="form-group">
+                            <label class="col-sm-2 control-label"><span>#{i18n['acl.skill']}</span></label>
+                            <div class="col-sm-9">
+                                <h:inputTextarea value="#{docEditModifyStrutturaInterna.struttura_interna.competenze.text}" rows="4" cols="120" styleClass="form-control"/>
+                            </div>
+                          </div>
+                          
+                          <div class="form-group">
+                            <label class="col-sm-2 control-label"><span>#{i18n['acl.director']}</span></label>
+                            <div class="col-sm-3">
+		                    <ui:include src="./lookupField.xhtml">
+		                        <ui:param name="id" value="demsi_nome_responsabile" />
+		                        <ui:param name="field" value="#{docEditModifyStrutturaInterna.struttura_interna.nomeresponsabile}" />
+		                        <ui:param name="bean" value="#{docEditModifyStrutturaInterna}" />
+		                        <ui:param name="action" value="lookupResponsabile"/>
+		                        <ui:param name="clearaction" value="clearLookupResponsabile"/>
+		                        <ui:param name="title" value="Lookup Responsabile"/>
+		                        <ui:param name="styleclass" value="form-control"/>
+		                        <ui:param name="refresh" value="templateForm:demsi_nome_responsabile_input templateForm:demsi_cod_responsabile_input templateForm:struint_codamm templateForm:struint_codaoo templateForm:validationMesseges templateForm:lookup templateForm:errormsg"/>
+		                    </ui:include>
+		                    <h:inputHidden value="#{docEditModifyStrutturaInterna.struttura_interna.cod_responsabile}" id="demsi_cod_responsabile_input"/>
+		                    </div>
+                          </div>
+                          
+                          <div class="form-group">
+                            <label class="col-sm-2 control-label"><span>#{i18n['acl.notes']}</span></label>
+                            <div class="col-sm-9">
+                                <h:inputTextarea value="#{docEditModifyStrutturaInterna.struttura_interna.note.text}" rows="4" cols="120" styleClass="form-control"/>
+                            </div>
+                          </div>
+                          
+                          <div class="form-group">
+                            <label class="col-sm-2 control-label"><span>#{i18n['acl.tipologia']}</span></label>
+                            <div class="col-sm-3">
+                            <ui:include src="./thField.xhtml">
+		                        <ui:param name="id" value="demsi_tipologia" />
+		                        <ui:param name="field" value="#{docEditModifyStrutturaInterna.struttura_interna.tipologia}" />
+		                        <ui:param name="bean" value="#{docEditModifyStrutturaInterna}" />
+		                        <ui:param name="action" value="thVincolatoTipologia"/>
+		                        <ui:param name="title" value="Thesauro Vincolato Tipologia"/>
+		                        <ui:param name="styleclass" value="form-control"/>
+		                        <ui:param name="refresh" value="templateForm:demsi_tipologia_input"/>
+		                    </ui:include>
+		                    </div>
+                          </div>
+                          
+                       </div> <!-- fieldset -->
+						
+					</div>
+				</div>
+			</div>
+			
+		</div>
+
+		<h:inputTextarea value="#{docEditModifyStrutturaInterna.xml}" styleClass="form-control" rows="10" rendered="#{docEditModifyStrutturaInterna.debugMode}"/>
+        <ui:include src="./lookup.xhtml"> <ui:param name="pageBean" value="#{docEditModifyStrutturaInterna}"/></ui:include>
+        <ui:include src="./thvincolato.xhtml"> <ui:param name="pageBean" value="#{docEditModifyStrutturaInterna}"/></ui:include>
+    </ui:define>
+</ui:composition>    

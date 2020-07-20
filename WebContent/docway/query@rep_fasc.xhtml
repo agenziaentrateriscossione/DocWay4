@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+    template="#{queryRep_fasc.pageTemplate}"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:c="http://java.sun.com/jsp/jstl/core"
+    xmlns:p="http://xmlns.jcp.org/jsf/passthrough">
+
+<ui:define name="content">
+	<div class="report">
+	
+		<!-- toolbar: inizio -->
+		<div class="btn-toolbar margin-bottom" role="toolbar">
+			<div class="btn-group">
+				<h:commandLink id="printBtn" action="#{queryRep_fasc.stampaRepertorioFascicoli}" styleClass="btn btn-primary openwaitmsg">#{i18n['dw4.print']}</h:commandLink>
+				<h:commandLink action="#{docwaymenu.gotoTableQRep_fasc}" styleClass="btn btn-default">#{i18n['acl.clear']}</h:commandLink>
+			</div>
+		</div>
+		<!-- toolbar: fine -->
+		
+		<div class="sub-header">
+			<span class="glyphicon glyphicon-print"></span>&#160;
+			#{i18n['dw4.repertorio_dei_fascicoli']}
+		</div>
+	
+		<!-- messages: inizio -->
+		<div class="docedit-messages alert alert-info">#{i18n['dw4.selezionare_una_modalita_di_stampa_quindi_premere_il_pulsante_stampa']}</div>
+		
+		<h:panelGroup rendered="#{not empty facesContext.messageList}" layout="block" styleClass="docedit-messages alert alert-danger">
+			<h:messages styleClass="" id="validationMesseges" />
+		</h:panelGroup>
+		<!-- messages: fine -->
+	
+		<!-- scheda query: inizio -->
+		<div class="row-fluid" style="margin-top:10px;">
+			<div id="fixedshowdoc" class="box span12 fixed-showdoc">
+				<div class="box-content">
+				
+					<div class="fieldset">
+						<div class="legend">#{i18n['dw4.filtro']}</div>
+					
+						<div class="form-group">
+							<ui:include src="./rangeField.xhtml">
+								<ui:param name="label" value="#{i18n['dw4.anno']}" />
+								<ui:param name="id" value="fascAnno" />
+								<ui:param name="from_value" value="#{queryRep_fasc.range_fasc_anno_from}" />
+								<ui:param name="to_value" value="#{queryRep_fasc.range_fasc_anno_to}" />
+							</ui:include>
+						</div>
+					
+						<div class="form-group">
+							<label for="templateForm:fascClassifCod" class="col-sm-2 control-label">#{i18n['dw4.classificazione']}</label>
+							<div class="col-sm-3">
+								<h:inputText id="fascClassifCod" p:placeholder="#{i18n['dw4.cod_classif']}" value="#{queryRep_fasc.custom_classiffasccod}" styleClass="#{ component.valid ? '' : 'invalidinput' } form-control" />
+							</div>
+							<div class="col-sm-6">
+								<h:inputText id="fascClassif" p:placeholder="#{i18n['dw4.descr_classif']}" value="#{queryRep_fasc.custom_classiffasc}" styleClass="#{ component.valid ? '' : 'invalidinput' } form-control" />
+							</div>
+						</div>
+					</div> <!-- /fieldset -->
+					
+					<div id="printFormatHolder" class="fieldset">
+						<div class="legend">#{i18n['dw4.opzioni_di_stampa']}</div>
+						
+						<div class="form-group">
+							<div class="col-sm-offset-2 col-sm-9">
+								<h:selectOneRadio value="#{queryRep_fasc.fasc_stato}" styleClass="radio-selection">
+									<f:selectItem itemLabel="#{i18n['dw4.aperti']}" itemValue="A" />
+									<f:selectItem itemLabel="#{i18n['dw4.chiusi']}" itemValue="C" />
+									<f:selectItem itemLabel="#{i18n['dw4.entrambi']}" itemValue="I" />
+								</h:selectOneRadio>
+							</div>
+						</div>
+						
+						<div class="form-group">
+							<div class="col-sm-offset-2 col-sm-9">
+								<h:selectOneRadio value="#{queryRep_fasc.fasc_personale}" styleClass="radio-selection">
+									<f:selectItem itemLabel="#{i18n['dw4.solo_fascicoli_del_personale']}" itemValue="only" />
+									<f:selectItem itemLabel="#{i18n['dw4.no_fascicoli_del_personale']}" itemValue="no" />
+									<f:selectItem itemLabel="#{i18n['dw4.tutti']}" itemValue="also" />
+								</h:selectOneRadio>
+							</div>
+						</div>
+						
+						<div class="form-group" style="margin-top:15px;">
+							<div class="col-sm-offset-2 col-sm-9">
+								<h:commandLink id="checkOpzioniConsistenzaBtn" action="#{queryRep_fasc.checkOpzioniConsistenza}" style="display:none;" styleClass="context-menu-one box menu-1 iconButton openwaitmsg"><f:ajax execute="@form" render="@form" /></h:commandLink>
+								<script type="text/javascript">
+								function checkOpzioniConsistenza() {
+									$("#templateForm\\:checkOpzioniConsistenzaBtn").trigger('click');
+								}
+								</script>
+								<h:selectBooleanCheckbox id="chkbox_consistenza_fasc" value="#{queryRep_fasc.consistenza_fasc}" immediate="true" valueChangeListener="#{queryRep_fasc.consistenzaOptionValueChange}" onchange="checkOpzioniConsistenza();" />
+								<label for="templateForm:chkbox_consistenza_fasc" class="normal-weight-text">#{i18n['dw4.informazioni_sulla_consistenza_dei_fascicoli']}</label>
+								&#160;(<h:selectBooleanCheckbox id="chkbox_consistenza_sottofasc" value="#{queryRep_fasc.consistenza_sottofasc}" immediate="true" valueChangeListener="#{queryRep_fasc.consistenzaOptionValueChange}" onchange="checkOpzioniConsistenza();" /> <label for="templateForm:chkbox_consistenza_sottofasc" class="normal-weight-text">#{i18n['dw4.includi_i_sottofascicoli']}</label>)
+							</div>
+						</div>
+					</div> <!-- /fieldset -->
+					
+					<div class="alert alert-info">#{i18n['dw4.lasciando_vuota_la_zona_sottostante_sara_stampato_il_repertorio_di_tutti_i_fascicoli_visibili']}</div>
+					
+					<div class="fieldset">
+						<div class="legend">#{i18n['dw4.filtro']} #{i18n['dw4.assegnatari']}</div>
+						
+						<h:panelGroup id="rpa" layout="block" styleClass="form-group">
+							<label for="templateForm:rpanomeuff" class="col-sm-2 control-label">#{i18n['dw4.proprietario']}</label>
+							<div class="col-sm-4">
+								<h:inputHidden value="#{queryRep_fasc.rif.cod_uff}" id="cod_uff" />
+								<ui:include src="./lookupField.xhtml">
+					        		<ui:param name="id" value="nome_uff" />
+					        		<ui:param name="field" value="#{queryRep_fasc.rif.nome_uff}" />
+					        		<ui:param name="bean" value="#{queryRep_fasc}" />
+					        		<ui:param name="action" value="lookupUor"/>
+					        		<ui:param name="clearaction" value="clearUor"/>
+					        		<ui:param name="title" value="#{i18n['dw4.lookup_uor']}"/>
+					        		<ui:param name="styleclass" value="form-control"/>
+					        		<ui:param name="placeholder" value="#{i18n['acl.uff']}"/>
+					        		<ui:param name="refresh" value="templateForm:nome_uff_input templateForm:cod_uff templateForm:lookup templateForm:errormsg" />
+					        	</ui:include>
+							</div>
+							<div class="col-sm-5">
+								<h:inputHidden value="#{queryRep_fasc.rif.cod_persona}" id="cod_persona" />
+								<ui:include src="./lookupField.xhtml">
+					        		<ui:param name="id" value="nome_persona" />
+					        		<ui:param name="field" value="#{queryRep_fasc.rif.nome_persona}" />
+					        		<ui:param name="bean" value="#{queryRep_fasc}" />
+					        		<ui:param name="action" value="lookupRpa"/>
+					        		<ui:param name="clearaction" value="clearRpa"/>
+					        		<ui:param name="title" value="#{i18n['dw4.lookup_rpa']}"/>
+					        		<ui:param name="styleclass" value="form-control"/>
+					        		<ui:param name="placeholder" value="#{i18n['acl.oper']}"/>
+					        		<ui:param name="refresh" value="templateForm:nome_persona_input templateForm:cod_persona templateForm:lookup templateForm:errormsg" />
+					        	</ui:include>
+							</div>
+						</h:panelGroup>						
+					</div>
+				</div>
+			</div>
+		</div>
+		<!-- scheda query: fine -->
+	</div>
+
+	<ui:include src="./lookup.xhtml"> <ui:param name="pageBean" value="#{queryRep_fasc}"/></ui:include>
+	<ui:include src="./loadingbar@ctrl_gestione.xhtml"><ui:param name="pageBean" value="#{queryRep_fasc}"/></ui:include>
+	
+	<h:inputTextarea value="#{queryRep_fasc.xml}" rendered="#{queryRep_fasc.debugMode}" styleClass="form-control" rows="10" />
+</ui:define>
+    
+</ui:composition>    

@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" 
+	  xmlns:h="http://java.sun.com/jsf/html" 
+	  xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	  xmlns:ui="http://java.sun.com/jsf/facelets" 
+	  xmlns:f="http://java.sun.com/jsf/core"
+	  xmlns:p="http://xmlns.jcp.org/jsf/passthrough">
+<ui:composition>
+
+	<h:panelGroup id="addvaschetta" layout="block">
+		<h:panelGroup rendered="#{pageBean.addVaschettaCustomOpened}">
+			<!-- Modal -->
+			<div id="addVaschettaModal" class="modal fade in" aria-hidden="false" aria-labelledby="addVaschettaModalLabel" role="dialog" tabindex="-1" style="display: block;">
+			<!--div class="modal fade" id="addVaschettaModal" role="dialog" aria-labelledby="addVaschettaModalLabel" aria-hidden="true"-->
+				<div class="modal-dialog">
+					<div class="modal-content jsf-modal">
+						<div class="modal-header">
+							<h:commandButton styleClass="close" title="#{i18n['acl.close']}" action="#{pageBean.closeAddVaschetta}" p:data-dismiss="modal"  value="&#215;" >
+			        			<f:ajax execute="@form" render="@form" />
+			        		</h:commandButton>
+			        		
+			        		<h4 class="modal-title" id="addVaschettaModalLabel">#{i18n['dw4.aggiunta_vaschetta_utente']}</h4>
+						</div>
+						<div class="modal-body">
+							
+							<!-- messages -->
+							<h:panelGroup rendered="#{not empty facesContext.messageList}" layout="block" styleClass="docedit-messages alert alert-danger" style="margin-bottom:15px;">
+								<h:messages styleClass="" id="validationMesseges" />
+							</h:panelGroup>
+							
+							<div class="form-group">
+								<label for="templateForm:nomeVaschetta" class="col-sm-2 control-label requiredField">* #{i18n['dw4.nome_vaschetta']}</label>
+								<div class="col-sm-10">
+									<h:inputText id="nomeVaschetta" value="#{pageBean.nomeVaschettaCustom}" styleClass="#{ component.valid ? '' : 'invalidinput' } form-control" />
+								</div>
+							</div>
+							<div class="form-group">
+								<label for="templateForm:filtroVaschetta" class="col-sm-2 control-label">#{i18n['dw4.mostra']}</label>
+								<div class="col-sm-10">
+									<h:selectOneMenu id="filtroVaschetta" value="#{pageBean.filtroTemporaleVaschettaCustom}" styleClass="form-control">
+										<f:selectItem itemValue="tutti" itemLabel="#{i18n['dw4.tutti']}" />
+										<f:selectItem itemValue="giorno" itemLabel="#{i18n['dw4.del_giorno']}" />
+										<f:selectItem itemValue="settimana" itemLabel="#{i18n['dw4.ultima_settimana']}" />
+										<f:selectItem itemValue="mese" itemLabel="#{i18n['dw4.ultimo_mese']}" />
+									</h:selectOneMenu>
+								</div>
+							</div>
+							
+						</div>
+						<div class="modal-footer">
+							<h:commandButton styleClass="btn btn-primary openwaitmsg" action="#{pageBean.addVaschetta}" value="#{i18n['acl.save']}">
+								<f:ajax execute="@form" render="@form" />
+							</h:commandButton>
+							
+							<h:commandButton styleClass="btn btn-default" title="#{i18n['acl.close']}" action="#{pageBean.closeAddVaschetta}" p:data-dismiss="modal"  value="#{i18n['acl.close']}" >
+			        			<f:ajax execute="@form" render="@form" />
+			        		</h:commandButton>
+						</div>
+					</div>
+				</div>
+			</div>
+			<!--script type="text/javascript">
+			$('#addVaschettaModal').modal('show');
+			</script-->
+		</h:panelGroup>
+	</h:panelGroup>
+
+</ui:composition>   
+</html>

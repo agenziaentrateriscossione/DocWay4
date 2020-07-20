@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" 
+	  xmlns:h="http://java.sun.com/jsf/html" 
+	  xmlns:ui="http://java.sun.com/jsf/facelets" 
+	  xmlns:f="http://java.sun.com/jsf/core">
+<ui:composition>
+
+	<h:panelGroup rendered="#{bean.totRecords == 0 }">
+		<div class="alert alert-info">
+			#{i18n['apv.nessuna_fattura_trovata']}
+		</div>
+	</h:panelGroup>
+
+	<!-- toolbar: inizio -->
+	<div class="btn-toolbar" role="toolbar">
+		<div class="pull-right">
+			<ui:include src="./consoleapvAjaxNavigationBar.xhtml"><ui:param name="beanPaginator" value="#{bean.paginator}"/><ui:param name="customPage" value="true"/><ui:param name="customPageId" value="titlesId"/></ui:include>
+		</div>
+	</div>
+	<!-- toolbar: fine -->
+
+	<h:panelGroup rendered="#{bean.totRecords > 0}">
+		<table class="table table-hover doc-titles-table webmail-titles-table">
+			<thead>
+				<tr>
+					<th style="width:5%;">
+						<h:panelGroup>
+							<span style="white-space:nowrap;">
+								<h:commandLink action="#{bean.order}" actionListener="#{bean.attrListenerSortHeader}">
+									<f:attribute name="colSort" value="direzione" />
+									<f:ajax execute="@form" render="@form" />
+									#{i18n['apv.direzione']}
+								</h:commandLink>
+								<h:panelGroup rendered="#{bean.colSort ne '' and fn:toLowerCase(bean.colSort) eq 'direzione'}">
+									&#160;<span class="glyphicon #{ bean.ascSort ? 'glyphicon-chevron-up' : 'glyphicon-chevron-down' }" title="#{ bean.ascSort ? i18n['dw4.ordine_crescente'] : i18n['dw4.ordine_decrescente'] }"></span>
+								</h:panelGroup>
+							</span>
+						</h:panelGroup>
+					</th>
+					<th style="width:5%;">
+						<h:panelGroup>
+							<span style="white-space:nowrap;">
+								<h:commandLink action="#{bean.order}" actionListener="#{bean.attrListenerSortHeader}">
+									<f:attribute name="colSort" value="area" />
+									<f:ajax execute="@form" render="@form" />
+									#{i18n['apv.area']}
+								</h:commandLink>
+								<h:panelGroup rendered="#{bean.colSort ne '' and fn:toLowerCase(bean.colSort) eq 'area'}">
+									&#160;<span class="glyphicon #{ bean.ascSort ? 'glyphicon-chevron-up' : 'glyphicon-chevron-down' }" title="#{ bean.ascSort ? i18n['dw4.ordine_crescente'] : i18n['dw4.ordine_decrescente'] }"></span>
+								</h:panelGroup>
+							</span>
+						</h:panelGroup>
+					</th>
+
+					<th style="width:8%;">
+						<h:panelGroup>
+							<span style="white-space:nowrap;">
+								<h:commandLink action="#{bean.order}" actionListener="#{bean.attrListenerSortHeader}">
+									<f:attribute name="colSort" value="fornitore" />
+									<f:ajax execute="@form" render="@form" />
+									#{i18n['apv.fattura_fornitore']}
+								</h:commandLink>
+								<h:panelGroup rendered="#{bean.colSort ne '' and fn:toLowerCase(bean.colSort) eq 'fornitore'}">
+									&#160;<span class="glyphicon #{ bean.ascSort ? 'glyphicon-chevron-up' : 'glyphicon-chevron-down' }" title="#{ bean.ascSort ? i18n['dw4.ordine_crescente'] : i18n['dw4.ordine_decrescente'] }"></span>
+								</h:panelGroup>
+							</span>
+						</h:panelGroup>
+					</th>
+					<th style="width:5%;">
+						<h:panelGroup>
+							<span style="white-space:nowrap;">
+								<h:commandLink action="#{bean.order}" actionListener="#{bean.attrListenerSortHeader}">
+									<f:attribute name="colSort" value="numero" />
+									<f:ajax execute="@form" render="@form" />
+									#{i18n['apv.fattura_numero']}
+								</h:commandLink>
+								<h:panelGroup rendered="#{bean.colSort ne '' and fn:toLowerCase(bean.colSort) eq 'numero'}">
+									&#160;<span class="glyphicon #{ bean.ascSort ? 'glyphicon-chevron-up' : 'glyphicon-chevron-down' }" title="#{ bean.ascSort ? i18n['dw4.ordine_crescente'] : i18n['dw4.ordine_decrescente'] }"></span>
+								</h:panelGroup>
+							</span>
+						</h:panelGroup>
+					</th>
+					<th style="width:8%;">
+						<h:panelGroup>
+							<span style="white-space:nowrap;">
+								<h:commandLink action="#{bean.order}" actionListener="#{bean.attrListenerSortHeader}">
+									<f:attribute name="colSort" value="importo" />
+									<f:ajax execute="@form" render="@form" />
+									#{i18n['apv.fattura_importo']}
+								</h:commandLink>
+								<h:panelGroup rendered="#{bean.colSort ne '' and fn:toLowerCase(bean.colSort) eq 'importo'}">
+									&#160;<span class="glyphicon #{ bean.ascSort ? 'glyphicon-chevron-up' : 'glyphicon-chevron-down' }" title="#{ bean.ascSort ? i18n['dw4.ordine_crescente'] : i18n['dw4.ordine_decrescente'] }"></span>
+								</h:panelGroup>
+							</span>
+						</h:panelGroup>
+					</th>
+					<th style="width:5%;">
+						<h:panelGroup>
+							<span style="white-space:nowrap;">
+								<h:commandLink action="#{bean.order}" actionListener="#{bean.attrListenerSortHeader}">
+									<f:attribute name="colSort" value="giorni_df" />
+									<f:ajax execute="@form" render="@form" />
+									#{i18n['apv.fattura_giorni_data_fattura']}
+								</h:commandLink>
+								<h:panelGroup rendered="#{bean.colSort ne '' and fn:toLowerCase(bean.colSort) eq 'giorni_df'}">
+									&#160;<span class="glyphicon #{ bean.ascSort ? 'glyphicon-chevron-up' : 'glyphicon-chevron-down' }" title="#{ bean.ascSort ? i18n['dw4.ordine_crescente'] : i18n['dw4.ordine_decrescente'] }"></span>
+								</h:panelGroup>
+							</span>
+						</h:panelGroup>
+					</th>
+					<th>
+						<span style="white-space:nowrap;">
+							<h:commandLink action="#{bean.order}" actionListener="#{bean.attrListenerSortHeader}">
+								<f:attribute name="colSort" value="oggetto" />
+								<f:ajax execute="@form" render="@form" />
+								#{i18n['apv.oggetto']}
+							</h:commandLink>
+							<h:panelGroup rendered="#{bean.colSort ne '' and fn:toLowerCase(bean.colSort) eq 'oggetto'}">
+								&#160;<span class="glyphicon #{ bean.ascSort ? 'glyphicon-chevron-up' : 'glyphicon-chevron-down' }" title="#{ bean.ascSort ? i18n['dw4.ordine_crescente'] : i18n['dw4.ordine_decrescente'] }"></span>
+							</h:panelGroup>
+						</span>
+					</th>
+					<th style="width:5%;">
+						<span style="white-space:nowrap;">
+							<h:commandLink action="#{bean.order}" actionListener="#{bean.attrListenerSortHeader}">
+								<f:attribute name="colSort" value="stato" />
+								<f:ajax execute="@form" render="@form" />
+								#{i18n['apv.stato']}
+							</h:commandLink>
+							<h:panelGroup rendered="#{bean.colSort ne '' and fn:toLowerCase(bean.colSort) eq 'stato'}">
+								&#160;<span class="glyphicon #{ bean.ascSort ? 'glyphicon-chevron-up' : 'glyphicon-chevron-down' }" title="#{ bean.ascSort ? i18n['dw4.ordine_crescente'] : i18n['dw4.ordine_decrescente'] }"></span>
+							</h:panelGroup>
+						</span>
+					</th>
+					<th style="width:8%;">
+						<span style="white-space:nowrap;">
+							<h:commandLink action="#{bean.order}" actionListener="#{bean.attrListenerSortHeader}">
+								<f:attribute name="colSort" value="in_attesa" />
+								<f:ajax execute="@form" render="@form" />
+								#{i18n['apv.in_attesa_da']}
+							</h:commandLink>
+							<h:panelGroup rendered="#{bean.colSort ne '' and fn:toLowerCase(bean.colSort) eq 'in_attesa'}">
+								&#160;<span class="glyphicon #{ bean.ascSort ? 'glyphicon-chevron-up' : 'glyphicon-chevron-down' }" title="#{ bean.ascSort ? i18n['dw4.ordine_crescente'] : i18n['dw4.ordine_decrescente'] }"></span>
+							</h:panelGroup>
+						</span>
+					</th>
+
+					<th style="width:8%;">
+						<span style="white-space:nowrap;">
+							<h:commandLink action="#{bean.order}" actionListener="#{bean.attrListenerSortHeader}">
+								<f:attribute name="colSort" value="rep_ord" />
+								<f:ajax execute="@form" render="@form" />
+								#{i18n['apv.repertorio_lettera_ordine']}
+							</h:commandLink>
+							<h:panelGroup rendered="#{bean.colSort ne '' and fn:toLowerCase(bean.colSort) eq 'rep_ord'}">
+								&#160;<span class="glyphicon #{ bean.ascSort ? 'glyphicon-chevron-up' : 'glyphicon-chevron-down' }" title="#{ bean.ascSort ? i18n['dw4.ordine_crescente'] : i18n['dw4.ordine_decrescente'] }"></span>
+							</h:panelGroup>
+						</span>
+					</th>
+					<th style="width:8%;">
+						<span style="white-space:nowrap;">
+							<h:commandLink action="#{bean.order}" actionListener="#{bean.attrListenerSortHeader}">
+								<f:attribute name="colSort" value="rep_decr" />
+								<f:ajax execute="@form" render="@form" />
+								#{i18n['apv.repertorio_decretazione']}
+							</h:commandLink>
+							<h:panelGroup rendered="#{bean.colSort ne '' and fn:toLowerCase(bean.colSort) eq 'rep_decr'}">
+								&#160;<span class="glyphicon #{ bean.ascSort ? 'glyphicon-chevron-up' : 'glyphicon-chevron-down' }" title="#{ bean.ascSort ? i18n['dw4.ordine_crescente'] : i18n['dw4.ordine_decrescente'] }"></span>
+							</h:panelGroup>
+						</span>
+					</th>
+					<th style="width:5%;">
+						#{i18n['apv.invia_sollecito']}
+					</th>
+				</tr>
+			</thead>
+			<tbody>
+				<ui:repeat var="fatt" value="#{bean.fattureOnPage}" varStatus="status">
+					<tr> 
+						<td class="webmail-coldata essential">
+							<h:outputText value="#{fatt.direzione}"></h:outputText>
+						</td>
+						<td class="webmail-coldata essential">
+							<h:outputText value="#{fatt.area}"></h:outputText>
+						</td>
+						<td class="webmail-coldata essential">
+							<h:outputText value="#{fatt.fornitore}"></h:outputText>
+						</td>
+						<td class="webmail-coldata essential">
+							<h:outputText value="#{fatt.numero}"></h:outputText>
+						</td>
+						<td class="webmail-coldata essential">
+							<h:outputText value="#{fatt.importo}"></h:outputText>
+						</td>
+						<td class="webmail-coldata essential">
+							<h:outputText value="#{fatt.giorniDataFattura}"></h:outputText>
+							<!-- br/><h:outputText value="#{fatt.dataInvioEmail}"></h:outputText -->
+						</td>
+						<td class="webmail-coldata essential">
+							<h:outputLink value="#{facesContext.externalContext.requestContextPath}/docway/loaddoc.pf?alias=DOC%5FREPERTORIONUMERO&amp;value=#{fatt.repertorio}">
+								<h:outputText value="#{fatt.oggetto}"></h:outputText>
+							</h:outputLink>
+						</td>
+						<td class="webmail-coldata essential">
+							<!-- h:outputText value="#{fatt.statoAvanzamentoApv}"></h:outputText -->
+							<img src="#{facesContext.externalContext.requestContextPath}/common/css/#{(!empty docwayInit.customDirCss) ? docwayInit.customDirCss.concat('/') : ''}images/console/fattura/#{fatt.statoAvanzamentoApv.getImgName()}.png" alt="#{i18n[fatt.statoAvanzamentoApv.getI18N()]}" title="#{i18n[fatt.statoAvanzamentoApv.getI18N()]}"/>
+						</td>
+						<td class="webmail-coldata essential">
+							<h:outputText value="#{fatt.inAttesaDa}" escape="false"></h:outputText>
+						</td>
+						
+						<td class="webmail-coldata essential">
+							<ui:repeat var="ordrep" value="#{fatt.ordiniRepertori}" varStatus="status">
+								<h:outputLink value="#{facesContext.externalContext.requestContextPath}/docway/loaddoc.pf?alias=DOC%5FREPERTORIONUMERO&amp;value=#{ordrep.fullRepertorioOrdine}">
+									<h:outputText value="#{ordrep.repertorioOrdine}"></h:outputText>
+								</h:outputLink><br/>
+							</ui:repeat>
+						</td>
+						<td class="webmail-coldata essential">
+							<ui:repeat var="ordrep" value="#{fatt.ordiniRepertori}" varStatus="status">
+								<h:outputLink value="#{facesContext.externalContext.requestContextPath}/docway/loaddoc.pf?alias=DOC%5FREPERTORIONUMERO&amp;value=#{ordrep.fullRepertorioDecretazione}">
+									<h:outputText value="#{ordrep.repertorioDecretazione}"></h:outputText>
+								</h:outputLink><br/>
+							</ui:repeat>
+						</td>
+						
+						<td class="webmail-coldata essential">
+							<h:commandLink action="#{bean.inviaSollecito}" rendered="#{fatt.linkInviaSollecitoShow}">
+								<f:ajax execute="@form" render="@form" />
+								<f:setPropertyActionListener target="#{bean.current}" value="#{fatt}"/>
+								#{i18n['apv.invia_sollecito']}
+							</h:commandLink>
+						</td>
+					</tr>
+				</ui:repeat>
+			</tbody>
+		</table>
+	</h:panelGroup>
+		
+</ui:composition>   
+</html>

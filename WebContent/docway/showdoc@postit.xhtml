@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" 
+	  xmlns:h="http://java.sun.com/jsf/html" 
+	  xmlns:ui="http://java.sun.com/jsf/facelets" 
+	  xmlns:f="http://java.sun.com/jsf/core">
+<ui:composition>
+
+	<h:panelGroup rendered="#{fn:length(bean.doc.postit) > 0 or (!empty bean.doc.note.text and bean.formsAdapter.funzionalitaDisponibili['visioneNote'])}" layout="block" styleClass="showdoc-section">
+		<div class="title">
+			#{i18n['dw4.note_e_annotazioni']}
+			
+			<div class="pull-right">
+				<span class="glyphicon glyphicon-pushpin" title="#{i18n['dw4.note_e_annotazioni']}"></span>
+			</div>
+		</div>
+	
+		<dl class="dl-horizontal">
+			<ui:repeat var="postit" value="#{bean.doc.postit}">
+				<dt>#{i18n['dw4.annotazione']}</dt>
+				<dd>
+					<span class="postit-operatore">#{postit.operatore}</span>
+					&#160;-&#160;
+					<span class="postit-data"><h:outputText value="#{postit.data}"><f:converter converterId="DateConverter"/></h:outputText> #{postit.ora}</span>
+					<span class="btn-group">
+						<h:panelGroup rendered="#{bean.formsAdapter.funzionalitaDisponibili['postitmodifica']}" styleClass="btn btn-default btn-xs">
+							<h:commandLink action="#{bean.modPostit}" title="#{i18n['dw4.modifica_annotazione']}">
+								<span class="glyphicon glyphicon-pencil"></span>
+							</h:commandLink>
+						</h:panelGroup>
+						<h:panelGroup rendered="#{bean.formsAdapter.funzionalitaDisponibili['postiteliminazione']}">
+							<h:commandLink action="#{bean.delPostit}" title="#{i18n['dw4.cancella_annotazione']}" onclick="if ( !confirm('Cancellare l\'annotazione selezionata?') ) return false;" styleClass="btn btn-default btn-xs">
+								<span class="glyphicon glyphicon-remove"></span>
+							</h:commandLink>
+						</h:panelGroup>
+					</span>
+					<br/>
+					<pre class="postit"><h:outputText value="#{postit.text}" escape="false" /></pre>
+				</dd>
+			</ui:repeat>
+		
+			<h:panelGroup rendered="#{! empty bean.doc.note.text and bean.formsAdapter.funzionalitaDisponibili['visioneNote']}">
+				<dt>#{i18n['dw4.notes']}</dt>
+				<dd><pre><h:outputText value="#{bean.doc.note.text}" escape="false" /></pre></dd>
+			</h:panelGroup>
+		</dl>
+	</h:panelGroup>
+		
+</ui:composition>   
+</html>

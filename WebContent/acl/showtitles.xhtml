@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+    template="template.xhtml"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:f="http://java.sun.com/jsf/core">
+
+<ui:define name="content">
+
+	<!-- toolbar: inizio -->
+	<div class="btn-toolbar" role="toolbar">
+		<div class="pull-right">
+			<ui:include src="./ajaxNavigationBar.xhtml"><ui:param name="bean" value="#{titles}"/><ui:param name="customPage" value="false"/><ui:param name="customPageId" value="titlesId"/></ui:include>
+		</div>
+		<div class="btn-group">
+			<ui:remove><h:commandLink action="#{titles.esportaCSV}" onclick="if (!owmConfirm('Confermare l\'esportazione di #{titles.count} documenti?')) return false;" styleClass="btn btn-default">#{i18n['dw4.esportazione_csv']}<f:ajax execute="@form" render="@form" /></h:commandLink></ui:remove>
+			
+			<h:panelGroup rendered="#{titles.formsAdapter.funzionalitaDisponibili['abilitaEsportazioneCSVBase'] and titles.formsAdapter.funzionalitaDisponibili['abilitaEsportazioneCSVAvanzata']}">
+				<div class="btn-group">
+					<button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+						#{i18n['dw4.esportazione_csv']} <span class="caret"></span>
+					</button>
+					<ul class="dropdown-menu">
+						<li><h:commandLink action="#{titles.esportaCSV}" value="#{i18n['dw4.base']}" onclick="return exportCSV(#{titles.count});" /></li>
+						<li><h:commandLink action="#{titles.startExportCSVAdvanced}" value="#{i18n['dw4.avanzata']}" onclick="return exportCSV(#{titles.count});" /></li>
+					</ul>
+				</div>
+			</h:panelGroup>
+			<h:commandLink rendered="#{!titles.formsAdapter.funzionalitaDisponibili['abilitaEsportazioneCSVBase'] and titles.formsAdapter.funzionalitaDisponibili['abilitaEsportazioneCSVAvanzata']}" action="#{titles.startExportCSVAdvanced}" styleClass="btn btn-default" onclick="return exportCSV(#{titles.count});">#{i18n['dw4.esportazione_csv']}</h:commandLink>
+            <h:commandLink rendered="#{titles.formsAdapter.funzionalitaDisponibili['abilitaEsportazioneCSVBase'] and !titles.formsAdapter.funzionalitaDisponibili['abilitaEsportazioneCSVAvanzata']}" action="#{titles.esportaCSV}" styleClass="btn btn-default" onclick="return exportCSV(#{titles.count});">#{i18n['dw4.esportazione_csv']}</h:commandLink>
+			
+			<h:panelGroup rendered="#{titles.formsAdapter.funzionalitaDisponibili['showPrintRightsButton']}">
+				<div class="btn-group">
+					<button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+						#{i18n['dw4.esportazione_diritti_utenti']} <span class="caret"></span>
+					</button>
+					<ul class="dropdown-menu">
+						<li>
+    						<h:commandLink action="#{titles.printPIRights}" onclick="if (!owmConfirm('#{i18n['dw4.confermare_esportazione_csv_diritti_utenti']}')) return false;">
+    							<f:param name="type" value="csv" />
+    							<f:ajax execute="@form" render="@form" />
+    							CSV
+    						</h:commandLink>
+    					</li>
+						<li>
+							<h:commandLink action="#{titles.printPIRights}" onclick="if (!owmConfirm('#{i18n['dw4.confermare_esportazione_xls_diritti_utenti']}')) return false;">
+								<f:param name="type" value="xls" />
+								<f:ajax execute="@form" render="@form" />
+								XLS
+							</h:commandLink>
+						</li>
+						<li>
+							<h:commandLink action="#{titles.printPIRights}" onclick="if (!owmConfirm('#{i18n['dw4.confermare_esportazione_pdf_diritti_utenti']}')) return false;">
+								<f:param name="type" value="pdf" />
+								<f:ajax execute="@form" render="@form" />
+								PDF
+							</h:commandLink>
+						</li>
+					</ul>
+				</div>
+			</h:panelGroup>
+		</div>
+	</div>
+	<ui:include src="./buttons.xhtml">
+		<ui:param name="bean" value="#{titles}" />
+	</ui:include>
+	<!-- toolbar: fine -->
+	
+	<div style="margin-top:15px;">
+		<div id="fixedshowdoc" class="showtitles fixed-showdoc">
+			<table class="table table-hover acl-titles-table">
+				<thead>
+					<tr>
+						<th class="coltipo optional">#{i18n['acl.type']}</th>
+						<th class="cologgetto essential">
+							<span style="white-space:nowrap;">
+									#{i18n['acl.title']}
+							</span>
+						</th>
+					</tr>
+				</thead>
+				<tbody>
+					<ui:repeat var="title" value="#{titles.titles}" varStatus="status">
+						<tr>      
+							<td class="coltipo optional">
+								<h:commandLink action="#{titles.mostraDocumento}"  title="#{title.dbTable}" styleClass="openwaitmsg">
+									<span class="acl-tipo #{title.dbTable} glyphicons-pro"></span>
+								</h:commandLink>
+							</td>
+							<td class="cologgetto essential">
+								<h:commandLink action="#{titles.mostraDocumento}" styleClass="openwaitmsg">
+									<div>#{title.testo}</div>
+								</h:commandLink>
+							</td>
+						</tr>
+					</ui:repeat>
+				</tbody>
+			</table>
+		</div>
+	</div>
+
+	<h:inputTextarea value="#{titles.xml}" rendered="#{titles.debugMode}" styleClass="form-control" rows="10" />
+		
+	<ui:include src="./loadingbar.xhtml"><ui:param name="pageBean" value="#{titles}"/></ui:include>
+	<ui:include src="./loadingbar@stampe.xhtml"><ui:param name="pageBean" value="#{titles}"/></ui:include>
+	<ui:include src="./exportCSVAdvanced.xhtml"> <ui:param name="pageBean" value="#{titles}"/></ui:include>
+</ui:define>
+
+</ui:composition>

@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+    template="../#{docEditVarieFPNALGERIA.pageTemplate}"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:c="http://java.sun.com/jsp/jstl/core"
+    xmlns:p="http://xmlns.jcp.org/jsf/passthrough">
+
+<ui:define name="content">
+	<div class="varie docedit">
+		
+		<!-- toolbar: inizio -->
+		<div class="btn-toolbar" role="toolbar">
+			<div class="btn-group">
+				<h:commandLink id="saveBtn" action="#{docEditVarieFPNALGERIA.saveDocument}" 
+							onclick="return customCheckForm();" styleClass="btn btn-primary openwaitmsg">
+					#{i18n['acl.save']}
+				</h:commandLink>
+				
+				<h:commandLink action="#{docEditVarieFPNALGERIA.clearDocument}" 
+							onclick="IwxRuntime.Client.resetJobIWX();" styleClass="btn btn-default">
+					#{i18n['acl.clear']}
+				</h:commandLink>	
+			</div>
+		</div>
+		<!-- toolbar: fine -->
+		
+		<h5 class="sub-header">
+			<span class="doc-tipo-varie glyphicon glyphicon-file"></span>&#160;
+			<h:outputText value="#{docEditVarieFPNALGERIA.docEditTitle}" escape="false" />
+		</h5>
+		
+		<!-- messages: inizio -->
+		<h:panelGroup rendered="#{not empty facesContext.messageList}" layout="block" styleClass="docedit-messages alert alert-danger">
+			<h:messages styleClass="" id="validationMesseges" />
+		</h:panelGroup>
+		<h:inputHidden id="errorFieldIds" value="#{docEditVarieFPNALGERIA.errorFieldIds}" />
+		<!-- messages: fine -->
+		
+		<script type="text/javascript">
+		function customCheckForm() {
+			if (!controlloWarningSeSenzaAllegato(#{docEditVarieFPNALGERIA.warningSeNessunAllegato}, "#{i18n['dw4.non_e_stato_indicato_alcun_documento_informatico_Continuare_con_la_registrazione']}"))
+				return false;
+			
+			displayOpenwaitmsg();
+			return true;
+		}
+		
+		$(document).ready(function() {
+			setInvalidInputFields();
+		});
+		</script>
+		
+		<!-- scheda edit: inizio -->
+		<div class="row-fluid" style="margin-top:10px;">
+			<div id="fixedshowdoc" class="box span12 fixed-showdoc">
+				<div class="box-content">
+				
+					<div class="fieldset">
+						<div class="legend">
+							#{i18n['dw4.datidoc']}
+						
+							<div class="pull-right">
+								<span class="glyphicon glyphicon-envelope" title="#{i18n['dw4.datidoc']}"></span>
+							</div>
+						</div>
+												
+						<h:panelGroup rendered="#{ docEditVarieFPNALGERIA.formsAdapter.funzionalitaDisponibili['rppNascondiData'] }" layout="block" styleClass="form-group">
+							<ui:include src="../dateField.xhtml">
+								<ui:param name="label" value="* #{i18n['dw4.data_doc']}" />
+								<ui:param name="id" value="dataProtDocRpp" />
+								<ui:param name="value" value="#{docEditVarieFPNALGERIA.doc.data_prot}" />
+							</ui:include>
+							<label for="templateForm:numRepPreg" class="col-sm-offset-3 col-sm-2 control-label requiredField"><span>* #{i18n['dw4.num_rep']}</span></label>
+							<div class="col-sm-2">
+								<h:inputText id="numRepPreg" value="#{docEditVarieFPNALGERIA.doc.rpp_num_prot}" styleClass="#{ component.valid ? '' : 'invalidinput' } form-control" />
+							</div>
+						</h:panelGroup>
+						
+						<ui:include src="../multisocietaFields.xhtml">
+							<ui:param name="beanDoc" value="#{docEditVarieFPNALGERIA.doc}" />
+			        	</ui:include>
+			        	
+						<h:panelGroup rendered="#{!docEditVarieFPNALGERIA.customfields.hiddenFields['voceindice']}">
+							<h:panelGroup rendered="#{docEditVarieFPNALGERIA.copyIfNotRipetiInFascicolo}" layout="block" styleClass="form-group">
+								<label for="templateForm:voceindice_input" class="col-sm-2 control-label"><span>#{i18n['dw4.index']}</span></label>
+								<div class="col-sm-4">
+									<ui:include src="../lookupField.xhtml">
+						        		<ui:param name="id" value="voceindice" />
+						        		<ui:param name="field" value="#{docEditVarieFPNALGERIA.doc.voce_indice.text}" />
+						        		<ui:param name="bean" value="#{docEditVarieFPNALGERIA}" />
+						        		<ui:param name="action" value="lookupVoceIndice"/>
+						        		<ui:param name="clearaction" value="clearLookupVoceIndice"/>
+						        		<ui:param name="title" value="#{i18n['dw4.lookup_voce_indice']}"/>
+						        		<ui:param name="styleclass" value="form-control"/>
+						        		<ui:param name="refresh" value="templateForm:voceindice_input templateForm:doc_oggetto templateForm:classif_holder templateForm:lookup templateForm:errormsg" />
+						        	</ui:include>
+					        	</div>
+							</h:panelGroup>
+						</h:panelGroup>
+						
+					</div> <!-- /fieldset -->
+					
+					<ui:include src="./docEdit@datiFattura.xhtml">
+						<ui:param name="bean" value="#{docEditVarieFPNALGERIA}" />
+		        	</ui:include>
+					
+					<ui:include src="./docEdit@datiContabili.xhtml">
+						<ui:param name="bean" value="#{docEditVarieFPNALGERIA}" />
+		        	</ui:include>
+		        	
+		        	<ui:include src="./docEdit@datiApprovazione.xhtml">
+						<ui:param name="bean" value="#{docEditVarieFPNALGERIA}" />
+		        	</ui:include>
+		        					
+					<ui:include src="../docEdit@rifinterni@doc.xhtml">
+						<ui:param name="bean" value="#{docEditVarieFPNALGERIA}" />
+		        	</ui:include>
+	        		
+		        	<ui:include src="../docInformaticiFields.xhtml">
+						<ui:param name="bean" value="#{docEditVarieFPNALGERIA}" />
+		        		<ui:param name="beanDoc" value="#{docEditVarieFPNALGERIA.doc}" />
+						<ui:param name="enableFiles" value="#{docEditVarieFPNALGERIA.docInformaticiEnabled and docEditVarieFPNALGERIA.formsAdapter.funzionalitaDisponibili['addFile']}" />
+		        		<ui:param name="enableImages" value="#{docEditVarieFPNALGERIA.docInformaticiEnabled and docEditVarieFPNALGERIA.formsAdapter.funzionalitaDisponibili['addImg']}" />	        		
+		        		<ui:param name="enableFileAgentPDF" value="true" />
+		        		<ui:param name="enableImageAgentPDF" value="true" />
+		        	</ui:include>
+				</div>
+			</div>
+		</div>
+		<!-- scheda edit: fine -->
+		
+		<ui:include src="../lookup.xhtml"> <ui:param name="pageBean" value="#{docEditVarieFPNALGERIA}"/></ui:include>
+		<ui:include src="../rifintLookup.xhtml"> <ui:param name="pageBean" value="#{docEditVarieFPNALGERIA}"/></ui:include>
+		<ui:include src="../showthes.xhtml"> <ui:param name="pageBean" value="#{docEditVarieFPNALGERIA}"/></ui:include>
+		
+		<h:inputTextarea value="#{docEditVarieFPNALGERIA.xml}" rendered="#{docEditVarieFPNALGERIA.debugMode}" styleClass="form-control" rows="10" />
+	</div>
+</ui:define>
+
+</ui:composition>

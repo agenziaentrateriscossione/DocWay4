@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core">
+<ui:composition>
+
+	<h:panelGroup rendered="#{(modify and fn:length(bean.profili) > 0) or (fn:length(bean.listof_rights) > 0)}" id="rightSection" layout="block" styleClass="fieldset">
+		<div class="legend">#{i18n['acl.rights']}</div>
+
+		<h:panelGroup rendered="#{modify and fn:length(bean.profili) > 0}">
+			<div class="form-group">
+				<label for="templateForm:profilo_codice" class="col-sm-2 control-label"><span>#{i18n['acl.rightsprofiles']}</span></label>
+				<div class="col-sm-10">
+					<h:selectOneMenu id="profilo_codice" valueChangeListener="#{bean.profilesValueChange}" value="#{bean.profilo.codice}" styleClass="form-control">
+						<f:selectItems value="#{bean.profili}" var="profilo" itemValue="#{profilo.codice}" itemLabel="#{profilo.nome}" itemLabelEscaped="false"></f:selectItems>
+						<f:ajax execute="@form" render="templateForm:rightSection templateForm:errormsg" />
+					</h:selectOneMenu>
+				</div>
+			</div>
+		</h:panelGroup>
+
+		<div class="form-group">
+			<!--label class="col-sm-2 control-label"><span>&#160;</span></label-->
+			<div class="col-sm-2 rights-list-col">
+				<div class="dw-listofrights-holder">
+					<ul class="nav nav-pills nav-stacked">
+						<ui:repeat var="listof_rights" value="#{bean.listof_rights}">
+							<h:panelGroup rendered="#{listof_rights.applicativo.cod ne 'TO'}">
+								<ui:repeat var="group" value="#{listof_rights.groups}">
+									<li class="#{(group.opened) ? 'active' : ''}">
+										<h:commandLink value="#{group.label}" action="#{bean.changeOpenedGroup}" title="#{group.label}">
+											<f:param name="group" value="#{group}" />
+											<f:ajax execute="@form" render="templateForm:rightSection templateForm:errormsg" />
+										</h:commandLink>
+									</li>
+								</ui:repeat>
+								<ui:repeat var="db" value="#{listof_rights.dbs}">
+									<ui:repeat var="group" value="#{db.groups}">
+										<li class="#{(group.opened) ? 'active' : ''}">
+											<h:commandLink value="#{group.label}" action="#{bean.changeOpenedGroup}" title="#{group.label}">
+												<f:param name="group" value="#{group}" />
+												<f:ajax execute="@form" render="templateForm:rightSection templateForm:errormsg" />
+											</h:commandLink>
+										</li>
+									</ui:repeat>
+								</ui:repeat>
+							</h:panelGroup>	
+							<h:panelGroup rendered="#{listof_rights.applicativo.cod eq 'TO'}">
+								<ui:repeat var="group" value="#{listof_rights.groups}" varStatus="indice">
+									<h:panelGroup rendered="#{indice.index != 0 and (indice.index % 2) == 1}">
+										<li class="#{(group.opened) ? 'active' : ''}">
+											<h:commandLink value="#{group.label}" action="#{bean.changeOpenedGroup}" title="#{group.label}">
+												<f:param name="group" value="#{group}" />
+												<f:ajax execute="@form" render="templateForm:rightSection templateForm:errormsg" />
+											</h:commandLink>
+										</li>
+									</h:panelGroup>
+								</ui:repeat>
+							</h:panelGroup>
+						</ui:repeat>
+					</ul>
+				</div>
+			</div>
+
+			<ui:repeat var="listof_rights" value="#{bean.listof_rights}" varStatus="index">
+				<ui:repeat var="group" value="#{listof_rights.groups}" varStatus="subindex">
+					<h:panelGroup layout="block" rendered="#{group.opened and listof_rights.applicativo.cod ne 'TO'}" styleClass="col-sm-10">
+						<div class="dw-rights-holder">
+							<!--h3>#{group.label}</h3-->
+							<h:panelGroup layout="block" rendered="#{!empty group.explain}" styleClass="well">#{group.explain}</h:panelGroup>
+
+							<ui:repeat var="subgroup" value="#{group.groups}" varStatus="subsubindex">
+								<div class="panel #{!subgroup.enabled ? 'panel-default' : 'panel-success'}">
+									<div id="clasp_#{index.index+1}_#{subindex.index+1}_#{subsubindex.index+1}" class="panel-heading">
+										<h3 class="panel-title">
+											<a class="btn #{!subgroup.enabled ? 'btn-default' : 'btn-success'} btn-xs" href="javascript:#{!subgroup.enabled ? 'lunchboxOpen' : 'lunchboxClose'}('#{index.index+1}_#{subindex.index+1}_#{subsubindex.index+1}', '#{!empty subgroup.label ? subgroup.escapedLabel : group.escapedLabel}');">
+												<span class="glyphicon #{subgroup.enabled ? 'glyphicon-minus' : 'glyphicon-plus'}"></span>
+											</a> 
+											<a href="javascript:#{!subgroup.enabled ? 'lunchboxOpen' : 'lunchboxClose'}('#{index.index+1}_#{subindex.index+1}_#{subsubindex.index+1}', '#{!empty subgroup.label ? subgroup.escapedLabel : group.escapedLabel}');">
+												#{!empty subgroup.label ? subgroup.label : group.label} 
+											</a>
+										</h3>
+									</div>
+									<div id="lunch_#{index.index+1}_#{subindex.index+1}_#{subsubindex.index+1}" class="panel-body" style="#{subgroup.enabled ? '' : 'display:none;'}">
+										<h:panelGroup rendered="#{!empty subgroup.explain}" layout="block" styleClass="well">
+	                                        #{subgroup.explain}
+	                                    </h:panelGroup>
+
+										<ul>
+											<ui:repeat var="right" value="#{subgroup.rights}">
+												<li class="block-item-#{right.disable ? 'locked' : (right.selected ? 'enabled' : 'disabled')}">
+													<div>
+														<span class="#{right.disable ? 'remove' : (right.selected ? 'ok' : 'ban')} glyphicons-pro icon" />
+														<h:commandLink value="#{fn:substring(right.label,0,32)}#{fn:length(right.label) &gt; 32 ? '...' : ''}" action="#{bean.modifyRight}" title="#{right.label}" rendered="#{modify and !right.disable}">
+															<f:ajax execute="@form" render="templateForm:rightSection templateForm:errormsg" />
+														</h:commandLink>
+														<h:panelGroup rendered="#{right.type =='alfa'}">
+															<h:inputText value="#{right.value}" rendered="#{modify}" styleClass="form-control" />
+														</h:panelGroup>
+														<h:outputText value="#{fn:substring(right.label,0,32)}#{fn:length(right.label) &gt; 32 ? '...' : ''}" title="#{right.label}" rendered="#{!modify or right.disable}" />
+														<h:panelGroup rendered="#{!modify and right.type eq 'alfa' and right.value ne '*NHL*'}"> : <h:outputText styleClass="diritti-wordwrap" value="#{right.value}" title="#{right.value}" /></h:panelGroup>
+													</div>
+												</li>
+											</ui:repeat>
+											<ui:fragment rendered="#{fn:length(subgroup.rights) == 0}">
+												<li style="display: none;"></li>
+											</ui:fragment>
+										</ul>
+									</div>
+								</div>
+							</ui:repeat>
+
+							<ul>
+								<ui:repeat var="right" value="#{group.rights}">
+									<li class="block-item-#{right.disable ? 'locked' : (right.selected ? 'enabled' : 'disabled')}">
+										<div>
+											<span class="#{right.disable ? 'remove' : (right.selected ? 'ok' : 'ban')} glyphicons-pro icon" />
+											<h:commandLink value="#{fn:substring(right.label,0,32)}#{fn:length(right.label) &gt; 32 ? '...' : ''}" action="#{bean.modifyRight}" title="#{right.label}" rendered="#{modify and !rights.disable}">
+												<f:param name="right" value="#{right}" />
+												<f:ajax execute="@form" render="templateForm:rightSection templateForm:errormsg" />
+											</h:commandLink>
+											<h:panelGroup rendered="#{right.type =='alfa'}">
+												<h:inputText value="#{right.value}" rendered="#{modify}" styleClass="form-control" />
+											</h:panelGroup>
+											<h:outputText value="#{fn:substring(right.label,0,32)}#{fn:length(right.label) &gt; 32 ? '...' : ''}" title="#{right.label}" rendered="#{!modify or rights.disable}" />
+											<h:panelGroup rendered="#{!modify and right.type eq 'alfa' and right.value ne '*NHL*'}"> : <h:outputText styleClass="diritti-wordwrap" value="#{right.value}" title="#{right.value}" /></h:panelGroup>
+										</div>
+									</li>
+								</ui:repeat>
+								<ui:fragment rendered="#{fn:length(group.rights) == 0}">
+									<li style="display: none;"></li>
+								</ui:fragment>
+							</ul>
+						</div>
+					</h:panelGroup>
+					<h:panelGroup layout="block" rendered="#{group.opened and listof_rights.applicativo.cod eq 'TO'}" styleClass="col-sm-10">
+						<div class="dw-rights-holder">
+							<!--h3>#{group.label}</h3-->
+							<h:panelGroup layout="block" rendered="#{!empty group.explain}" styleClass="well">#{group.explain}</h:panelGroup>
+
+							<ui:repeat var="subgroup" value="#{group.groups}" varStatus="subsubindex">
+								<div class="panel #{!subgroup.enabled ? 'panel-default' : 'panel-success'}">
+									<div id="clasp_#{index.index+1}_#{subindex.index+1}_#{subsubindex.index+1}" class="panel-heading">
+										<h3 class="panel-title">
+											<a class="btn #{!subgroup.enabled ? 'btn-default' : 'btn-success'} btn-xs" href="javascript:#{!subgroup.enabled ? 'lunchboxOpen' : 'lunchboxClose'}('#{index.index+1}_#{subindex.index+1}_#{subsubindex.index+1}', '#{!empty subgroup.label ? subgroup.escapedLabel : group.escapedLabel}');">
+												<span class="glyphicon #{subgroup.enabled ? 'glyphicon-minus' : 'glyphicon-plus'}"></span>
+											</a> 
+											<a href="javascript:#{!subgroup.enabled ? 'lunchboxOpen' : 'lunchboxClose'}('#{index.index+1}_#{subindex.index+1}_#{subsubindex.index+1}', '#{!empty subgroup.label ? subgroup.escapedLabel : group.escapedLabel}');">
+												#{!empty subgroup.label ? subgroup.label : group.label} 
+											</a>
+										</h3>
+									</div>
+									<div id="lunch_#{index.index+1}_#{subindex.index+1}_#{subsubindex.index+1}" class="panel-body" style="#{subgroup.enabled ? '' : 'display:none;'}">
+										<h:panelGroup rendered="#{!empty subgroup.explain}" layout="block" styleClass="well">
+	                                        #{subgroup.explain}
+	                                    </h:panelGroup>
+
+										<ul>
+											<ui:repeat var="right" value="#{subgroup.rights}">
+												<li class="block-item-#{right.disable ? 'locked' : (right.selected ? 'enabled' : 'disabled')}">
+													<div>
+														<span class="#{right.disable ? 'remove' : (right.selected ? 'ok' : 'ban')} glyphicons-pro icon" />
+														<h:commandLink value="#{fn:substring(right.label,0,32)}#{fn:length(right.label) &gt; 32 ? '...' : ''}" action="#{bean.modifyRight}" title="#{right.label}" rendered="#{modify and !right.disable}">
+															<f:ajax execute="@form" render="templateForm:rightSection templateForm:errormsg" />
+														</h:commandLink>
+														<h:panelGroup rendered="#{right.type =='alfa'}">
+															<h:inputText value="#{right.value}" rendered="#{modify}" styleClass="form-control" />
+														</h:panelGroup>
+														<h:outputText value="#{fn:substring(right.label,0,32)}#{fn:length(right.label) &gt; 32 ? '...' : ''}" title="#{right.label}" rendered="#{!modify or right.disable}" />
+														<h:panelGroup rendered="#{!modify and right.type eq 'alfa' and right.value ne '*NHL*'}"> : <h:outputText styleClass="diritti-wordwrap" value="#{right.value}" title="#{right.value}" /></h:panelGroup>
+													</div>
+												</li>
+											</ui:repeat>
+											<ui:fragment rendered="#{fn:length(subgroup.rights) == 0}">
+												<li style="display: none;"></li>
+											</ui:fragment>
+										</ul>
+									</div>
+								</div>
+							</ui:repeat>
+							
+							<ui:repeat var="groupGestioneSeduta" value="#{listof_rights.groups[subindex.index+1].groups}" varStatus="indexGestioneSeduta">
+								<div class="panel #{!groupGestioneSeduta.enabled ? 'panel-default' : 'panel-success'}">
+									<div id="clasp_#{index.index+1}_#{subindex.index+1}_#{subsubindex.index+1}_#{indexGestioneSeduta.index+1}" class="panel-heading">
+										<h3 class="panel-title">
+											<a class="btn #{!groupGestioneSeduta.enabled ? 'btn-default' : 'btn-success'} btn-xs" href="javascript:#{!groupGestioneSeduta.enabled ? 'lunchboxOpen' : 'lunchboxClose'}('#{index.index+1}_#{subindex.index+1}_#{subsubindex.index+1}_#{indexGestioneSeduta.index+1}', '#{!empty groupGestioneSeduta.label ? groupGestioneSeduta.escapedLabel : group.escapedLabel}');">
+												<span class="glyphicon #{groupGestioneSeduta.enabled ? 'glyphicon-minus' : 'glyphicon-plus'}"></span>
+											</a> 
+											<a href="javascript:#{!groupGestioneSeduta.enabled ? 'lunchboxOpen' : 'lunchboxClose'}('#{index.index+1}_#{subindex.index+1}_#{subsubindex.index+1}_#{indexGestioneSeduta.index+1}', '#{!empty groupGestioneSeduta.label ? groupGestioneSeduta.escapedLabel : group.escapedLabel}');">
+												#{!empty groupGestioneSeduta.label ? groupGestioneSeduta.label : group.label} 
+											</a>
+										</h3>
+									</div>
+									<div id="lunch_#{index.index+1}_#{subindex.index+1}_#{subsubindex.index+1}_#{indexGestioneSeduta.index+1}" class="panel-body" style="#{groupGestioneSeduta.enabled ? '' : 'display:none;'}">
+										<h:panelGroup rendered="#{!empty groupGestioneSeduta.explain}" layout="block" styleClass="well">
+	                                        #{groupGestioneSeduta.explain}
+	                                    </h:panelGroup>
+
+										<ul>
+											<ui:repeat var="right" value="#{groupGestioneSeduta.rights}">
+												<li class="block-item-#{right.disable ? 'locked' : (right.selected ? 'enabled' : 'disabled')}">
+													<div>
+														<span class="#{right.disable ? 'remove' : (right.selected ? 'ok' : 'ban')} glyphicons-pro icon" />
+														<h:commandLink value="#{fn:substring(right.label,0,32)}#{fn:length(right.label) &gt; 32 ? '...' : ''}" action="#{bean.modifyRight}" title="#{right.label}" rendered="#{modify and !right.disable}">
+															<f:ajax execute="@form" render="templateForm:rightSection templateForm:errormsg" />
+														</h:commandLink>
+														<h:panelGroup rendered="#{right.type =='alfa'}">
+															<h:inputText value="#{right.value}" rendered="#{modify}" styleClass="form-control" />
+														</h:panelGroup>
+														<h:outputText value="#{fn:substring(right.label,0,32)}#{fn:length(right.label) &gt; 32 ? '...' : ''}" title="#{right.label}" rendered="#{!modify or right.disable}" />
+														<h:panelGroup rendered="#{!modify and right.type eq 'alfa' and right.value ne '*NHL*'}"> : <h:outputText styleClass="diritti-wordwrap" value="#{right.value}" title="#{right.value}" /></h:panelGroup>
+													</div>
+												</li>
+											</ui:repeat>
+											<ui:fragment rendered="#{fn:length(groupGestioneSeduta.rights) == 0}">
+												<li style="display: none;"></li>
+											</ui:fragment>
+										</ul>
+									</div>
+								</div>
+							</ui:repeat>
+							
+							<ul>
+								<ui:repeat var="right" value="#{group.rights}">
+									<li class="block-item-#{right.disable ? 'locked' : (right.selected ? 'enabled' : 'disabled')}">
+										<div>
+											<span class="#{right.disable ? 'remove' : (right.selected ? 'ok' : 'ban')} glyphicons-pro icon" />
+											<h:commandLink value="#{fn:substring(right.label,0,32)}#{fn:length(right.label) &gt; 32 ? '...' : ''}" action="#{bean.modifyRight}" title="#{right.label}" rendered="#{modify and !rights.disable}">
+												<f:param name="right" value="#{right}" />
+												<f:ajax execute="@form" render="templateForm:rightSection templateForm:errormsg" />
+											</h:commandLink>
+											<h:panelGroup rendered="#{right.type =='alfa'}">
+												<h:inputText value="#{right.value}" rendered="#{modify}" styleClass="form-control" />
+											</h:panelGroup>
+											<h:outputText value="#{fn:substring(right.label,0,32)}#{fn:length(right.label) &gt; 32 ? '...' : ''}" title="#{right.label}" rendered="#{!modify or rights.disable}" />
+											<h:panelGroup rendered="#{!modify and right.type eq 'alfa' and right.value ne '*NHL*'}"> : <h:outputText styleClass="diritti-wordwrap" value="#{right.value}" title="#{right.value}" /></h:panelGroup>
+										</div>
+									</li>
+								</ui:repeat>
+								<ui:fragment rendered="#{fn:length(group.rights) == 0}">
+									<li style="display: none;"></li>
+								</ui:fragment>
+							</ul>
+						</div>
+					</h:panelGroup>
+				</ui:repeat>
+
+				<ui:repeat var="db" value="#{listof_rights.dbs}" varStatus="dbindex">
+					<ui:repeat var="group" value="#{db.groups}" varStatus="groupindex">
+						<h:panelGroup layout="block" rendered="#{group.opened}" styleClass="col-sm-10">
+							<div class="dw-rights-holder">
+								<!--h3>#{group.label}</h3-->
+								<h:panelGroup layout="block" rendered="#{!empty group.explain}" styleClass="well">#{group.explain}</h:panelGroup>
+
+								<ui:repeat var="subgroup" value="#{group.groups}" varStatus="subgroupindex">
+									<div class="panel #{!subgroup.enabled ? 'panel-default' : 'panel-success'}">
+										<div id="clasp_#{index.index+1}_#{dbindex.index+1}_#{groupindex.index+1}_#{subgroupindex.index+1}" class="panel-heading">
+											<h3 class="panel-title">
+												<a class="btn #{!subgroup.enabled ? 'btn-default' : 'btn-success'} btn-xs" href="javascript:#{!subgroup.enabled ? 'lunchboxOpen' : 'lunchboxClose'}('#{index.index+1}_#{dbindex.index+1}_#{groupindex.index+1}_#{subgroupindex.index+1}', '#{!empty subgroup.label ? subgroup.escapedLabel : group.escapedLabel}');">
+													<span class="glyphicon #{subgroup.enabled ? 'glyphicon-minus' : 'glyphicon-plus'}"></span>
+												</a> 
+												<a href="javascript:#{!subgroup.enabled ? 'lunchboxOpen' : 'lunchboxClose'}('#{index.index+1}_#{dbindex.index+1}_#{groupindex.index+1}_#{subgroupindex.index+1}', '#{!empty subgroup.label ? subgroup.escapedLabel : group.escapedLabel}');">
+													#{!empty subgroup.label ? subgroup.label : group.label} 
+												</a>
+											</h3>
+										</div>
+										<div id="lunch_#{index.index+1}_#{dbindex.index+1}_#{groupindex.index+1}_#{subgroupindex.index+1}" class="panel-body" style="#{subgroup.enabled ? '' : 'display:none;'}">
+											<h:panelGroup rendered="#{!empty subgroup.explain}" layout="block" styleClass="well">
+	                                            #{subgroup.explain}
+	                                        </h:panelGroup>
+
+											<ul>
+												<ui:repeat var="right" value="#{subgroup.rights}">
+													<li class="block-item-#{right.disable ? 'locked' : (right.selected ? 'enabled' : 'disabled')}">
+														<div>
+															<span class="#{right.disable ? 'remove' : (right.selected ? 'ok' : 'ban')} glyphicons-pro icon" />
+															<h:commandLink value="#{fn:substring(right.label,0,32)}#{fn:length(right.label) &gt; 32 ? '...' : ''}" action="#{bean.modifyRight}" title="#{right.label}" rendered="#{modify and !right.disable}">
+																<f:param name="right" value="#{right}" />
+																<f:ajax execute="@form" render="templateForm:rightSection templateForm:errormsg" />
+															</h:commandLink>
+															<h:panelGroup rendered="#{right.type =='alfa'}">
+																<h:inputText value="#{right.value}" rendered="#{modify}" styleClass="form-control" />
+															</h:panelGroup>
+															<h:outputText value="#{fn:substring(right.label,0,32)}#{fn:length(right.label) &gt; 32 ? '...' : ''}" title="#{right.label}" rendered="#{!modify or right.disable}" />
+															<h:panelGroup rendered="#{!modify and right.type eq 'alfa' and right.value ne '*NHL*'}"> : <h:outputText styleClass="diritti-wordwrap" value="#{right.value}" title="#{right.value}" /></h:panelGroup>
+														</div>
+													</li>
+												</ui:repeat>
+												<ui:fragment rendered="#{fn:length(subgroup.rights) == 0}">
+													<li style="display: none;"></li>
+												</ui:fragment>
+											</ul>
+										</div>
+									</div>
+								</ui:repeat>
+
+								<ul>
+									<ui:repeat var="right" value="#{group.rights}">
+										<li class="block-item-#{right.disable ? 'locked' : (right.selected ? 'enabled' : 'disabled')}">
+											<div>
+												<span class="#{right.disable ? 'remove' : (right.selected ? 'ok' : 'ban')} glyphicons-pro icon" />
+												<h:commandLink value="#{fn:substring(right.label,0,32)}#{fn:length(right.label) &gt; 32 ? '...' : ''}" action="#{bean.modifyRight}" title="#{right.label}" rendered="#{modify and !right.disable}">
+													<f:param name="right" value="#{right}" />
+													<f:ajax execute="@form" render="templateForm:rightSection templateForm:errormsg" />
+												</h:commandLink>
+												<h:panelGroup rendered="#{right.type =='alfa'}">
+													<h:inputText value="#{right.value}" rendered="#{modify}" styleClass="form-control" />
+												</h:panelGroup>
+												<h:outputText value="#{fn:substring(right.label,0,32)}#{fn:length(right.label) &gt; 32 ? '...' : ''}" title="#{right.label}" rendered="#{!modify or right.disable}" />
+												<h:panelGroup rendered="#{!modify and right.type eq 'alfa' and right.value ne '*NHL*'}"> : <h:outputText styleClass="diritti-wordwrap" value="#{right.value}" title="#{right.value}" /></h:panelGroup>
+											</div>
+										</li>
+									</ui:repeat>
+									<ui:fragment rendered="#{fn:length(group.rights) == 0}">
+										<li style="display: none;"></li>
+									</ui:fragment>
+								</ul>
+
+							</div>
+						</h:panelGroup>
+					</ui:repeat>
+				</ui:repeat>
+			</ui:repeat>
+		</div>
+	</h:panelGroup>
+
+</ui:composition>
+</html>

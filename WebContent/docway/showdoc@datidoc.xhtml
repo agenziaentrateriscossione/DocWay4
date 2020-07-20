@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" 
+	  xmlns:h="http://java.sun.com/jsf/html" 
+	  xmlns:ui="http://java.sun.com/jsf/facelets" 
+	  xmlns:f="http://java.sun.com/jsf/core">
+<ui:composition>
+
+	<div class="showdoc-section">
+		<div class="title">
+			#{i18n['dw4.datidoc']}
+			
+			<div class="pull-right">
+				<span class="glyphicon glyphicon-envelope" title="#{i18n['dw4.datidoc']}"></span>
+			</div>
+		</div>
+		<dl class="dl-horizontal">
+			
+			<ui:include src="showdoc@datidoc@content.xhtml">
+				<ui:param name="bean" value="#{bean}"/>
+				<ui:param name="hideInvioTelematico" value="#{hideInvioTelematico}" />
+				<ui:param name="hideAllegati" value="#{hideAllegati}" />
+				<ui:param name="personalViewToUse" value="#{personalViewToUse}"/>
+			</ui:include>
+			
+		</dl>
+	</div>
+
+</ui:composition>
+</html>

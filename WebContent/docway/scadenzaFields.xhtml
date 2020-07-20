@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" 
+	  xmlns:h="http://java.sun.com/jsf/html" 
+	  xmlns:ui="http://java.sun.com/jsf/facelets" 
+	  xmlns:f="http://java.sun.com/jsf/core">
+<ui:composition>
+	
+	<h:panelGroup rendered="#{!bean.customfields.hiddenSections['scadenza'] and bean.formsAdapter.funzionalitaDisponibili['scadenzaAttiva']}" id="scadenzaHolder">
+		<div class="fieldset">
+			<div class="legend">
+				#{i18n['dw4.scadenza']}
+				
+				<div class="pull-right">
+					<span class="glyphicon glyphicon-time" title="#{i18n['dw4.scadenza']}"></span>
+				</div>
+			</div>
+			
+			<div class="form-group">
+               	<label for="templateForm:scadenzaTipo" class="col-sm-2 control-label"><span>#{i18n['acl.type']}</span></label>
+               	<div class="col-sm-4">
+	               	<h:selectOneMenu id="scadenzaTipo" immediate="true" value="#{beanDoc.scadenza.tipo}" onchange="$('#templateForm\\:checkScadenzaDocBtn').trigger('click');" styleClass="form-control">
+	               		<f:selectItem itemValue="nessuna" itemLabel="#{i18n['dw4.nessuna']}" />
+	               		<f:selectItem itemValue="fissa" itemLabel="#{i18n['dw4.fissa']}" />
+	               		<f:selectItem itemValue="settimanale" itemLabel="#{i18n['dw4.settimanale']}" />
+	               		<f:selectItem itemValue="mensile" itemLabel="#{i18n['dw4.mensile']}" />
+	               		<f:selectItem itemValue="bimestrale" itemLabel="#{i18n['dw4.bimestrale']}" />
+	               		<f:selectItem itemValue="trimestrale" itemLabel="#{i18n['dw4.trimestrale']}" />
+	               		<f:selectItem itemValue="semestrale" itemLabel="#{i18n['dw4.semestrale']}" />
+	               		<f:selectItem itemValue="annuale" itemLabel="#{i18n['dw4.annuale']}" />
+	               	</h:selectOneMenu>
+	               	<!-- Se utilizzo valueChangeListener anziche' il commandLink ho dei problemi con il componente jquery del calendario -->
+	               	<h:commandLink id="checkScadenzaDocBtn" action="#{beanDoc.checkScadenza}" >
+	               		<f:ajax execute="@form" render="templateForm:scadenzaHolder :templateForm:errormsg" />
+	               	</h:commandLink>
+               	</div>			
+				
+				<label for="templateForm:dataScadenzaDoc" class="col-sm-3 control-label"><span>#{i18n['dw4.data_scadenza']}</span></label>
+				<div class="col-sm-2">
+					<h:panelGroup rendered="#{(beanDoc.scadenza.tipo eq 'fissa')}">
+						<div class="input-group date" data-date-format="dd/mm/yyyy">
+							<h:inputText id="dataScadenzaDoc" value="#{beanDoc.scadenza.data_scadenza}" readonly="false" styleClass="#{ component.valid ? '' : 'invalidinput' } form-control datepicker" />
+							<span class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></span>
+						</div>
+					</h:panelGroup>
+					<h:panelGroup rendered="#{(beanDoc.scadenza.tipo ne 'fissa')}">
+						<h:inputText id="dataScadenzaDocReadOnly" value="#{beanDoc.scadenza.data_scadenza}" readonly="true" styleClass="#{ component.valid ? '' : 'invalidinput' } form-control readonlyinput" />
+					</h:panelGroup>
+				</div>
+			</div>
+		</div> <!-- /fieldset -->
+	</h:panelGroup>
+
+</ui:composition>
+</html>

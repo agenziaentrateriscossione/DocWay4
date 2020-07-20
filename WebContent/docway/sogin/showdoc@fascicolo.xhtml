@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" 
+	xmlns:h="http://java.sun.com/jsf/html" 
+	xmlns:ui="http://java.sun.com/jsf/facelets" 
+	xmlns:f="http://java.sun.com/jsf/core">
+<ui:composition>
+	
+	<dl class="dl-horizontal">
+		<h:panelGroup rendered="#{!empty bean.fascicolo.extra.tipologia_fascicolo}">
+			<dt>#{i18n['dw4.tipologia_fascicolo']}</dt>
+			<dd><h:outputText value="#{bean.fascicolo.extra.tipologia_fascicolo}" /></dd>
+		</h:panelGroup>
+		<h:panelGroup rendered="#{!empty bean.fascicolo.extra.numero_gara}">
+			<dt>#{i18n['dw4.num_gara']}</dt>
+			<dd><h:outputText value="#{bean.fascicolo.extra.numero_gara}" /></dd>
+		</h:panelGroup>
+		<h:panelGroup rendered="#{!empty bean.fascicolo.extra.numero_oda_sap}">
+			<dt>#{i18n['dw4.num_oda_sap']}</dt>
+			<dd><h:outputText value="#{bean.fascicolo.extra.numero_oda_sap}" /></dd>
+		</h:panelGroup>
+		<h:panelGroup rendered="#{!empty bean.fascicolo.extra.fornitore}">
+			<dt>#{i18n['dw4.fornitore']}</dt>
+			<dd><h:outputText value="#{bean.fascicolo.extra.fornitore}" /></dd>
+		</h:panelGroup>
+		<h:panelGroup rendered="#{!empty bean.fascicolo.extra.fornitore_codice}">
+			<dt>#{i18n['dw4.codice_sap_e_proc']}</dt>
+			<dd><h:outputText value="#{bean.fascicolo.extra.fornitore_codice}" /></dd>
+		</h:panelGroup>
+	</dl>
+		
+</ui:composition>
+</html>

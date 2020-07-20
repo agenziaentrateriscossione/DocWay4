@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+    template="#{docwayFirmaDigitale.pageTemplate}"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:f="http://java.sun.com/jsf/core">
+
+	<ui:define name="content">
+		<h:panelGroup rendered="#{docwayFirmaDigitale.configFirmaDigitale.abilitaFirmaSuDerTo and empty docwayFirmaDigitale.fileDaFirmare}">
+			
+			<div class="sub-header">#{i18n['dw4.selezionare_il_file_da_firmare']}</div>
+			
+			<!-- toolbar: inizio -->
+			<div class="btn-toolbar margin-bottom" role="toolbar">
+				<div class="btn-group">
+					<h:commandLink rendered="#{docwayFirmaDigitale.popupPage}" onclick="top.close();" styleClass="btn btn-default">#{i18n['acl.close']}</h:commandLink>
+				</div>
+			</div>
+			<!-- toolbar: fine -->
+			
+			<div class="list-group">
+				<ui:repeat var="file" value="#{docwayFirmaDigitale.files}">
+					<h:commandLink action="#{docwayFirmaDigitale.selezionaFileDaFirmare}" styleClass="list-group-item" title="#{file.title}">
+						<f:ajax execute="@form" render="@form" />
+						#{file.title}
+					</h:commandLink>
+				</ui:repeat>
+			</div>
+			
+			<h:inputTextarea value="#{docwayFirmaDigitale.xml}" rendered="#{docwayFirmaDigitale.debugMode}" styleClass="form-control" rows="10" />
+			
+		</h:panelGroup>
+		<h:panelGroup rendered="#{!docwayFirmaDigitale.configFirmaDigitale.abilitaFirmaSuDerTo or !empty docwayFirmaDigitale.fileDaFirmare}" layout="block">
+			
+			<iframe 
+				src="#{facesContext.externalContext.requestContextPath}/docway/firmadigitale@actalis@applet.jsf" 
+				style="margin:0; padding:0; border:none; width:100%; height:300px;"
+			></iframe>
+			
+		</h:panelGroup>
+	</ui:define>
+	
+</ui:composition>

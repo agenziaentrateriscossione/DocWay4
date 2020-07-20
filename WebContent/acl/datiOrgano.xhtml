@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" 
+	  xmlns:h="http://java.sun.com/jsf/html" 
+	  xmlns:ui="http://java.sun.com/jsf/facelets" 
+	  xmlns:f="http://java.sun.com/jsf/core"
+	  xmlns:p="http://xmlns.jcp.org/jsf/passthrough" >
+<ui:composition>
+	
+		<div class="fieldset">
+			<div class="legend">
+                 #{i18n['acl.informazioni_di_base']}
+                 <div class="pull-right">
+                     <span class="organo glyphicons-pro"
+                         title="#{i18n['acl.informazioni_di_base']}"></span>
+                 </div>
+             </div>
+
+			<div class="form-group">
+				<label for="templateForm:organo_cod" class="col-sm-2 control-label requiredField">#{i18n['acl.cod']}</label>
+				<div class="col-sm-2">
+					<h:inputText id="organo_cod" value="#{bean.organo.cod}" styleClass="#{ component.valid ? '' : 'invalidinput' } form-control" />
+				</div>
+				
+				<label for="templateForm:organo_nome" class="col-sm-1 control-label requiredField">#{i18n['acl.name']}</label>
+				<div class="col-sm-6">
+					<h:inputText id="organo_nome" value="#{bean.organo.nome}" styleClass="#{ component.valid ? '' : 'invalidinput' } form-control" />
+				</div>
+			</div>
+	
+			<h:panelGroup id="classif_holder" layout="block">
+				<ui:include src="./classifFields.xhtml">
+	        		<ui:param name="id" value="classif_verbale" />
+	        		<ui:param name="editable" value="true" />
+	        		<ui:param name="bean" value="#{bean}" />
+	        		<ui:param name="beanDoc" value="#{bean.organo}" />
+	        		<ui:param name="beanDoc.classif" value="#{bean.organo.classif_verbale}" />
+	        		<ui:param name="actionTitolario" value="thVincolatoTitolarioClassificazione"/>
+	        		<ui:param name="actionGerarchia" value="gerarchiaTitolarioClassificazione"/>
+	        		<ui:param name="refresh" value="templateForm:classif_holder templateForm:showthes templateForm:errormsg"/>
+	        		<ui:param name="readOnlyConservazione" value="true" />
+	        		<ui:param name="optionalField" value="#{bean.formsAdapter.funzionalitaDisponibili['docClassifEreditabile']}" />
+	        	</ui:include>
+        	</h:panelGroup>
+		</div> <!-- /fieldset -->
+
+</ui:composition>
+</html>

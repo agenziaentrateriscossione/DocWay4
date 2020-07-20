@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" 
+	  xmlns:h="http://java.sun.com/jsf/html" 
+	  xmlns:ui="http://java.sun.com/jsf/facelets" 
+	  xmlns:f="http://java.sun.com/jsf/core"
+	  xmlns:c="http://java.sun.com/jsp/jstl/core"
+	  xmlns:p="http://xmlns.jcp.org/jsf/passthrough">
+<ui:composition>
+	
+	<h:panelGroup id="archiveList">
+		<ui:repeat var="archiveGroup" value="#{bean.account.listOfArchiveGroup}" varStatus="groupIndex">
+			<div id="archiveGroup_#{groupIndex.index+1}" class="panel panel-default">
+				<div id="clasp_#{groupIndex.index+1}" class="panel-heading">
+					<h3 class="panel-title">
+						<h:panelGroup>
+							<div class="form-group">
+								<h:panelGroup styleClass="col-sm-6" rendered="#{!readOnly}">
+									<h:inputText value="#{archiveGroup.name}" styleClass="form-control" />
+								</h:panelGroup>
+								<h:panelGroup styleClass="account-label" rendered="#{readOnly}">
+									<h:outputText value="#{archiveGroup.name}"></h:outputText>		
+								</h:panelGroup>
+								<h:panelGroup>
+									<div class="col-sm-2">
+										<div class="input-group">
+											<div class="btn-group">
+												<a class="btn btn-default" href="javascript:#{!archiveGroup.enabled ? 'accountboxOpen' : 'accountboxClose'}('#{groupIndex.index+1}', '#{archiveGroup.escapedName}' , 'true');">
+													<span class="glyphicon glyphicon-eye-open"></span> 
+												</a>
+												<h:commandLink rendered="#{!readOnly and archiveGroup.canDelete}" action="#{bean.account.deleteArchiveGroup}" title="#{i18n['acl.elimina_archiveGroup']}" styleClass="btn btn-default">
+										 			<f:ajax execute="@form" render="templateForm:archiveList" />
+										 			<span class="glyphicon glyphicon-minus"></span>
+												</h:commandLink>
+												<h:commandLink rendered="#{!readOnly}" action="#{bean.account.addArchiveGroup}" title="#{i18n['acl.aggiungi_archiveGroup']}" styleClass="btn btn-default">
+										 			<f:ajax execute="@form" render="templateForm:archiveList" />
+										 			<span class="glyphicon glyphicon-plus"></span>
+												</h:commandLink>
+											</div>
+										</div>
+									</div>
+								</h:panelGroup>
+							</div>
+						</h:panelGroup>
+					</h3>
+				</div>
+				<div id="lunch_#{groupIndex.index+1}" class="panel-body" style="#{archiveGroup.enabled ? '' : 'display:none;'}">
+					<ui:repeat var="archive" value="#{archiveGroup.listOfArchive}" varStatus="indice">
+						<h:panelGroup layout="block" styleClass="showdoc-section" rendered="#{!empty archive.text or !readOnly}">
+							<div class="form-group">
+								<div class="col-sm-6">
+									<h:inputText rendered="#{!readOnly}" value="#{archive.text}" styleClass="form-control" />
+									<h:panelGroup rendered="#{readOnly}">
+										<p class="form-control-static">
+											<div class="title">
+												<h:outputText value="#{archive.text}"></h:outputText>		
+											</div>	
+										</p>
+									</h:panelGroup>
+								</div>
+								<h:panelGroup rendered="#{!readOnly}">
+									<div class="col-sm-2">
+										<div class="input-group">
+											<div class="btn-group">
+												<h:commandLink rendered="#{archive.canDelete}" action="#{archiveGroup.deleteArchive}" title="#{i18n['acl.elimina_archive']}" styleClass="btn btn-default">
+										 			<f:ajax execute="@form" render="templateForm:archiveList" />
+										 			<span class="glyphicon glyphicon-minus"></span>
+												</h:commandLink>
+												
+												<h:commandLink action="#{archiveGroup.addArchive}" title="#{i18n['acl.aggiungi_archive']}" styleClass="btn btn-default">
+										 			<f:ajax execute="@form" render="templateForm:archiveList" />
+										 			<span class="glyphicon glyphicon-plus"></span>
+												</h:commandLink>
+											</div>
+										</div>
+									</div>
+								</h:panelGroup>
+							</div>
+							
+							<div class="form-group">
+								<h:panelGroup rendered="#{!empty archive.idEc}">
+									<label class="col-sm-2 control-label">#{i18n['acl.idEc']}</label>
+									<div class="col-sm-4">
+										<h:panelGroup rendered="#{!empty archive.text}">
+											<p class="form-control-static">
+												<h:outputText value="#{archive.idEc}" />
+											</p>	
+										</h:panelGroup>		
+									</div>
+								</h:panelGroup>
+								
+								<h:panelGroup rendered="#{!empty archive.owner}">
+									<label class="col-sm-2 control-label">#{i18n['acl.owner']}</label>
+									<div class="col-sm-4">
+										<h:panelGroup rendered="#{!empty archive.text}">
+											<p class="form-control-static">
+												<h:outputText value="#{archive.owner}" />
+											</p>	
+										</h:panelGroup>		
+									</div>
+								</h:panelGroup>
+							</div>
+							
+							<div class="form-group">
+								<h:panelGroup rendered="#{!empty archive.host or !readOnly}">
+									<label class="col-sm-2 control-label">#{i18n['acl.host']}</label>
+									<div class="col-sm-4">
+										<h:inputText rendered="#{!readOnly}" value="#{archive.host}" styleClass="form-control" />
+										<h:panelGroup rendered="#{readOnly}">
+											<p class="form-control-static">
+												<h:outputText value="#{archive.host}" />
+											</p>			
+										</h:panelGroup>
+									</div>
+								</h:panelGroup>
+								<h:panelGroup rendered="#{!empty archive.port or !readOnly}">	
+									<label class="col-sm-2 control-label">#{i18n['acl.archive_port']}</label>
+									<div class="col-sm-4">
+										<h:inputText rendered="#{!readOnly}" value="#{archive.port}" styleClass="form-control" />
+										<h:panelGroup rendered="#{readOnly}">
+											<p class="form-control-static">
+												<h:outputText value="#{archive.port}" />
+											</p>
+										</h:panelGroup>			
+									</div>
+								</h:panelGroup>
+							</div>
+							
+							<div class="form-group">
+								<h:panelGroup rendered="#{!empty archive.type or !readOnly}">	
+									<label class="col-sm-2 control-label">#{i18n['acl.type_archive']}</label>
+									<div class="col-sm-4">
+										<h:inputText rendered="#{!readOnly}" value="#{archive.type}" styleClass="form-control" />
+										<h:panelGroup rendered="#{readOnly}">
+											<p class="form-control-static">
+												<h:outputText value="#{archive.type}" />
+											</p>
+										</h:panelGroup>			
+									</div>
+								</h:panelGroup>
+								<h:panelGroup rendered="#{!empty archive.alias or !readOnly}">
+									<label class="col-sm-2 control-label">#{i18n['acl.alias']}</label>
+									<div class="col-sm-4">
+										<h:inputText rendered="#{!readOnly}" value="#{archive.alias}" styleClass="form-control" />
+										<h:panelGroup rendered="#{readOnly}">
+											<p class="form-control-static">
+												<h:outputText value="#{archive.alias}" />
+											</p>
+										</h:panelGroup>			
+									</div>
+								</h:panelGroup>
+							</div>
+							
+							<div class="form-group">
+								<h:panelGroup rendered="#{!empty archive.ico or !readOnly}">	
+									<label class="col-sm-2 control-label">#{i18n['acl.ico']}</label>
+									<div class="col-sm-4">
+										<h:inputText rendered="#{!readOnly}" value="#{archive.ico}" styleClass="form-control" />
+										<h:panelGroup rendered="#{readOnly}">
+											<p class="form-control-static">
+												<h:outputText value="#{archive.ico}"/>
+											</p>			
+										</h:panelGroup>
+									</div>
+								</h:panelGroup>
+								<h:panelGroup rendered="#{!empty archive.pne or !readOnly}">
+									<label class="col-sm-2 control-label">#{i18n['acl.pne']}</label>
+									<div class="col-sm-4">
+										<h:inputText rendered="#{!readOnly}" value="#{archive.pne}" styleClass="form-control" />
+										<h:panelGroup rendered="#{readOnly}">
+											<p class="form-control-static">
+												<h:outputText value="#{archive.pne}"/>
+											</p>
+										</h:panelGroup>			
+									</div>
+								</h:panelGroup>
+							</div>
+							
+							<div class="form-group">
+								<h:panelGroup rendered="#{!empty archive.structure or !readOnly}">
+									<label class="col-sm-2 control-label">#{i18n['acl.structure']}</label>
+									<div class="col-sm-4">
+										<h:inputText rendered="#{!readOnly}" value="#{archive.structure}" styleClass="form-control" />
+										<h:panelGroup rendered="#{readOnly}">
+											<p class="form-control-static">	
+												<h:outputText value="#{archive.structure}"></h:outputText>
+											</p>			
+										</h:panelGroup>
+									</div>
+								</h:panelGroup>
+								<h:panelGroup rendered="#{!empty archive.webapp or !readOnly}">
+									<label class="col-sm-2 control-label">#{i18n['acl.webapp']}</label>
+									<div class="col-sm-4">
+										<h:inputText rendered="#{!readOnly}" value="#{archive.webapp}" styleClass="form-control" />
+										<h:panelGroup rendered="#{readOnly}">
+											<p class="form-control-static">
+												<h:outputText value="#{archive.webapp}"></h:outputText>			
+											</p>
+										</h:panelGroup>
+									</div>
+								</h:panelGroup>
+							</div>
+						</h:panelGroup>
+					</ui:repeat>
+				</div>
+			</div>
+		</ui:repeat>
+	</h:panelGroup>
+</ui:composition>
+</html>

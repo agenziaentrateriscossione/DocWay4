@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	template="#{docwayFirmaDigitale.pageTemplate}"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core">
+
+<ui:define name="content">
+	<div class="sub-header">#{i18n['dw4.firma_digitale']}</div>
+
+	<!-- toolbar: inizio -->
+	<div class="btn-toolbar margin-bottom" role="toolbar">
+		<div class="btn-group btn-group-justified">
+			<h:commandLink rendered="#{docwayFirmaDigitale.popupPage}" onclick="top.close();" styleClass="btn btn-default">#{i18n['acl.close']}</h:commandLink>
+			<h:link outcome="firmadigitale@actalis@help" styleClass="btn btn-default">#{i18n['dw4.help']}</h:link>
+		</div>
+	</div>
+	<!-- toolbar: fine -->
+
+	<ui:remove>
+		<!-- rimosso per bug in riconoscimento JRE su Windows7 64bit (richiede in continuazione l'upgrade della JRE) -->
+		<script src="http://www.java.com/js/deployJava.js"></script>
+		<script>
+		// check if current JRE version is greater than 1.5.0 
+		if (deployJava.versionCheck('1.5.0+') == false ) {                   
+			var userInput = confirm("#{i18n['dw4.occorre_installare_l_ultima_versione_di_java_runtime_environment_Si_vuole_eseguire_ora_l_aggiornamento']}");        
+			if (userInput == true) {  
+				// install latest JRE or redirect user to another page to get JRE from.
+				deployJava.installLatestJRE(); 
+			}
+		}
+		</script>
+	</ui:remove>
+
+	<object type="application/x-java-applet" height="150px" width="100%">
+		<param name="code" value="it.actalis.applet.Sign.class" />
+		<!--param name="archive" value="Sample.jar" /-->
+				
+		<param name="jnlp_href" value="#{docwayFirmaDigitale.configFirmaDigitale.baseUrl}docway/actalisApplet/sign.jnlp" />	
+		<!--param name="NO_POST" value="demo-test-no-postURL" /-->
+		<param name="Sign.AutoStart" value="true" />
+		<h:panelGroup rendered="#{!empty docwayFirmaDigitale.configFirmaDigitale.params.cert_dayToExpire}">
+			<param name="Cert.DayToExpire" value="#{docwayFirmaDigitale.configFirmaDigitale.params.cert_dayToExpire}" />
+		</h:panelGroup>
+		<param name="Sign.DataSource" value="URL" />
+		<param name="Sign.DataURL" value="#{docwayFirmaDigitale.downlaodFileUrl}" />
+		<h:panelGroup rendered="#{!empty docwayFirmaDigitale.configFirmaDigitale.params.sign_includeTime}">
+			<param name="Sign.IncludeTime" value="#{docwayFirmaDigitale.configFirmaDigitale.params.sign_includeTime}" />
+		</h:panelGroup>
+		<h:panelGroup rendered="#{!empty docwayFirmaDigitale.configFirmaDigitale.params.sign_tokenType}">
+			<param name="Sign.TokenType" value="#{docwayFirmaDigitale.configFirmaDigitale.params.sign_tokenType}" />
+		</h:panelGroup>
+		<h:panelGroup rendered="#{!empty docwayFirmaDigitale.configFirmaDigitale.params.sign_tokenArgs}">
+			<param name="Sign.TokenArgs" value="#{docwayFirmaDigitale.configFirmaDigitale.params.sign_tokenArgs}" />
+		</h:panelGroup>
+		<h:panelGroup rendered="#{!empty docwayFirmaDigitale.configFirmaDigitale.params.sign_tokenAlias}">
+			<param name="Sign.TokenAlias" value="#{docwayFirmaDigitale.configFirmaDigitale.params.sign_tokenAlias}" />
+		</h:panelGroup>
+		<h:panelGroup rendered="#{!empty docwayFirmaDigitale.configFirmaDigitale.params.sign_type}">
+			<param name="Sign.Type" value="#{docwayFirmaDigitale.configFirmaDigitale.params.sign_type}" />
+		</h:panelGroup>
+		<h:panelGroup rendered="#{!empty docwayFirmaDigitale.configFirmaDigitale.params.sign_multiple}">
+			<param name="Sign.Multiple" value="#{docwayFirmaDigitale.configFirmaDigitale.params.sign_multiple}" />
+		</h:panelGroup>
+		<param name="Sign.PostURL" value="#{docwayFirmaDigitale.configFirmaDigitale.postUrl}" />
+		<param name="Sign.PostParams" value="#{docwayFirmaDigitale.postParams}" />
+		<h:panelGroup rendered="#{!empty docwayFirmaDigitale.configFirmaDigitale.params.gui_viewSaveDoc or !empty docwayFirmaDigitale.configFirmaDigitale.params.gui_saveEnv}">
+			<param name="GUI.DocName" value="#{docwayFirmaDigitale.fileTitleWithExtension}" />
+		</h:panelGroup>
+		<h:panelGroup rendered="#{!empty docwayFirmaDigitale.configFirmaDigitale.params.gui_viewSaveDoc}">
+			<param name="GUI.ViewSaveDoc" value="#{docwayFirmaDigitale.configFirmaDigitale.params.gui_viewSaveDoc}" />
+		</h:panelGroup>
+		<h:panelGroup rendered="#{!empty docwayFirmaDigitale.configFirmaDigitale.params.gui_saveEnv}">
+			<param name="GUI.SaveEnv" value="#{docwayFirmaDigitale.configFirmaDigitale.params.gui_saveEnv}" />
+		</h:panelGroup>
+		<h:panelGroup rendered="#{!empty docwayFirmaDigitale.configFirmaDigitale.params.gui_language}">
+			<param name="GUI.Language" value="#{docwayFirmaDigitale.configFirmaDigitale.params.gui_language}" />
+		</h:panelGroup>
+		<h:panelGroup rendered="#{!empty docwayFirmaDigitale.configFirmaDigitale.params.js_cachePinStatus}">
+			<param name="JS.cachePinStatus" value="#{docwayFirmaDigitale.configFirmaDigitale.params.js_cachePinStatus}" />
+		</h:panelGroup>
+		<h:panelGroup rendered="#{!empty docwayFirmaDigitale.configFirmaDigitale.params.js_useCachedPin}">
+			<param name="JS.useCachedPin" value="#{docwayFirmaDigitale.configFirmaDigitale.params.js_useCachedPin}" />
+		</h:panelGroup>
+		<param name="Check.CAPI" value="true" />
+				
+		#{i18n['dw4.errore_nel_caricamento_dell_applet_Non_trovato_il_plugin_java']}
+	</object>
+
+	<h:inputTextarea value="#{docwayFirmaDigitale.xml}" rendered="#{docwayFirmaDigitale.debugMode}" styleClass="form-control" rows="10" />
+</ui:define>
+	
+</ui:composition>

@@ -1,0 +1,79 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+    template="#{queryWorkflow.pageTemplate}"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:f="http://java.sun.com/jsf/core">
+
+    <ui:define name="content">
+    	<div class="schedaWorkflow globale">
+    		<div class="rightSidePageTitle">
+    			<h:panelGroup rendered="#{fn:length(queryWorkflow.workflowDefinitions) == 0}">
+    				#{i18n['dw4.nessun_workflow_individuato']}
+    			</h:panelGroup>
+    			<h:panelGroup rendered="#{fn:length(queryWorkflow.workflowDefinitions) > 0}">
+    				#{i18n['dw4.elenco_risultati']} #{i18n['dw4.from']} 1 #{i18n['dw4.to']} #{fn:length(queryWorkflow.workflowDefinitions)}
+    			</h:panelGroup>
+    		</div>
+    		
+    		<div class="actionButtonHolder">
+		        <h:commandLink onclick="history.back(); return false;" styleClass="context-menu-one box menu-1 iconButton openwaitmsg"><span class="icontorna">#{i18n['torna']}</span></h:commandLink>
+			</div>
+
+			<div class="rightsideContentTop ui-resizable">
+				<div class="rightSidePageContent">
+					<div class="showdocwayTitles fieldset">
+						<table style="width:100%;" class="titlesTable">
+							<tbody>
+								<tr class="docwayTitlesTable_header" style="color:white; font-weight: bold; line-height: 20px;">
+									<td style="width:30px; border:none;"></td>							
+									<td style="border:none;">
+										#{i18n['dw4.workflowdefinition_name']}
+									</td>
+									<td style="border:none;">
+										#{i18n['acl.description']}
+									</td>								
+									<td class="headerlast" style="width:10%; border:none;">
+										#{i18n['dw4.workflowdefinition_version']}
+									</td>								
+								</tr>
+								
+								<h:panelGroup rendered="#{fn:length(queryWorkflow.workflowDefinitions) == 0}">
+									<tr class="ListaGrigio2">
+										<td colspan="4" style="text-align:center;"><h:outputText value="#{i18n['dw4.nessun_workflow_disponibile_all_assegnazione']}" styleClass="outputField" /></td>
+									</tr>
+								</h:panelGroup>
+								
+								<h:panelGroup rendered="#{fn:length(queryWorkflow.workflowDefinitions) > 0}">
+									<ui:repeat var="workflowdefinition" value="#{queryWorkflow.workflowDefinitions}" varStatus="status">
+										<tr class="ListaGrigio#{(status.index mod 2 == 1) ? '1' : '2'}">
+											<td style="text-align:center; border:none;">
+												<h:commandLink title="#{i18n['dw4.assegna_il_workflow']} #{workflowdefinition.name}" action="#{queryWorkflow.doAssignWorkflow}" styleClass="openwaitmsg">
+													<h:graphicImage url="/docway/css/images/assegna_docs.png" title="#{i18n['dw4.assegna_il_workflow']} #{workflowdefinition.name}" alt="#{i18n['dw4.assegna_il_workflow']} #{workflowdefinition.name}" />
+												</h:commandLink>
+											</td>							
+											<td><span title="#{workflowdefinition.name}"><h:outputText value="#{workflowdefinition.label}" /></span></td>
+											<td><h:outputText value="#{workflowdefinition.description}" /></td>
+											<td><h:outputText value="#{workflowdefinition.version}" /></td>
+										</tr>
+									</ui:repeat>
+								</h:panelGroup>
+							</tbody>
+						</table>
+					</div>
+				</div>
+			</div>
+			
+			<h:inputTextarea value="#{queryWorkflow.xml}" styleClass="form-control" rows="10" rendered="#{queryWorkflow.debugMode}"/>
+		</div>
+
+		<ui:fragment rendered="#{queryWorkflow.close}">
+			<script type="text/javascript">
+			//alert('Chiudo e aggiorno');
+			window.opener.$('#templateForm\\:reloadPage').trigger("click");
+			self.close();
+			</script>
+		</ui:fragment>
+
+	</ui:define>
+</ui:composition>

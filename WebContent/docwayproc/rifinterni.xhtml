@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" 
+	  xmlns:h="http://java.sun.com/jsf/html" 
+	  xmlns:ui="http://java.sun.com/jsf/facelets" 
+	  xmlns:f="http://java.sun.com/jsf/core"
+	  xmlns:p="http://xmlns.jcp.org/jsf/passthrough"
+	  xmlns:c="http://java.sun.com/jsp/jstl/core">
+<ui:composition>
+
+	<h:panelGroup rendered="#{editable}">
+		<!-- campi modificabili -->
+		<div class="form-group">
+			<h:panelGroup rendered="#{!pageBean.formsAdapter.funzionalitaDisponibili['rolesManagement'] or rifintBean.tipo_uff ne 'ruolo'}">
+				<label class="control-label col-sm-2 #{requiredField ? 'requiredField' : '' }">
+					<c:if test="#{requiredField eq 'true'}">* </c:if>
+					<c:choose>
+						<c:when test="#{rifintType eq 'rpa'}">
+							#{i18n['dw4.proprietario']}
+						</c:when>
+						<c:when test="#{rifintType eq  'rpam'}">
+							#{i18n['dw4.proprietariom']}
+						</c:when>
+						<c:when test="#{rifintType eq 'cds'}">
+							#{i18n['dw4.in_conferenza_di_servizi_con']}
+						</c:when>
+						<c:when test="#{rifintType eq 'op'}">
+							#{i18n['dw4.operatore_incaricato']}
+						</c:when>
+						<c:when test="#{rifintType eq 'opm'}">
+							#{i18n['dw4.operatore_incaricato_m']}
+						</c:when>
+						<c:when test="#{rifintType eq 'cc'}">
+							#{i18n['dw4.cc']}
+						</c:when>
+					</c:choose>
+				</label>
+				<div class="col-sm-4">
+					<div class="input-group">
+						<h:panelGroup rendered="#{(((rifintType eq 'cc' or rifintType eq 'cds') and !pageBean.formsAdapter.funzionalitaDisponibili['interventoCDSInattivo']) or (rifintType eq 'rpam' and pageBean.formsAdapter.funzionalitaDisponibili['interventoConfigurabileSuDoc']))}">
+							<span class="input-group-addon">
+					        	<h:selectBooleanCheckbox id="#{rifintType}#{indice}_intCheck" value="#{rifintBean.intervento}" p:data-toggle="popover" p:data-placement="bottom" p:data-trigger="hover" p:data-content="#{i18n['dw4.assegna_intervento']}" styleClass="#{ component.valid ? '' : 'invalidinput' } popoveritem" />
+					      	</span>
+				      	</h:panelGroup>
+				      	
+						<h:inputText id="#{rifintType}#{indice}_nome_uff_input" value="#{rifintBean.nome_uff}" p:placeholder="#{i18n['acl.uff']}" title="#{i18n['acl.uff']}" onblur="executeAction(this);" onfocus="setDefaultValue(this);" styleClass="#{ component.valid ? '' : 'invalidinput' } lookup-field form-control">
+							<f:ajax execute="@form" render="#{refresh}"/>
+						</h:inputText>
+						
+						<span class="input-group-btn">
+							<ui:param name="action" value="clearUfficio_#{rifintType}" />
+					   		<h:commandLink style="display:none;" title="#{i18n['dw4.lookup_ufficio']}" action="#{pageBean[action]}" id="#{rifintType}#{indice}_nome_uff_clear">
+					  			<f:ajax execute="@form" render="#{refresh}"/>
+							</h:commandLink>
+							
+							<ui:param name="action" value="lookupUfficio_#{rifintType}" />
+							<h:commandLink title="#{i18n['dw4.lookup_ufficio']}" action="#{pageBean[action]}" id="#{rifintType}#{indice}_nome_uff_button" onclick="setFocusLookup(this);" styleClass="btn btn-default">
+					   			<f:ajax execute="@form" render="#{refresh}"/>
+					   			<span class="glyphicon glyphicon-search"></span>
+					   		</h:commandLink>
+				  		</span>
+					</div>
+					<h:inputHidden value="#{rifintBean.cod_uff}" id="#{rifintType}#{indice}_cod_uff" />
+				</div>
+				
+				<div class="col-sm-5">
+					<div class="input-group">
+						<h:panelGroup rendered="#{((rifintType eq 'cc' or rifintType eq 'cds') and pageBean.formsAdapter.funzionalitaDisponibili['enTutti'])}">
+					      	<span class="input-group-addon">
+						      	<h:selectBooleanCheckbox id="#{rifintType}#{indice}_tuttiCheck" value="#{rifintBean.ufficio_completo}" p:data-toggle="popover" p:data-placement="bottom" p:data-trigger="hover" p:data-content="#{i18n['dw4.assegna_all_ufficio']}" onclick="checkTutti('#{rifintType}#{indice}_ufficioCompletoBtn', '#{i18n['dw4.stai_mandando_un_email_a_tutte_le_persone_dell_ufficio']}.\n#{i18n['dw4.premere_ok_per_non_far_apparire_piu_questo_messaggio']}');" styleClass="popoveritem" />
+								<h:commandLink styleClass="#{rifintType}#{indice}_ufficioCompletoBtn" action="#{pageBean.ufficioCompleto}" style="display:none;">
+									<f:ajax execute="@form" render="#{refresh}" />
+								</h:commandLink>
+							</span>
+						</h:panelGroup>
+						
+						<h:inputText id="#{rifintType}#{indice}_nome_persona_input" value="#{rifintBean.nome_persona}" p:placeholder="#{i18n['acl.oper']}" title="#{i18n['acl.oper']}" onblur="executeAction(this);" onfocus="setDefaultValue(this);" styleClass="#{ component.valid ? '' : 'invalidinput' } lookup-field form-control">
+							<f:ajax execute="@form" render="#{refresh}"/>
+						</h:inputText>
+						
+						<span class="input-group-btn">
+							<ui:param name="action" value="clearPersona_#{rifintType}" />
+					   		<h:commandLink style="display:none;" title="#{i18n['dw4.lookup_persona']}" action="#{pageBean[action]}" id="#{rifintType}#{indice}_nome_persona_clear">
+					  			<f:ajax execute="@form" render="#{refresh}"/>
+							</h:commandLink>
+							
+							<ui:param name="action" value="lookupPersona_#{rifintType}" />
+							<h:commandLink title="#{i18n['dw4.lookup_persona']}" action="#{pageBean[action]}" id="#{rifintType}#{indice}_nome_persona_button" onclick="setFocusLookup(this);" styleClass="btn btn-default">
+					   			<f:ajax execute="@form" render="#{refresh}"/>
+					   			<span class="glyphicon glyphicon-search"></span>
+					   		</h:commandLink>
+					   		
+					   		<h:panelGroup rendered="#{pageBean.formsAdapter.funzionalitaDisponibili['rolesManagement']}">
+				        		<h:commandLink action="#{rifintBean.changeToRuolo}" title="#{i18n['dw4.passa_a_ruolo']}" styleClass="btn btn-default">
+				        			<f:ajax execute="@form" render="#{refresh}" />
+				        			<span class="glyphicon glyphicon-briefcase"></span>
+				        		</h:commandLink>
+				        	</h:panelGroup>				   		
+				  		</span>
+					</div>
+					<h:inputHidden value="#{rifintBean.cod_persona}" id="#{rifintType}#{indice}_cod_persona" />
+				</div>
+			</h:panelGroup>
+			<h:panelGroup rendered="#{pageBean.formsAdapter.funzionalitaDisponibili['rolesManagement'] and rifintBean.tipo_uff eq 'ruolo'}">
+				<label class="col-sm-2 control-label">
+					<c:if test="#{requiredField eq 'true'}">* </c:if>
+					<c:choose>
+						<c:when test="#{rifintType eq 'rpa'}">
+							#{i18n['dw4.proprietario']}
+						</c:when>
+						<c:when test="#{rifintType eq  'rpam'}">
+							#{i18n['dw4.proprietariom']}
+						</c:when>
+						<c:when test="#{rifintType eq 'cds'}">
+							#{i18n['dw4.in_conferenza_di_servizi_con']}
+						</c:when>
+						<c:when test="#{rifintType eq 'op'}">
+							#{i18n['dw4.operatore_incaricato']}
+						</c:when>
+						<c:when test="#{rifintType eq 'cc'}">
+							#{i18n['dw4.cc']}
+						</c:when>
+					</c:choose>
+				</label>
+				<div class="col-sm-9">
+					<div class="input-group">
+						<h:inputText id="#{rifintType}#{indice}_nome_ruolo_input" value="#{rifintBean.nome_uff}" p:placeholder="#{i18n['acl.role']}" title="#{i18n['acl.role']}" onblur="executeAction(this);" onfocus="setDefaultValue(this);" styleClass="#{ component.valid ? '' : 'invalidinput' } lookup-field form-control">
+							<f:ajax execute="@form" render="#{refresh}"/>
+						</h:inputText>
+						
+						<span class="input-group-btn">
+							<ui:param name="action" value="clearRuolo_#{rifintType}" />
+					   		<h:commandLink style="display:none;" title="#{i18n['dw4.lookup_ruolo']}" action="#{pageBean[action]}" id="#{rifintType}#{indice}_nome_ruolo_clear">
+					  			<f:ajax execute="@form" render="#{refresh}"/>
+							</h:commandLink>
+							
+							<ui:param name="action" value="lookupRuolo_#{rifintType}" />
+							<h:commandLink title="#{i18n['dw4.lookup_ruolo']}" action="#{pageBean[action]}" id="#{rifintType}#{indice}_nome_ruolo_button" onclick="setFocusLookup(this);" styleClass="btn btn-default">
+					   			<f:ajax execute="@form" render="#{refresh}"/>
+					   			<span class="glyphicon glyphicon-search"></span>
+					   		</h:commandLink>
+					   		
+					   		<h:panelGroup rendered="#{pageBean.formsAdapter.funzionalitaDisponibili['rolesManagement']}">
+				        		<h:commandLink action="#{rifintBean.changeToUfficio}" title="#{i18n['dw4.passa_a_ufficio_persona']}" styleClass="btn btn-default">
+					        		<f:ajax execute="@form" render="#{refresh}" />
+					        		<span class="glyphicon glyphicon-user"></span>
+					        	</h:commandLink>
+				        	</h:panelGroup>				   		
+				  		</span>
+					</div>
+					<h:inputHidden value="#{rifintBean.cod_uff}" id="#{rifintType}#{indice}_cod_ruolo" />
+				</div>
+			</h:panelGroup>
+		
+			<h:panelGroup rendered="#{multiple and rifintType eq 'cc'}">
+				<div class="col-sm-1 input-group">
+					<div class="btn-group">
+						<h:commandLink action="#{pageBean.deleteRifInt_cc}" title="#{i18n['dw4.elimina_istanza']}" styleClass="btn btn-default">
+				 			<f:ajax execute="@form" render="#{refresh}"/>
+				 			<span class="glyphicon glyphicon-minus"></span>
+						</h:commandLink>
+						
+						<h:commandLink action="#{pageBean.addRifInt_cc}" title="#{i18n['dw4.aggiungi_istanza']}" styleClass="btn btn-default">
+				 			<f:ajax execute="@form" render="#{refresh}"/>
+				 			<span class="glyphicon glyphicon-plus"></span>
+						</h:commandLink>
+					</div>
+				</div>
+			</h:panelGroup>
+			<h:panelGroup rendered="#{multiple and rifintType eq 'cds'}">
+				<div class="col-sm-1 input-group">
+					<div class="btn-group">
+						<h:commandLink action="#{pageBean.deleteRifInt_cds}" title="#{i18n['dw4.elimina_istanza']}" styleClass="btn btn-default">
+				 			<f:ajax execute="@form" render="#{refresh}"/>
+				 			<span class="glyphicon glyphicon-minus"></span>
+						</h:commandLink>
+						
+						<h:commandLink action="#{pageBean.addRifInt_cds}" title="#{i18n['dw4.aggiungi_istanza']}" styleClass="btn btn-default">
+				 			<f:ajax execute="@form" render="#{refresh}"/>
+				 			<span class="glyphicon glyphicon-plus"></span>
+						</h:commandLink>
+					</div>
+				</div>
+			</h:panelGroup>
+		</div>
+	</h:panelGroup>
+	
+	<h:panelGroup rendered="#{!editable and (rifintBean.nome_uff ne '' or rifintBean.nome_persona ne '')}">
+		<!-- campi in sola visualizzazione (es. ereditati da fascicolo) -->
+		
+		<div class="form-group">
+			<label class="control-label col-sm-2">
+				<c:choose>
+					<c:when test="#{rifintType eq 'rpa'}">
+						#{i18n['dw4.resp_proc_amministrativo']}
+					</c:when>
+					<c:when test="#{rifintType eq  'rpam'}">
+						#{i18n['dw4.proprietariom']}
+					</c:when>
+					<c:when test="#{rifintType eq 'cds'}">
+						#{i18n['dw4.in_conferenza_di_servizi_con']}
+					</c:when>
+					<c:when test="#{rifintType eq 'op'}">
+						#{i18n['dw4.operatore_incaricato']}
+					</c:when>
+					<c:when test="#{rifintType eq 'cc'}">
+						#{i18n['dw4.cc']} 
+					</c:when>
+				</c:choose>
+			</label>
+			<div class="col-sm-9">
+				<p class="form-control-static">
+					<h:outputText value="#{rifintBean.nome_uff}" />
+					<h:panelGroup rendered="#{!empty rifintBean.nome_uff and !empty rifintBean.nome_persona}"> - </h:panelGroup>
+					<h:outputText value="#{rifintBean.nome_persona}" />
+				</p>
+			</div>	
+		</div>
+	</h:panelGroup>
+		
+</ui:composition>
+</html>

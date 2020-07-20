@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" 
+	  xmlns:h="http://java.sun.com/jsf/html" 
+	  xmlns:ui="http://java.sun.com/jsf/facelets" 
+	  xmlns:f="http://java.sun.com/jsf/core">
+<ui:composition>
+
+	<h:panelGroup id="workflowHolder" rendered="#{fn:length(bean.doc.workflowInstances) > 0 and bean.formsAdapter.funzionalitaDisponibili['abilitaeXtraWayWorkflow']}" layout="block" styleClass="workflow-holder">
+		<ui:repeat var="workflowInstance" value="#{bean.doc.workflowInstances}">
+			<h:panelGroup rendered="#{!empty workflowInstance.id}" layout="block" styleClass="showdoc-section">
+				<div class="title">
+					#{workflowInstance.label}
+					&#160;
+					<h:panelGroup rendered="#{workflowInstance.status eq 'finished'}">
+						<span class="glyphicon glyphicon-flag workflow-concluso" data-toggle="popover" data-placement="top" data-trigger="hover" data-content="#{i18n['dw4.workflow_concluso']}" styleClass="popoveritem"></span>
+					</h:panelGroup>
+					<h:panelGroup rendered="#{workflowInstance.status eq 'cancelled'}">
+						<span class="glyphicon glyphicon-flag workflow-annullato" data-toggle="popover" data-placement="top" data-trigger="hover" data-content="#{i18n['dw4.workflow_annullato']}" styleClass="popoveritem"></span>
+					</h:panelGroup>
+					<h:panelGroup rendered="#{workflowInstance.status ne 'finished' and workflowInstance.status ne 'cancelled'}">
+						<span class="glyphicon glyphicon-cog workflow-attivo" data-toggle="popover" data-placement="top" data-trigger="hover" data-content="#{i18n['dw4.workflow_attivo']}" styleClass="popoveritem"></span>
+					</h:panelGroup>
+					&#160;
+					<h:commandLink title="#{workflowInstance.id}" onclick="openCenterPopup('#{bean.extrawayWorkflowWsUrl}/procView/?procUUID=#{workflowInstance.id}', '', '1024', '400'); return false;"><span class="glyphicon glyphicon-zoom-in" data-toggle="popover" data-placement="top" data-trigger="hover" data-content="#{i18n['dw4.flusso_workflow']}" styleClass="popoveritem"></span></h:commandLink>
+					&#160;
+					<h:commandLink rendered="#{bean.formsAdapter.funzionalitaDisponibili['mostraAnnullaWF'] and workflowInstance.status ne 'finished' and workflowInstance.status ne 'cancelled'}" action="#{bean.cancelWorkflowInstance}" onclick="if (!owmConfirm('#{i18n['dw4.annullare_l_istanza_di_workflow_con_id']} #{workflowInstance.id}?')) return false;"><f:ajax execute="@form" render="@form" /><span class="glyphicon glyphicon-remove workflow-anullare" data-toggle="popover" data-placement="top" data-trigger="hover" data-content="#{i18n['acl.cancel']}" styleClass="popoveritem"></span></h:commandLink>
+					&#160;
+					<h:commandLink rendered="#{bean.formsAdapter.funzionalitaDisponibili['delegaWF'] and workflowInstance.status ne 'finished' and workflowInstance.status ne 'cancelled'}" action="#{bean.delegaWorkflow}"><f:ajax execute="@form" render="@form" /><span class="glyphicon glyphicon-user" data-toggle="popover" data-placement="top" data-trigger="hover" data-content="#{i18n['dw4.delega_azione']}" styleClass="popoveritem"></span></h:commandLink>
+					
+					<div class="pull-right">
+						<span class="glyphicon glyphicon-tasks" title="#{workflowInstance.label}"></span>
+					</div>
+				</div>
+		
+				<dl class="dl-horizontal">
+					<h:panelGroup rendered="#{!empty workflowInstance.description}">
+						<dt>#{i18n['acl.description']}</dt>
+						<dd>#{workflowInstance.description}</dd>
+					</h:panelGroup>
+					<h:panelGroup rendered="#{fn:length(workflowInstance.tasks) > 0}">
+						<dt>#{i18n['dw4.azioni_disponibili']}</dt>
+						<dd>
+							<ui:repeat var="task" value="#{workflowInstance.tasks}">
+								<h:commandLink value="#{task.label}" action="#{bean.showFormExecuteTask}" styleClass="workflow-task-action"/>
+								
+								<h:panelGroup rendered="#{!empty task.description}">
+									&#160;(#{task.description})
+								</h:panelGroup>
+								<br/>
+							</ui:repeat>
+						</dd>
+					</h:panelGroup>
+				</dl>
+				
+				<h:panelGroup rendered="#{fn:length(workflowInstance.ex_actions) > 0}">
+					<table class="table table-condensed workflow-history-table">
+						<tbody>
+							<ui:repeat var="ex_action" value="#{workflowInstance.ex_actions}" varStatus="indice">
+								<tr>
+									<td class="workflow-history-first optional">#{(indice.index == 0) ? i18n['dw4.storia_workflow'] : '&#160;'}</td>
+									<td class="workflow-history-task essential">
+										<h:outputText value="#{ex_action.descrizione}" />
+										<h:panelGroup rendered="#{ex_action.state eq 'ABORTED'}">
+											<span title="#{i18n['dw4.bonita_task_aborted_controllare_i_logs_per_maggiori_dettagli']}" class="workflow-task-error">(#{i18n['dw4.riscontrato_errore']})</span>
+										</h:panelGroup>
+										
+										<ui:remove>
+										<h:panelGroup rendered="#{!empty ex_action.taskId}">
+											<span class="btn-group">
+												<h:commandLink action="#{bean.showWfTaskVars}" title="#{i18n['dw4.dettagli_del_task']}" styleClass="btn btn-default btn-xs">
+													<f:ajax execute="@form" render="templateForm:showTaskVars templateForm:workflowHolder templateForm:errormsg" />
+													<span class="glyphicon glyphicon-list-alt"></span>
+												</h:commandLink>
+											</span>
+										</h:panelGroup>
+										</ui:remove>
+										
+									</td>
+									<td class="workflow-history-user optional">
+										<h:outputText value="#{ex_action.nome_uff}" /> - <h:outputText value="#{ex_action.nome_persona}" />
+									</td>
+									<td class="workflow-history-date optional">
+										<h:outputText value="#{ex_action.data}"><f:converter converterId="DateConverter"/></h:outputText>
+										<h:outputText value=" #{ex_action.ora}"/>
+									</td>
+								</tr>
+							</ui:repeat>	
+						</tbody>
+					</table>
+				</h:panelGroup>
+			</h:panelGroup>
+		</ui:repeat>
+	</h:panelGroup>
+		
+	<ui:include src="./delegaWF.xhtml"><ui:param name="pageBean" value="#{delegaWF}"/></ui:include>
+</ui:composition>   
+</html>

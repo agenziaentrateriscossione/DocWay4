@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core">
+<ui:composition>
+
+	<h:panelGroup rendered="#{fn:length(aclHome.sedi) > 0}" layout="block" styleClass="sidebar-nav">
+		<h:panelGroup id="aooSelectorPage" layout="block" styleClass="panel panel-default">
+			<div class="panel-heading clearfix">
+      			<h3 class="panel-title pull-left">
+      				#{i18n['acl.selezione_aoo']}
+      				<span data-toggle="popover" data-placement="bottom" data-trigger="hover" data-content="#{i18n['acl.selezionare_l_aoo_in_base_alla_quale_filtrare_le_ricerche_in_acl']}" class="popoveritem">
+      					<span class="glyphicon glyphicon-info-sign popoveritem"></span>
+      				</span>
+      			</h3>
+			</div>
+			
+			<div class="panel-body aoo-selector">
+				
+				<h:selectOneMenu id="aaoselector" value="#{aclHome.selectedCodSede}" valueChangeListener="#{aclHome.codSedeChangeListener}" styleClass="form-control">
+					<f:ajax execute="@this" render="@this" />
+					<f:selectItems value="#{aclHome.sedi}" var="option" itemValue="#{option.codammaoo}" itemLabel="#{option.codammaoo}" />
+				</h:selectOneMenu>
+				
+			</div>
+		</h:panelGroup>
+	</h:panelGroup> <!--/.sidebar-nav -->
+
+</ui:composition>
+</html>

@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" 
+	  xmlns:h="http://java.sun.com/jsf/html" 
+	  xmlns:ui="http://java.sun.com/jsf/facelets" 
+	  xmlns:f="http://java.sun.com/jsf/core">
+<ui:composition>
+	
+	<ui:repeat id="gestore" var="gestore" value="#{mailbox.gestoriMailbox}" varStatus="indiceGestori">
+		<div class="form-group">
+			<label class="col-sm-2 control-label">#{indice.index == 0 ? i18n['acl.gestore'] : '&#160;'}</label>
+
+			<div class="col-sm-2">
+				<h:selectOneMenu value="#{gestore.livello}" styleClass="form-control">
+					<f:selectItem itemLabel="#{i18n['acl.livello_cambio_password']}" itemValue="cambiopwd" />
+					<f:selectItem itemLabel="#{i18n['acl.livello_titolare']}" itemValue="titolare" />
+				</h:selectOneMenu>
+			</div>
+			<div class="col-sm-5">
+				<ui:include src="./lookupRepeatField.xhtml">
+        			<ui:param name="id" value="nomeGestore" />
+        			<ui:param name="field" value="#{gestore.nome_pers}" />
+	        		<ui:param name="element" value="#{gestore}" />
+	        		<ui:param name="bean" value="#{page}" />
+	        		<ui:param name="action" value="lookupGestore#{(holderName eq 'interop') ? 'Interoperabilita' : 'Archiviazione'}"/>
+	        		<ui:param name="clearaction" value="clearLookupGestore#{(holderName eq 'interop') ? 'Interoperabilita' : 'Archiviazione'}"/>
+	        		<ui:param name="title" value="#{i18n['acl.lookup_gestore']}"/>
+	        		<ui:param name="styleclass" value="#{ component.valid ? '' : 'invalidinput' } form-control"/>
+	        		<ui:param name="refresh" value="@form"/>
+	        	</ui:include>
+	        </div>
+	        <div class="col-sm-1 input-group">
+				<div class="btn-group">
+					<h:commandLink action="#{mailbox.removeGestore}" styleClass="btn btn-default" title="#{i18n['acl.rimuovi_gestore']}" onclick="setGlobalFocusFieldId('templateForm:#{holderName}:#{holderIndex}:gestore:#{(indiceGestori.index > 0) ? indiceGestori.index-1 : '0' }:nomeGestore_input');" onkeypress="setGlobalFocusFieldId('templateForm:#{holderName}:#{holderIndex}:gestore:#{(indiceGestori.index > 0) ? indiceGestori.index-1 : '0' }:nomeGestore_input');" >
+		 				<f:ajax execute="@form" render="@form" /> 
+		 				<span class="glyphicon glyphicon-minus"></span>
+					</h:commandLink>
+					<h:commandLink action="#{mailbox.addGestore}" styleClass="btn btn-default" title="#{i18n['acl.aggiungi_gestore']}" onclick="setGlobalFocusFieldId('templateForm:#{holderName}:#{holderIndex}:gestore:#{indiceGestori.index}:nomeGestore_input');" onkeypress="setGlobalFocusFieldId('templateForm:#{holderName}:#{holderIndex}:gestore:#{indiceGestori.index}:nomeGestore_input');" >
+		 				<f:ajax execute="@form" render="@form" />
+			 			<span class="glyphicon glyphicon-plus"></span>
+					</h:commandLink>
+  				</div>
+  			</div>
+  		</div>
+ 	</ui:repeat>
+
+</ui:composition>
+</html>

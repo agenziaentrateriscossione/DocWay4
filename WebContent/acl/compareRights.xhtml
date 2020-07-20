@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" 
+	  xmlns:h="http://java.sun.com/jsf/html" 
+	  xmlns:ui="http://java.sun.com/jsf/facelets" 
+	  xmlns:f="http://java.sun.com/jsf/core"
+	  xmlns:c="http://java.sun.com/jsp/jstl/core">
+<ui:composition>
+
+	<h:panelGroup id="compareRights" layout="block">
+		<h:panelGroup rendered="#{pageBean.compareRightsActive}">
+			<!-- Modal -->
+			<div id="compareRightsModal" class="modal fade in" aria-hidden="false" aria-labelledby="compareRightsModalLabel" role="dialog" tabindex="-1" style="display: block;">
+			<!--div class="modal fade" id="loadingbarModal" tabindex="-1" role="dialog" aria-labelledby="loadingbarModalLabel" aria-hidden="true"-->
+				<div class="modal-dialog modal-lg">
+					<div class="modal-content jsf-modal">
+						<div class="modal-header">
+							<h:commandButton styleClass="close" title="#{i18n['acl.close']}" action="#{pageBean.compareRights.close}" data-dismiss="modal"  value="&#215;" >
+			        			<f:ajax render="compareRights"/>
+			        		</h:commandButton>
+			        		
+			        		<h4 class="modal-title" id="compareRightsModalLabel">#{i18n['acl.contronto_diritti']}</h4>
+						</div>
+						<div class="modal-body">
+						
+							<c:if test="#{fn:length(pageBean.compareRights.comparison.differences) > 0}">
+								<table class="table table-bordered">
+									<thead>
+										<tr>
+											<th colspan="2" class="comparerights-diritto">#{i18n['acl.diritto']}</th>
+											<th class="comparerights-descrizione">#{pageBean.compareRights.comparison.description1}</th>
+											<th class="comparerights-descrizione">#{pageBean.compareRights.comparison.description2}</th>
+										</tr>
+									</thead>
+									<tbody>
+										<c:forEach var="difference" items="#{pageBean.compareRights.comparison.differences}">
+											<tr class="#{(difference.type eq 'added') ? 'success' : ((difference.type eq 'deleted') ? 'danger' : '')}">
+												<td>#{difference.cod}</td>
+												<td><h:outputText value="#{difference.label}" escape="false" /></td>
+												<td><span class="#{difference.alfa ? 'diritti-wordwrap' : ''}">#{(difference.alfa) ? fn:replace(difference.value1, ',', ', ') : difference.value1}</span></td>
+												<td><span class="#{difference.alfa ? 'diritti-wordwrap' : ''}">#{(difference.alfa) ? fn:replace(difference.value2, ',', ', ') : difference.value2}</span></td>
+											</tr>
+										</c:forEach>
+									</tbody>
+								</table>
+							</c:if>
+							
+							<c:if test="#{fn:length(pageBean.compareRights.comparison.differences) == 0}">
+								<div class="alert alert-info" role="alert">#{i18n['acl.nessuna_differenza_individuata']}</div>
+							</c:if>
+							
+						</div>
+						<div class="modal-footer">
+							<h:commandButton styleClass="btn btn-default" title="#{i18n['acl.close']}" action="#{pageBean.compareRights.close}" data-dismiss="modal"  value="#{i18n['acl.close']}" >
+			        			<f:ajax render="compareRights"/>
+			        		</h:commandButton>
+						</div>
+					</div>
+				</div>
+			</div>
+		</h:panelGroup>
+	</h:panelGroup>
+
+</ui:composition>   
+</html>

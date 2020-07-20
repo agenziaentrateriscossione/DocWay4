@@ -1,0 +1,692 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" 
+      xmlns:h="http://java.sun.com/jsf/html" 
+      xmlns:ui="http://java.sun.com/jsf/facelets" 
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:c="http://java.sun.com/jsp/jstl/core"
+      xmlns:p="http://xmlns.jcp.org/jsf/passthrough">
+<ui:composition>
+
+    <h:panelGroup id="responsabilitaDoc" layout="block" styleClass="assegnatari-section">
+        
+        <h:panelGroup rendered="#{!empty bean.doc.assegnazioneRPAM.diritto}">
+            <h:panelGroup id="respMinuta" layout="block"  styleClass="showdoc-section">
+                <div class="title">             
+                    #{i18n['dw4.assegnatari']} #{i18n['dw4.minuta']}
+                    
+                    <div class="pull-right">
+                        <span class="glyphicon glyphicon-user" title="#{i18n['dw4.assegnatari']} #{i18n['dw4.minuta']}"></span>
+                    </div>
+                </div>
+                
+                <div class="table-responsive">
+                    <table class="table table-condensed">
+                        <tbody>
+                            <tr>
+                                <td class="resp-type">
+                                    <h:outputText value="#{i18n[bean.doc.assegnazioneRPAM.tipo_uff =='ruolo' ? 'dw4.ruoloproprietario' : 'dw4.unita_responsabile']}" />
+                                </td>
+                                <td class="resp-name">
+                                    <h:panelGroup rendered="#{empty bean.doc.assegnazioneRPAM.tipo_uff or bean.doc.assegnazioneRPAM.tipo_uff =='ufficio'}">
+                                        <span class="nome-uff">#{bean.doc.assegnazioneRPAM.nome_uff}</span> - #{bean.doc.assegnazioneRPAM.nome_persona}
+                                    </h:panelGroup>
+                                    <h:panelGroup rendered="#{bean.doc.assegnazioneRPAM.tipo_uff =='ruolo'}">
+                                        <span class="nome-uff">#{bean.doc.assegnazioneRPAM.nome_uff}</span>
+                                    </h:panelGroup>
+                                </td>
+                                <td class="resp-date optional">
+                                    <h:outputText value="#{bean.data_assegRPAM}"><f:converter converterId="DateConverter"/></h:outputText>
+                                </td>
+                                <td class="resp-cmds optional">
+                                    <h:panelGroup rendered="#{bean.formsAdapter.funzionalitaDisponibili['interventoConfigurabileSuDoc']}" layout="block" styleClass="btn-group">
+                                        <h:commandLink action="#{bean.assegnaInterventoRPAM}" title="#{i18n['dw4.assegna_il_diritto_di_intervento']}" rendered="#{!bean.doc.assegnazioneRPAM.intervento}" styleClass="btn btn-default btn-xs">
+                                            <f:ajax execute="@form" render=":templateForm:responsabilitaDoc" />
+                                            <span class="glyphicon glyphicon-plus-sign"></span>
+                                        </h:commandLink>
+                                        <h:commandLink action="#{bean.rimuoviInterventoRPAM}" title="#{i18n['dw4.rimuovi_il_diritto_di_intervento']}" rendered="#{bean.doc.assegnazioneRPAM.intervento}" styleClass="btn btn-default btn-xs">
+                                            <f:ajax execute="@form" render=":templateForm:responsabilitaDoc" />
+                                            <span class="glyphicon glyphicon-minus-sign"></span>
+                                        </h:commandLink>
+                                    </h:panelGroup>
+                                </td>
+                                <td class="resp-vars optional">
+                                    <h:panelGroup rendered="#{!empty bean.checkVistoRPAM}">
+                                        <span class="glyphicon glyphicon-ok visto-icon normal-size-icon popoveritem" data-toggle="popover" data-placement="top" data-trigger="hover" data-content="#{bean.checkVistoRPAM}"></span>
+                                    </h:panelGroup>
+                                </td>
+                            </tr>
+                            
+                            <h:panelGroup rendered="#{!empty bean.doc.assegnazioneOPM.diritto}">
+                                <tr>
+                                    <td class="resp-type">
+                                        <h:outputText value="#{i18n['dw4.gruppo_di_condivisione']}" />
+                                    </td>
+                                    <td class="resp-name">
+                                        <h:panelGroup rendered="#{empty bean.doc.assegnazioneOPM.tipo_uff or bean.doc.assegnazioneOPM.tipo_uff =='ufficio'}">
+                                            <span class="nome-uff">#{bean.doc.assegnazioneOPM.nome_uff}</span> - #{bean.doc.assegnazioneOPM.nome_persona}
+                                        </h:panelGroup>
+                                        <h:panelGroup rendered="#{bean.doc.assegnazioneOPM.tipo_uff =='ruolo'}">
+                                            <span class="nome-uff">#{bean.doc.assegnazioneOPM.nome_uff}</span>
+                                        </h:panelGroup>
+                                    </td>
+                                    <td class="resp-date optional">
+                                        <h:outputText value="#{bean.data_assegOPM}"><f:converter converterId="DateConverter"/></h:outputText>
+                                        <h:panelGroup rendered="#{!empty bean.infoAssegnazioneOPM}">
+                                            <a class="popoveritem" data-toggle="popover" data-placement="top" data-trigger="hover" data-content="#{bean.infoAssegnazioneOPM}" styleClass="popoveritem" href='#'>
+                                                <i class="glyphicon glyphicon-info-sign normal-size-icon"></i>
+                                            </a>
+                                        </h:panelGroup>
+                                    </td>
+                                    <td class="resp-cmds optional">
+                                        <h:panelGroup rendered="#{bean.formsAdapter.funzionalitaDisponibili['opmremove'] or (bean.formsAdapter.funzionalitaDisponibili['disableSegnatura'] and bean.doc.assegnazioneOPM.scartabile =='true' and bean.doc.assegnazioneOPM.scartato != 'true')}" layout="block" styleClass="btn-group">
+                                            <h:panelGroup rendered="#{bean.formsAdapter.funzionalitaDisponibili['opmremove']}">
+                                                <h:commandLink action="#{bean.removeRifOPM}" title="#{i18n['dw4.rimuovi_operatore_incaricato_minuta']}" styleClass="btn btn-default btn-xs">
+                                                    <f:ajax execute="@form" render=":templateForm:responsabilitaDoc" />
+                                                    <span class="glyphicon glyphicon-remove rimuovi-da-rif-interni"></span>
+                                                </h:commandLink>
+                                            </h:panelGroup> 
+                                            <h:panelGroup rendered="#{bean.formsAdapter.funzionalitaDisponibili['disableSegnatura'] and bean.doc.assegnazioneOPM.scartabile =='true' and bean.doc.assegnazioneOPM.scartato != 'true'}">
+                                                <h:commandLink action="#{bean.scartaDocOPM}" title="#{i18n['dw4.scarta_il_documento_dalla_cartella_personale']}" styleClass="btn btn-default btn-xs">
+                                                    <f:ajax execute="@form" render=":templateForm:responsabilitaDoc" />
+                                                    <span class="glyphicon glyphicon-ban-circle scarta-doc-da-cartella-personale"></span>
+                                                </h:commandLink>
+                                            </h:panelGroup>
+                                        </h:panelGroup>
+                                    </td>
+                                    <td class="resp-vars optional">
+                                        <h:panelGroup rendered="#{!empty bean.checkVistoOPM}">
+                                            <span class="glyphicon glyphicon-ok visto-icon normal-size-icon popoveritem" data-toggle="popover" data-placement="top" data-trigger="hover" data-content="#{bean.checkVistoOPM}"></span>
+                                        </h:panelGroup>
+                                    </td>
+                                </tr>
+                            </h:panelGroup>
+                            
+                            <h:panelGroup rendered="#{not empty bean.doc.minuta.cc_fasc_minuta_list}">
+                                <tr>
+                                    <td class="resp-type">#{i18n['dw4.cc_fasc']}</td>
+                                    <td class="resp-name" colspan="4">
+                                        <h:commandLink rendered="#{!bean.showCCfascMinuta}" action="#{bean.hideShowCCfromFascMinuta}" value="#{i18n['dw4.visualizza_i_cc_ereditati_dal_fascicolo']}"><f:ajax execute="@form" render="templateForm:respMinuta" /></h:commandLink>
+                                        <h:commandLink rendered="#{bean.showCCfascMinuta}" action="#{bean.hideShowCCfromFascMinuta}" value="#{i18n['dw4.nascondi_i_cc_ereditati_dal_fascicolo']}"><f:ajax execute="@form" render="templateForm:respMinuta" /></h:commandLink>
+                                    </td>
+                                </tr>
+                                <h:panelGroup rendered="#{bean.showCCfascMinuta}">
+                                    <h:panelGroup rendered="#{bean.formsAdapter.funzionalitaDisponibili['raggruppaCC'] and bean.raggruppaCC_statoIniziale ne ''}">
+                                        <tr>
+                                            <td class="resp-type">&#160;</td>
+                                            <td class="resp-name">
+                                                <h:outputText value="#{bean.doc.minuta.countCcFascicoloMinuta}"/>&#160;
+                                                <h:outputText rendered="#{bean.doc.minuta.countCcFascicoloMinuta == 1}" value="#{i18n['dw4.nominativo']}"/>
+                                                <h:outputText rendered="#{bean.doc.minuta.countCcFascicoloMinuta != 1}" value="#{i18n['dw4.nominativi']}"/>
+                                            </td>
+                                            <td class="resp-cmds optional" colspan="3">
+                                                <div class="btn-group">
+                                                    <h:commandLink rendered="#{bean.raggruppaCC_statoIniziale eq 'compact' and bean.raggruppaCC_fasc_minuta_statoCorrente eq ''}" action="#{bean.hideShowCCfascMinuta}" title="#{i18n['dw4.visualizza_una_riga_riassuntiva_per_ogni_ufficio']}" styleClass="btn btn-default btn-xs">
+                                                        <f:ajax execute="@form" render="templateForm:respMinuta" />
+                                                        <span class="glyphicon glyphicon-plus"></span>
+                                                    </h:commandLink>
+                                                    <h:commandLink rendered="#{bean.raggruppaCC_statoIniziale eq 'minimized' and bean.raggruppaCC_fasc_minuta_statoCorrente eq ''}" action="#{bean.hideShowCCfascMinuta}" title="#{i18n['dw4.visualizza_tutti_i_nominativi']}" styleClass="btn btn-default btn-xs">
+                                                        <f:ajax execute="@form" render="templateForm:respMinuta" />
+                                                        <span class="glyphicon glyphicon-plus"></span>
+                                                    </h:commandLink>
+                                                    <h:commandLink rendered="#{bean.raggruppaCC_fasc_minuta_statoCorrente eq 'expand'}" action="#{bean.hideShowCCfascMinuta}" title="#{i18n['dw4.visualizza_tutti_i_nominativi']}" styleClass="btn btn-default btn-xs">
+                                                        <f:ajax execute="@form" render="templateForm:respMinuta" />
+                                                        <span class="glyphicon glyphicon-th-list"></span>
+                                                    </h:commandLink>
+                                                    <h:commandLink rendered="#{bean.raggruppaCC_fasc_minuta_statoCorrente eq 'minimized'}" action="#{bean.hideShowCCfascMinuta}" title="#{i18n['dw4.contrai_tutti_i_nominativi']}" styleClass="btn btn-default btn-xs">
+                                                        <f:ajax execute="@form" render="templateForm:respMinuta" />
+                                                        <span class="glyphicon glyphicon-minus"></span>
+                                                    </h:commandLink>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    </h:panelGroup>
+                                    <h:panelGroup rendered="#{bean.raggruppaCC_statoIniziale eq '' or (bean.raggruppaCC_statoIniziale ne '' and bean.raggruppaCC_fasc_minuta_statoCorrente ne '')}">
+                                        <h:panelGroup rendered="#{bean.raggruppaCC_statoIniziale eq 'compact'}">
+                                            <c:forEach items="#{bean.doc.minuta.cc_fasc_minuta_ufficio}" var="ufficioKey" varStatus="indice">
+                                                <tr>
+                                                    <td class="resp-type">&#160;</td>
+                                                    <td class="resp-name">
+                                                        <h:outputText value="#{ufficioKey.value[0].nome_uff}"/>&#160;
+                                                        <h:outputText value="("/>
+                                                        <h:outputText value="#{fn:length(ufficioKey.value)}"/>&#160;
+                                                        <h:outputText rendered="#{fn:length(ufficioKey.value) == 1}" value="#{i18n['dw4.nominativo']}"/>
+                                                        <h:outputText rendered="#{fn:length(ufficioKey.value) != 1}" value="#{i18n['dw4.nominativi']}"/>
+                                                        <h:outputText value=")"/>
+                                                    </td>
+                                                    <td class="resp-cmds optional" colspan="3">
+                                                        <h:panelGroup rendered="#{bean.raggruppaCC_fasc_minuta_statoCorrente eq 'expand'}">
+                                                            <div class="btn-group">
+                                                                <h:commandLink rendered="#{!fn:contains(bean.raggruppaCC_fasc_minuta_uffici_aperti, ufficioKey.key)}" action="#{bean.hideShowCCufficioFascMinuta}" actionListener="#{bean.attrListenerUfficioCorrente}" title="#{i18n['dw4.visualizza_i_nominativi_dell_ufficio']}" styleClass="btn btn-default btn-xs">
+                                                                    <f:ajax execute="@form" render="templateForm:respMinuta" />
+                                                                    <f:attribute name="raggruppaCC_ufficio_corrente" value="#{ufficioKey.key}" />
+                                                                    <span class="glyphicon glyphicon-plus"></span>
+                                                                </h:commandLink>
+                                                                <h:commandLink rendered="#{fn:contains(bean.raggruppaCC_fasc_minuta_uffici_aperti, ufficioKey.key)}" action="#{bean.hideShowCCufficioFascMinuta}" actionListener="#{bean.attrListenerUfficioCorrente}" title="#{i18n['dw4.nascondi_i_nominativi_dell_ufficio']}" styleClass="btn btn-default btn-xs">
+                                                                    <f:ajax execute="@form" render="templateForm:respMinuta" />
+                                                                    <f:attribute name="raggruppaCC_ufficio_corrente" value="#{ufficioKey.key}" />
+                                                                    <span class="glyphicon glyphicon-minus"></span>
+                                                                </h:commandLink>
+                                                            </div>
+                                                        </h:panelGroup>
+                                                    </td>
+                                                </tr>
+                                                <h:panelGroup rendered="#{bean.raggruppaCC_fasc_minuta_statoCorrente ne 'expand' or fn:contains(bean.raggruppaCC_fasc_minuta_uffici_aperti, ufficioKey.key)}">
+                                                    <ui:repeat var="rif" value="#{ufficioKey.value}">
+                                                        <tr>
+                                                            <td class="resp-type">&#160;</td>
+                                                            <td class="resp-name">
+                                                                <span class="margin-left-20" style="#{(rif.personale) ? 'font-weight: bold;' : ''}">#{rif.nome_persona}</span>
+                                                                <h:panelGroup rendered="#{rif.intervento}">
+                                                                    <em>(#{i18n['dw4.intervento']})</em>
+                                                                </h:panelGroup>
+                                                            </td>
+                                                            <td class="resp-date optional" colspan="3">
+                                                                <h:outputText value="#{bean.data_asseg}"><f:converter converterId="DateConverter"/></h:outputText>
+                                                                <h:outputText value=" (CC fascicolo: #{rif.cc_from_fasc}) "/>
+                                                                <h:panelGroup rendered="#{!empty bean.infoAssegnazione}">
+                                                                    <a class="popoveritem" data-toggle="popover" data-placement="top" data-trigger="hover" data-content="#{bean.infoAssegnazione}" styleClass="popoveritem" href='#'>
+                                                                        <i class="glyphicon glyphicon-info-sign normal-size-icon"></i>
+                                                                    </a>
+                                                                </h:panelGroup>
+                                                            </td>
+                                                        </tr>
+                                                    </ui:repeat>
+                                                </h:panelGroup>
+                                            </c:forEach>
+                                        </h:panelGroup>
+                                        <h:panelGroup rendered="#{bean.raggruppaCC_statoIniziale ne 'compact'}">
+                                            <ui:repeat var="rif" value="#{bean.doc.minuta.cc_fasc_minuta_list}">
+                                                <tr>
+                                                    <td class="resp-type">&#160;</td>
+                                                    <td class="resp-name">
+                                                        #{rif.nome_uff}
+                                                        <h:panelGroup rendered="#{rif.tipo_uff != 'ruolo'}">
+                                                            <h:panelGroup rendered="#{rif.personale}"> - <strong>#{rif.nome_persona}</strong></h:panelGroup>
+                                                            <h:panelGroup rendered="#{!rif.personale}"> - #{rif.nome_persona}</h:panelGroup>
+                                                        </h:panelGroup>
+                                                        <h:panelGroup rendered="#{rif.intervento}">
+                                                            <em>(#{i18n['dw4.intervento']})</em>
+                                                        </h:panelGroup>
+                                                    </td>
+                                                    <td class="resp-date optional" colspan="3">
+                                                        <h:outputText value="#{bean.data_asseg}"><f:converter converterId="DateConverter"/></h:outputText>
+                                                        <h:outputText value=" (#{i18n['dw4.cc_fascicolo']}: #{rif.cc_from_fasc}) "/>
+                                                        <h:panelGroup rendered="#{!empty bean.infoAssegnazione}">
+                                                            <a class="popoveritem" data-toggle="popover" data-placement="top" data-trigger="hover" data-content="#{bean.infoAssegnazione}" styleClass="popoveritem" href='#'>
+                                                                <i class="glyphicon glyphicon-info-sign normal-size-icon"></i>
+                                                            </a>
+                                                        </h:panelGroup>
+                                                    </td>
+                                                </tr>
+                                            </ui:repeat>
+                                        </h:panelGroup>
+                                    </h:panelGroup>
+                                </h:panelGroup>
+                            </h:panelGroup>
+                        </tbody>
+                    </table>
+                </div>
+            </h:panelGroup>
+        </h:panelGroup>
+        
+        <div class="showdoc-section">
+            <div class="title">
+                #{i18n['dw4.assegnatari']}
+                <h:panelGroup rendered="#{bean.doc.tipo eq 'interno'}">
+                    #{i18n['dw4.originale']}
+                </h:panelGroup>
+                
+                <div class="pull-right">
+                    <span class="glyphicon glyphicon-user" title="#{i18n['dw4.assegnatari']} #{(bean.doc.tipo eq 'interno') ? i18n['dw4.originale'] : ''}"></span>
+                </div>
+            </div>
+        
+            <h:panelGroup rendered="#{!empty bean.doc.assegnazioneRPA.diritto or (!empty bean.doc.assegnazioneCDS and !empty bean.doc.assegnazioneCDS[0].diritto) or !empty bean.doc.assegnazioneOP.diritto}">  
+                <div class="table-responsive">
+                    <table class="table table-condensed">
+                        <tbody>
+                            <h:panelGroup rendered="#{!empty bean.doc.assegnazioneRPA.diritto}">
+                                <tr>
+                                    <td class="resp-type">
+                                        <h:outputText value="#{i18n[bean.doc.assegnazioneRPA.tipo_uff =='ruolo' ? 'dw4.ruoloproprietario' : 'dw4.unita_responsabile']}" />
+                                    </td>
+                                    <td class="resp-name">
+                                        <h:panelGroup rendered="#{empty bean.doc.assegnazioneRPA.tipo_uff or bean.doc.assegnazioneRPA.tipo_uff =='ufficio'}">
+                                            <span class="nome-uff">#{bean.doc.assegnazioneRPA.nome_uff}</span> - #{bean.doc.assegnazioneRPA.nome_persona}
+                                        </h:panelGroup>
+                                        <h:panelGroup rendered="#{bean.doc.assegnazioneRPA.tipo_uff =='ruolo'}">
+                                            <span class="nome-uff">#{bean.doc.assegnazioneRPA.nome_uff}</span>
+                                        </h:panelGroup>
+                                    </td>
+                                    <td class="resp-date optional">
+                                        <h:outputText value="#{bean.data_assegRPA}"><f:converter converterId="DateConverter"/></h:outputText>
+                                    </td>
+                                    <td class="resp-cmds optional">
+                                        <h:panelGroup rendered="#{bean.formsAdapter.funzionalitaDisponibili['cds']}" styleClass="btn-group">
+                                            <h:commandLink action="#{bean.addCDS}" title="#{i18n['dw4.attiva_disattiva_modifica_conferenza_di_servizi']}" styleClass="btn btn-default btn-xs">
+                                                <f:ajax execute="@form" render="@form" />
+                                                <span class="glyphicons-pro parents"></span>
+                                            </h:commandLink>
+                                        </h:panelGroup>
+                                    </td>
+                                    <td class="resp-vars optional">
+                                        <h:panelGroup rendered="#{!empty bean.checkVistoRPA}">
+                                            <span class="glyphicon glyphicon-ok visto-icon normal-size-icon popoveritem" data-toggle="popover" data-placement="top" data-trigger="hover" data-content="#{bean.checkVistoRPA}"></span>
+                                        </h:panelGroup>
+                                    </td>
+                                </tr>
+                            </h:panelGroup>
+                            <ui:repeat var="rif" value="#{bean.doc.assegnazioneCDS}">
+                                <h:panelGroup rendered="#{!empty rif.diritto}">
+                                    <tr>
+                                        <td class="resp-type"><h:outputText value="#{i18n['dw4.cds']}" /></td>
+                                        <td class="resp-name">
+                                            <h:panelGroup rendered="#{empty rif.tipo_uff or rif.tipo_uff =='ufficio'}">
+                                                <span class="nome-uff">#{rif.nome_uff}</span>
+                                                <h:panelGroup rendered="#{rif.personale}"> - #{rif.nome_persona}</h:panelGroup>
+                                                <h:panelGroup rendered="#{!rif.personale}"> - #{rif.nome_persona}</h:panelGroup>
+                                            </h:panelGroup>
+                                            <h:panelGroup rendered="#{rif.tipo_uff =='ruolo'}">
+                                                <span class="nome-uff">#{rif.nome_uff}</span>
+                                            </h:panelGroup>
+                                            <h:panelGroup rendered="#{rif.intervento}">
+                                                <em>(#{i18n['dw4.intervento']})</em>
+                                            </h:panelGroup>
+                                        </td>
+                                        <td class="resp-date optional">
+                                            <h:outputText value="#{bean.data_asseg}"><f:converter converterId="DateConverter"/></h:outputText>
+                                        </td>
+                                        <td class="resp-cmds optional">
+                                            <h:panelGroup rendered="#{(bean.formsAdapter.funzionalitaDisponibili['disableSegnatura'] and rif.scartabile =='true' and rif.scartato != 'true') or (bean.formsAdapter.funzionalitaDisponibili['interventoConfigurabileSuDoc'])}" styleClass="btn-group">
+                                                <h:panelGroup rendered="#{bean.formsAdapter.funzionalitaDisponibili['disableSegnatura'] and rif.scartabile =='true' and rif.scartato != 'true'}">
+                                                    <h:commandLink action="#{bean.scartaDoc}" title="#{i18n['dw4.scarta_il_documento_dalla_cartella_personale']}" styleClass="btn btn-default btn-xs">
+                                                        <f:ajax execute="@form" render=":templateForm:responsabilitaDoc" />
+                                                        <span class="glyphicon glyphicon-ban-circle scarta-doc-da-cartella-personale"></span>
+                                                    </h:commandLink>
+                                                </h:panelGroup>
+                                                <h:panelGroup rendered="#{bean.formsAdapter.funzionalitaDisponibili['interventoConfigurabileSuDoc']}">
+                                                    <h:commandLink action="#{bean.assegnaIntervento}" title="#{i18n['dw4.assegna_il_diritto_di_intervento']}" rendered="#{!rif.intervento}" styleClass="btn btn-default btn-xs">
+                                                        <f:ajax execute="@form" render=":templateForm:responsabilitaDoc" />
+                                                        <span class="glyphicon glyphicon-plus-sign"></span>
+                                                    </h:commandLink>
+                                                    <h:commandLink action="#{bean.rimuoviIntervento}" title="#{i18n['dw4.rimuovi_il_diritto_di_intervento']}" rendered="#{rif.intervento}" styleClass="btn btn-default btn-xs">
+                                                        <f:ajax execute="@form" render=":templateForm:responsabilitaDoc" />
+                                                        <span class="glyphicon glyphicon-minus-sign"></span>
+                                                    </h:commandLink>
+                                                </h:panelGroup>
+                                            </h:panelGroup>
+                                        </td>
+                                        <td class="resp-vars optional">
+                                            <h:panelGroup rendered="#{!empty bean.checkVisto}">
+                                                <span class="glyphicon glyphicon-ok visto-icon normal-size-icon popoveritem" data-toggle="popover" data-placement="top" data-trigger="hover" data-content="#{bean.checkVisto}"></span>
+                                            </h:panelGroup>
+                                        </td>
+                                    </tr>
+                                </h:panelGroup>
+                            </ui:repeat>
+                            <h:panelGroup rendered="#{!empty bean.doc.assegnazioneOP.diritto}">
+                                <tr>
+                                    <td class="resp-type"><h:outputText value="#{i18n['dw4.gruppo_di_condivisione']}" /></td>
+                                    <td class="resp-name">
+                                        <h:panelGroup rendered="#{empty bean.doc.assegnazioneOP.tipo_uff or bean.doc.assegnazioneOP.tipo_uff =='ufficio'}">
+                                            <span class="nome-uff">#{bean.doc.assegnazioneOP.nome_uff}</span> - #{bean.doc.assegnazioneOP.nome_persona}
+                                        </h:panelGroup>
+                                        <h:panelGroup rendered="#{bean.doc.assegnazioneOP.tipo_uff =='ruolo'}">
+                                            <span class="nome-uff">#{bean.doc.assegnazioneOP.nome_uff}</span>
+                                        </h:panelGroup>
+                                    </td>
+                                    <td class="resp-date optional">
+                                        <h:outputText value="#{bean.data_assegOP}"><f:converter converterId="DateConverter"/></h:outputText>
+                                        <h:panelGroup rendered="#{!empty bean.infoAssegnazioneOP}">
+                                            <a class="popoveritem" data-toggle="popover" data-placement="top" data-trigger="hover" data-content="#{bean.infoAssegnazioneOP}" styleClass="popoveritem" href='#'>
+                                                <i class="glyphicon glyphicon-info-sign normal-size-icon"></i>
+                                            </a>
+                                        </h:panelGroup>
+                                    </td>
+                                    <td class="resp-cmds optional">
+                                        <h:panelGroup rendered="#{(bean.formsAdapter.funzionalitaDisponibili['opremove']) or (bean.formsAdapter.funzionalitaDisponibili['disableSegnatura'] and bean.doc.assegnazioneOP.scartabile =='true' and bean.doc.assegnazioneOP.scartato != 'true')}" styleClass="btn-group">
+                                            <h:panelGroup rendered="#{bean.formsAdapter.funzionalitaDisponibili['opremove']}">
+                                                <h:commandLink action="#{bean.removeRifOP}" title="#{i18n['dexia.rimuovi_unita_organizzativa']}" styleClass="btn btn-default btn-xs">
+                                                    <f:ajax execute="@form" render=":templateForm:responsabilitaDoc" />
+                                                    <span class="glyphicon glyphicon-remove rimuovi-da-rif-interni"></span>
+                                                </h:commandLink>
+                                            </h:panelGroup>
+                                            <h:panelGroup rendered="#{bean.formsAdapter.funzionalitaDisponibili['disableSegnatura'] and bean.doc.assegnazioneOP.scartabile =='true' and bean.doc.assegnazioneOP.scartato != 'true'}">
+                                                <h:commandLink action="#{bean.scartaDocOP}" title="#{i18n['dw4.scarta_il_documento_dalla_cartella_personale']}" styleClass="btn btn-default btn-xs">
+                                                    <f:ajax execute="@form" render=":templateForm:responsabilitaDoc" />
+                                                    <span class="glyphicon glyphicon-ban-circle scarta-doc-da-cartella-personale"></span>
+                                                </h:commandLink>
+                                            </h:panelGroup>
+                                        </h:panelGroup>
+                                    </td>
+                                    <td class="resp-vars optional">
+                                        <h:panelGroup rendered="#{!empty bean.checkVistoOP}">
+                                            <span class="glyphicon glyphicon-ok visto-icon normal-size-icon popoveritem" data-toggle="popover" data-placement="top" data-trigger="hover" data-content="#{bean.checkVistoOP}"></span>
+                                        </h:panelGroup>
+                                    </td>
+                                </tr>                       
+                            </h:panelGroup>
+                            <h:panelGroup rendered="#{!empty bean.doc.assegnazioneRESO.diritto}">
+                                <tr>
+                                    <td class="resp-type">#{i18n['dw4.resoa']}</td>
+                                    <td class="resp-name" colspan="4">#{bean.doc.assegnazioneRESO.nome_uff} - #{bean.doc.assegnazioneRESO.nome_persona}</td>
+                                </tr>
+                            </h:panelGroup>
+                            <h:panelGroup rendered="#{not empty bean.doc.cc_list}">
+                                <h:panelGroup rendered="#{bean.formsAdapter.funzionalitaDisponibili['raggruppaCC'] and bean.raggruppaCC_statoIniziale ne ''}">
+                                    <tr>
+                                        <td class="resp-type">#{i18n['dexia.condivisione']}</td>
+                                        <td class="resp-name" colspan="2">
+                                            <h:outputText value="#{bean.doc.countCcTotali}"/>&#160;
+                                            <h:outputText rendered="#{bean.doc.countCcTotali == 1}" value="#{i18n['dw4.nominativo']}"/>
+                                            <h:outputText rendered="#{bean.doc.countCcTotali != 1}" value="#{i18n['dw4.nominativi']}"/>
+                                        </td>
+                                        <td class="resp-cmds optional" colspan="2">
+                                            <div class="btn-group">
+                                                <h:commandLink rendered="#{bean.raggruppaCC_statoIniziale eq 'compact' and bean.raggruppaCC_statoCorrente eq ''}" action="#{bean.hideShowCC}" title="#{i18n['dw4.visualizza_una_riga_riassuntiva_per_ogni_ufficio']}" styleClass="btn btn-default btn-xs">
+                                                    <f:ajax execute="@form" render="templateForm:responsabilitaDoc" />
+                                                    <span class="glyphicon glyphicon-plus"></span>
+                                                </h:commandLink>
+                                                <h:commandLink rendered="#{bean.raggruppaCC_statoIniziale eq 'minimized' and bean.raggruppaCC_statoCorrente eq ''}" action="#{bean.hideShowCC}" title="#{i18n['dw4.visualizza_tutti_i_nominativi']}" styleClass="btn btn-default btn-xs">
+                                                    <f:ajax execute="@form" render="templateForm:responsabilitaDoc" />
+                                                    <span class="glyphicon glyphicon-plus"></span>
+                                                </h:commandLink>
+                                                <h:commandLink rendered="#{bean.raggruppaCC_statoCorrente eq 'expand'}" action="#{bean.hideShowCC}" title="#{i18n['dw4.visualizza_tutti_i_nominativi']}" styleClass="btn btn-default btn-xs">
+                                                    <f:ajax execute="@form" render="templateForm:responsabilitaDoc" />
+                                                    <span class="glyphicon glyphicon-th-list"></span>
+                                                </h:commandLink>
+                                                <h:commandLink rendered="#{bean.raggruppaCC_statoCorrente eq 'minimized'}" action="#{bean.hideShowCC}" title="#{i18n['dw4.contrai_tutti_i_nominativi']}" styleClass="btn btn-default btn-xs">
+                                                    <f:ajax execute="@form" render="templateForm:responsabilitaDoc" />
+                                                    <span class="glyphicon glyphicon-minus"></span>
+                                                </h:commandLink>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </h:panelGroup>
+                                <h:panelGroup rendered="#{bean.raggruppaCC_statoIniziale eq '' or (bean.raggruppaCC_statoIniziale ne '' and bean.raggruppaCC_statoCorrente ne '')}">
+                                    <h:panelGroup rendered="#{bean.raggruppaCC_statoIniziale eq 'compact'}">
+                                        <c:forEach items="#{bean.doc.cc_ufficio}" var="ufficioKey" varStatus="indice">
+                                            <tr>
+                                                <td class="resp-type">&#160;</td>
+                                                <td class="resp-name" colspan="2">
+                                                    <h:outputText value="#{ufficioKey.value[0].nome_uff}"/>&#160;
+                                                    <h:outputText value="("/>
+                                                    <h:outputText value="#{fn:length(ufficioKey.value)}"/>&#160;
+                                                    <h:outputText rendered="#{fn:length(ufficioKey.value) == 1}" value="#{i18n['dw4.nominativo']}"/>
+                                                    <h:outputText rendered="#{fn:length(ufficioKey.value) != 1}" value="#{i18n['dw4.nominativi']}"/>
+                                                    <h:outputText value=")"/>
+                                                </td>
+                                                <td class="resp-cmds optional" colspan="2">
+                                                    <h:panelGroup rendered="#{bean.raggruppaCC_statoCorrente eq 'expand'}">
+                                                        <div class="btn-group">
+                                                            <h:commandLink rendered="#{!fn:contains(bean.raggruppaCC_uffici_aperti, ufficioKey.key)}" action="#{bean.hideShowCCufficio}" actionListener="#{bean.attrListenerUfficioCorrente}" title="#{i18n['dw4.visualizza_i_nominativi_dell_ufficio']}" styleClass="btn btn-default btn-xs">
+                                                                <f:ajax execute="@form" render="templateForm:responsabilitaDoc" />
+                                                                <f:attribute name="raggruppaCC_ufficio_corrente" value="#{ufficioKey.key}" />
+                                                                <span class="glyphicon glyphicon-plus"></span>
+                                                            </h:commandLink>
+                                                            <h:commandLink rendered="#{fn:contains(bean.raggruppaCC_uffici_aperti, ufficioKey.key)}" action="#{bean.hideShowCCufficio}" actionListener="#{bean.attrListenerUfficioCorrente}" title="#{i18n['dw4.nascondi_i_nominativi_dell_ufficio']}" styleClass="btn btn-default btn-xs">
+                                                                <f:ajax execute="@form" render="templateForm:responsabilitaDoc" />
+                                                                <f:attribute name="raggruppaCC_ufficio_corrente" value="#{ufficioKey.key}" />
+                                                                <span class="glyphicon glyphicon-minus"></span>
+                                                            </h:commandLink>
+                                                        </div>
+                                                    </h:panelGroup>
+                                                </td>
+                                            </tr>
+                                            <h:panelGroup rendered="#{bean.raggruppaCC_statoCorrente ne 'expand' or fn:contains(bean.raggruppaCC_uffici_aperti, ufficioKey.key)}">
+                                                <ui:repeat var="rif" value="#{ufficioKey.value}">
+                                                    <tr>
+                                                        <td class="resp-type">&#160;</td>
+                                                        <td class="resp-name">
+                                                            <span class="margin-left-20">#{rif.nome_persona}</span>
+                                                            <h:panelGroup rendered="#{rif.intervento}">
+                                                                <em>(#{i18n['dw4.intervento']})</em>
+                                                            </h:panelGroup>
+                                                        </td>
+                                                        <td class="resp-date optional">
+                                                            <h:outputText value="#{bean.data_asseg}"><f:converter converterId="DateConverter"/></h:outputText>
+                                                            <h:panelGroup rendered="#{!empty bean.infoAssegnazione}">
+                                                                <a class="popoveritem" data-toggle="popover" data-placement="top" data-trigger="hover" data-content="#{bean.infoAssegnazione}" styleClass="popoveritem" href='#'>
+                                                                    <i class="glyphicon glyphicon-info-sign normal-size-icon"></i>
+                                                                </a>
+                                                            </h:panelGroup>
+                                                        </td>
+                                                        <td class="resp-cmds optional">
+                                                            <div class="btn-group">
+                                                                <h:panelGroup rendered="#{bean.formsAdapter.funzionalitaDisponibili['ccremove']}">
+                                                                    <h:commandLink action="#{bean.removeRifCC}" title="#{i18n['dexia.rimuovi_da_lista']}" styleClass="btn btn-default btn-xs">
+                                                                        <f:ajax execute="@form" render=":templateForm:responsabilitaDoc" />
+                                                                        <span class="glyphicon glyphicon-remove rimuovi-da-rif-interni"></span>
+                                                                    </h:commandLink>
+                                                                </h:panelGroup>
+                                                                <h:panelGroup rendered="#{bean.formsAdapter.funzionalitaDisponibili['disableSegnatura'] and rif.scartabile =='true' and rif.scartato != 'true'}">
+                                                                    <h:commandLink action="#{bean.scartaDoc}" title="#{i18n['dw4.scarta_il_documento_dalla_cartella_personale']}" styleClass="btn btn-default btn-xs">
+                                                                        <span class="glyphicon glyphicon-ban-circle scarta-doc-da-cartella-personale"></span>
+                                                                    </h:commandLink>
+                                                                </h:panelGroup>
+                                                                <h:panelGroup rendered="#{bean.formsAdapter.funzionalitaDisponibili['interventoConfigurabileSuDoc']}">
+                                                                    <h:commandLink action="#{bean.assegnaIntervento}" title="#{i18n['dw4.assegna_il_diritto_di_intervento']}" rendered="#{!rif.intervento}" styleClass="btn btn-default btn-xs">
+                                                                        <f:ajax execute="@form" render=":templateForm:responsabilitaDoc" />
+                                                                        <span class="glyphicon glyphicon-plus-sign"></span>
+                                                                    </h:commandLink>
+                                                                    <h:commandLink action="#{bean.rimuoviIntervento}" title="#{i18n['dw4.rimuovi_il_diritto_di_intervento']}" rendered="#{rif.intervento}" styleClass="btn btn-default btn-xs">
+                                                                        <f:ajax execute="@form" render=":templateForm:responsabilitaDoc" />
+                                                                        <span class="glyphicon glyphicon-minus-sign"></span>
+                                                                    </h:commandLink>
+                                                                </h:panelGroup>
+                                                            </div>
+                                                        </td>
+                                                        <td class="resp-vars optional">
+                                                            <h:panelGroup rendered="#{!empty bean.checkVisto}">
+                                                                <span class="glyphicon glyphicon-ok visto-icon normal-size-icon popoveritem" data-toggle="popover" data-placement="top" data-trigger="hover" data-content="#{bean.checkVisto}"></span>
+                                                            </h:panelGroup>
+                                                        </td>
+                                                    </tr>
+                                                </ui:repeat>
+                                            </h:panelGroup>
+                                        </c:forEach>
+                                    </h:panelGroup>
+                                    <h:panelGroup rendered="#{bean.raggruppaCC_statoIniziale ne 'compact'}">
+                                        <ui:repeat var="rif" value="#{bean.doc.cc_list}">
+                                            <tr>
+                                                <td class="resp-type">
+                                                    <h:outputText rendered="#{!bean.formsAdapter.funzionalitaDisponibili['raggruppaCC'] or bean.raggruppaCC_statoIniziale eq ''}" value="#{i18n['dexia.condivisione']}" />
+                                                    <h:outputText rendered="#{bean.formsAdapter.funzionalitaDisponibili['raggruppaCC'] and bean.raggruppaCC_statoIniziale ne ''}" value="&#160;" />
+                                                </td>
+                                                <td class="resp-name">
+                                                    #{rif.nome_uff}
+                                                    <h:panelGroup rendered="#{rif.tipo_uff != 'ruolo'}">
+                                                        <h:panelGroup rendered="#{rif.personale}"> - <strong>#{rif.nome_persona}</strong></h:panelGroup>
+                                                        <h:panelGroup rendered="#{!rif.personale}"> - #{rif.nome_persona}</h:panelGroup>
+                                                    </h:panelGroup>
+                                                    <h:panelGroup rendered="#{rif.intervento}">
+                                                        <em>(#{i18n['dw4.intervento']})</em>
+                                                    </h:panelGroup>
+                                                </td>
+                                                <td class="resp-date optional">
+                                                    <h:outputText value="#{bean.data_asseg}"><f:converter converterId="DateConverter"/></h:outputText>
+                                                    <h:panelGroup rendered="#{!empty bean.infoAssegnazione}">
+                                                        <a class="popoveritem" data-toggle="popover" data-placement="top" data-trigger="hover" data-content="#{bean.infoAssegnazione}" styleClass="popoveritem" href='#'>
+                                                            <i class="glyphicon glyphicon-info-sign normal-size-icon"></i>
+                                                        </a>
+                                                    </h:panelGroup>
+                                                </td>
+                                                <td class="resp-cmds optional">
+                                                    <div class="btn-group">
+                                                        <h:panelGroup rendered="#{bean.formsAdapter.funzionalitaDisponibili['ccremove']}">
+                                                            <h:commandLink action="#{bean.removeRifCC}" title="#{i18n['dexia.rimuovi_da_lista']}" styleClass="btn btn-default btn-xs">
+                                                                <f:ajax execute="@form" render=":templateForm:responsabilitaDoc" />
+                                                                <span class="glyphicon glyphicon-remove rimuovi-da-rif-interni"></span>
+                                                            </h:commandLink>
+                                                        </h:panelGroup>
+                                                        <h:panelGroup rendered="#{bean.formsAdapter.funzionalitaDisponibili['disableSegnatura'] and rif.scartabile =='true' and rif.scartato != 'true'}">
+                                                            <h:commandLink action="#{bean.scartaDoc}" title="#{i18n['dw4.scarta_il_documento_dalla_cartella_personale']}" styleClass="btn btn-default btn-xs">  
+                                                                <f:ajax execute="@form" render=":templateForm:responsabilitaDoc" />
+                                                                <span class="glyphicon glyphicon-ban-circle scarta-doc-da-cartella-personale"></span>
+                                                            </h:commandLink>
+                                                        </h:panelGroup>
+                                                        <h:panelGroup rendered="#{bean.formsAdapter.funzionalitaDisponibili['interventoConfigurabileSuDoc']}">
+                                                            <h:commandLink action="#{bean.assegnaIntervento}" title="#{i18n['dw4.assegna_il_diritto_di_intervento']}" rendered="#{!rif.intervento}" styleClass="btn btn-default btn-xs">
+                                                                <f:ajax execute="@form" render=":templateForm:responsabilitaDoc" />
+                                                                <span class="glyphicon glyphicon-plus-sign"></span>
+                                                            </h:commandLink>
+                                                            <h:commandLink action="#{bean.rimuoviIntervento}" title="#{i18n['dw4.rimuovi_il_diritto_di_intervento']}" rendered="#{rif.intervento}" styleClass="btn btn-default btn-xs">
+                                                                <f:ajax execute="@form" render=":templateForm:responsabilitaDoc" />
+                                                                <span class="glyphicon glyphicon-minus-sign"></span>
+                                                            </h:commandLink>
+                                                        </h:panelGroup>
+                                                    </div>
+                                                </td>
+                                                <td class="resp-vars optional">
+                                                    <h:panelGroup rendered="#{!empty bean.checkVisto}">
+                                                        <span class="glyphicon glyphicon-ok visto-icon normal-size-icon popoveritem" data-toggle="popover" data-placement="top" data-trigger="hover" data-content="#{bean.checkVisto}"></span>
+                                                    </h:panelGroup>
+                                                </td>
+                                            </tr>
+                                        </ui:repeat>
+                                    </h:panelGroup>
+                                </h:panelGroup>
+                            </h:panelGroup>
+                            <h:panelGroup rendered="#{not empty bean.doc.cc_fasc_list}">
+                                <tr>
+                                    <td class="resp-type">#{i18n['dw4.cc_fasc']}</td>
+                                    <td class="resp-name" colspan="4">
+                                        <h:commandLink rendered="#{!bean.showCCfasc}" action="#{bean.hideShowCCfromFasc}" value="#{i18n['dw4.visualizza_i_cc_ereditati_dal_fascicolo']}"><f:ajax execute="@form" render="templateForm:responsabilitaDoc" /></h:commandLink>
+                                        <h:commandLink rendered="#{bean.showCCfasc}" action="#{bean.hideShowCCfromFasc}" value="#{i18n['dw4.nascondi_i_cc_ereditati_dal_fascicolo']}"><f:ajax execute="@form" render="templateForm:responsabilitaDoc" /></h:commandLink>
+                                    </td>
+                                </tr>
+                                <h:panelGroup rendered="#{bean.showCCfasc}">
+                                    <h:panelGroup rendered="#{bean.formsAdapter.funzionalitaDisponibili['raggruppaCC'] and bean.raggruppaCC_statoIniziale ne ''}">
+                                        <tr>
+                                            <td class="resp-type">&#160;</td>
+                                            <td class="resp-name">
+                                                <h:outputText value="#{bean.doc.countCcFascicolo}"/>&#160;
+                                                <h:outputText rendered="#{bean.doc.countCcFascicolo == 1}" value="#{i18n['dw4.nominativo']}"/>
+                                                <h:outputText rendered="#{bean.doc.countCcFascicolo != 1}" value="#{i18n['dw4.nominativi']}"/>
+                                            </td>
+                                            <td class="resp-cmds optional" colspan="3">
+                                                <div class="btn-group">
+                                                    <h:commandLink rendered="#{bean.raggruppaCC_statoIniziale eq 'compact' and bean.raggruppaCC_fasc_statoCorrente eq ''}" action="#{bean.hideShowCCfasc}" title="#{i18n['dw4.visualizza_una_riga_riassuntiva_per_ogni_ufficio']}" styleClass="btn btn-default btn-xs">
+                                                        <f:ajax execute="@form" render="templateForm:responsabilitaDoc" />
+                                                        <span class="glyphicon glyphicon-plus"></span>
+                                                    </h:commandLink>
+                                                    <h:commandLink rendered="#{bean.raggruppaCC_statoIniziale eq 'minimized' and bean.raggruppaCC_fasc_statoCorrente eq ''}" action="#{bean.hideShowCCfasc}" title="#{i18n['dw4.visualizza_tutti_i_nominativi']}" styleClass="btn btn-default btn-xs">
+                                                        <f:ajax execute="@form" render="templateForm:responsabilitaDoc" />
+                                                        <span class="glyphicon glyphicon-plus"></span>
+                                                    </h:commandLink>
+                                                    <h:commandLink rendered="#{bean.raggruppaCC_fasc_statoCorrente eq 'expand'}" action="#{bean.hideShowCCfasc}" title="#{i18n['dw4.visualizza_tutti_i_nominativi']}" styleClass="btn btn-default btn-xs">
+                                                        <f:ajax execute="@form" render="templateForm:responsabilitaDoc" />
+                                                        <span class="glyphicon glyphicon-th-list"></span>
+                                                    </h:commandLink>
+                                                    <h:commandLink rendered="#{bean.raggruppaCC_fasc_statoCorrente eq 'minimized'}" action="#{bean.hideShowCCfasc}" title="#{i18n['dw4.contrai_tutti_i_nominativi']}" styleClass="btn btn-default btn-xs">
+                                                        <f:ajax execute="@form" render="templateForm:responsabilitaDoc" />
+                                                        <span class="glyphicon glyphicon-minus"></span>
+                                                    </h:commandLink>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    </h:panelGroup>
+                                    <h:panelGroup rendered="#{bean.raggruppaCC_statoIniziale eq '' or (bean.raggruppaCC_statoIniziale ne '' and bean.raggruppaCC_fasc_statoCorrente ne '')}">
+                                        <h:panelGroup rendered="#{bean.raggruppaCC_statoIniziale eq 'compact'}">
+                                            <c:forEach items="#{bean.doc.cc_fasc_ufficio}" var="ufficioKey" varStatus="indice">
+                                                <tr>
+                                                    <td class="resp-type">&#160;</td>
+                                                    <td class="resp-name">
+                                                        <h:outputText value="#{ufficioKey.value[0].nome_uff}"/>&#160;
+                                                        <h:outputText value="("/>
+                                                        <h:outputText value="#{fn:length(ufficioKey.value)}"/>&#160;
+                                                        <h:outputText rendered="#{fn:length(ufficioKey.value) == 1}" value="#{i18n['dw4.nominativo']}"/>
+                                                        <h:outputText rendered="#{fn:length(ufficioKey.value) != 1}" value="#{i18n['dw4.nominativi']}"/>
+                                                        <h:outputText value=")"/>
+                                                    </td>
+                                                    <td class="resp-cmds optional" colspan="3">
+                                                        <h:panelGroup rendered="#{bean.raggruppaCC_fasc_statoCorrente eq 'expand'}">
+                                                            <div class="btn-group">
+                                                                <h:commandLink rendered="#{!fn:contains(bean.raggruppaCC_fasc_uffici_aperti, ufficioKey.key)}" action="#{bean.hideShowCCufficioFasc}" actionListener="#{bean.attrListenerUfficioCorrente}" title="#{i18n['dw4.visualizza_i_nominativi_dell_ufficio']}" styleClass="btn btn-default btn-xs">
+                                                                    <f:ajax execute="@form" render="templateForm:responsabilitaDoc" />
+                                                                    <f:attribute name="raggruppaCC_ufficio_corrente" value="#{ufficioKey.key}" />
+                                                                    <span class="glyphicon glyphicon-plus"></span>
+                                                                </h:commandLink>
+                                                                <h:commandLink rendered="#{fn:contains(bean.raggruppaCC_fasc_uffici_aperti, ufficioKey.key)}" action="#{bean.hideShowCCufficioFasc}" actionListener="#{bean.attrListenerUfficioCorrente}" title="#{i18n['dw4.nascondi_i_nominativi_dell_ufficio']}" styleClass="btn btn-default btn-xs">
+                                                                    <f:ajax execute="@form" render="templateForm:responsabilitaDoc" />
+                                                                    <f:attribute name="raggruppaCC_ufficio_corrente" value="#{ufficioKey.key}" />
+                                                                    <span class="glyphicon glyphicon-minus"></span>
+                                                                </h:commandLink>
+                                                            </div>
+                                                        </h:panelGroup>
+                                                    </td>
+                                                </tr>
+                                                <h:panelGroup rendered="#{bean.raggruppaCC_fasc_statoCorrente ne 'expand' or fn:contains(bean.raggruppaCC_fasc_uffici_aperti, ufficioKey.key)}">
+                                                    <ui:repeat var="rif" value="#{ufficioKey.value}">
+                                                        <tr>
+                                                            <td class="resp-type">&#160;</td>
+                                                            <td class="resp-name">
+                                                                <span class="margin-left-20" style="#{(rif.personale) ? 'font-weight: bold;' : ''}">#{rif.nome_persona}</span>
+                                                                <h:panelGroup rendered="#{rif.intervento}">
+                                                                    <em>(#{i18n['dw4.intervento']})</em>
+                                                                </h:panelGroup>
+                                                            </td>
+                                                            <td class="resp-date optional" colspan="3">
+                                                                <h:outputText value="#{bean.data_asseg}"><f:converter converterId="DateConverter"/></h:outputText>
+                                                                <h:outputText value=" (CC fascicolo: #{rif.cc_from_fasc}) "/>
+                                                                <h:panelGroup rendered="#{!empty bean.infoAssegnazione}">
+                                                                    <a class="popoveritem" data-toggle="popover" data-placement="top" data-trigger="hover" data-content="#{bean.infoAssegnazione}" styleClass="popoveritem" href='#'>
+                                                                        <i class="glyphicon glyphicon-info-sign normal-size-icon"></i>
+                                                                    </a>
+                                                                </h:panelGroup>
+                                                            </td>
+                                                        </tr>
+                                                    </ui:repeat>
+                                                </h:panelGroup>
+                                            </c:forEach>
+                                        </h:panelGroup>
+                                        <h:panelGroup rendered="#{bean.raggruppaCC_statoIniziale ne 'compact'}">
+                                            <ui:repeat var="rif" value="#{bean.doc.cc_fasc_list}">
+                                                <tr>
+                                                    <td class="resp-type">&#160;</td>
+                                                    <td class="resp-name">
+                                                        #{rif.nome_uff}
+                                                        <h:panelGroup rendered="#{rif.tipo_uff != 'ruolo'}">
+                                                            <h:panelGroup rendered="#{rif.personale}"> - <strong>#{rif.nome_persona}</strong></h:panelGroup>
+                                                            <h:panelGroup rendered="#{!rif.personale}"> - #{rif.nome_persona}</h:panelGroup>
+                                                        </h:panelGroup>
+                                                        <h:panelGroup rendered="#{rif.intervento}">
+                                                            <em>(#{i18n['dw4.intervento']})</em>
+                                                        </h:panelGroup>
+                                                    </td>
+                                                    <td class="resp-date optional" colspan="3">
+                                                        <h:outputText value="#{bean.data_asseg}"><f:converter converterId="DateConverter"/></h:outputText>
+                                                        <h:outputText value=" (CC fascicolo: #{rif.cc_from_fasc}) "/>
+                                                        <h:panelGroup rendered="#{!empty bean.infoAssegnazione}">
+                                                            <a class="popoveritem" data-toggle="popover" data-placement="top" data-trigger="hover" data-content="#{bean.infoAssegnazione}" styleClass="popoveritem" href='#'>
+                                                                <i class="glyphicon glyphicon-info-sign normal-size-icon"></i>
+                                                            </a>
+                                                        </h:panelGroup>
+                                                    </td>
+                                                </tr>
+                                            </ui:repeat>
+                                        </h:panelGroup>
+                                    </h:panelGroup>
+                                </h:panelGroup>
+                            </h:panelGroup>
+                            <h:panelGroup rendered="#{bean.formsAdapter.funzionalitaDisponibili['rolesManagement'] and bean.formsAdapter.funzionalitaDisponibili['scartoRuoli']}">
+                                <tr>
+                                    <td class="resp-type">#{i18n['dw4.scarta_ruoli']}</td>
+                                    <td class="resp-name" colspan="4">
+                                        <h:commandLink action="#{bean.scartaRuoli}" title="#{i18n['dw4.scarta_ruoli']}" styleClass="btn btn-default btn-xs">
+                                            <f:ajax execute="@form" render=":templateForm:responsabilitaDoc" />
+                                            <span class="glyphicon glyphicon-ban-circle"></span>
+                                        </h:commandLink>
+                                    </td>
+                                </tr>
+                            </h:panelGroup>
+                        </tbody>
+                    </table>
+                </div>
+            </h:panelGroup>
+        </div>
+            
+    </h:panelGroup> 
+
+</ui:composition>   
+</html>

@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" 
+	  xmlns:h="http://java.sun.com/jsf/html" 
+	  xmlns:ui="http://java.sun.com/jsf/facelets" 
+	  xmlns:f="http://java.sun.com/jsf/core">
+<ui:composition>
+
+	<table class="table table-hover doc-titles-table doc-titles-table-extended">
+		<thead>
+			<tr>
+				<th class="coltipo essential">
+					<h:commandLink rendered="#{beanTitles.titlesSwitchEnabled}" action="#{beanTitles.changeTitlesMode('list')}" title="#{i18n['dw4.mostra_i_titoli_in_modalita_lista']}">
+						<f:ajax execute="@form" render="@form" />
+						<span class="title-list-mode-icon glyphicons-pro list"></span>	
+					</h:commandLink>
+				</th>
+				<h:panelGroup rendered="#{hidecheckbox != 'true'}">
+					<th class="colcheck essential">
+						<h:selectBooleanCheckbox id="selectAll" title="#{i18n['dw4.seleziona_tutti']}" immediate="true" value="#{beanTitles.selectAll}" valueChangeListener="#{beanTitles.selectAll}">
+							<f:ajax execute="@this" render="@form" />
+						</h:selectBooleanCheckbox>
+					</th>
+				</h:panelGroup>
+				<th class="colinfo optional">#{i18n['dw4.info']}</th>
+				<h:panelGroup rendered="#{!bean.formsAdapter.funzionalitaDisponibili['nascondiprotocollo']}">
+					<th class="colprot optional">
+						<span style="white-space:nowrap;">
+							<h:commandLink action="#{beanTitles.sortByCol}" actionListener="#{beanTitles.attrListenerSortHeader}">
+								<f:attribute name="colSort" value="xml(xpart:/doc/@num_prot),xml(xpart:/doc/repertorio/@numero)" />
+								<f:ajax event="action" render="@form"/>
+								#{i18n['dw4.n_rep_n']}
+							</h:commandLink>
+							<h:panelGroup rendered="#{beanTitles.xwOrd ne '' and fn:toLowerCase(beanTitles.xwOrd) eq 'xml(xpart:/doc/@num_prot),xml(xpart:/doc/repertorio/@numero)'}">
+								&#160;<span class="#{ beanTitles.ascSort ? 'glyphicon glyphicon-chevron-up' : 'glyphicon glyphicon-chevron-down' }" title="#{ beanTitles.ascSort ? i18n['dw4.ordine_crescente'] : i18n['dw4.ordine_decrescente'] }"></span>
+							</h:panelGroup>
+						</span>
+					</th>
+				</h:panelGroup>
+				<th class="coldata optional">
+					<span style="white-space:nowrap;">
+						<h:commandLink action="#{beanTitles.sortByCol}" actionListener="#{beanTitles.attrListenerSortHeader}">
+							<f:attribute name="colSort" value="xml(xpart:/doc/@data_prot:d)" />
+							<f:ajax event="action" render="@form"/>
+							<h:outputText value="#{(beanTitles.formsAdapter.funzionalitaDisponibili['nascondiprotocollo']) ? i18n['dw4.datadoc'] : i18n['dw4.dataprot']}" />
+						</h:commandLink>
+						<h:panelGroup rendered="#{beanTitles.xwOrd ne '' and fn:toLowerCase(beanTitles.xwOrd) eq 'xml(xpart:/doc/@data_prot:d)'}">
+							&#160;<span class="#{ beanTitles.ascSort ? 'glyphicon glyphicon-chevron-up' : 'glyphicon glyphicon-chevron-down' }" title="#{ beanTitles.ascSort ? i18n['dw4.ordine_crescente'] : i18n['dw4.ordine_decrescente'] }"></span>
+						</h:panelGroup>
+					</span>
+				</th>
+				<th class="colsoggetto optional">
+					<span style="white-space:nowrap;">
+						<h:commandLink action="#{beanTitles.sortByCol}" actionListener="#{beanTitles.attrListenerSortHeader}">
+							<f:attribute name="colSort" value="xml(xpart:/doc/rif_esterni/rif/nome),xml(xpart:/doc/autore)(join)" />
+							<f:ajax event="action" render="@form"/>
+							#{i18n['dw4.subject']}
+						</h:commandLink>
+						<h:panelGroup rendered="#{beanTitles.xwOrd ne '' and fn:toLowerCase(beanTitles.xwOrd) eq 'xml(xpart:/doc/rif_esterni/rif/nome),xml(xpart:/doc/autore)(join)'}">
+							&#160;<span class="#{ beanTitles.ascSort ? 'glyphicon glyphicon-chevron-up' : 'glyphicon glyphicon-chevron-down' }" title="#{ beanTitles.ascSort ? i18n['dw4.ordine_crescente'] : i18n['dw4.ordine_decrescente'] }"></span>
+						</h:panelGroup>
+					</span>
+				</th>
+				<th class="cologgetto essential">
+					<span style="white-space:nowrap;">
+						<h:commandLink action="#{beanTitles.sortByCol}" actionListener="#{beanTitles.attrListenerSortHeader}">
+							<f:attribute name="colSort" value="xml(xpart:/doc/oggetto)" />
+							<f:ajax event="action" render="@form"/>
+							#{i18n['dw4.object']}
+						</h:commandLink>
+						<h:panelGroup rendered="#{beanTitles.xwOrd ne '' and fn:toLowerCase(beanTitles.xwOrd) eq 'xml(xpart:/doc/oggetto)'}">
+							&#160;<span class="#{ beanTitles.ascSort ? 'glyphicon glyphicon-chevron-up' : 'glyphicon glyphicon-chevron-down' }" title="#{ beanTitles.ascSort ? i18n['dw4.ordine_crescente'] : i18n['dw4.ordine_decrescente'] }"></span>
+						</h:panelGroup>
+					</span>
+				</th>
+				<th class="colscad optional">
+					<span style="white-space:nowrap;">
+						<h:commandLink action="#{beanTitles.sortByCol}" actionListener="#{beanTitles.attrListenerSortHeader}">
+							<f:attribute name="colSort" value="xml(xpart:/doc/scadenza/@data_scadenza:d)" />
+							<f:ajax event="action" render="@form"/>
+							#{i18n['dw4.scadenza']}
+						</h:commandLink>
+						<h:panelGroup rendered="#{beanTitles.xwOrd ne '' and fn:toLowerCase(beanTitles.xwOrd) eq 'xml(xpart:/doc/scadenza/@data_scadenza:d)'}">
+							&#160;<span class="#{ beanTitles.ascSort ? 'glyphicon glyphicon-chevron-up' : 'glyphicon glyphicon-chevron-down' }" title="#{ beanTitles.ascSort ? i18n['dw4.ordine_crescente'] : i18n['dw4.ordine_decrescente'] }"></span>
+						</h:panelGroup>
+					</span>
+				</th>
+				<th class="colconservato optional">#{i18n['dw4.conservato']}</th>
+			</tr>
+		</thead>
+		<tbody>
+			<ui:repeat var="title" value="#{beanTitles.titles}" varStatus="varstatus">
+				<h:panelGroup rendered="#{!(fn:startsWith(title.testo, '|||||||'))}">
+					<tr>
+						<h:panelGroup rendered="#{title.visible != 'false'}">
+							<td class="coltipo essential">
+								<h:panelGroup rendered="#{title.icon ne ''}">
+									<h:commandLink action="#{beanTitles.mostraDocumento}" title="#{fn:toUpperCase(title.dbTable)} - #{i18n['dw4.vai_al_record']}" styleClass="openwaitmsg">
+										<span class="doc-tipo-custom #{title.icon} #{(title.split[12]=='annullato=si') ? 'annullato' : ''}" title="#{fn:toUpperCase(title.split[11])} - #{i18n['dw4.vai_al_record']}"></span>
+										<ui:remove>
+											<h:graphicImage url="#{title.split[12]=='annullato=si' ? fn:replace(title.icon, '.png', 'annullato.png') : title.icon}" title="#{fn:toUpperCase(title.split[11])} - #{i18n['dw4.vai_al_record']}" alt="#{fn:toUpperCase(title.dbTable)} - #{i18n['dw4.vai_al_record']}" />
+										</ui:remove>
+									</h:commandLink>
+								</h:panelGroup>
+								<h:panelGroup rendered="#{title.icon eq ''}">
+									<h:commandLink action="#{beanTitles.mostraDocumento}" title="#{fn:toUpperCase(title.dbTable)} - #{i18n['dw4.vai_al_record']}" styleClass="openwaitmsg">
+										<span class="doc-tipo-#{title.dbTable} glyphicons-pro #{title.split[12]=='annullato=si' ? 'annullato' : ''}"></span>
+									</h:commandLink>
+								</h:panelGroup>
+							</td>
+							<h:panelGroup rendered="#{hidecheckbox != 'true'}">
+								<td class="colcheck essential">
+									<h:selectBooleanCheckbox value="#{title.select}" valueChangeListener="#{beanTitles.selectTitle}" class="title-check" onclick="setFieldAsGlobalFocusFieldId(this);">
+										<f:ajax execute="@this" render="@form"/>
+									</h:selectBooleanCheckbox>
+								</td>
+							</h:panelGroup>
+							<td class="colinfo optional">
+								<ui:include src="./showtitles@docinfo.xhtml">
+									<ui:param name="bean" value="#{beanTitles}" />
+									<ui:param name="title" value="#{title}" />
+									<ui:param name="indice" value="#{varstatus.index}" />
+									<ui:param name="direction" value="#{(!empty beanTitles.languageOrientation and beanTitles.languageOrientation eq 'rtl') ? 'top' : 'right'}" />
+					        	</ui:include>
+							</td>
+							<h:panelGroup rendered="#{!beanTitles.formsAdapter.funzionalitaDisponibili['nascondiprotocollo']}">
+								<td class="colprot optional">
+									<ui:param name="var" value="#{fn:substring(title.split[1], (fn:indexOf(title.split[1], '-')+1), fn:length(title.split[1]))}"/>
+									<h:outputText value="#{fn:substring(var, (fn:indexOf(var, '-')+1), fn:length(var))}">
+										<f:converter converterId="NumConverter"/>
+									</h:outputText>
+									<h:panelGroup rendered="#{!empty title.split[2]}">
+										<br/>
+										<h:outputText value="(" />
+										<h:outputText value="#{fn:substring(title.split[2], (fn:indexOf(title.split[2], '-')+5), fn:length(title.split[2]))}" >
+											<f:converter converterId="NumConverter"/>
+										</h:outputText>
+										<h:outputText value="-"/>
+										<h:outputText value="#{fn:substring(title.split[2], (fn:indexOf(title.split[2], '-')+1), (fn:indexOf(title.split[2], '-')+5))}" />
+										<h:outputText value=")"/>
+									</h:panelGroup>
+									<h:panelGroup rendered="#{title.split[10] eq 'bozza=si'}">
+										<h:outputText value="#{i18n['dw4.bozza']}" style="font-weight:bold;"/>
+									</h:panelGroup>
+								</td>
+							</h:panelGroup>
+							<td class="coldata optional">
+								<h:outputText value="#{title.split[3]}"><f:converter converterId="DateConverter"/></h:outputText>
+							</td>
+							<td class="colsoggetto optional">
+								<ui:param name="subject" value="#{(!empty title.split[4] and fn:length(title.split[4]) > 100) ? fn:substring(title.split[4], 0, 99) : title.split[4]}" />
+								<span title="#{title.split[4]}">#{subject} #{(!empty title.split[4] and fn:length(title.split[4]) > 100) ? '...' : ''}</span>
+							</td>
+							<td class="cologgetto essential">
+								<span class="first-row-oggetto">#{title.split[11]}</span> 
+								<h:panelGroup rendered="#{!empty title.split[11] and !empty title.split[5]}"><br/></h:panelGroup>
+								<h:commandLink action="#{beanTitles.mostraDocumento}" styleClass="openwaitmsg">
+									<ui:param name="object" value="#{(!empty title.split[5] and (beanTitles.lunghezzaMaxOggetto > 0) and (fn:length(title.split[5]) > beanTitles.lunghezzaMaxOggetto)) ? fn:substring(title.split[5], 0, beanTitles.lunghezzaMaxOggetto - 1) : title.split[5]}" />
+									<span class="second-row-oggetto #{(title.hashSplit['TRASH'] eq 'si') ? 'doc-in-cestino' : ''}" title="#{title.split[5]}">
+										<h:panelGroup rendered="#{title.visto == 'true'}">
+											<h:outputText value="#{object}" escape="false" /> #{(!empty title.split[5] and (beanTitles.lunghezzaMaxOggetto > 0) and (fn:length(title.split[5]) > beanTitles.lunghezzaMaxOggetto)) ? '...' : ''}
+										</h:panelGroup>
+										<h:panelGroup rendered="#{title.visto != 'true'}">
+											<span class="showtitles-documento-non-visto"><h:outputText value="#{object}" escape="false" /> #{(!empty title.split[5] and (beanTitles.lunghezzaMaxOggetto > 0) and (fn:length(title.split[5]) > beanTitles.lunghezzaMaxOggetto)) ? '...' : ''}</span>
+										</h:panelGroup>
+									</span>
+								</h:commandLink>
+							</td>
+							<td class="colscad optional">
+								<div><h:outputText value="#{title.hashSplit['DS']}"><f:converter converterId="DateConverter"/></h:outputText></div>
+							</td>
+							<td class="colconservato optional">
+								<h:panelGroup rendered="#{title.hashSplit['CONSID'] != null and title.hashSplit['CONSID'] ne ''}" layout="block">
+									<span class="visto-icon glyphicon glyphicon-ok normal-size-icon" title="#{i18n['dw4.documento_inviato_in_conservazione']}"></span>
+								</h:panelGroup>
+							</td>
+						</h:panelGroup>
+						<h:panelGroup rendered="#{title.visible == 'false'}">
+							<td class="coltipo essential">&#160;</td>
+							<h:panelGroup rendered="#{hidecheckbox != 'true'}">
+								<td class="colcheck essential">&#160;</td>
+							</h:panelGroup>
+							<td class="colinfo optional">&#160;</td>
+							<td class="cologgetto essential" colspan="#{(!bean.formsAdapter.funzionalitaDisponibili['nascondiprotocollo']) ? '7' : '6'}">
+								<span class="showtitles-documento-non-visibile">#{title.testo}</span>
+							</td>
+						</h:panelGroup>
+					</tr>
+				</h:panelGroup>
+				<h:panelGroup rendered="#{fn:startsWith(title.testo, '|||||||')}">
+					<tr>
+						<td class="coltipo essential">
+							<h:commandLink action="#{beanTitles.mostraDocumento}" title="#{i18n['dw4.vai_al_fascicolo']}" styleClass="openwaitmsg">
+								<f:param name="titolo" value="#{title}"></f:param>
+								<span class="doc-tipo-fascicolo glyphicon #{(title.split[9] eq 'aperto') ? 'glyphicon-folder-open': 'glyphicon-folder-close'}"></span>
+							</h:commandLink>
+						</td>
+						<h:panelGroup rendered="#{hidecheckbox != 'true'}">
+							<td class="colcheck essential">
+								<h:selectBooleanCheckbox value="#{title.select}" valueChangeListener="#{beanTitles.selectTitle}">
+									<f:ajax execute="@this" render="@form"/>
+								</h:selectBooleanCheckbox>
+							</td>
+						</h:panelGroup>
+						<td class="cologgetto essential" colspan="#{(!bean.formsAdapter.funzionalitaDisponibili['nascondiprotocollo']) ? '6' : '5'}">
+							<h:commandLink action="#{beanTitles.mostraDocumento}" styleClass="openwaitmsg">
+								<div><h:outputText value="#{title.split[7]}"><f:converter converterId="NumFascConverter"/></h:outputText> - «#{title.split[8]}»</div>
+							</h:commandLink>
+						</td>
+						<td class="optional">&#160;</td>
+					</tr>
+				</h:panelGroup>
+			</ui:repeat>
+		</tbody>
+	</table>
+
+</ui:composition>   
+</html>

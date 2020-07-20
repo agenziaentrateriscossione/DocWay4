@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" 
+	  xmlns:h="http://java.sun.com/jsf/html" 
+	  xmlns:ui="http://java.sun.com/jsf/facelets" 
+	  xmlns:f="http://java.sun.com/jsf/core"
+	  xmlns:c="http://java.sun.com/jsp/jstl/core">
+<ui:composition>
+
+	<h:panelGroup id="lookup" layout="block">
+		<h:panelGroup rendered="#{pageBean.lookupActive}">
+			<!-- Modal -->
+			<div id="lookupModal" class="modal fade in" aria-hidden="false" aria-labelledby="lookupModalLabel" role="dialog" tabindex="-1" style="display: block;">
+			<!--div class="modal fade" id="loadingbarModal" tabindex="-1" role="dialog" aria-labelledby="loadingbarModalLabel" aria-hidden="true"-->
+				<div class="modal-dialog">
+					<div class="modal-content jsf-modal">
+						<div class="modal-header">
+							<h:commandButton styleClass="close" title="#{i18n['acl.close']}" action="#{pageBean.lookup.close}" data-dismiss="modal"  value="&#215;" >
+			        			<f:ajax render="lookup"/>
+			        		</h:commandButton>
+			        		
+			        		<h4 class="modal-title" id="lookupModalLabel">Lookup</h4>
+						</div>
+						<div class="modal-body">
+						
+							<!-- toolbar -->
+							<div class="row btn-toolbar dw-modal-content-buttons margin-bottom">
+								<div class="col-md-6">
+									<div class="btn-group">
+										<h:commandLink 
+											rendered="#{pageBean.lookup.formsAdapter.funzionalitaDisponibili['ins_record'] and pageBean.lookup.formsAdapter.lookupNew != ''}" 
+											action="#{pageBean.lookup.newRecord}" onclick="openCenterPopup('', 'popupNewLookupRecord');" target="popupNewLookupRecord" 
+											value="#{i18n['nuovo']}" styleClass="btn btn-default" />
+									</div>
+								</div>
+								<div class="col-md-6 text-right">
+									<h:panelGroup rendered="#{fn:length(pageBean.lookup.titoli) > 0}">
+										<ui:include src="./ajaxNavigationBar.xhtml">
+											<ui:param name="bean" value="#{pageBean.lookup}"/>
+										</ui:include>
+									</h:panelGroup>
+								</div>
+							</div>
+							
+							<!-- titles -->
+							<h:panelGroup rendered="#{fn:length(pageBean.lookup.titoli) > 0}">
+								<table class="table table-striped">
+									<thead>
+										<tr>
+											<th class="essential">#{i18n['acl.title']}</th>
+										</tr>
+									</thead>
+									<tbody>
+										<ui:repeat var="title" value="#{pageBean.lookup.titoli}" varStatus="status">
+											<tr>
+												<td class="essential">
+													<h:commandLink action="#{pageBean.lookup.confirm}" value="#{title.testo}">
+														<f:ajax execute="@form" render="@form" />
+													</h:commandLink>
+												</td>
+											</tr>
+										</ui:repeat>
+									</tbody>
+								</table>
+							</h:panelGroup>
+							<h:panelGroup rendered="#{fn:length(pageBean.lookup.titoli) == 0}">
+								<div style="margin-top:15px;" class="alert alert-info">#{i18n['acl.emptysearch']}</div>
+							</h:panelGroup>
+				        	
+					       	<h:inputTextarea value="#{pageBean.lookup.xml}" rendered="#{pageBean.debugMode}" styleClass="form-control" rows="10"/>
+						</div>
+						<div class="modal-footer">
+							<h:commandButton styleClass="btn btn-default" title="#{i18n['acl.close']}" action="#{pageBean.lookup.close}" data-dismiss="modal"  value="#{i18n['acl.close']}" >
+			        			<f:ajax render="lookup"/>
+			        		</h:commandButton>
+						</div>
+					</div>
+				</div>
+			</div>
+		</h:panelGroup>
+		
+		<h:inputHidden id="focusElementLookup"></h:inputHidden>
+		<h:outputScript>
+		// gestione del ritorno da lookup. focus su campo successivo al campo di lookup
+		setGlobalFocusFieldId($('#templateForm\\:focusElementLookup').val());
+		</h:outputScript>
+		    
+	    <h:inputHidden id="lookupNewPhysDoc" rendered="#{pageBean.lookup != null}" value="#{pageBean.lookup.physDoc}" />
+	    <h:commandLink style="display:none;" id="redoLookupAfterInsert" action="#{pageBean.lookup.redoLookupAfterInsert}" >
+			<f:ajax execute="@form" render="@form" />
+		</h:commandLink>
+	</h:panelGroup>
+
+</ui:composition>   
+</html>

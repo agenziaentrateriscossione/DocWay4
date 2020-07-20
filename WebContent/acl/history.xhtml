@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core">
+<ui:composition>
+
+	<div class="showdoc-section">
+		<div class="title">
+			#{i18n['acl.servicesinformation']}
+			<div class="pull-right">
+				<span class="glyphicons-pro settings" title="#{i18n['acl.servicesinformation']}"></span>
+			</div>
+		</div>
+
+		<dl class="dl-horizontal">
+			<dt>#{i18n['acl.registration']}</dt>
+			<dd>#{bean.creazione.dateLong} <strong>#{bean.creazione.uff_oper}</strong> - #{bean.creazione.oper}</dd>
+
+			<h:panelGroup rendered="#{fn:length(bean.modifiche)>0}">
+				<dt>#{i18n['acl.storia_modifiche']}</dt>
+				<dd>
+					<h:panelGroup id="storiaCommand">
+						<h:commandLink rendered="#{!visible}" title="#{i18n['acl.viewmodify']}" onclick="return openCloseHistory();">
+							<span id="hideHistoryLink" style="display:none;">#{i18n['dw4.nascondi_storia']}</span>
+							<span id="showHistoryLink">#{i18n['dw4.visualizza_storia']}</span>
+	                    </h:commandLink>
+					</h:panelGroup>
+				</dd>
+			</h:panelGroup>
+		</dl>
+		
+		<div id="historyPanel" style="display:none;">
+			<dl class="dl-horizontal">
+				<ui:repeat var="storia" value="#{bean.modifiche}">
+					<h:panelGroup layout="block" rendered="#{!empty(storia.dateLong)}">
+						<dt>#{i18n['acl.modify']}</dt>
+						<dd>#{storia.dateLong} <strong>#{storia.uff_oper}</strong> - #{storia.oper}</dd>
+					</h:panelGroup>
+				</ui:repeat>
+			</dl>
+		</div>
+		
+		<h:panelGroup rendered="#{fn:length(bean.modifiche)>0}">
+			<dl class="dl-horizontal">
+				<h:panelGroup layout="block" rendered="#{!empty(bean.ultima_modifica.dateLong)}">
+					<dt>#{i18n['acl.lastmodify']}</dt>
+					<dd>#{bean.ultima_modifica.dateLong} <strong>#{bean.ultima_modifica.uff_oper}</strong> - #{bean.ultima_modifica.oper}</dd>
+				</h:panelGroup>
+			</dl>
+		</h:panelGroup>
+	</div>
+
+</ui:composition>
+</html>

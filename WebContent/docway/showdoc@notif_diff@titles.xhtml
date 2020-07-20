@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" 
+	  xmlns:h="http://java.sun.com/jsf/html" 
+	  xmlns:ui="http://java.sun.com/jsf/facelets" 
+	  xmlns:f="http://java.sun.com/jsf/core">
+<ui:composition>
+
+	<h:panelGroup rendered="#{not empty titles}">
+		<div class="panel panel-default">
+			<div class="panel-heading">
+				<h3 class="panel-title">#{headerTitle}</h3>
+			</div>
+			<table class="table notifica-differita-titles">
+				<ui:repeat var="title" value="#{titles}" varStatus="indice">
+					<tr>
+						<td class="#{title.selected ? 'active' : ''}">
+							<h:commandLink rendered="#{!title.selected}" title="#{i18n['dw4.inoltra_il_documento_via_email']}" onclick="return notif_diff_showTitoloNonSelezionato();" >
+								<span class="glyphicon glyphicon-envelope normal-size-icon" title="#{i18n['dw4.inoltra_il_documento_via_email']}"></span>
+							</h:commandLink>
+							<h:commandLink rendered="#{title.selected and (bean.errore ne '' or !bean.docWithFiles)}" title="#{i18n['dw4.inoltra_il_documento_via_email']}" onclick="return notif_diff_showTitoloNoAllegati();" >
+								<span class="glyphicon glyphicon-envelope normal-size-icon" title="#{i18n['dw4.inoltra_il_documento_via_email']}"></span>
+							</h:commandLink>
+							<h:commandLink rendered="#{title.selected and bean.errore eq '' and bean.docWithFiles}" title="#{i18n['dw4.inoltra_il_documento_via_email']}" action="#{bean.showEMailForm}" >
+								<span class="glyphicon glyphicon-envelope normal-size-icon" title="#{i18n['dw4.inoltra_il_documento_via_email']}"></span>
+							</h:commandLink>
+						</td>
+						<td class="#{title.selected ? 'active' : ''}">
+							<h:commandLink action="#{bean.showDocNotifDiff}" styleClass="blacklink">
+								<f:ajax execute="@this" render="@form" />
+								<h:outputText value="#{title.testo}" />
+							</h:commandLink>
+						</td>
+						<td class="#{title.selected ? 'active' : ''} text-right">
+							<h:commandLink action="#{bean.goToShowDocFromNotifDiff}" title="#{i18n['dw4.vai_al_documento']}" >
+								<span class="glyphicon glyphicon-new-window normal-size-icon" title="#{i18n['dw4.vai_al_documento']}"></span>
+							</h:commandLink>
+						</td>
+					</tr>
+				</ui:repeat>
+			</table>
+		</div>
+	</h:panelGroup>
+
+</ui:composition>
+</html>

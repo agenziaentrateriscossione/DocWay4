@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	template="template.xhtml" xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core">
+
+	<ui:define name="content">
+		<div class="persest docedit">
+
+			<!-- toolbar: inizio -->
+			<div class="btn-toolbar margin-bottom" role="toolbar">
+				<div class="btn-group">
+					<h:commandLink id="saveBtn" action="#{docEditModifyPersonaEsterna.saveDocument}" styleClass="btn btn-primary openwaitmsg">#{i18n['acl.save']}</h:commandLink>
+					<h:commandLink action="#{docEditModifyPersonaEsterna.clearDocument}" styleClass="btn btn-default">#{i18n['acl.back']}</h:commandLink>
+					<h:commandLink rendered="#{docEditModifyPersonaEsterna.popupPage}" onclick="self.close();" styleClass="btn btn-default">#{i18n['acl.close']}</h:commandLink>
+				</div>
+			</div>
+			<!-- toolbar: fine -->
+
+			<h5 class="sub-header">
+				<span class="persone-esterne glyphicons-pro"></span>&#160;
+				<h:outputText value="#{i18n['acl.mod_persest']}" escape="false" />
+			</h5>
+
+			<!-- messages: inizio -->
+			<h:panelGroup rendered="#{not empty facesContext.messageList}"
+				layout="block" styleClass="docedit-messages alert alert-danger">
+				<h:messages styleClass="" id="validationMesseges" />
+			</h:panelGroup>
+			<!-- messages: fine -->
+
+			<script type="text/javascript">
+			$(document).ready(function() {
+				// disabilita link esterni al form per rilascio del lock sul documento
+				disableNoTemplateFormLinks("#{i18n['dw4.abbandona_alert_msg']}");
+			});
+			</script>
+
+			<!-- scheda edit: inizio -->
+			<div class="row-fluid" style="margin-top:10px;">
+				<div id="fixedshowdoc" class="box span12 fixed-showdoc">
+					<div class="box-content">
+
+						<div class="fieldset">
+							<div class="legend">
+								#{i18n['acl.informazioni_di_base']}
+								<div class="pull-right">
+									<span class="glyphicons-pro old_man" title="#{i18n['acl.informazioni_di_base']}"></span>
+								</div>
+							</div>
+
+							<div class="form-group">
+								<label class="col-sm-2 control-label"><span>#{i18n['acl.code']}</span></label>
+								<div class="col-sm-3">
+									<h:outputText
+										value="#{docEditModifyPersonaEsterna.persona_esterna.matricola}"
+										styleClass="form-control" />
+								</div>
+                            </div>
+                            <div class="form-group">
+								<label for="templateForm:demsi_titolodeferenza_input"
+									class="col-sm-2 control-label">#{i18n['acl.deferenza']}</label>
+								<div class="col-sm-3">
+									<ui:include src="./thField.xhtml">
+										<ui:param name="id" value="demsi_titolodeferenza" />
+										<ui:param name="field"
+											value="#{docEditModifyPersonaEsterna.persona_esterna.titolo_deferenza}" />
+										<ui:param name="bean" value="#{docEditModifyPersonaEsterna}" />
+										<ui:param name="action" value="thVincolatoTitoloDeferenza" />
+										<ui:param name="title" value="#{i18n['acl.thdeferenza']}" />
+										<ui:param name="styleclass" value="form-control" />
+										<ui:param name="refresh"
+											value="templateForm:demsi_titolodeferenza_input" />
+									</ui:include>
+								</div>
+								<label for="templateForm:demsi_titolo_input"
+									class="col-sm-2 control-label">#{i18n['acl.title']}</label>
+								<div class="col-sm-3">
+									<ui:include src="./thField.xhtml">
+										<ui:param name="id" value="demsi_titolo" />
+										<ui:param name="field"
+											value="#{docEditModifyPersonaEsterna.persona_esterna.titolo}" />
+										<ui:param name="bean" value="#{docEditModifyPersonaEsterna}" />
+										<ui:param name="action" value="thVincolatoTitolo" />
+										<ui:param name="title" value="#{i18n['acl.thtitle']}" />
+										<ui:param name="styleclass" value="form-control" />
+										<ui:param name="refresh"
+											value="templateForm:demsi_titolo_input" />
+									</ui:include>
+								</div>
+							</div>
+							<div class="form-group">
+								<label for="templateForm:demsi_titolodeferenza_input"
+									class="col-sm-2 control-label requiredField">*
+									#{i18n['acl.surname']}</label>
+								<div class="col-sm-4">
+									<h:inputText
+										value="#{docEditModifyPersonaEsterna.persona_esterna.cognome}"
+										id="demsi_cognome"
+										styleClass="#{ component.valid ? '' : 'invalidinput' } form-control" />
+								</div>
+								<label class="col-sm-1 control-label requiredField"><span>*
+										#{i18n['acl.name']}</span></label>
+								<div class="col-sm-4">
+									<h:inputText
+										value="#{docEditModifyPersonaEsterna.persona_esterna.nome}"
+										id="demsi_nome"
+										styleClass="#{ component.valid ? '' : 'invalidinput' } form-control" />
+								</div>
+							</div>
+							<div class="form-group">
+								<label class="col-sm-2 control-label"><span>#{i18n['acl.secondname']}</span></label>
+								<div class="col-sm-4">
+									<h:inputText
+										value="#{docEditModifyPersonaEsterna.persona_esterna.secondo_nome}"
+										styleClass="form-control" />
+								</div>
+								<label class="col-sm-1 control-label"><span>#{i18n['acl.nickname']}</span></label>
+								<div class="col-sm-4">
+									<h:inputText
+										value="#{docEditModifyPersonaEsterna.persona_esterna.soprannome}"
+										styleClass="form-control" />
+								</div>
+							</div>
+							<div class="form-group">
+								<label class="col-sm-2 control-label"><span>#{i18n['acl.cf']}</span></label>
+								<div class="col-sm-4">
+									<h:inputText
+										value="#{docEditModifyPersonaEsterna.persona_esterna.codice_fiscale}"
+										styleClass="form-control" />
+								</div>
+							</div>
+							<div class="form-group">
+								<label class="col-sm-2 control-label"><span>#{i18n['acl.birthtown']}</span></label>
+								<div class="col-sm-3">
+									<ui:include src="./lookupField.xhtml">
+										<ui:param name="id" value="demsi_comunenascita" />
+										<ui:param name="field"
+											value="#{docEditModifyPersonaEsterna.persona_esterna.luogo_nascita}" />
+										<ui:param name="bean" value="#{docEditModifyPersonaEsterna}" />
+										<ui:param name="action" value="lookupComuneNascita" />
+										<ui:param name="clearaction" value="clearLookupComuneNascita" />
+										<ui:param name="title" value="#{i18n['acl.townlookup']}" />
+										<ui:param name="styleclass" value="form-control" />
+										<ui:param name="refresh"
+											value="templateForm:demsi_comunenascita_input templateForm:lookup templateForm:errormsg" />
+									</ui:include>
+								</div>
+								<ui:include src="./dateField.xhtml">
+									<ui:param name="label" value="#{i18n['acl.birthdate']}" />
+									<ui:param name="id" value="dataNascita" />
+									<ui:param name="value"
+										value="#{docEditModifyPersonaEsterna.persona_esterna.data_nascita}" />
+								</ui:include>
+							</div>
+							<div class="form-group">
+								<label class="col-sm-2 control-label"><span>#{i18n['acl.sex']}</span></label>
+								<div class="col-sm-3">
+									<h:selectOneRadio
+										value="#{docEditModifyPersonaEsterna.persona_esterna.sesso}"
+										styleClass="radio-selection">
+										<f:selectItem itemLabel="M" itemValue="M" />
+										<f:selectItem itemLabel="F" itemValue="F" />
+									</h:selectOneRadio>
+								</div>
+							</div>
+							<div class="form-group">
+								<label class="col-sm-2 control-label requiredField"><span>*
+										#{i18n['acl.cod_amm']}</span></label>
+								<div class="col-sm-2">
+									<h:inputText
+										rendered="#{ !docEditModifyPersonaEsterna.formsAdapter.funzionalitaDisponibili['acl_ext_aoo_restriction'] }"
+										id="persest_codamm"
+										value="#{docEditModifyPersonaEsterna.persona_esterna.cod_amm}"
+										valueChangeListener="#{docEditModifyPersonaEsterna.codAmmValueChange}"
+										styleClass="#{ component.valid ? '' : 'invalidinput' } form-control"
+										maxlength="4">
+										<f:ajax execute="@this"
+											render="templateForm:struttureAppartenenza" />
+									</h:inputText>
+									<h:panelGroup rendered="#{ docEditModifyPersonaEsterna.formsAdapter.funzionalitaDisponibili['acl_ext_aoo_restriction'] }">
+										<p class="form-control-static"><h:outputText value="#{docEditModifyPersonaEsterna.persona_esterna.cod_amm}" /></p>
+									</h:panelGroup>
+								</div>
+								<label class="col-sm-offset-1 col-sm-2 control-label requiredField"><span>*
+										#{i18n['acl.cod_aoo']}</span></label>
+								<div class="col-sm-2">
+									<h:inputText
+										rendered="#{ !docEditModifyPersonaEsterna.formsAdapter.funzionalitaDisponibili['acl_ext_aoo_restriction'] }"
+										id="persest_codaoo"
+										value="#{docEditModifyPersonaEsterna.persona_esterna.cod_aoo}"
+										valueChangeListener="#{docEditModifyPersonaEsterna.codAooValueChange}"
+										styleClass="#{ component.valid ? '' : 'invalidinput' } form-control"
+										maxlength="3">
+										<f:ajax execute="@this"
+											render="templateForm:struttureAppartenenza" />
+									</h:inputText>
+									<h:panelGroup rendered="#{ docEditModifyPersonaEsterna.formsAdapter.funzionalitaDisponibili['acl_ext_aoo_restriction'] }">
+										<p class="form-control-static"><h:outputText value="#{docEditModifyPersonaEsterna.persona_esterna.cod_aoo}" /></p>
+									</h:panelGroup>
+								</div>
+							</div>
+						</div>
+						<!-- /fieldset -->
+					</div>
+
+					<div class="fieldset">
+						<div class="legend">
+							#{i18n['acl.roles-skills']}
+							<div class="pull-right">
+								<span class="glyphicons-pro briefcase"
+									title="#{i18n['acl.roles-skills']}"></span>
+							</div>
+						</div>
+
+						<ui:repeat var="appartenenza"
+							value="#{docEditModifyPersonaEsterna.persona_esterna.appartenenza}">
+							<div class="form-group">
+								<label class="col-sm-2 control-label"><span>#{i18n['acl.assigned']}</span></label>
+								<div class="col-sm-3">
+									<ui:include src="./lookupRepeatField.xhtml">
+										<ui:param name="id" value="demse_appartenenza_nome" />
+										<ui:param name="field" value="#{appartenenza.nome}" />
+										<ui:param name="element" value="#{appartenenza}" />
+										<ui:param name="bean" value="#{docEditModifyPersonaEsterna}" />
+										<ui:param name="action" value="lookupStrutturaAppartenenza" />
+										<ui:param name="clearaction"
+											value="clearLookupStrutturaAppartenenza" />
+										<ui:param name="title"
+											value="#{i18n['acl.assignedstructurelookup']}" />
+										<ui:param name="styleclass" value="form-control" />
+										<ui:param name="refresh" value="@form" />
+									</ui:include>
+									<h:inputHidden value="#{appartenenza.cod_uff}"
+										id="demse_appartenenza_cod_uff" />
+								</div>
+								<label class="col-sm-2 control-label"><span>#{i18n['acl.role']}</span></label>
+								<div class="col-sm-3">
+									<ui:include src="./thField.xhtml">
+										<ui:param name="id" value="demsi_ruolo" />
+										<ui:param name="field" value="#{appartenenza.qualifica}" />
+										<ui:param name="bean" value="#{docEditModifyPersonaEsterna}" />
+										<ui:param name="action" value="thVincolatoRuolo" />
+										<ui:param name="title" value="#{i18n['acl.throle']}" />
+										<ui:param name="styleclass" value="form-control" />
+										<ui:param name="refresh"
+											value="templateForm:demsi_ruolo_input" />
+									</ui:include>
+								</div>
+
+								<div class="col-sm-1 input-group">
+									<div class="btn-group">
+										<h:commandLink
+											action="#{docEditModifyPersonaEsterna.persona_esterna.deleteAppartenenza}"
+											title="#{i18n['dw4.elimina_istanza']}"
+											styleClass="btn btn-default">
+											<f:param name="appartenenza" value="#{appartenenza}" />
+											<f:ajax execute="@form" render="@form" />
+											<span class="glyphicon glyphicon-minus"></span>
+										</h:commandLink>
+										<h:commandLink
+											action="#{docEditModifyPersonaEsterna.persona_esterna.addAppartenenza}"
+											title="#{i18n['dw4.aggiungi_istanza']}"
+											styleClass="btn btn-default">
+											<f:param name="appartenenza" value="#{appartenenza}" />
+											<f:ajax execute="@form" render="@form" />
+											<span class="glyphicon glyphicon-plus"></span>
+										</h:commandLink>
+										<h:commandLink
+											action="#{docEditModifyPersonaEsterna.persona_esterna.moveUpAppartenenza}"
+											title="#{i18n['dw4.sposta_su']}"
+											rendered="#{docEditModifyPersonaEsterna.persona_esterna.appartenenza[0] != appartenenza}"
+											styleClass="btn btn-default">
+											<f:param name="appartenenza" value="#{appartenenza}" />
+											<f:ajax execute="@form" render="@form" />
+											<span class="glyphicon glyphicon-chevron-up"></span>
+										</h:commandLink>
+										<h:commandLink
+											action="#{docEditModifyPersonaEsterna.persona_esterna.moveDownAppartenenza}"
+											title="#{i18n['dw4.sposta_giu']}"
+											rendered="#{docEditModifyPersonaEsterna.persona_esterna.appartenenza[fn:length(docEditModifyPersonaEsterna.persona_esterna.appartenenza)-1] != appartenenza}"
+											styleClass="btn btn-default">
+											<f:param name="appartenenza" value="#{appartenenza}" />
+											<f:ajax execute="@form" render="@form" />
+											<span class="glyphicon glyphicon-chevron-down"></span>
+										</h:commandLink>
+									</div>
+								</div>
+
+							</div>
+						</ui:repeat>
+
+					</div>
+					<!-- /fieldset -->
+
+					<div class="fieldset">
+						<div class="legend">
+							#{(!empty docEditModifyPersonaEsterna.label_dati_attivita) ?
+							docEditModifyPersonaEsterna.label_dati_attivita :
+							i18n['acl.workdata']}
+							<div class="pull-right">
+								<span class="glyphicons-pro building"
+									title="#{(!empty docEditModifyPersonaEsterna.label_dati_attivita) ? docEditModifyPersonaEsterna.label_dati_attivita : i18n['acl.workdata']}"></span>
+							</div>
+						</div>
+
+						<div class="form-group">
+							<label class="col-sm-2 control-label"><span>#{i18n['acl.street']}</span></label>
+							<div class="col-sm-9">
+								<h:inputText id="demsi_recapito_indirizzovia"
+									value="#{docEditModifyPersonaEsterna.persona_esterna.recapito.indirizzo.indirizzo}"
+									styleClass="#{ component.valid ? '' : 'invalidinput' } form-control" />
+							</div>
+						</div>
+						<div class="form-group">
+							<label class="col-sm-2 control-label"><span>#{i18n['acl.town']}</span></label>
+							<div class="col-sm-5">
+								<ui:include src="./lookupField.xhtml">
+									<ui:param name="id" value="demsi_recapito_indirizzocomune" />
+									<ui:param name="field"
+										value="#{docEditModifyPersonaEsterna.persona_esterna.recapito.indirizzo.comune}" />
+									<ui:param name="bean" value="#{docEditModifyPersonaEsterna}" />
+									<ui:param name="action" value="lookupRecapitoComune" />
+									<ui:param name="clearaction" value="clearLookupRecapitoComune" />
+									<ui:param name="title" value="#{i18n['acl.townlookup']}" />
+									<ui:param name="styleclass" value="form-control" />
+									<ui:param name="refresh"
+										value="templateForm:demsi_recapito_indirizzocomune_input templateForm:demsi_recapito_indirizzocap_input templateForm:demsi_recapito_indirizzoprov templateForm:demsi_recapito_indirizzonazione templateForm:lookup templateForm:errormsg" />
+								</ui:include>
+							</div>
+							<label class="col-sm-2 control-label"><span>#{i18n['acl.zip']}</span></label>
+							<div class="col-sm-2">
+								<ui:include src="./lookupField.xhtml">
+									<ui:param name="id" value="demsi_recapito_indirizzocap" />
+									<ui:param name="field"
+										value="#{docEditModifyPersonaEsterna.persona_esterna.recapito.indirizzo.cap}" />
+									<ui:param name="bean" value="#{docEditModifyPersonaEsterna}" />
+									<ui:param name="action" value="lookupRecapitoCap" />
+									<ui:param name="clearaction" value="clearLookupRecapitoCap" />
+									<ui:param name="title" value="#{i18n['acl.ziplookup']}" />
+									<ui:param name="styleclass" value="form-control" />
+									<ui:param name="refresh"
+										value="templateForm:demsi_recapito_indirizzocomune_input templateForm:demsi_recapito_indirizzocap_input templateForm:demsi_recapito_indirizzoprov templateForm:demsi_recapito_indirizzonazione templateForm:lookup templateForm:errormsg" />
+								</ui:include>
+							</div>
+						</div>
+
+						<div class="form-group">
+							<label class="col-sm-2 control-label"><span>#{i18n['acl.province']}</span></label>
+							<div class="col-sm-2">
+								<h:inputText
+									value="#{docEditModifyPersonaEsterna.persona_esterna.recapito.indirizzo.prov}"
+									styleClass="form-control" id="demsi_recapito_indirizzoprov" />
+							</div>
+							<label class="col-sm-2 control-label"><span>#{i18n['acl.state']}</span></label>
+							<div class="col-sm-5">
+								<h:inputText
+									value="#{docEditModifyPersonaEsterna.persona_esterna.recapito.indirizzo.nazione}"
+									styleClass="form-control" id="demsi_recapito_indirizzonazione" />
+							</div>
+						</div>
+
+						<ui:include src="./phones.xhtml">
+							<ui:param name="pageBean"
+								value="#{docEditModifyPersonaEsterna.persona_esterna.recapito}" />
+							<ui:param name="idHolder" value="recapito" />
+						</ui:include>
+						<ui:include src="./emails.xhtml">
+							<ui:param name="pageBean"
+								value="#{docEditModifyPersonaEsterna.persona_esterna.recapito}" />
+							<ui:param name="emailCertificataEnabled" value="true" />
+							<ui:param name="idHolder" value="recapito" />
+						</ui:include>
+						<ui:include src="./websites.xhtml">
+							<ui:param name="pageBean"
+								value="#{docEditModifyPersonaEsterna.persona_esterna.recapito}" />
+							<ui:param name="idHolder" value="recapito" />
+						</ui:include>
+					</div>
+					<!-- /fieldset -->
+
+					<div class="fieldset">
+						<div class="legend">
+							#{(!empty docEditModifyPersonaEsterna.label_dati_personali) ?
+							docEditModifyPersonaEsterna.label_dati_personali :
+							i18n['acl.personaldata']}
+							<div class="pull-right">
+								<span class="glyphicons-pro home"
+									title="#{(!empty docEditModifyPersonaEsterna.label_dati_personali) ? docEditModifyPersonaEsterna.label_dati_personali : i18n['acl.personaldata']}"></span>
+							</div>
+						</div>
+
+						<div class="form-group">
+							<label class="col-sm-2 control-label"><span>#{i18n['acl.street']}</span></label>
+							<div class="col-sm-9">
+								<h:inputText id="demsi_indirizzovia"
+									value="#{docEditModifyPersonaEsterna.persona_esterna.recapito_personale.indirizzo.indirizzo}"
+									styleClass="#{ component.valid ? '' : 'invalidinput' } form-control" />
+							</div>
+						</div>
+						<div class="form-group">
+							<label class="col-sm-2 control-label"><span>#{i18n['acl.town']}</span></label>
+							<div class="col-sm-5">
+								<ui:include src="./lookupField.xhtml">
+									<ui:param name="id" value="demsi_indirizzocomune" />
+									<ui:param name="field"
+										value="#{docEditModifyPersonaEsterna.persona_esterna.recapito_personale.indirizzo.comune}" />
+									<ui:param name="bean" value="#{docEditModifyPersonaEsterna}" />
+									<ui:param name="action" value="lookupRecapitoPersonaleComune" />
+									<ui:param name="clearaction"
+										value="clearLookupRecapitoPersonaleComune" />
+									<ui:param name="title" value="#{i18n['acl.townlookup']}" />
+									<ui:param name="styleclass" value="form-control" />
+									<ui:param name="refresh"
+										value="templateForm:demsi_indirizzocomune_input templateForm:demsi_indirizzocap_input templateForm:demsi_indirizzoprov templateForm:demsi_indirizzonazione templateForm:lookup templateForm:errormsg" />
+								</ui:include>
+							</div>
+
+							<label class="col-sm-2 control-label"><span>#{i18n['acl.zip']}</span></label>
+							<div class="col-sm-2">
+								<ui:include src="./lookupField.xhtml">
+									<ui:param name="id" value="demsi_indirizzocap" />
+									<ui:param name="field"
+										value="#{docEditModifyPersonaEsterna.persona_esterna.recapito_personale.indirizzo.cap}" />
+									<ui:param name="bean" value="#{docEditModifyPersonaEsterna}" />
+									<ui:param name="action" value="lookupRecapitoPersonaleCap" />
+									<ui:param name="clearaction"
+										value="clearLookupRecapitoPersonaleCap" />
+									<ui:param name="title" value="#{i18n['acl.ziplookup']}" />
+									<ui:param name="styleclass" value="form-control" />
+									<ui:param name="refresh"
+										value="templateForm:demsi_indirizzocomune_input templateForm:demsi_indirizzocap_input templateForm:demsi_indirizzoprov templateForm:demsi_indirizzonazione templateForm:lookup templateForm:errormsg" />
+								</ui:include>
+							</div>
+						</div>
+
+						<div class="form-group">
+							<label class="col-sm-2 control-label"><span>#{i18n['acl.province']}</span></label>
+							<div class="col-sm-2">
+								<h:inputText
+									value="#{docEditModifyPersonaEsterna.persona_esterna.recapito_personale.indirizzo.prov}"
+									styleClass="form-control" id="demsi_indirizzoprov" />
+							</div>
+							<label class="col-sm-2 control-label"><span>#{i18n['acl.state']}</span></label>
+							<div class="col-sm-5">
+								<h:inputText
+									value="#{docEditModifyPersonaEsterna.persona_esterna.recapito_personale.indirizzo.nazione}"
+									styleClass="form-control" id="demsi_indirizzonazione" />
+							</div>
+						</div>
+
+						<ui:include src="./phones.xhtml">
+							<ui:param name="pageBean"
+								value="#{docEditModifyPersonaEsterna.persona_esterna.recapito_personale}" />
+							<ui:param name="idHolder" value="recapito_personale" />
+						</ui:include>
+						<ui:include src="./emails.xhtml">
+							<ui:param name="pageBean"
+								value="#{docEditModifyPersonaEsterna.persona_esterna.recapito_personale}" />
+							<ui:param name="idHolder" value="recapito_personale" />
+						</ui:include>
+						<ui:include src="./websites.xhtml">
+							<ui:param name="pageBean"
+								value="#{docEditModifyPersonaEsterna.persona_esterna.recapito_personale}" />
+							<ui:param name="idHolder" value="recapito_personale" />
+						</ui:include>
+
+					</div>
+					<!-- /fieldset -->
+
+					<div class="fieldset">
+						<div class="legend">
+							#{i18n['dw4.other']}
+							<div class="pull-right">
+								<span class="glyphicon glyphicon-list-alt"
+									title="#{i18n['dw4.other']}"></span>
+							</div>
+						</div>
+						<div class="form-group">
+							<label class="col-sm-2 control-label"><span>#{i18n['acl.skill']}</span></label>
+							<div class="col-sm-9">
+								<h:inputTextarea
+									value="#{docEditModifyPersonaEsterna.persona_esterna.competenze.text}"
+									rows="4" cols="120" styleClass="form-control" />
+							</div>
+						</div>
+						<div class="form-group">
+							<label class="col-sm-2 control-label"><span>#{i18n['acl.notes']}</span></label>
+							<div class="col-sm-9">
+								<h:inputTextarea
+									value="#{docEditModifyPersonaEsterna.persona_esterna.note.text}"
+									rows="4" cols="120" styleClass="form-control" />
+							</div>
+						</div>
+					</div>
+					<!-- /fieldset -->
+				</div>
+			</div>
+		</div>
+		<!-- scheda edit: fine -->
+
+		<h:inputTextarea value="#{docEditModifyPersonaEsterna.xml}"
+			styleClass="form-control" rows="10"
+			rendered="#{docEditModifyPersonaEsterna.debugMode}" />
+		<ui:include src="./lookup.xhtml">
+			<ui:param name="pageBean" value="#{docEditModifyPersonaEsterna}" />
+		</ui:include>
+		<ui:include src="./thvincolato.xhtml">
+			<ui:param name="pageBean" value="#{docEditModifyPersonaEsterna}" />
+		</ui:include>
+
+	</ui:define>
+</ui:composition>

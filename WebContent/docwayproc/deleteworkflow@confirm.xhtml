@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" 
+	  xmlns:h="http://java.sun.com/jsf/html" 
+	  xmlns:ui="http://java.sun.com/jsf/facelets" 
+	  xmlns:f="http://java.sun.com/jsf/core">
+<ui:composition>
+	
+	<h:panelGroup id="workflowdeleteconfirm">
+		<h:panelGroup rendered="#{showdocWorkflow.confirmDeleteActive}">
+			<!-- Modal -->
+			<div id="workflowdelconfirmModal" class="modal fade in" aria-hidden="false" aria-labelledby="workflowdelconfirmModalLabel" role="dialog" tabindex="-1" style="display: block;">
+			<!--div class="modal fade" id="workflowdelconfirmModal" tabindex="-1" role="dialog" aria-labelledby="workflowdelconfirmModalLabel" aria-hidden="true"-->
+				<div class="modal-dialog">
+					<div class="modal-content jsf-modal">
+						<div class="modal-header">
+							<h:commandLink class="close" action="#{showdocWorkflow.closeConfirmDelete}" value="&#215;">
+		                    	<f:ajax render="@form"/>
+		                   	</h:commandLink>
+							
+							<h4 class="modal-title" id="workflowdelconfirmModalLabel">#{i18n['dw4.conferma_cancellazione_flusso']}</h4>
+						</div>
+						<div class="modal-body">
+						
+							<div class="alert alert-info">
+								<div style="margin-bottom: 5px;">#{i18n['dw4.si_sta_procedendo_con_l_eliminazione_del_flusso_dall_archivio_documentale']}</div>
+			                    <div style="margin-bottom: 15px;">#{i18n['dw4.sul_database_di_bonita_lo_stesso_passera_allo_stato_archiviato_in_modo_tale_da_garantire_la_persistenza_dei_dati_del_flusso_avviato_sui_documenti']}</div>
+			                    	
+		                    	<h:panelGroup rendered="#{!empty showdocWorkflow.urlPaginaWikiIstruzioniBonita}" layout="block">
+			                    	#{i18n['dw4.per_procedere_con_l_eliminazione_dei_dati_dei_flussi_archiviati_sul_database_di_bonita_consultare_la_pagina_seguente']}<br/>
+			                    	<a href="#{showdocWorkflow.urlPaginaWikiIstruzioniBonita}">#{showdocWorkflow.urlPaginaWikiIstruzioniBonita}</a>
+		                    	</h:panelGroup>
+							</div>
+							
+						</div>
+						<div class="modal-footer">
+							<h:commandLink action="#{showdocWorkflow.rimuoviDoc}" styleClass="btn btn-danger">#{i18n['acl.confirm']}</h:commandLink>
+	                    	
+	                    	<h:commandLink action="#{showdocWorkflow.closeConfirmDelete}" styleClass="btn btn-default">
+	                    		<f:ajax render="@form"/>
+	                    		#{i18n['acl.cancel']}
+	                    	</h:commandLink>
+						</div>
+					</div>
+				</div>
+			</div>
+			<!--h:outputScript>
+				$('#workflowdelconfirmModal').modal('show');
+			</h:outputScript-->
+		</h:panelGroup>
+	</h:panelGroup>
+
+</ui:composition>	
+</html>

@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core">
+<ui:composition>
+
+	<h:panelGroup rendered="#{fn:length(bean.doc.odg) > 0}">
+		<div class="showdoc-section">
+			<div class="title">
+				#{i18n['dw4.proposte_all_ordine_del_giorno']}
+				<div class="pull-right">
+					<span class="glyphicons-pro notes"
+						title="#{i18n['dw4.proposte_in_odg']}"></span>
+				</div>
+			</div>
+			
+			<!-- ui:repeat ui:repeat -->
+			<!-- sembra ci sia un bug per cui con 2 o piu ui:repeat annidati non si riesce ad aggiornare le singole tabelle dopo chiamate ajax -->
+			<ui:remove>
+				<ui:repeat var="cat_container" value="#{bean.doc.odg}" varStatus="status">
+					<h:form>
+						<div class="table-responsive">
+								<h:panelGroup rendered="#{cat_container.tipo eq 'delibera'}">
+									<table class="table table-bordered show-odg-table">
+										<thead>
+											<tr>
+												<th class="ndelib-col">#{i18n['dw4.progr']}</th>
+												<th class="text-col">#{cat_container.cat_container}</th>
+												<ui:remove>
+													<th class="check-col" 
+														title="#{i18n['dw4.approvata']}"><span
+														class="glyphicon glyphicon-ok"></span></th>
+													<th class="check-col"
+														title="#{i18n['dw4.approvata_con_modifiche']}"><span
+														class="glyphicon glyphicon-pencil"></span></th>
+													<th class="check-col" title="#{i18n['dw4.non_accolta']}"><span
+														class="glyphicon glyphicon-trash"></span></th>
+													<th class="check-col" title="#{i18n['dw4.rinviata']}"><span
+														class="glyphicon glyphicon-share-alt"></span></th>
+													<th class="check-col" title="#{i18n['dw4.ritirata']}"><span
+														class="glyphicon glyphicon-remove"></span></th>
+													<th class="check-col" title="#{i18n['dw4.non_discussa']}"><span
+														class="glyphicon glyphicon-time"></span></th>
+												</ui:remove>
+												<th class="check-col" >
+													<span class="glyphicon glyphicon-ok" title="#{i18n['dw4.approvata']}"></span>
+													<span class="glyphicon glyphicon-pencil" title="#{i18n['dw4.approvata_con_modifiche']}"></span>
+													<span class="glyphicon glyphicon-trash" title="#{i18n['dw4.non_accolta']}"></span>
+													<span class="glyphicon glyphicon-share-alt" title="#{i18n['dw4.rinviata']}"></span>
+													<span class="glyphicon glyphicon-remove" title="#{i18n['dw4.ritirata']}"></span>
+													<span class="glyphicon glyphicon-time" title="#{i18n['dw4.non_discussa']}"></span>
+												</th>
+											</tr>
+										</thead>
+										<tbody>
+											<ui:repeat var="proposta"
+												value="#{cat_container.proposte}" varStatus="status">
+												<tr>
+													<td class="ndelib-col">
+														<ui:remove>
+															<h:inputHidden name="N#{proposta.radio}" value="#{proposta.nrecord_prop}"></h:inputHidden>
+														</ui:remove>
+														<h:inputText name="#{proposta.pos}" value="#{proposta.posField}" size="2" maxlength="2"></h:inputText>
+													</td>
+													<td class="text-col">#{proposta.cod_categoria}.
+														#{proposta.oggetto_prop}</td>
+													<ui:remove>
+														<td class="check-col">
+															<input type="radio" name="#{proposta.radio}" value="A" />
+														</td>
+														<td class="check-col">
+															<input type="radio" name="#{proposta.radio}" value="M" />
+														</td>
+														<td class="check-col">
+															<input type="radio" name="#{proposta.radio}" value="N" />
+														</td>
+														<td class="check-col">
+															<input type="radio" name="#{proposta.radio}" value="R" />
+														</td>
+														<td class="check-col">
+															<input type="radio" name="#{proposta.radio}" value="T" />
+														</td>
+														<td class="check-col">
+															<input type="radio" name="#{proposta.radio}" value="D" />
+														</td>
+													</ui:remove>
+													<td>
+														<h:selectOneRadio styleClass="radioTable" value="#{proposta.radioField}" valueChangeListener="#{bean.checkItem}">
+															<f:selectItems value="#{bean.proposteRadioButtons}"></f:selectItems>
+															<f:ajax event="click" render="@form"></f:ajax>
+														</h:selectOneRadio>
+													</td>
+												</tr>
+												</ui:repeat>
+												<h:panelGroup
+													rendered="#{bean.formsAdapter.funzionalitaDisponibili['noteInRisultatiProposte']}">
+													<tr>
+														<td colspan="8">
+															<h:inputTextarea name="#{i18n['dw4.nota']}.#{cat_container.last.radio}" value="#{cat_container.last.nota_risultato}" cols="70" rows="2" />
+														</td>
+													</tr>
+												</h:panelGroup>
+										</tbody>
+									</table>
+								</h:panelGroup>
+								<h:panelGroup rendered="#{cat_container.tipo eq 'comunicazione'}">
+									<table class="table table-bordered show-odg-table">
+										<thead>
+											<tr>
+												<th class="ndelib-col width-10">#{i18n['dw4.progr']}</th>
+												<th class="text-col  width-55">#{cat_container.cat_container}</th>
+												<ui:remove>
+													<th class="check-col" title="#{i18n['dw4.preso_atto']}">
+														<span class="glyphicon glyphicon-ok"></span>
+													</th>
+													<th class="check-col" title="#{i18n['dw4.non_discussa']}">
+														<span class="glyphicon glyphicon-time"></span>
+													</th>
+												</ui:remove>
+												<th class="check-col">
+													<span class="glyphicon glyphicon-ok" title="#{i18n['dw4.preso_atto']}"></span>
+													<span class="glyphicon glyphicon-time" title="#{i18n['dw4.non_discussa']}"></span>
+												</th>
+											</tr>
+										</thead>
+										<tbody>
+											<ui:repeat var="proposta" value="#{cat_container.proposte}" varStatus="status">
+												<tr>
+													<td class="ndelib-col  width-10">
+														<h:inputHidden name="N#{proposta.radio}" value="#{proposta.nrecord_prop}"></h:inputHidden>
+													</td>
+													<td class="text-col  width-55">#{proposta.cod_categoria}.#{proposta.oggetto_prop}</td>
+													<ui:remove>
+														<td class="check-col">
+															<input type="radio" name="#{proposta.radio}" value="P" />
+														</td>
+														<td class="check-col">
+															<input type="radio" name="#{proposta.radio}" value="D" />
+														</td>
+													</ui:remove>
+													<td>
+													<h:selectOneRadio styleClass="radioTable" value="#{proposta.radioField}" valueChangeListener="#{bean.checkItem}">
+														<f:selectItems value="#{bean.comunicazioniRadioButtons}"></f:selectItems>
+														<f:ajax event="click" execute="@form" render="@form"></f:ajax>
+													</h:selectOneRadio>
+													</td>
+												</tr>
+											</ui:repeat>
+											<h:panelGroup rendered="#{bean.formsAdapter.funzionalitaDisponibili['noteInRisultati']}">
+												<tr>
+													<td colspan="4" class="text-center">
+														<div><h:inputTextarea name="#{i18n['dw4.commento']}.#{cat_container.last.radio}" value="#{cat_container.last.commento_comunicazioni}" cols="50" rows="3" /></div>
+														<div><strong>#{i18n['dw4.eventuali_commenti_alle']} #{bean.comunicazioneLabel}</strong></div>
+													</td>
+												</tr>
+											</h:panelGroup>
+										</tbody>
+									</table>
+								</h:panelGroup>
+						</div>
+					</h:form>
+				</ui:repeat>
+			</ui:remove>
+			
+			<!-- ui:repeat h:datatable -->
+			<!-- datatable lavora per colonna e non posso gestire l'ultima riga per i commenti alle comunicazioni -->
+			<ui:remove>
+				<ui:repeat var="cat_container" value="#{bean.doc.odg}" varStatus="status">
+					<h:form>
+						<div class="table-responsive">
+							<h:panelGroup rendered="#{cat_container.tipo eq 'delibera'}">
+								<h:dataTable styleClass="table table-bordered show-odg-table" var="proposta" value="#{cat_container.proposte}">
+									<h:column>
+												<f:facet name="header">#{i18n['dw4.progr']}</f:facet>
+												<h:inputText name="#{proposta.pos}" value="#{proposta.posField}" size="2" maxlength="2"></h:inputText>
+									</h:column>
+									<h:column>
+												<f:facet name="header">#{cat_container.cat_container}</f:facet>
+												#{proposta.oggetto_prop}
+									</h:column>
+									<h:column>
+											<f:facet name="header">
+												<span class="glyphicon glyphicon-ok" title="#{i18n['dw4.approvata']}"></span>
+												<span class="glyphicon glyphicon-pencil" title="#{i18n['dw4.approvata_con_modifiche']}"></span>
+												<span class="glyphicon glyphicon-trash" title="#{i18n['dw4.non_accolta']}"></span>
+												<span class="glyphicon glyphicon-share-alt" title="#{i18n['dw4.rinviata']}"></span>
+												<span class="glyphicon glyphicon-remove" title="#{i18n['dw4.ritirata']}"></span>
+												<span class="glyphicon glyphicon-time" title="#{i18n['dw4.non_discussa']}"></span>
+											</f:facet>
+										<h:selectOneRadio styleClass="radioTable" value="#{proposta.radioField}" valueChangeListener="#{bean.checkItem}">
+											<f:selectItems value="#{bean.proposteRadioButtons}"></f:selectItems>
+											<f:ajax event="click" render="@form"></f:ajax>
+										</h:selectOneRadio>
+									</h:column>
+								</h:dataTable>		
+							</h:panelGroup>
+							<h:panelGroup rendered="#{cat_container.tipo eq 'comunicazione'}">
+								<h:dataTable styleClass="table table-bordered show-odg-table" var="proposta" value="#{cat_container.proposte}">
+									<h:column>
+										<f:facet name="header">#{i18n['dw4.progr']}</f:facet>
+									</h:column>
+									<h:column>
+										<f:facet name="header">#{cat_container.cat_container}</f:facet>
+										#{proposta.oggetto_prop}
+									</h:column>
+									<h:column>
+											<f:facet name="header">
+												<span class="glyphicon glyphicon-ok" title="#{i18n['dw4.preso_atto']}"></span>
+												<span class="glyphicon glyphicon-time" title="#{i18n['dw4.non_discussa']}"></span>
+											</f:facet>
+										<h:selectOneRadio styleClass="radioTable" value="#{proposta.radioField}" valueChangeListener="#{bean.checkItem}">
+											<f:selectItems value="#{bean.comunicazioniRadioButtons}"></f:selectItems>
+											<f:ajax event="click" execute="@form"></f:ajax>
+										</h:selectOneRadio>
+									</h:column>
+								</h:dataTable>
+							</h:panelGroup>
+						</div>
+					</h:form>
+				</ui:repeat>
+			</ui:remove>
+			
+			<!-- h:datatable ui:repeat -->
+			<!-- soluzione funzionante, lavoro un po di css per sistemare il layout che con ui:repeat era fatto automaticamente -->
+			<h:dataTable styleClass="show-odg-table width-100" var="cat_container" value="#{bean.doc.odg}">
+				<h:column>
+					<h:form>
+						<div class="table-responsive">
+							<h:panelGroup rendered="#{cat_container.tipo eq 'delibera'}">
+								<table class="table table-bordered show-odg-table">
+									<thead>
+										<tr>
+											<th class="ndelib-col width-10">#{i18n['dw4.progr']}</th>
+											<th class="text-col width-70">#{cat_container.cat_container}</th>
+											<th class="check-col width-20 odg-icon-container" >
+												<table class="radioTable">
+													<tr>
+														<td><span class="odg-icon glyphicon glyphicon-ok" title="#{i18n['dw4.approvata']}"></span></td>
+														<td><span class="odg-icon glyphicon glyphicon-pencil" title="#{i18n['dw4.approvata_con_modifiche']}"></span></td>
+														<td><span class="odg-icon glyphicon glyphicon-trash" title="#{i18n['dw4.non_accolta']}"></span></td>
+														<td><span class="odg-icon glyphicon glyphicon-share-alt" title="#{i18n['dw4.rinviata']}"></span></td>
+														<td><span class="odg-icon glyphicon glyphicon-remove" title="#{i18n['dw4.ritirata']}"></span></td>
+														<td><span class="odg-icon glyphicon glyphicon-time" title="#{i18n['dw4.non_discussa']}"></span></td>
+													</tr>
+												</table>
+											</th>
+										</tr>
+									</thead>
+									<tbody>
+										<ui:repeat var="proposta" value="#{cat_container.proposte}" varStatus="status">
+											<tr id="#{proposta.pos}">
+												<td class="ndelib-col">
+													<h:inputText name="#{proposta.pos}" value="#{proposta.posField}" size="2" maxlength="2"></h:inputText>
+												</td>
+												<td class="text-col">
+													#{proposta.cod_categoria}.#{proposta.oggetto_prop}
+												</td>
+												<td>
+													<h:selectOneRadio styleClass="radioTable" value="#{proposta.radioField}" valueChangeListener="#{bean.checkItem}">
+														<f:selectItems value="#{bean.proposteRadioButtons}"></f:selectItems>
+														<f:ajax event="click" render="@form"></f:ajax>
+													</h:selectOneRadio>
+												</td>
+											</tr>
+										</ui:repeat>
+										<h:panelGroup
+											rendered="#{bean.formsAdapter.funzionalitaDisponibili['noteInRisultatiProposte']}">
+											<tr>
+												<td colspan="8">
+													<h:inputTextarea name="#{i18n['dw4.nota']}.#{cat_container.last.radio}" value="#{cat_container.last.nota_risultato}" cols="70" rows="2" />
+												</td>
+											</tr>
+										</h:panelGroup>
+									</tbody>
+								</table>
+							</h:panelGroup>
+							<h:panelGroup rendered="#{cat_container.tipo eq 'comunicazione'}">
+								<table class="table table-bordered show-odg-table">
+									<thead>
+										<tr>
+											<th class="ndelib-col width-10">#{i18n['dw4.progr']}</th>
+											<th class="text-col  width-70">#{cat_container.cat_container}</th>
+											<th class="check-col width-20">
+												<table class="radioTable">
+													<tr>
+														<td><span class="glyphicon glyphicon-ok" title="#{i18n['dw4.preso_atto']}"></span></td>
+														<td><span class="glyphicon glyphicon-time" title="#{i18n['dw4.non_discussa']}"></span></td>
+													</tr>
+												</table>
+											</th>
+										</tr>
+									</thead>
+									<tbody>
+										<ui:repeat var="proposta" value="#{cat_container.proposte}" varStatus="status">
+											<tr id="#{proposta.pos}">
+												<td class="ndelib-col  width-10">
+												</td>
+												<td class="text-col  width-55">
+													#{proposta.cod_categoria}.#{proposta.oggetto_prop}
+												</td>
+												<td>
+													<h:selectOneRadio styleClass="radioTable" value="#{proposta.radioField}" valueChangeListener="#{bean.checkItem}">
+														<f:selectItems value="#{bean.comunicazioniRadioButtons}"></f:selectItems>
+														<f:ajax event="click" execute="@form"></f:ajax>
+													</h:selectOneRadio>
+												</td>
+											</tr>
+										</ui:repeat>
+										<h:panelGroup rendered="#{bean.formsAdapter.funzionalitaDisponibili['noteInRisultati']}">
+											<tr>
+												<td colspan="4" class="text-center">
+													<div><h:inputTextarea name="#{i18n['dw4.commento']}.#{cat_container.last.radio}" value="#{cat_container.last.commento_comunicazioni}" cols="50" rows="3">
+														<f:ajax event="blur" execute="@form"></f:ajax>
+													</h:inputTextarea></div>
+													<div><strong>#{i18n['dw4.eventuali_commenti_alle']} #{bean.comunicazioneLabel}</strong></div>
+												</td>
+											</tr>
+										</h:panelGroup>
+									</tbody>
+								</table>
+							</h:panelGroup>
+						</div>
+					</h:form>
+				</h:column>
+			</h:dataTable>
+			
+		</div>
+	</h:panelGroup>
+
+</ui:composition>
+</html>

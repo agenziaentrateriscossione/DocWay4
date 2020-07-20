@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+    template="#{showdocHistory.pageTemplate}"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:f="http://java.sun.com/jsf/core">
+
+<ui:define name="content">
+	<div class="#{showdocHistory.tipoDoc}">
+		<div class="sub-header">#{i18n['dw4.versioni_del_file']}</div>
+		
+		<!-- toolbar: inizio -->
+		<div class="btn-toolbar margin-bottom" role="toolbar">
+			<div class="btn-group">
+				<h:commandLink rendered="#{showdocHistory.popupPage}" onclick="self.close();" styleClass="btn btn-default">#{i18n['acl.close']}</h:commandLink>
+			</div>
+		</div>
+		<!-- toolbar: fine -->
+		
+		<table class="table table-hover doc-titles-table versions-titles-table">
+			<thead>
+				<tr>
+					<th class="version-colname essential" style="width:45%;">#{i18n['acl.name']}</th>
+					<th class="version-colinfo essential" style="width:10%;">&#160;</th>
+					<th class="version-coldate essential" style="width:35%;">#{i18n['dw4.intervento']}</th>
+				</tr>
+			</thead>
+			<tbody>
+				<ui:repeat var="xwfile" value="#{showdocHistory.xwfiles}" varStatus="indice">
+					<h:panelGroup rendered="#{empty xwfile.der_from}">
+						<tr>
+							<td>
+								<h:commandLink action="#{showdocHistory.downloadFileVersion}" title="#{i18n['dw4.scarica_il_file']}" styleClass="outputField blacklink">
+									<h:outputText value="#{xwfile.title}" escape="false" />
+								</h:commandLink>
+								<h:panelGroup rendered="#{not empty xwfile.metadata and not empty xwfile.metadata.pageCount or not empty xwfile.metadata.fileSize}">
+									&#160;<h:outputText value="(" />
+									<h:outputText rendered="#{not empty xwfile.metadata.fileSize}" value="#{xwfile.metadata.fileSize}" />
+									<h:outputText rendered="#{not empty xwfile.metadata.pageCount and not empty xwfile.metadata.fileSize}" value=", " />
+									<h:panelGroup rendered="#{not empty xwfile.metadata.pageCount}">
+										<h:outputText value="#{xwfile.metadata.pageCount}" />
+										<h:outputText value=" #{i18n['dw4.pag']}" />
+									</h:panelGroup>
+									<h:outputText value=")" />
+								</h:panelGroup>
+							</td>
+							<td>
+								
+								<h:panelGroup rendered="#{(xwfile.metadata != null and not empty xwfile.metadata.dati) or (fn:contains(xwfile.name, '.p7m') or fn:contains(xwfile.name, '.s@s') or xwfile.force_sign=='true')}" title="#{i18n['dw4.info']}">
+									<h:commandLink title="#{i18n['dw4.visualizza_metadati']}" onclick="return showMetadata('file_#{indice.index}_metadata');" styleClass="btn btn-default btn-xs">
+										<i class="glyphicon glyphicon-info-sign"></i>
+									</h:commandLink>
+								</h:panelGroup>
+								
+								<ui:repeat var="derFromXwfile" value="#{showdocHistory.xwfiles}">
+									<h:panelGroup rendered="#{not empty derFromXwfile.der_from and derFromXwfile.der_from eq xwfile.name and derFromXwfile.extension ne 'txt'}">
+										<h:commandLink action="#{showdocHistory.downloadFileVersionConvertito}" title="#{i18n['dw4.download_documento_convertito']}: #{derFromXwfile.extension}" styleClass="btn btn-default btn-xs">
+											<span class="glyphicon glyphicon-file #{derFromXwfile.extension}"></span> #{fn:toUpperCase(derFromXwfile.extension)}
+										</h:commandLink>
+									</h:panelGroup>
+								</ui:repeat>
+							</td>
+							<td>
+								<h:panelGroup rendered="#{not empty xwfile.chkout and not empty xwfile.chkout.data}">
+									<div class="history-details prenotato-label">
+										#{i18n['dw4.prenotato_il']}
+										<h:outputText value="#{xwfile.chkout.data}">
+											<f:converter converterId="DateConverter"/>
+										</h:outputText>
+										&#160;-&#160; 
+										#{xwfile.chkout.ora}
+									</div>
+								</h:panelGroup>
+								<h:panelGroup rendered="#{not empty xwfile.chkin and not empty xwfile.chkin.data}">
+									<div class="history-details registrato-label">
+										#{i18n['dw4.registrato_il']}
+										<h:outputText value="#{xwfile.chkin.data}">
+											<f:converter converterId="DateConverter"/>
+										</h:outputText>
+										&#160;-&#160; 
+										#{xwfile.chkin.ora}
+										&#160;
+										<span class="glyphicons-pro circle_question_mark popoveritem" data-toggle="popover" data-placement="top" data-trigger="hover" data-content="#{i18n['dw4.a_cura_di']} #{xwfile.chkin.operatore}"></span>
+									</div>
+								</h:panelGroup>
+							</td>
+						</tr>
+						<h:panelGroup rendered="#{(xwfile.metadata != null and not empty xwfile.metadata.dati) or (fn:contains(xwfile.name, '.p7m') or fn:contains(xwfile.name, '.s@s') or xwfile.force_sign=='true')}">
+							<tr id="file_#{indice.index}_metadata" style="display:none;">
+								<td colspan="3">
+									<h:panelGroup rendered="#{(fn:contains(xwfile.name, '.p7m') or fn:contains(xwfile.name, '.s@s') or xwfile.force_sign=='true')}">
+										<div class="file-firmato">#{i18n['dw4.file_firmato_digitalmente']}</div><br/>
+									</h:panelGroup>
+									<div class="metadata-holder" style="font-size:0.9em;">
+										<h:dataTable value="#{xwfile.metadata.datiKeys}" var="key" >
+											<h:column><h:outputText value="#{key}:&#160;" styleClass="outputField" /></h:column>
+						                    <h:column><h:outputText value="#{xwfile.metadata.dati[key]}" /></h:column>
+										</h:dataTable>
+										<h:panelGroup rendered="#{xwfile.metadata.documentMetadata != null and not empty xwfile.metadata.documentMetadata.dati}">
+											<h:dataTable value="#{xwfile.metadata.documentMetadata.datiKeys}" var="key" >
+												<h:column><h:outputText value="#{key}:&#160;" styleClass="outputField" /></h:column>
+							                    <h:column><h:outputText value="#{xwfile.metadata.documentMetadata.dati[key]}" /></h:column>
+											</h:dataTable>
+										</h:panelGroup>
+									</div>
+								</td>
+							</tr>
+						</h:panelGroup>
+					</h:panelGroup>
+				</ui:repeat>
+			</tbody>
+		</table>
+	</div>
+	
+	<h:inputTextarea value="#{showdocHistory.xml}" rendered="#{showdocHistory.debugMode}" styleClass="form-control" rows="10" />
+</ui:define>
+	
+</ui:composition>

@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+    template="template.xhtml"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:f="http://java.sun.com/jsf/core">
+
+<ui:define name="content">
+	<div id="advancedSearch" class="struint submitEnterKey">
+		
+		<!-- toolbar: inizio -->
+		<div class="btn-toolbar docway-toolbar margin-bottom" role="toolbar">
+			<div class="btn-group">
+				<h:commandLink id="advancedSearchBtn" action="#{queryComune.queryPlain}" styleClass="btn btn-primary openwaitmsg" value="#{i18n['acl.search']}" />
+				<h:commandLink action="#{queryComune.resetQuery}" styleClass="btn btn-default" value="#{i18n['acl.clear']}"></h:commandLink>
+			</div>
+		</div>
+		<!-- toolbar: fine -->
+		
+		<!-- messages: inizio -->
+		<h:panelGroup rendered="#{not empty facesContext.messageList}" layout="block" styleClass="docedit-messages alert alert-info">
+			<h:messages styleClass="" id="validationMesseges" />
+		</h:panelGroup>
+		<!-- messages: fine -->
+		
+		<!-- scheda query: inizio -->
+		<div class="row-fluid" style="margin-top:10px;">
+			<div id="fixedshowdoc" class="box span12 fixed-showdoc">
+				<div class="box-content">
+					<div class="fieldset">
+						<div class="legend">#{i18n['acl.search_town']}</div>
+						
+						<div class="form-group">
+							<label for="templateForm:query_comune_nome" class="col-sm-2 control-label">#{i18n['acl.town']}</label>
+							<div class="col-sm-9">
+								<div class="input-group">
+									<h:inputText id="query_comune_nome" value="#{queryComune.comuni_nome}" styleClass="form-control" />
+									<div class="input-group-btn">
+										<h:commandLink title="#{i18n['acl.vocabulary']}" action="#{queryComune.openIndexNome}" styleClass="btn btn-default">
+											<f:ajax execute="@form" render="@form"/>
+											<span class="glyphicon glyphicon-search"></span>
+								        </h:commandLink>
+							        </div>
+						        </div>
+							</div>
+						</div>
+						<div class="form-group">
+							<label for="templateForm:query_comune_prov" class="col-sm-2 control-label">#{i18n['acl.province']}</label>
+							<div class="col-sm-3">
+								<div class="input-group">
+									<h:inputText id="query_comune_prov" value="#{queryComune.comuni_prov}" styleClass="form-control" />
+									<div class="input-group-btn">
+										<h:commandLink title="#{i18n['acl.vocabulary']}" action="#{queryComune.openIndexProvincia}" styleClass="btn btn-default">
+											<f:ajax execute="@form" render="@form"/>
+											<span class="glyphicon glyphicon-search"></span>
+								        </h:commandLink>
+							        </div>
+						        </div>
+							</div>
+						</div>
+						<div class="form-group">
+							<label for="templateForm:query_comune_regione" class="col-sm-2 control-label">#{i18n['acl.country']}</label>
+							<div class="col-sm-5">
+								<div class="input-group">
+									<h:inputText id="query_comune_regione" value="#{queryComune.comuni_regione}" styleClass="form-control" />
+									<div class="input-group-btn">
+										<h:commandLink title="#{i18n['acl.vocabulary']}" action="#{queryComune.openIndexRegione}" styleClass="btn btn-default">
+											<f:ajax execute="@form" render="@form"/>
+											<span class="glyphicon glyphicon-search"></span>
+								        </h:commandLink>
+							        </div>
+						        </div>
+							</div>
+						</div>
+						<div class="form-group">
+							<label for="templateForm:query_comune_prefisso" class="col-sm-2 control-label">#{i18n['acl.areacode']}</label>
+							<div class="col-sm-3">
+								<div class="input-group">
+									<h:inputText id="query_comune_prefisso" value="#{queryComune.comuni_prefisso}" styleClass="form-control" />
+									<div class="input-group-btn">
+										<h:commandLink title="#{i18n['acl.vocabulary']}" action="#{queryComune.openIndexPrefisso}" styleClass="btn btn-default">
+											<f:ajax execute="@form" render="@form"/>
+											<span class="glyphicon glyphicon-search"></span>
+								        </h:commandLink>
+							        </div>
+						        </div>
+							</div>
+						</div>
+						<div class="form-group">
+							<label for="templateForm:query_comune_nazione" class="col-sm-2 control-label">#{i18n['acl.state']}</label>
+							<div class="col-sm-5">
+								<div class="input-group">
+									<h:inputText id="query_comune_nazione" value="#{queryComune.comuni_nazione}" styleClass="form-control" />
+									<div class="input-group-btn">
+										<h:commandLink title="#{i18n['acl.vocabulary']}" action="#{queryComune.openIndexNazione}" styleClass="btn btn-default">
+											<f:ajax execute="@form" render="@form"/>
+											<span class="glyphicon glyphicon-search"></span>
+								        </h:commandLink>
+							        </div>
+						        </div>
+							</div>
+						</div>
+						<div class="form-group">
+							<label for="templateForm:query_comune_istat" class="col-sm-2 control-label">#{i18n['acl.istatcode']}</label>
+							<div class="col-sm-3">
+								<div class="input-group">
+									<h:inputText id="query_comune_istat" value="#{queryComune.comuni_codiceistat}" styleClass="form-control" />
+									<div class="input-group-btn">
+										<h:commandLink title="#{i18n['acl.vocabulary']}" action="#{queryComune.openIndexCodiceIstat}" styleClass="btn btn-default">
+											<f:ajax execute="@form" render="@form"/>
+											<span class="glyphicon glyphicon-search"></span>
+								        </h:commandLink>
+							        </div>
+						        </div>
+							</div>
+						</div>
+					</div> <!-- /fieldset -->
+				</div>
+			</div>
+		</div>
+		<script type="text/javascript">
+		$(document).ready(function() {
+			// focus su campo globale
+			$('#templateForm\\:query_comune_nome').focus();
+		});
+		</script>
+		<!-- scheda query: fine -->
+	</div>
+
+	<ui:include src="./showindex.xhtml"> <ui:param name="pageBean" value="#{queryComune}"/></ui:include>
+</ui:define>
+    
+</ui:composition>    

@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+    template="#{docwayTitles.pageTemplate}"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:c="http://java.sun.com/jsp/jstl/core">
+
+<ui:define name="content">
+	
+	<ui:remove>
+		<h5 class="sub-header">#{i18n['dw4.elenco_risultati']} #{i18n['dw4.from']} #{docwayTitles.firstPosition} #{i18n['dw4.to']} #{docwayTitles.lastPosition} (#{i18n['dw4.on']} #{docwayTitles.count})</h5>
+	</ui:remove>
+
+	<ui:include src="./showtitles@buttonBar.xhtml"><ui:param name="beanTitles" value="#{docwayTitles}"/></ui:include>
+	
+	<h:panelGroup rendered="#{!empty docwayTitles.oggetto_fasc}" layout="block" style="margin-bottom:10px;" styleClass="contenuto-doc">
+		<div class="#{fn:startsWith(docwayTitles.num_fasc,'RAC_') ? 'doc-tipo-raccoglitore' : 'doc-tipo-fascicolo'} showdoc-title clearfix">
+			<div class="row">
+				<div class="col-xs-1">
+					<h:panelGroup rendered="#{!fn:startsWith(docwayTitles.num_fasc,'RAC_')}">
+						<span class="doc-tipo-fascicolo glyphicon glyphicon-folder-open"></span>
+					</h:panelGroup>
+					<h:panelGroup rendered="#{fn:startsWith(docwayTitles.num_fasc,'RAC_')}">
+						<span class="doc-tipo-raccoglitore glyphicon glyphicon-inbox"></span>
+					</h:panelGroup>
+				</div>
+				<div class="col-xs-11">
+					<div class="showdoc-second-row-title" title="#{docwayTitles.oggetto_fasc}">
+						<h:commandLink action="#{docwayTitles.queryFasc}"><h:outputText value="#{docwayTitles.oggetto_fasc}" escape="false" /></h:commandLink>
+					</div>
+					<div class="showdoc-row-subtitle">
+						<h:panelGroup rendered="#{!empty docwayTitles.classif_fasc}">
+							<span>(#{docwayTitles.classif_fasc})</span>
+						</h:panelGroup>
+						<h:panelGroup rendered="#{docwayTitles.nome_persona_fasc ne '' or docwayTitles.nome_uff_fasc ne ''}">
+							<span>#{docwayTitles.nome_persona_fasc} <h:panelGroup rendered="#{docwayTitles.nome_uff_fasc ne ''}">(#{docwayTitles.nome_uff_fasc})</h:panelGroup></span>
+						</h:panelGroup>
+					</div>
+				</div>
+			</div>
+		</div>
+	</h:panelGroup>
+		
+	<div style="margin-top:15px;">
+		<div id="fixedshowdoc" class="#{docwayTitles.cestino ? 'showtitles-cestino' : 'showtitles'} fixed-showdoc">
+			<ui:include src="./showtitles@docviewtable@#{docwayTitles.mode}.xhtml"><ui:param name="beanTitles" value="#{docwayTitles}"/></ui:include>
+		</div>
+	</div>
+	
+	<ui:include src="./loadingbar@removeDocs.xhtml"><ui:param name="pageBean" value="#{docwayTitles}"/></ui:include>
+	<ui:include src="./loadingbar@exportCSV.xhtml"><ui:param name="pageBean" value="#{docwayTitles}"/></ui:include>
+	<ui:include src="./loadingbar@removeSelFromFasc.xhtml"><ui:param name="pageBean" value="#{docwayTitles}"/></ui:include>
+	<ui:include src="./loadingbar@if.xhtml"><ui:param name="pageBean" value="#{docwayTitles}"/></ui:include>
+	<ui:include src="./loadingbar@ritiraBandoSelezione.xhtml"><ui:param name="pageBean" value="#{docwayTitles}"/></ui:include>
+	<ui:include src="./rifinterni@RPA.xhtml"><ui:param name="bean" value="#{rifInt}"/></ui:include>
+	<ui:include src="./rifinterni@CC.xhtml"><ui:param name="bean" value="#{rifInt}"/></ui:include>
+	<ui:include src="./lookup.xhtml"> <ui:param name="pageBean" value="#{rifInt}"/></ui:include>
+	<ui:include src="./rifintLookup.xhtml"> <ui:param name="pageBean" value="#{rifInt}"/></ui:include>
+	<ui:include src="./loadingbar@assegnazioneCC.xhtml"><ui:param name="pageBean" value="#{rifInt}"/></ui:include>
+	<ui:include src="./loadingbar@assegnazioneRPA.xhtml"><ui:param name="pageBean" value="#{rifInt}"/></ui:include>
+	<ui:include src="./changeclassifDoc.xhtml"> <ui:param name="pageBean" value="#{changeclassifdoc}"/></ui:include>
+	<ui:include src="./showthes.xhtml"> <ui:param name="pageBean" value="#{changeclassifdoc}"/></ui:include>
+	<ui:include src="./addVaschettaCustom.xhtml"> <ui:param name="pageBean" value="#{docwayTitles}"/></ui:include>
+	<ui:include src="./exportCSVAdvanced.xhtml"> <ui:param name="pageBean" value="#{docwayTitles}"/></ui:include>
+	
+	<h:inputTextarea value="#{docwayTitles.xml}" rendered="#{docwayTitles.debugMode}" styleClass="form-control" rows="10" />
+</ui:define>
+
+</ui:composition>

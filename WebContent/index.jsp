@@ -1,0 +1,1 @@
+<% response.sendRedirect("docway/index.jsp"); %>

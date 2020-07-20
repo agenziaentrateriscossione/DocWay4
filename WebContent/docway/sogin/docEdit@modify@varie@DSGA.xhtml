@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+    template="../#{docEditModifyVarieDSGA.pageTemplate}"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:c="http://java.sun.com/jsp/jstl/core"
+    xmlns:p="http://xmlns.jcp.org/jsf/passthrough">
+
+<ui:define name="content">
+	<div class="varie dsga docedit">
+	
+		<!-- toolbar: inizio -->
+		<div class="btn-toolbar" role="toolbar">
+			<div class="btn-group">
+				<h:commandLink id="saveBtn" action="#{docEditModifyVarieDSGA.saveDocument}" 
+							styleClass="btn btn-primary openwaitmsg">
+					#{i18n['acl.save']}
+				</h:commandLink>
+				
+				<h:commandLink action="#{docEditModifyVarieDSGA.clearDocument}" 
+							onclick="IwxRuntime.Client.resetJobIWX();" styleClass="btn btn-default">
+					#{i18n['acl.back']}
+				</h:commandLink>	
+			</div>
+		</div>
+		<!-- toolbar: fine -->
+		
+		<!-- messages: inizio -->
+		<h:panelGroup rendered="#{not empty facesContext.messageList}" layout="block" styleClass="docedit-messages alert alert-danger">
+			<h:messages styleClass="" id="validationMesseges" />
+		</h:panelGroup>
+		<h:inputHidden id="errorFieldIds" value="#{docEditModifyVarieDSGA.errorFieldIds}" />
+		<!-- messages: fine -->
+		
+		<h5 class="sub-header">
+			<span class="doc-tipo-custom glyphicons-pro file dsga"></span>&#160;
+			<h:outputText value="#{docEditModifyVarieDSGA.docEditTitle}" escape="false" />
+		</h5>
+	
+		<script type="text/javascript">
+		$(document).ready(function() {
+			setInvalidInputFields();
+			
+			// disabilita link esterni al form per rilascio del lock sul documento
+			disableNoTemplateFormLinks("#{i18n['dw4.abbandona_alert_msg']}");
+		});
+		</script>
+		
+		<!-- scheda edit: inizio -->
+		<div class="row-fluid" style="margin-top:10px;">
+			<div id="fixedshowdoc" class="box span12 fixed-showdoc">
+				<div class="box-content">
+				
+					<div class="fieldset">
+						<div class="legend">
+							#{i18n['dw4.datidoc']}
+						
+							<div class="pull-right">
+								<span class="glyphicon glyphicon-envelope" title="#{i18n['dw4.datidoc']}"></span>
+							</div>
+						</div>
+						
+						<h:panelGroup rendered="#{!empty docEditModifyVarieDSGA.doc.repertorio.numero and docEditModifyVarieDSGA.doc.repertorio.numero ne '.'}" layout="block" styleClass="form-group">
+							<label class="col-sm-2 control-label">#{i18n['dw4.repertorio_n']}</label>
+							<div class="col-sm-9">
+								<p class="form-control-static"><h:outputText value="#{docEditModifyVarieDSGA.doc.repertorio.numero}"><f:converter converterId="NumRepConverter"/></h:outputText></p>
+							</div>
+						</h:panelGroup>
+						
+						<div class="form-group">
+							<label for="templateForm:docPersonale" class="col-sm-2 control-label">#{i18n['dw4.personale']}</label>
+							<div class="col-sm-3">
+								<h:selectBooleanCheckbox id="docPersonale" immediate="true" value="#{docEditModifyVarieDSGA.doc.personale}" p:data-toggle="popover" p:data-placement="bottom" p:data-trigger="hover" p:data-content="#{i18n['dw4.se_si_imposta_il_flag_personale_il_documento_sara_visibile_solo_alle_persone_selezionate_e_non_ai_relativi_uffici']}" styleClass="popoveritem" />
+							</div>
+						</div>
+						
+						<div class="form-group">
+							<label for="templateForm:codElaborato" class="col-sm-2 control-label">#{i18n['dw4.codifica_elaborato']}</label>
+							<div class="col-sm-9">
+								<h:inputText id="codElaborato" value="#{docEditModifyVarieDSGA.doc.extra.et_classificaelaborato}" styleClass="form-control" />
+							</div>
+						</div>
+						<div class="form-group">
+							<label for="templateForm:titoloElaborato" class="col-sm-2 control-label">#{i18n['dw4.titolo_elaborato']}</label>
+							<div class="col-sm-9">
+								<h:inputText id="titoloElaborato" value="#{docEditModifyVarieDSGA.doc.extra.et_titoloelaborato}" styleClass="form-control" />
+							</div>
+						</div>
+						<div class="form-group">
+							<label for="templateForm:sedeArchivio" class="col-sm-2 control-label">#{i18n['dw4.sede_archivio']}</label>
+							<div class="col-sm-5">
+								<h:selectOneMenu id="sedeArchivio" value="#{docEditModifyVarieDSGA.doc.extra.customSelectSedeArchivio}" styleClass="form-control">
+									<f:selectItems value="#{docEditModifyVarieDSGA.select_customSelectSedeArchivio}" var="option" itemValue="#{option.value}" itemLabel="#{option.value}"></f:selectItems>
+								</h:selectOneMenu>
+							</div>
+						</div>
+						<div class="form-group">
+							<label for="templateForm:zonaArchivio" class="col-sm-2 control-label">#{i18n['dw4.zona_di_archivio']}</label>
+							<div class="col-sm-9">
+								<h:inputText id="zonaArchivio" value="#{docEditModifyVarieDSGA.doc.extra.et_zonaarchivio}" styleClass="form-control" />
+							</div>
+						</div>
+						<div class="form-group">
+							<label for="templateForm:noteArchivio" class="col-sm-2 control-label">#{i18n['dw4.note_archivio']}</label>
+							<div class="col-sm-9">
+								<h:inputTextarea id="noteArchivio" value="#{docEditModifyVarieDSGA.doc.extra.et_notearchivio}" rows="4" cols="120" styleClass="form-control" />
+							</div>
+						</div>
+												
+						<h:panelGroup rendered="#{fn:length(docEditModifyVarieDSGA.doc.repTipologiaSelect) > 0}" layout="block" styleClass="form-group">
+							<label for="templateForm:repTipoDocumento" class="col-sm-2 control-label">#{i18n['dw4.tipodocumento']}</label>
+							<div class="col-sm-3">
+								<h:selectOneMenu id="repTipoDocumento" value="#{docEditModifyVarieDSGA.doc.extra.tipo_repertorio}" styleClass="form-control">
+									<f:selectItems value="#{docEditModifyVarieDSGA.doc.repTipologiaSelect}" var="tipologia" itemValue="#{tipologia.text}" itemLabel="#{tipologia.text}"></f:selectItems>
+								</h:selectOneMenu>
+							</div>
+						</h:panelGroup>
+						
+						<div class="form-group endsection">
+							<label for="templateForm:autoreDoc" class="col-sm-2 control-label">#{i18n['dw4.author']}</label>
+							<div class="col-sm-4">
+								<h:inputText id="autoreDoc" value="#{docEditModifyVarieDSGA.doc.autore.text}" styleClass="form-control" />
+							</div>
+							<h:panelGroup rendered="#{ docEditModifyVarieDSGA.formsAdapter.funzionalitaDisponibili['dataNonProtocollatiSi'] }">
+								<ui:include src="../dateField.xhtml">
+									<ui:param name="label" value="* #{i18n['dw4.data_doc']}" />
+									<ui:param name="id" value="dataProtDoc" />
+									<ui:param name="value" value="#{docEditModifyVarieDSGA.doc.data_prot}" />
+									<ui:param name="offset" value="1" />
+								</ui:include>
+							</h:panelGroup>
+							<h:panelGroup rendered="#{ !docEditModifyVarieDSGA.formsAdapter.funzionalitaDisponibili['dataNonProtocollatiSi'] }">
+								<div class="col-sm-1">
+									<h:inputHidden value="#{docEditModifyVarieDSGA.doc.data_prot}"><f:converter converterId="DateConverter"/></h:inputHidden>
+								</div>
+							</h:panelGroup>
+						</div>
+						
+						<h:panelGroup rendered="#{ docEditModifyVarieDSGA.docIsNotInFascicolo }" layout="block" styleClass="form-group">
+							<label for="templateForm:voceindice_input" class="col-sm-2 control-label"><span>#{i18n['dw4.index']}</span></label>
+							<div class="col-sm-4">
+								<ui:include src="../lookupField.xhtml">
+					        		<ui:param name="id" value="voceindice" />
+					        		<ui:param name="field" value="#{docEditModifyVarieDSGA.doc.voce_indice.text}" />
+					        		<ui:param name="bean" value="#{docEditModifyVarieDSGA}" />
+					        		<ui:param name="confirmOnAction" value="#{(docEditModifyVarieDSGA.formsAdapter.funzionalitaDisponibili['rifInterniModificabiliDaVoceIndice']) ? i18n['dw4.se_si_seleziona_una_voce_di_indice_potrebbero_essere_sovrascritti_gli_assegnatari_del_documento_Continuare'] : ''}" />
+					        		<ui:param name="action" value="lookupVoceIndice"/>
+					        		<ui:param name="clearaction" value="clearLookupVoceIndice"/>
+					        		<ui:param name="title" value="#{i18n['dw4.lookup_voce_indice']}"/>
+					        		<ui:param name="styleclass" value="form-control"/>
+					        		<ui:param name="refresh" value="templateForm:voceindice_input templateForm:doc_oggetto templateForm:classif_holder templateForm:lookup templateForm:errormsg" />
+					        	</ui:include>
+							</div>
+						</h:panelGroup>
+						
+						<div class="form-group">
+							<label for="templateForm:doc_oggetto" class="col-sm-2 control-label requiredField"><span>* #{i18n['dw4.object']}</span></label>
+							<div class="col-sm-9">
+								<h:inputTextarea id="doc_oggetto" value="#{docEditModifyVarieDSGA.doc.oggetto}" rows="4" cols="120" styleClass="#{ component.valid ? '' : 'invalidinput' } form-control" />
+							</div>
+						</div>
+						
+						<h:panelGroup rendered="#{ docEditModifyVarieDSGA.formsAdapter.funzionalitaDisponibili['enAllegato'] }">
+							<ui:include src="../allegatiFields.xhtml">
+								<ui:param name="bean" value="#{docEditModifyVarieDSGA}" />
+				        		<ui:param name="beanDoc" value="#{docEditModifyVarieDSGA.doc}" />
+				        	</ui:include>
+			        	</h:panelGroup>
+			        	
+			        	<h:panelGroup id="classif_holder" layout="block">
+							<ui:include src="../classifFields.xhtml">
+				        		<ui:param name="id" value="classif" />
+				        		<ui:param name="editable" value="#{ docEditModifyVarieDSGA.formsAdapter.funzionalitaDisponibili['classificazioneDaGerarchia'] and docEditModifyVarieDSGA.docIsNotInFascicolo }" />
+				        		<ui:param name="bean" value="#{docEditModifyVarieDSGA}" />
+				        		<ui:param name="beanDoc" value="#{docEditModifyVarieDSGA.doc}" />
+				        		<ui:param name="actionTitolario" value="thVincolatoTitolarioClassificazione"/>
+				        		<ui:param name="actionGerarchia" value="gerarchiaTitolarioClassificazione"/>
+				        		<ui:param name="refresh" value="templateForm:classif_holder templateForm:showthes templateForm:errormsg"/>
+				        		<ui:param name="readOnlyConservazione" value="false" />
+				        		<ui:param name="optionalField" value="#{docEditModifyVarieDSGA.formsAdapter.funzionalitaDisponibili['docClassifEreditabile']}" />
+				        	</ui:include>
+				        </h:panelGroup>
+			        	
+			        	<ui:include src="../visibilitaFields.xhtml">
+							<ui:param name="bean" value="#{docEditModifyVarieDSGA}" />
+			        		<ui:param name="beanDoc" value="#{docEditModifyVarieDSGA.doc}" />
+			        	</ui:include>
+					</div> <!-- /fieldset -->
+					
+					<ui:include src="../scadenzaFields.xhtml">
+						<ui:param name="bean" value="#{docEditModifyVarieDSGA}" />
+		        		<ui:param name="beanDoc" value="#{docEditModifyVarieDSGA.doc}" />
+		        	</ui:include>
+		        	
+		        	<h:panelGroup rendered="#{docEditModifyVarieDSGA.docIsNotInFascicolo}">
+			        	<ui:include src="../docEdit@rifinterni@doc.xhtml">
+							<ui:param name="bean" value="#{docEditModifyVarieDSGA}" />
+			        	</ui:include>
+		        	</h:panelGroup>
+		        	
+		        	<div class="fieldset">
+	        			<div class="legend">
+	        				#{i18n['dw4.other']}
+	        				
+	        				<div class="pull-right">
+								<span class="glyphicon glyphicon-list-alt" title="#{i18n['dw4.other']}"></span>
+							</div>
+	        			</div>
+	        			
+	        			<h:panelGroup rendered="#{docEditModifyVarieDSGA.formsAdapter.funzionalitaDisponibili['mostraCodiceProgetto']}" layout="block" styleClass="form-group">
+							<label for="templateForm:codProgetto" class="col-sm-2 control-label">#{i18n['dw4.codice_progetto']}</label>
+							<div class="col-sm-9">
+								<h:inputText id="codProgetto" value="#{docEditModifyVarieDSGA.doc.extra.codice_progetto}" styleClass="form-control" />
+							</div>
+						</h:panelGroup>
+						
+						<div class="form-group">
+			               	<label for="templateForm:riferimentiDoc" class="col-sm-2 control-label">#{i18n['dw4.riferimenti']}</label>
+			               	<div class="col-sm-4">
+			               		<h:inputText id="riferimentiDoc" value="#{docEditModifyVarieDSGA.doc.riferimenti.text}" styleClass="form-control" />
+			               	</div>		
+			               	<label for="templateForm:codTipologiaDoc" class="col-sm-2 control-label">#{i18n['acl.tipologia']}</label>
+			               	<div class="col-sm-3">
+				               	<h:selectOneMenu id="codTipologiaDoc" value="#{docEditModifyVarieDSGA.doc.tipologia.cod}" styleClass="form-control">
+									<f:selectItems value="#{docEditModifyVarieDSGA.doc.tipologiaSelect}" var="option" itemValue="#{option.value}" itemLabel="#{option.label}" itemLabelEscaped="false"></f:selectItems>
+								</h:selectOneMenu>
+							</div>
+						</div>
+						
+						<div class="form-group">
+			               	<label for="templateForm:note" class="col-sm-2 control-label">#{i18n['acl.notes']}</label>
+			               	<div class="col-sm-9">
+			               		<h:inputTextarea id="note" value="#{docEditModifyVarieDSGA.doc.note.text}" rows="4" cols="120" styleClass="form-control" />
+			               	</div>		
+						</div>
+						
+						<div class="form-group">
+							<label for="templateForm:keywordsDoc" class="col-sm-2 control-label">#{i18n['dw4.keywords']}</label>
+							<div class="col-sm-9">
+								<h:inputText id="keywordsDoc" value="#{docEditModifyVarieDSGA.doc.keywords.text}" styleClass="form-control" />
+							</div>			
+						</div>
+	        		</div> <!-- /fieldset -->
+	        		
+	        		<ui:include src="../xlinkFields.xhtml">
+						<ui:param name="bean" value="#{docEditModifyVarieDSGA}" />
+		        		<ui:param name="beanDoc" value="#{docEditModifyVarieDSGA.doc}" />
+		        	</ui:include>
+		        	
+		        	<ui:include src="../docInformaticiFields.xhtml">
+						<ui:param name="bean" value="#{docEditModifyVarieDSGA}" />
+		        		<ui:param name="beanDoc" value="#{docEditModifyVarieDSGA.doc}" />
+		        		<ui:param name="enableFiles" value="#{docEditModifyVarieDSGA.docInformaticiEnabledSenzaFiles and docEditModifyVarieDSGA.formsAdapter.funzionalitaDisponibili['addFile']}" />
+		        		<ui:param name="enableImages" value="#{docEditModifyVarieDSGA.docInformaticiEnabled and docEditModifyVarieDSGA.formsAdapter.funzionalitaDisponibili['addImg']}" />
+		        		<ui:param name="enableFileAgentPDF" value="true" />
+		        		<ui:param name="enableImageAgentPDF" value="true" />
+		        	</ui:include>
+				</div>
+			</div>
+		</div>
+		<!-- scheda edit: fine -->
+			
+		<h:inputTextarea value="#{docEditModifyVarieDSGA.xml}" rendered="#{docEditModifyVarieDSGA.debugMode}" styleClass="form-control" rows="10" />
+			
+		<ui:include src="../lookup.xhtml"> <ui:param name="pageBean" value="#{docEditModifyVarieDSGA}"/></ui:include>
+		<ui:include src="../rifintLookup.xhtml"> <ui:param name="pageBean" value="#{docEditModifyVarieDSGA}"/></ui:include>
+		<ui:include src="../showthes.xhtml"> <ui:param name="pageBean" value="#{docEditModifyVarieDSGA}"/></ui:include>
+	</div>
+</ui:define>
+
+</ui:composition>

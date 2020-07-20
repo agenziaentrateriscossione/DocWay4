@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html 
+	xmlns="http://www.w3.org/1999/xhtml" 
+	xmlns:h="http://java.sun.com/jsf/html" 
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://xmlns.jcp.org/jsf/passthrough">
+<ui:composition>
+		
+	<!-- header: inizio -->
+	
+	<h:form id="menuForm">
+		<div class="navbar navbar-default navbar-fixed-top" role="navigation">
+			<div class="container-fluid row-navbar-first">
+				<div class="navbar-header">
+					<h:commandLink action="show@acl_home" styleClass="fullscreen-logo navbar-brand">
+						<img class="application-logo" src="#{facesContext.externalContext.requestContextPath}/common/css/#{(!empty aclHome.customDirCss) ? aclHome.customDirCss.concat('/') : ''}images/logo/acl-small.png" alt="acl" />
+					</h:commandLink>
+				</div>
+				<div class="navbar-form navbar-right">
+					<div class="inline">
+						<h:inputText id="globalSearchInput" p:placeholder="#{i18n['dw4.search']}..." styleClass="form-control submitsingleinput" value="#{aclHome.searchTerms}"/>
+					</div>
+					<h:commandLink id="globalSearchInputBtn" action="#{aclHome.search}" style="display:none;" />
+				</div>
+			</div>
+			<div class="container-fluid">
+				<div class="navbar-header">
+					<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target=".navbar-collapse">
+						<span class="sr-only">Toggle navigation</span>
+						<span class="icon-bar"></span>
+						<span class="icon-bar"></span>
+						<span class="icon-bar"></span>
+					</button>
+					<h:commandLink action="#{docwaymenu.loadDocWayMainPage}" styleClass="resizescreen-logo navbar-brand">
+						<img class="application-logo" src="#{facesContext.externalContext.requestContextPath}/common/css/#{(!empty aclHome.customDirCss) ? aclHome.customDirCss.concat('/') : ''}images/logo/acl-small.png" alt="acl" />
+					</h:commandLink>
+				</div>
+				<div style="height: 1px;" class="navbar-collapse collapse">
+					<ul class="nav navbar-nav">
+						<li class="dropdown">
+							<a data-toggle="dropdown" class="dropdown-toggle" href="#">
+					        	<span class="glyphicon glyphicon-plus navbar-menu-icon"></span>
+					        	#{i18n['acl.insert']} <b class="caret"></b>
+					        </a>
+							<ul class="dropdown-menu">
+								<li><h:commandLink value="#{i18n['acl.struint']}" action="#{menu.insTableDocStrutturaInterna}" immediate="true" rendered="#{aclHome.formsAdapter.funzionalitaDisponibili['ins_struint']}"/></li>
+							    <li><h:commandLink value="#{i18n['acl.struest']}" action="#{menu.insTableDocStrutturaEsterna}" immediate="true" rendered="#{aclHome.formsAdapter.funzionalitaDisponibili['ins_struest']}"/></li>
+							    <li><h:commandLink value="#{i18n['acl.persest']}" action="#{menu.insTableDocPersonaEsterna}" immediate="true" rendered="#{aclHome.formsAdapter.funzionalitaDisponibili['ins_persest']}"/></li>
+							    <li><h:commandLink value="#{i18n['acl.profiles']}" action="#{menu.insTableDocProfilo}" immediate="true" rendered="#{aclHome.formsAdapter.funzionalitaDisponibili['ins_profili']}"/></li>
+							    <li><h:commandLink value="#{i18n['acl.roles']}" action="#{menu.insTableDocRuolo}" immediate="true" rendered="#{aclHome.formsAdapter.funzionalitaDisponibili['rolesManagement'] and aclHome.formsAdapter.funzionalitaDisponibili['ins_roles']}"/></li>
+							    <li><h:commandLink value="#{i18n['acl.groups']}" action="#{menu.insTableDocGruppo}" immediate="true" rendered="#{aclHome.formsAdapter.funzionalitaDisponibili['ins_gruppi']}"/></li>
+							    <li><h:commandLink value="#{i18n['acl.towns']}" action="#{menu.insTableDocComune}" immediate="true" rendered="#{aclHome.formsAdapter.funzionalitaDisponibili['ins_comuni']}"/></li>
+							    <li><h:commandLink value="#{i18n['acl.pec']}" action="#{menu.insTableDocAoo}" immediate="true" rendered="#{aclHome.formsAdapter.funzionalitaDisponibili['ins_aoo'] and aclHome.adminAcl}"/></li>
+		    				</ul>
+						</li>
+						<li class="dropdown">
+					        <a data-toggle="dropdown" class="dropdown-toggle" href="#">
+					        	<span class="glyphicon glyphicon-search navbar-menu-icon"></span>
+					        	#{i18n['acl.advancedsearch']} <b class="caret"></b>
+					        </a>
+							<ul class="dropdown-menu">
+								<li><h:commandLink value="#{i18n['acl.struint']}" action="#{menu.gotoTableQStrutturaInterna}" immediate="true"/></li>
+								<li><h:commandLink value="#{i18n['acl.struest']}" action="#{menu.gotoTableQStrutturaEsterna}" immediate="true"/></li>
+								<li><h:commandLink value="#{i18n['acl.persint']}" action="#{menu.gotoTableQPersonaInterna}" immediate="true"/></li>
+								<li><h:commandLink value="#{i18n['acl.persest']}" action="#{menu.gotoTableQPersonaEsterna}" immediate="true"/></li>
+							    <li><h:commandLink value="#{i18n['acl.profiles']}" action="#{menu.gotoTableQProfilo}" immediate="true"/></li>
+							    <li><h:commandLink rendered="#{menu.formsAdapter.funzionalitaDisponibili['rolesManagement']}" value="#{i18n['acl.roles']}" action="#{menu.gotoTableQRuolo}" immediate="true"/></li>
+							    <li><h:commandLink value="#{i18n['acl.groups']}" action="#{menu.gotoTableQGruppo}" immediate="true"/></li>
+							    <li><h:commandLink value="#{i18n['acl.towns']}" action="#{menu.gotoTableQComune}" immediate="true"/></li>
+							    <li><h:commandLink value="#{i18n['acl.pec']}" action="#{menu.gotoTableQAoo}" immediate="true"/></li>
+							    <li><h:commandLink rendered="#{aclHome.formsAdapter.funzionalitaDisponibili['abilitaAccount']}" value="#{i18n['acl.account']}" action="#{menu.queryAccount}" immediate="true"/></li>
+							</ul>
+						</li>
+						<h:panelGroup rendered="#{aclHome.formsAdapter.funzionalitaDisponibili['abilitaAclCrawler']}">
+							<li class="dropdown">
+						        <a data-toggle="dropdown" class="dropdown-toggle" href="#">
+						        	<span class="glyphicon glyphicon-th-list navbar-menu-icon"></span>
+						        	#{i18n['dw4.altre_funzioni']} <b class="caret"></b>
+						        </a>
+								<ul class="dropdown-menu">
+									<h:panelGroup rendered="#{aclHome.formsAdapter.funzionalitaDisponibili['abilitaAclCrawler']}">
+						                <li><a href="#{facesContext.externalContext.requestContextPath}/aclCrawler/home.jsf">#{i18n['aclCrawler.extramenuEntry']}</a></li>
+						            </h:panelGroup>
+								</ul>
+							</li>
+						</h:panelGroup>
+						<h:panelGroup rendered="#{!empty menu.urlPaginaWikiManualeACL}">
+							<li class="dropdown">
+						        <a data-toggle="dropdown" class="dropdown-toggle" href="#">
+						        	<span class="glyphicon glyphicon-book navbar-menu-icon"></span>
+						        	#{i18n['dw4.help']} <b class="caret"></b>
+						        </a>
+								<ul class="dropdown-menu">
+									<h:panelGroup rendered="#{!empty menu.urlPaginaWikiManualeACL}">
+										<li><h:outputLink value="#{menu.urlPaginaWikiManualeACL}" target="manuale" title="#{i18n['dw4.manuale_online']}">#{i18n['dw4.manuale_online']}</h:outputLink></li>
+									</h:panelGroup>
+								</ul>
+							</li>
+						</h:panelGroup>
+					</ul>
+					<ul class="nav navbar-nav navbar-right">
+						<li class="dropdown">
+					        <a data-toggle="dropdown" class="dropdown-toggle #{(aclHome.accessoADM) ? 'user-login-adm' : ''}" title="#{userBean.userInfo}" href="#">
+					        	<span class="glyphicon glyphicon-user navbar-menu-icon"></span>
+					        	#{fn:substring(userBean.userInfo,0, fn:indexOf(userBean.userInfo, '('))} <h:panelGroup rendered="#{aclHome.logoutFromACL}"><b class="caret"></b></h:panelGroup>
+					        </a>
+					        <h:panelGroup rendered="#{aclHome.logoutFromACL}">
+								<ul class="dropdown-menu">
+									<li><h:commandLink action="#{userBean.logout}" value="#{i18n['dw4.esci']}" /></li>
+								</ul>
+							</h:panelGroup>
+						</li>
+					</ul>
+				</div>
+			</div>
+		</div>
+	</h:form>
+	<!-- header: fine -->
+		
+</ui:composition>
+</html>

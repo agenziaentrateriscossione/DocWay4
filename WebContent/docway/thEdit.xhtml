@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" 
+	  xmlns:h="http://java.sun.com/jsf/html" 
+	  xmlns:ui="http://java.sun.com/jsf/facelets" 
+	  xmlns:f="http://java.sun.com/jsf/core">
+<ui:composition>
+
+	<h:panelGroup layout="block" id="thEdit">
+		<h:panelGroup rendered="#{pageBean.active}">
+			<!-- Modal -->
+			<div id="thEditModal" class="modal fade in" aria-hidden="false" aria-labelledby="thEditModalLabel" role="dialog" tabindex="-1" style="display: block;">
+			<!--div class="modal fade" id="thEditModal" tabindex="-1" role="dialog" aria-labelledby="thEditModalLabel" aria-hidden="true"-->
+				<div class="modal-dialog modal-lg">
+					<div class="modal-content jsf-modal">
+						<div class="modal-header">
+							<h:commandLink class="close" action="#{pageBean.close}" value="&#215;">
+		                    	<f:ajax render="@form"/>
+		                   	</h:commandLink>
+							
+							<h4 class="modal-title" id="thEditModalLabel">#{i18n['dw4.editing_di_tipologia_e_mezzo_di_trasmissione']}</h4>
+						</div>
+						<div class="modal-body">
+						
+							<h:panelGroup rendered="#{not empty facesContext.messageList}" layout="block" styleClass="alert alert-danger">
+								<h:messages styleClass="" id="validationMessegesPostit" />
+							</h:panelGroup>
+						
+							<fieldset>
+								<div class="form-group">
+									<label for="templateForm:canale" class="col-sm-2 control-label">#{i18n['dw4.canale']}</label>
+									<div class="col-sm-4">
+										<h:selectOneMenu id="canale" value="#{pageBean.keypath}" onchange="$('#templateForm\\:reloadThEdit').trigger('click');" styleClass="form-control">
+											<f:ajax execute="@this" render="@form" />
+											<f:selectItem itemValue="arrivo" itemLabel="#{i18n['dw4.documenti_in_arrivo']}" />
+											<f:selectItem itemValue="partenza" itemLabel="#{i18n['dw4.documenti_in_partenza']}" />
+											<f:selectItem itemValue="interno" itemLabel="#{i18n['dw4.documenti_tra_uffici']}" />
+											<f:selectItem itemValue="varie" itemLabel="#{i18n['dw4.documenti_non_protocollati']}" />
+										</h:selectOneMenu>
+									</div>
+								
+									<label for="templateForm:thtype" class="col-sm-1 control-label">#{i18n['acl.type']}</label>
+									<div class="col-sm-4">
+										<h:selectOneMenu id="thtype" value="#{pageBean.name}" onchange="$('#templateForm\\:reloadThEdit').trigger('click');" styleClass="form-control">
+											<f:selectItem itemValue="mezzo_trasmissione" itemLabel="#{i18n['dw4.mezzo_di_trasmissione']}" />
+											<f:selectItem itemValue="tipologia" itemLabel="#{i18n['acl.tipologia']}" />
+										</h:selectOneMenu>
+									</div>
+								</div>
+							</fieldset>
+							
+							<h:commandLink id="reloadThEdit" action="#{pageBean.reload}"><f:ajax execute="@form" render="@form"/></h:commandLink>
+							
+							<div class="docedit-messages alert alert-info">
+								<ul>
+									<li><h:outputText value="#{i18n['dw4.la_voce_che_termina_con']}" /> <span style="font-weight:bold;">(*)</span>&#160;<h:outputText value="#{i18n['dw4.indica_il_valore_di_default']}" /></li>
+									<li><span style="font-weight:bold;">!empty</span>&#160;<h:outputText value="#{i18n['dw4.indica_il_valore_vuoto']}" /></li>
+								</ul>
+							</div>
+							
+							<fieldset>
+								<div class="form-group">
+									<label for="templateForm:thvalori" class="col-sm-2 control-label">#{i18n['dw4.valori']}</label>
+									<div class="col-sm-9">
+										<h:inputTextarea id="thvalori" styleClass="form-control" rows="6" cols="120" value="#{pageBean.values}" />
+									</div>
+								</div>
+							</fieldset>
+							
+							<h:inputTextarea styleClass="form-control" rows="10" value="#{pageBean.xml}" rendered="#{pageBean.debugMode}"/>
+							
+						</div>
+						<div class="modal-footer">
+							<h:commandLink action="#{pageBean.salvaNodo}" styleClass="btn btn-primary openwaitmsg" value="#{i18n['acl.save']}">
+								<f:ajax execute="@form" render="@form"/>
+							</h:commandLink>
+							
+							<h:commandLink styleClass="btn btn-default" action="#{pageBean.close}"  value="#{i18n['acl.close']}">
+		                    	<f:ajax render="@form"/>
+		                   	</h:commandLink>
+						</div>
+					</div>
+				</div>
+			</div>
+			<!--h:outputScript>
+				$('#thEditModal').modal('show');
+			</h:outputScript-->
+		</h:panelGroup>
+	</h:panelGroup>
+
+</ui:composition> 
+</html>

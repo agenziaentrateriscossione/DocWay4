@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+    template="#{docwayFirmaDigitale.pageTemplate}"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:f="http://java.sun.com/jsf/core">
+
+<ui:define name="content">
+	<div class="sub-header">#{i18n['dw4.firma_digitale']}</div>
+
+	<!-- toolbar: inizio -->
+	<div class="btn-toolbar margin-bottom" role="toolbar">
+		<div class="btn-group btn-group-justified">
+			<h:commandLink rendered="#{docwayFirmaDigitale.popupPage}" onclick="top.close();" styleClass="btn btn-default">#{i18n['acl.close']}</h:commandLink>
+			<h:link outcome="firmadigitale@3di@help" styleClass="btn btn-default">#{i18n['dw4.help']}</h:link>
+		</div>
+	</div>
+	<!-- toolbar: fine -->
+	
+	<ui:remove>
+		<!-- rimosso per bug in riconoscimento JRE su Windows7 64bit (richiede in continuazione l'upgrade della JRE) -->
+		<script src="http://www.java.com/js/deployJava.js"></script>
+		<script>
+		// check if current JRE version is greater than 1.6.0 
+		if (deployJava.versionCheck('1.6.0+') == false ) {                   
+			var userInput = confirm("#{i18n['dw4.occorre_installare_l_ultima_versione_di_java_runtime_environment_Si_vuole_eseguire_ora_l_aggiornamento']}");        
+			if (userInput == true) {  
+				// install latest JRE or redirect user to another page to get JRE from.
+				deployJava.installLatestJRE(); 
+			}
+		}
+		</script>
+	</ui:remove>
+	
+	<ui:remove>
+		<script type="text/javascript">
+			document.write('<object type="application/x-java-applet" width="100%" height="80">');
+			document.write('<param name="code" value="it.tredi.applet.signature.SignatureApplet.class" />');
+			document.write('<param name="archive" value="3disignapplet.jar" />');
+			document.write('<param name="jnlp_href" value="#{docwayFirmaDigitale.configFirmaDigitale.baseUrl}docway/3diSignatureApplet/3disign.jnlp" />');
+			document.write('<param name="DownloadFilesServiceURL" value="#{docwayFirmaDigitale.configFirmaDigitale.baseUrl}3disignaturetools" />');
+			document.write('<param name="InputFile" value="#{docwayFirmaDigitale.encodedDownloadFileUrl}" />');
+			document.write('<param name="FileNameURL" value="#{docwayFirmaDigitale.fileTitleWithExtension}" />');
+			document.write('<param name="OutputFileType" value="#{docwayFirmaDigitale.outputFileType}" />');
+			document.write('<param name="SendToServerURL" value="#{docwayFirmaDigitale.postUrlWithParams}" />');
+			document.write('<param name="cookies" value="' + document.cookie + '" />');
+			document.write('<param name="SuccessRedirectURL" value="#{docwayFirmaDigitale.configFirmaDigitale.baseUrl}docway/actalisOK.jsf" />');  <!-- TODO modificare l'url -->
+			document.write('<param name="ErrorRedirectURL" value="#{docwayFirmaDigitale.configFirmaDigitale.baseUrl}docway/actalisKO.jsf" />');  <!-- TODO modificare l'url -->
+			document.write('Errore nel caricamento dell\'applet. Non trovato il plugin JAVA');
+			document.write('</object>');
+		</script>
+	</ui:remove>
+	
+	<object id="3diSignatureAppletObject" type="application/x-java-applet" width="100%" height="80">
+		<param name="code" value="it.tredi.applet.signature.SignatureApplet.class" />
+		<!--param name="code" value="it.tredi.applet.signature.ConverterAndSignerMain.class" /-->
+		<param name="archive" value="3disignapplet.jar" />
+
+		<!--param name="java_arguments" value="-Djnlp.packEnabled=true"/-->
+ 		<param name="jnlp_href" value="#{docwayFirmaDigitale.configFirmaDigitale.baseUrl}docway/3diSignatureApplet/3disign.jnlp" />
+ 
+ 		<param name="DownloadFilesServiceURL" value="#{docwayFirmaDigitale.configFirmaDigitale.baseUrl}3disignaturetools" />
+ 		<param name="InputFile" value="#{docwayFirmaDigitale.encodedDownloadFileUrl}" />
+ 		<param name="FileNameURL" value="#{docwayFirmaDigitale.fileTitleWithExtension}" />
+    	<param name="OutputFileType" value="#{docwayFirmaDigitale.outputFileType}" />
+		<param name="SendToServerURL" value="#{docwayFirmaDigitale.postUrlWithParams}" />
+		<param id="3diSignatureAppletParamCookies" name="cookies" value="" />
+		<!-- <param name="SuccessRedirectURL" value="#{docwayFirmaDigitale.configFirmaDigitale.baseUrl}docway/actalisOK.jsf" /> --> <!-- TODO modificare l'url -->
+		<!-- <param name="ErrorRedirectURL" value="#{docwayFirmaDigitale.configFirmaDigitale.baseUrl}docway/actalisKO.jsf" />  --> <!-- TODO modificare l'url -->
+		
+		<param name="successJsCode" value="document.getElementById('templateForm:signatureOK').click();" />
+		<param name="errorJsCode" value="document.getElementById('templateForm:signatureKO').click();" />
+ 
+ 		#{i18n['dw4.errore_nel_caricamento_dell_applet_Non_trovato_il_plugin_java']}
+	</object>
+	
+	<h:outputLink id="signatureOK" style="display: none;" value="#{facesContext.externalContext.requestContextPath}/docway/actalisOK.jsf"></h:outputLink>
+	<h:outputLink id="signatureKO" style="display: none;" value="#{facesContext.externalContext.requestContextPath}/docway/actalisKO.jsf"></h:outputLink>
+	
+	<script type="text/javascript">
+		$('#3diSignatureAppletParamCookies').val(document.cookie); 
+	</script>
+
+	<h:inputTextarea value="#{docwayFirmaDigitale.xml}" rendered="#{docwayFirmaDigitale.debugMode}" styleClass="form-control" rows="10" />
+</ui:define>
+	
+</ui:composition>

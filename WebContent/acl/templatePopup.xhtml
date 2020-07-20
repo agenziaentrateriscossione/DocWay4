@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" 
+		xmlns:h="http://java.sun.com/jsf/html" 
+		xmlns:ui="http://java.sun.com/jsf/facelets">
+
+<h:head>
+	<title>#{i18n['acl.page_title']}</title>
+
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<h:panelGroup rendered="#{fn:containsIgnoreCase(header['User-Agent'], 'Trident/7.0;')}"> <!-- TODO identifica correttamente IE11?  -->
+		<!-- Pare ci sia un bug su IE11 per la quale non funziona la registrazione di funzioni su eventi (addEventListener/attachEvent) -->
+		<meta http-equiv="X-UA-Compatible" content="IE=9" />
+	</h:panelGroup>
+	<h:panelGroup rendered="#{!fn:containsIgnoreCase(header['User-Agent'], 'Trident/7.0;')}">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+	</h:panelGroup>
+
+	<!-- javascript -->
+	<script type="text/javascript" src="#{facesContext.externalContext.requestContextPath}/common/js/jquery.js?ver=#{aclHome.versioneDocway}"></script>
+	<script type="text/javascript" src="#{facesContext.externalContext.requestContextPath}/common/js/jquery.formatCurrency-1.4.0.js?ver=#{aclHome.versioneDocway}"></script>
+	<script type="text/javascript" src="#{facesContext.externalContext.requestContextPath}/bootstrap/js/bootstrap.js?ver=#{aclHome.versioneDocway}"></script>
+	<script type="text/javascript" src="#{facesContext.externalContext.requestContextPath}/common/js/bootstrap-datepicker.js?ver=#{aclHome.versioneDocway}"></script>
+	<script type="text/javascript" src="#{facesContext.externalContext.requestContextPath}/common/js/docs.js?ver=#{aclHome.versioneDocway}"></script>
+	<script type="text/javascript" src="#{facesContext.externalContext.requestContextPath}/common/js/base64.js?ver=#{aclHome.versioneDocway}"></script>
+	<script type="text/javascript"><!-- var clientconfig = #{aclHome.clientconfig.json} //--></script>
+	<script type="text/javascript" src="#{facesContext.externalContext.requestContextPath}/common/js/common.js?ver=#{aclHome.versioneDocway}"></script>
+	<script type="text/javascript" src="#{facesContext.externalContext.requestContextPath}/acl/js/acl.js?ver=#{aclHome.versioneDocway}"></script>
+
+	<!-- styles -->
+	<link href="#{facesContext.externalContext.requestContextPath}/bootstrap/css/bootstrap.css?ver=#{aclHome.versioneDocway}" rel="stylesheet" type="text/css" />
+	<h:panelGroup rendered="#{aclHome.languageOrientation eq 'rtl'}">
+		<link href="#{facesContext.externalContext.requestContextPath}/bootstrap/css/bootstrap-rtl.css?ver=#{aclHome.versioneDocway}" rel="stylesheet" type="text/css" />
+	</h:panelGroup>
+	
+	<link href="#{facesContext.externalContext.requestContextPath}/glyphicons/css/glyphicons.css?ver=#{aclHome.versioneDocway}" rel="stylesheet" type="text/css" />
+	<link href="#{facesContext.externalContext.requestContextPath}/common/css/dashboard.css?ver=#{aclHome.versioneDocway}" rel="stylesheet" type="text/css" />
+	<link href="#{facesContext.externalContext.requestContextPath}/common/css/datepicker.css?ver=#{aclHome.versioneDocway}" rel="stylesheet" type="text/css" />
+	<link href="#{facesContext.externalContext.requestContextPath}/common/css/common.css?ver=#{aclHome.versioneDocway}" rel="stylesheet" type="text/css" />
+	<link href="#{facesContext.externalContext.requestContextPath}/acl/css/acl.css?ver=#{aclHome.versioneDocway}" rel="stylesheet" type="text/css" />
+	<h:panelGroup rendered="#{aclHome.languageOrientation eq 'rtl'}">
+		<link href="#{facesContext.externalContext.requestContextPath}/common/css/rtl.css?ver=#{aclHome.versioneDocway}" rel="stylesheet" type="text/css" />
+	</h:panelGroup>
+	
+	<h:panelGroup rendered="#{!empty aclHome.customDirCss}">
+		<link href="#{facesContext.externalContext.requestContextPath}/acl/css/#{aclHome.customDirCss}/acl.css?ver=#{aclHome.versioneDocway}" rel="stylesheet" type="text/css" />
+	</h:panelGroup>
+	
+	<script type="text/javascript">
+	$(document).ready(function() {
+		// reimposto il target sul form di opener
+		window.opener.document.getElementById('templateForm').target = '_self';
+		
+		window.opener.$('#waitmsgdiv').css('display','block');
+		window.opener.$('#waitmsgdiv').addClass('popup-overlay');
+	});
+	
+	$(window).unload(function() {
+		window.opener.$('#waitmsgdiv').removeClass('popup-overlay');
+		window.opener.$('#waitmsgdiv').css('display','none');
+		
+		window.opener.hideOpenwaitmsg();
+	});
+	</script>
+</h:head>
+
+<h:body styleClass="dw-popup-page #{aclHome.languageOrientation}">
+
+	<div class="container">
+		<div class="row clearfix">
+			<div class="col-md-12 main">
+				<h:form id="templateForm" styleClass="form-horizontal">
+					<div class="row">
+						<ui:insert name="content" />
+						
+						<ui:include src="./errormsg.xhtml" />
+					</div>
+				</h:form>
+			</div>
+		</div>
+		
+		<ui:include src="./waitmsg.xhtml" />
+		
+		<input type="hidden" id="globalFocusFieldAfterAjax" value="" />
+	</div><!--/.container-->
+
+</h:body>
+
+</html>

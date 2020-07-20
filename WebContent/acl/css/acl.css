@@ -1,0 +1,351 @@
+.fullscreen-logo .application-logo {
+	height: 45px;
+	padding-left: 5px;
+}
+
+.resizescreen-logo .application-logo {
+	height: 40px;
+	padding-left: 5px;
+	background-color: #fff;
+    border-radius: 5px;
+}
+
+.sidebar .panel-title {
+	padding-top: 3px; 
+	margin-right: 5px;
+}
+
+/*############################### DEFINIZIONE COLORI PER ACL - INIZIO ###############################*/
+
+a {
+	color: #9b5300;
+}
+a:hover, a:focus {
+	color:#915300;
+}
+
+.navbar-default {
+	background-color: #6a6a6b; /*#fa8c2b;*/
+}
+
+.btn-primary {
+	background-color: #fa8c2b;
+	border-color: #ccc;
+}
+
+.btn-primary:hover {
+	background-color: #ff7c05;
+	border-color: #ccc;
+}
+
+.btn-toolbar .btn-primary {
+	background-color: #b25300;
+}
+
+.btn-toolbar .btn-primary:hover {
+	background-color: #9b5300;
+}
+
+.btn-toolbar .btn-default {
+	background-color: #fa8c2b;
+}
+
+.btn-toolbar .btn-default:hover {
+	background-color: #ff7c05;
+}
+
+.table-hover > tbody > tr:hover > td {
+	background-color: #fa8c2b;
+	color: #fff;
+}
+
+/*############################### DEFINIZIONE COLORI PER ACL - FINE ###############################*/
+
+.acl-titles-table a .acl-tipo.glyphicons-pro {
+	background-color: #9b5300;
+	border-radius: 4px;
+    color: #ffffff;
+    padding: 4px;
+	font-size: 18px;
+}
+
+.glyphicons-pro.strutture-esterne, .glyphicons-pro.struttura_esterna, .glyphicons-pro.persone-esterne, .glyphicons-pro.persona_esterna, 
+.acl-titles-table a .acl-tipo.struttura_esterna.glyphicons-pro, .acl-titles-table a .acl-tipo.persona_esterna.glyphicons-pro {
+	background-color: #4682b4;
+}
+
+.acl-titles-table > tbody > tr > td {
+	vertical-align: middle;
+}
+
+.acl-titles-table .coltipo {
+	width: 50px;
+}
+
+.acl-titles-table img {
+	height: 22px;
+}
+
+.glyphicons-pro.strutture-interne, .glyphicons-pro.persone-interne, .glyphicons-pro.profili, .glyphicons-pro.gruppi, .glyphicons-pro.aoo, .glyphicons-pro.ruoli, .glyphicons-pro.comuni {
+    background-color: #9b5300;
+    color: #FFFFFF;
+}
+
+.glyphicons-pro.strutture-esterne, .glyphicons-pro.persone-esterne {
+    background-color: #4682b4;
+    color: #FFFFFF;
+}
+
+.aoo .emphasis-title {
+    color: #FA8C2B;
+}
+
+.btn-toolbar {
+    background-color: #F9F9F9;
+}
+
+.showdoc-section .title, .fieldset .legend {
+    background-color: transparent;
+    border-bottom: none;
+}
+
+#advancedSearch .fieldset .legend {
+    background-color: #d3d3d3;
+    border: 1px solid #e5e5e5;
+}
+
+/*############################### STILI PER SEZIONE DIRITTI - INIZIO ###############################*/
+
+.dw-listofrights-holder .nav {
+    text-align: right;
+    /*margin-right: 5px;*/
+}
+
+
+@media (max-width: 988px) {
+	.dw-listofrights-holder .nav {
+	    text-align: left;
+	}
+}
+
+.dw-listofrights-holder .nav > li > a {
+    padding: 5px 0; /*5px 10px;*/
+}
+
+.dw-listofrights-holder .nav > li.active > a {
+    padding: 5px;
+}
+
+.dw-listofrights-holder .col-sm-12 {
+    margin-bottom: 15px;
+}
+
+.dw-rights-holder .panel {
+    /*float: left;
+    width: 50%;*/
+    margin-bottom: 2px;
+}
+
+.dw-rights-holder .panel-heading {
+    padding: 2px 5px;
+}
+
+.dw-rights-holder .panel-title {
+	font-size: 12px;
+}
+
+.dw-rights-holder .panel-body {
+    padding: 5px;
+}
+
+.dw-rights-holder .panel-body ul {
+    margin: 5px 0;
+}
+
+.dw-rights-holder .lunchbox {
+    display: none;
+}
+
+li.block-item-enabled {
+    border: none;
+    display: inline-block;
+    margin-right: 10px;
+    margin-bottom: 3px;
+    width: 260px;
+    -moz-border-radius: 5px;
+    -webkit-border-radius: 5px;
+    border-radius: 5px;
+    border: 1px solid #b4b4b4;
+    background: #F8F8F8;
+}
+
+li.block-item-enabled div {
+    padding: 0px 5px 0px 22px;
+}
+
+li.block-item-enabled a,li.block-item-enabled span {
+    line-height: 22px;
+}
+
+li.block-item-disabled,.block-item-disabled {
+    display: inline-block;
+    min-height: 25px;
+    width: 260px;
+    margin-right: 10px;
+    margin-bottom: 3px;
+    -moz-border-radius: 5px;
+    -webkit-border-radius: 5px;
+    border-radius: 5px;
+    border: 1px solid #C8C8C8;
+    background: #F8F8F8;
+}
+
+li.block-item-disabled div {
+    padding: 0px 5px 0px 22px;
+}
+
+li.block-item-disabled a,li.block-item-disabled span {
+    line-height: 22px;
+}
+
+li.block-item-locked {
+    border: 1px solid #CCCCCC;
+    -moz-border-radius: 5px;
+    -webkit-border-radius: 5px;
+    border-radius: 5px;
+    background: #FDFDFD;
+    display: inline-block;
+    min-height: 25px;
+    width: 260px;
+    margin-right: 10px;
+    margin-bottom: 3px;
+    min-height: 25px;
+}
+
+li.block-item-locked div {
+    padding: 0px 5px 0px 22px;
+}
+
+li.block-item-locked a,li.block-item-locked span {
+    line-height: 22px;
+}
+
+li.block-item-enabled a,li.block-item-enabled span {
+    text-decoration: none;
+    color: #000000;
+/*    font-size: 11px; */
+}
+
+li.block-item-enabled a:hover {
+    text-decoration: none;
+    color: #660000;
+}
+
+li.block-item-disabled a:hover {
+    text-decoration: none;
+    color: #660000;
+}
+
+li.block-item-disabled a,li.block-item-disabled span {
+    text-decoration: none;
+    color: black;
+}
+
+li.block-item-locked a,li.block-item-locked span {
+    text-decoration: none;
+    color: #989898;
+}
+
+li.block-item-locked .form-control, li.block-item-disabled .form-control, li.block-item-enabled .form-control {
+    display: inline;
+    width: auto;
+    height: auto;
+    margin: 1px 5px 2px 5px;
+    padding: 0;
+}
+
+li.block-item-locked .icon {
+	font-size: 16px;
+	margin-right: 5px;
+	color: black;
+}
+
+li.block-item-disabled .icon {
+    font-size: 16px;
+    margin-right: 5px;
+    color: red;
+}
+
+li.block-item-enabled .icon {
+    font-size: 16px;
+    margin-right: 5px;
+    color: green;
+}
+
+@media screen and (max-width: 400px) {
+    li.block-item-enabled, li.block-item-disabled, li.block-item-locked {
+        width: auto;
+    }   
+}
+
+.dw-listofrights-holder .nav-pills > li.active > a, .dw-listofrights-holder .nav-pills > li.active > a:hover, 
+.dw-listofrights-holder .nav-pills > li.active > a:focus {
+	background-color: #F97505;	
+}
+
+.showdoc .col-sm-2.rights-list-col {
+	margin-right: 0;
+	padding-right: 0;
+}
+
+/*############################### STILI PER SEZIONE DIRITTI - FINE ###############################*/
+
+.showdoc-title .glyphicon, .sub-header .glyphicon, .showdoc-title .glyphicons-pro, .sub-header .glyphicons-pro {
+	padding: 4px;
+}
+
+.showdoc .sub-header {
+	font-size: 26px;
+	margin-bottom: 0;
+}
+
+.showdoc .sub-header {
+    display: block;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    vertical-align: middle;
+    white-space: nowrap;
+}
+
+pre {
+	word-break: normal;
+	white-space: pre-line;
+	max-height: 200px;
+}
+
+.aclcrawler-repsection-header {
+	padding-left: 4px;
+	width: 13px;
+	display: inline-flex;
+}
+
+.dmodel-protocollazione-automatica-fatturepa {
+	text-transform: uppercase;	
+}
+
+.account-label {
+	padding: 5px 5px 5px 10px;
+	float: left;
+}
+
+.diritti-wordwrap {
+	word-wrap: break-word;
+}
+
+.comparerights-descrizione {
+	width: 25%;	
+}
+
+h3 .popover.fade.in {
+	font-size: 0.7em;
+}

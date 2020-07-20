@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" 
+	  xmlns:h="http://java.sun.com/jsf/html" 
+	  xmlns:ui="http://java.sun.com/jsf/facelets" 
+	  xmlns:f="http://java.sun.com/jsf/core"
+	  xmlns:p="http://xmlns.jcp.org/jsf/passthrough">
+<ui:composition>
+
+	<h:panelGroup id="workflowPanel" rendered="#{bean.formsAdapter.funzionalitaDisponibili['abilitaeXtraWayWorkflow']}" layout="block">
+		<div class="fieldset">
+			<div class="legend">
+				<h:commandLink action="#{bean.openCloseWidgetWorklofw}" styleClass="legend-link">
+					<f:ajax render="templateForm:workflowPanel"/>
+					#{i18n['dw4.workflow']}
+					<span class="pull-right">
+						<span class="glyphicon #{bean.workflows_info ? 'glyphicon-collapse-up' : 'glyphicon-collapse-down'}"></span>
+					</span>
+				</h:commandLink>
+			</div>
+			
+			<h:panelGroup rendered="#{bean.workflows_info}" id="workflowCPanel" layout="block">
+				<div class="form-group">
+					<label for="templateForm:doc_workflowlabel" class="col-sm-2 control-label">#{i18n['dw4.workflowdefinition_name']}</label>
+					<div class="col-sm-9">
+						<div class="input-group">
+							<h:inputText styleClass="form-control" value="#{bean.workflow_label}" id="doc_workflowlabel" />
+							<div class="input-group-btn">
+								<h:commandLink title="#{i18n['acl.vocabulary']}" action="#{bean.openIndexWorkflowLabel}" styleClass="btn btn-default">
+									<f:ajax execute="@form" render="@form"/>
+									<span class="glyphicon glyphicon-search"></span>
+								</h:commandLink>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="col-sm-2 control-label">#{i18n['dw4.workflow_stato']}</label>
+					<div class="col-sm-9">
+						<div class="input-group">
+							<span class="margin-right-20" style="white-space:nowrap;">
+                                        <h:selectBooleanCheckbox value="#{bean.workflow_stato_attivo}" id="workflow_stato_attivo" />
+                                        <label for="templateForm:workflow_stato_attivo" class="normal-weight-text">#{i18n['dw4.workflow_stato_attivo']}</label>
+                                    </span>
+                                    <span class="margin-right-20" style="white-space:nowrap;">
+                                        <h:selectBooleanCheckbox value="#{bean.workflow_stato_concluso}" id="workflow_stato_concluso" />
+                                        <label for="templateForm:workflow_stato_concluso" class="normal-weight-text">#{i18n['dw4.workflow_stato_concluso']}</label>
+                                    </span>
+                                    <span style="white-space:nowrap;">
+                                        <h:selectBooleanCheckbox value="#{bean.workflow_stato_cancellato}" id="workflow_stato_cancellato" />
+                                        <label for="templateForm:workflow_stato_cancellato" class="normal-weight-text">#{i18n['dw4.workflow_stato_cancellato']}</label>
+                                    </span>
+						</div>
+					</div>
+				</div>
+			</h:panelGroup>
+		</div> <!-- /fieldset -->
+	</h:panelGroup>
+
+</ui:composition>
+</html>

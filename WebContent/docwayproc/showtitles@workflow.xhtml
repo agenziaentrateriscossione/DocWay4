@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+    template="template.xhtml"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:f="http://java.sun.com/jsf/core">
+
+<ui:define name="content">
+	<div class="workflow">
+	
+		<div class="sub-header">#{i18n['dw4.workflow']}</div>
+	
+		<!-- toolbar: inizio -->
+		<div class="btn-toolbar margin-bottom" role="toolbar">
+			<div class="pull-right">
+				<ui:include src="./ajaxNavigationBar.xhtml"><ui:param name="bean" value="#{docwayprocTitles}"/><ui:param name="customPage" value="true"/><ui:param name="customPageId" value="titlesId"/></ui:include>
+			</div>
+			<div class="btn-group">
+				<h:commandLink action="#{docwayprocMenu.gotoTableQWorkflow}" styleClass="btn btn-default">#{i18n['acl.ricerca']}</h:commandLink>
+			</div>
+		</div>
+		<!-- toolbar: fine -->
+		
+		<h:panelGroup rendered="#{fn:length(docwayprocTitles.titles) > 0}">
+			
+			<table class="table table-hover doc-titles-table fasc-titles-table">
+				<thead>
+					<tr>
+						<th class="cologgetto essential">#{i18n['dw4.workflow']}</th>
+					</tr>
+				</thead>
+				<tbody>
+					<ui:repeat id="titoli" var="title" value="#{docwayprocTitles.titles}" varStatus="status">
+						<tr>
+							<td>
+								<h:commandLink action="#{docwayprocTitles.mostraDocumento}" styleClass="blacklink openwaitmsg" style="text-decoration:none;">
+									<f:param name="titolo" value="#{title}"></f:param>
+									<div>#{title.testo}</div>
+								</h:commandLink>
+							</td>
+						</tr>
+					</ui:repeat>
+				</tbody>
+			</table>
+			
+		</h:panelGroup>
+		<h:panelGroup rendered="#{fn:length(docwayprocTitles.titles) == 0}">
+			
+			<div class="alert alert-info">#{i18n['acl.emptysearch']}</div>
+			
+		</h:panelGroup>
+		
+		<h:inputTextarea value="#{docwayprocTitles.xml}" rendered="#{docwayprocTitles.debugMode}" styleClass="form-control" rows="10" />
+	</div>
+</ui:define>
+
+</ui:composition>

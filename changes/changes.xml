@@ -1,0 +1,94 @@
+<document xmlns="http://maven.apache.org/changes/1.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/changes/1.0.0 http://maven.apache.org/xsd/changes-1.0.0.xsd">
+	<properties> 
+		<title>DocWay4</title>
+		<author email="mbernardini@3di.it">Mirko Bernardini</author>
+	</properties>
+	<body>
+
+		<release version="4.6.0" date="2015-12-01">
+			<action dev="abarducci" type="add" date="2015-11-30">
+				Aggiunta delle console Decretazioni, Ordini e Fatture per APV.
+			</action>
+			<action dev="mbernardini" type="fix" date="2015-11-27">
+				Rimosso dal progetto il componente server dei WS di SoginSAP per problemi di compatibilità e maggiore difficoltà di 
+				manutenzione in fase di installazione (la versione attualmente inclusa nel progetto non risulta funzionante neppure
+				sul cliente, viene utilizzata per la chiamata la vecchia webapp 'SoginSAP'). 
+				Occorre scaricare ed installare lo specifico modulo "SoginSAPDocWS". 
+			</action>
+			<action dev="mbernardini" type="fix" date="2015-11-25">
+				Caricamento del file di properties di soginSAP (da url PrettyFaces) tramite modulo configuratore (riscontrato durante la verifica del Task #4289).
+			</action>
+			<action dev="mbernardini" type="add" date="2015-11-23">
+				Aggiunto un messaggio di warning nelle pagine di ricerca in ACL in caso di restrizioni parziali su anagrafica. Per restrizioni parziali si intende 
+				il fatto che un operatore sia privo di restrizioni su anagrafica interna ma non sull'esterna o viceversa. Richiede l'abilitazione dal file docway.properties 
+				(abilitaWarningSuRestrizioniParziali=si).
+			</action>
+			<action dev="mbernardini" type="add" date="2015-11-18">
+				Aggiunto un tema specifico per Equitalia in modo da facilitare il riconoscimento dell'archivio al quale è collegato l'operatore.
+			</action>
+			<action dev="mbernardini" type="add" date="2015-11-16">
+				Possibilità di definire dei livelli di visibilità personalizzabili tramite i quali esterndere quelli classici di DocWay:
+				(*) I livelli custom devono essere definiti attraverso la property 'livelliRiservatezzaPersonalizzati' all'interno del file it.highwaytech.apps.generic.properties
+				(*) Per completare la configurazione occorre seguire le istruzioni specificate all'interno del file di properties (completamento file dei diritti, etichette da utilizzare per le visibilità custom, ecc.)
+			</action>
+			<action dev="mbernardini" type="update" date="2015-11-16">
+				Limitato (come da specifiche SdI) a 255 il numero di caratteri nella motivazione di rifiuto di una fatturaPA passiva.
+			</action>
+			<action dev="mbernardini" type="add" date="2015-11-06"> 
+				Gestione della motivazione di rifiuto di una fatturaPA attiva/passiva: notifiche di esito committente (EC) e notifiche
+				di esito cedente (NE).
+			</action>
+			<action dev="mbernardini" type="update" date="2015-10-29">
+				Applicate le restrizioni su AOO in ricerche su anagrafica interna/esterna in modo da 
+				supportare installazioni multi-aoo con anagrafiche esterne non condivise (caso di archivi ACL accorpati in 
+				uno unico con conflitti su codici).
+			</action>
+			<action dev="mbernardini" type="update" date="2015-10-27">
+				Aggiunto cod_amm_aoo nel caricamento di rif esterni dal documento.
+			</action>
+			<action dev="mbernardini" type="fix" date="2015-10-26">
+				Corretto bug in lookup su ruoli in rif interni: Non venivano filtrati i risultati in base all'AOO di appartenenza del documento/fascicolo.
+			</action>
+			<action dev="mbernardini" type="fix" date="2015-10-23">
+				In caso di lookup su mittente/destinatario (inserimento di doc in arrivo/partenza), se si seleziona una persona esterna non deve essere possibile
+				inserire una persona da lookup su firmatario/cortese attenzione. L'inserimento del firmatatario/cortese attenzione ha senso solo se è stata
+				selezionata una struttura esterna come mittente/destinatario. (Task #3960)
+			</action>
+			<action dev="mbernardini" type="update" date="2015-10-22">
+				In ACL, anche per utenti privi di restrizioni sulla propria AOO, in fase di inserimento persone/strutture interne, profili, gruppi, ruoli o AOO
+				non è possibile modifica i cod_amm e cod_aoo di default (in questo modo si evita un utilizzo potenzialmente "pericoloso" di ACL).
+			</action>
+			<action dev="mbernardini" type="fix" date="2015-10-22">
+				Corretto bug in selezione di gruppo di diritti con nome duplicato su più archivi (es. Riservatezza) in inserimento/modifica/visaulizzazione
+				di persone interne/profili.
+			</action>
+			<action dev="mbernardini" type="add">
+				In ACL possibilità di attivare, per gli utenti privi di restrizioni alla propria AOO, una select per selezionare l'AOO sulla quale
+				filtrare i risultati delle ricerche in ACL (solo se attiva la configurazione di archiviaoo.xml).
+			</action>
+			<action dev="mbernardini" type="add">
+				Definizione dei gestori di caselle di archiviazione e interoperabilità in ACL (modifica di PEC): 
+				(*) Possibilità di specificare, per ogni casella, gli utenti che possono modificare i dati della casella stessa;
+				(*) Sono stati definiti due livelli: "Titolare" e "Cambio Password". Un utente con assegnato il livello "Titolare" può modificare
+				ogni dato relativo alla casella, mentre un utente con livello "Cambio Password" può solamente modificare lo username e la password da utilizzare
+				per la connessione alla casella. 
+			</action>
+			<action dev="mbernardini" type="add">
+				Aggiunto alle Smart Actions di un documento/fascicolo il pulsante di cambio proprietario ("Proprietario" sul documento e "Trasferisci" 
+				sul fascicolo).
+			</action>
+			<action dev="mbernardini" type="add">
+				Eliminati tutti i riferimenti a broker.jar e common4.jar. Spostati i metodi chiamati in specifici JAR di utilities.
+			</action>
+			<action dev="aalberghini" type="add">
+				Passaggio a Maven.
+			</action>
+			<action dev="mbernardini" type="add">
+				Encoding dei contenuti (documenti xml) da ISO-8859-1 a UTF-8.
+			</action>
+		</release>
+		
+	</body>
+</document>

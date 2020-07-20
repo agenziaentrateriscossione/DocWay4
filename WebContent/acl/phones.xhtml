@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" 
+	  xmlns:h="http://java.sun.com/jsf/html" 
+	  xmlns:ui="http://java.sun.com/jsf/facelets" 
+	  xmlns:f="http://java.sun.com/jsf/core">
+<ui:composition>
+	
+	<ui:repeat id="#{idHolder}telefono" var="telefono" value="#{pageBean.telefoni}" varStatus="indice">
+		<div class="form-group">
+			<label for="templateForm:#{idHolder}telefono:#{indice.index}:num" class="col-sm-2 control-label">#{indice.index == 0 ? i18n['acl.phone'] : '&#160;'}</label>
+
+			<div class="col-sm-2">
+				<h:selectOneMenu value="#{telefono.tipo}" styleClass="form-control">
+					<f:selectItem itemLabel="#{i18n['acl.phone']}" itemValue="tel" />
+					<f:selectItem itemLabel="#{i18n['acl.fax']}" itemValue="fax" />
+					<f:selectItem itemLabel="#{i18n['acl.cell']}" itemValue="cell" />
+				</h:selectOneMenu>
+			</div>
+			<div class="col-sm-5">
+				<div class="input-group">
+					<h:inputText id="num" value="#{telefono.num}" styleClass="form-control" />
+					<div class="input-group-btn">
+						<h:commandLink action="#{pageBean.deleteTelefono}" styleClass="btn btn-default" title="#{i18n['dw4.elimina_istanza']}">
+			 				<f:ajax execute="@form" render="@form"/>
+			 				<span class="glyphicon glyphicon-minus"></span>
+						</h:commandLink>
+						<h:commandLink action="#{pageBean.addTelefono}" styleClass="btn btn-default" title="#{i18n['dw4.aggiungi_istanza']}">
+			 				<f:ajax execute="@form" render="@form"/>
+				 			<span class="glyphicon glyphicon-plus"></span>
+						</h:commandLink>
+						<h:commandLink action="#{pageBean.moveUpTelefono}" title="#{i18n['dw4.sposta_su']}" styleClass="btn btn-default #{(indice.index) > 0 ? '' : 'disabled'}">
+			 				<f:ajax execute="@form" render="@form"/>
+				 			<span class="glyphicon glyphicon-chevron-up"></span>
+						</h:commandLink>
+						<h:commandLink action="#{pageBean.moveDownTelefono}" title="#{i18n['dw4.sposta_giu']}" styleClass="btn btn-default #{fn:length(pageBean.telefoni) > (indice.index+1) ? '' : 'disabled'}">
+			 				<f:ajax execute="@form" render="@form"/>
+				 			<span class="glyphicon glyphicon-chevron-down"></span>
+						</h:commandLink>
+   					</div>
+  				</div>
+  			</div>
+  		</div>
+ 	</ui:repeat>
+
+</ui:composition>
+</html>

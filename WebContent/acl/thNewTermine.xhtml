@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+    template="templatePopup.xhtml"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:f="http://java.sun.com/jsf/core">
+
+<ui:define name="content">
+	<div class="thNuovoTermine">
+	
+		<!-- toolbar: inizio -->
+		<div class="btn-toolbar margin-bottom" role="toolbar">
+			<div class="btn-group">
+				<h:commandLink value="#{i18n['acl.save']}" onclick="saveNewTermine();" styleClass="btn btn-primary openwaitmsg" />
+				<h:commandLink value="#{i18n['acl.close']}" onclick="self.close();" styleClass="btn btn-default" />
+			</div>
+		</div>
+		<!-- toolbar: fine -->
+	
+		<!-- scheda edit: inizio -->
+		<div class="row-fluid">
+			<div class="box span12">
+				<div class="box-content">
+				
+					<div class="fieldset">
+						<div class="legend">#{i18n['dw4.nuovo_termine']}</div>
+						
+						<div class="form-group">
+							<label for="templateForm:termine" class="col-sm-2 control-label">#{i18n['dw4.inserisci_un_nuovo_termine']}</label>
+							<div class="col-sm-9">
+								<h:inputText id="termine" styleClass="form-control" />
+							</div>
+						</div>
+					</div> <!-- /fieldset -->
+					<script type="text/javascript">
+					function saveNewTermine() {
+						var termine = $('#templateForm\\:termine').val();
+						if (termine != '') {
+							window.opener.$('#templateForm\\:thNewTermine').val(termine);
+							window.opener.$('#templateForm\\:saveNewTermine').trigger("click");
+							
+							self.close();
+						}
+						else {
+							return false;	
+						}
+					}
+					</script>
+				</div>
+			</div>
+		</div>
+		<!-- scheda edit: fine -->
+	</div>
+</ui:define>
+
+</ui:composition>

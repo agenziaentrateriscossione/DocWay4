@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+    template="../#{showdocArrivoFTRPAP.pageTemplate}"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:c="http://java.sun.com/jsp/jstl/core">
+
+<ui:define name="content">
+	<div class="arrivo">
+		
+		<!-- toolbar: inizio -->
+		<ui:include src="../buttonBar.xhtml">
+			<ui:param name="bean" value="#{showdocArrivoFTRPAP}"/>
+			<ui:param name="qPersonalView" value="#{showdocArrivoFTRPAP.personalView}" /> <!-- attiva il pulsante di ricerca specifico per il repertorio -->
+			<ui:param name="hideNuovo" value="true" />
+			<ui:param name="hideRipeti" value="true" />
+		</ui:include>
+		
+		<h:panelGroup rendered="#{!showdocArrivoFTRPAP.doc.cestino and showdocArrivoFTRPAP.fatturaPA.fileNameFattura ne ''}" layout="block" styleClass="fieldsetButtons">
+			<div class="btn-toolbar hidden-print" role="toolbar">
+				<div class="btn-group">
+					<h:panelGroup rendered="#{showdocArrivoFTRPAP.formsAdapter.funzionalitaDisponibili['modifica'] and !showdocArrivoFTRPAP.doc.bozza and showdocArrivoFTRPAP.doc.annullato ne 'si' and empty showdocArrivoFTRPAP.statoFattura}">
+						<h:panelGroup rendered="#{showdocArrivoFTRPAP.fatturaPA.lottoFatture}">
+							<h:commandLink action="#{showdocArrivoFTRPAP.openPopupEsitoCommittente}" styleClass="btn btn-primary">
+								<f:ajax execute="@form" render="@form" />
+								#{i18n['dw4.notifica_esito']}
+							</h:commandLink>
+						</h:panelGroup>
+						<h:panelGroup rendered="#{!showdocArrivoFTRPAP.fatturaPA.lottoFatture}" layout="block" styleClass="btn-group">
+							<button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown">
+								#{i18n['dw4.notifica_esito']} <span class="caret"></span>
+							</button>
+							<ul class="dropdown-menu">
+								<li>
+									<h:commandLink action="#{showdocArrivoFTRPAP.sendEsitoCommittentePositivo}" onclick="if (!owmConfirm('#{i18n['dw4.invio_esito_committente_fattura_confirm']}')) return false;">
+										<f:ajax execute="@form" render="@form" />
+										#{i18n['dw4.accettazione']}
+									</h:commandLink>
+								</li>
+								<li>
+									<h:commandLink action="#{showdocArrivoFTRPAP.openPopupMotivazioneRifiuto}">
+										<f:ajax execute="@form" render="@form" />
+										#{i18n['dw4.rifiuto']}
+									</h:commandLink>
+								</li>
+							</ul>
+						</h:panelGroup>
+					</h:panelGroup>
+
+					<h:panelGroup rendered="#{!empty showdocArrivoFTRPAP.xslVisualizzazioneFattura and !empty showdocArrivoFTRPAP.fileidFattura}">					
+						<h:outputLink 
+								value="#{facesContext.externalContext.requestContextPath}/previewfatturapa?name=#{showdocArrivoFTRPAP.urlEncodedFileidFattura}&amp;title=#{showdocArrivoFTRPAP.urlEncodedFileNameFattura}&amp;xsltFileName=#{showdocArrivoFTRPAP.urlEncodedXsltFileName}&amp;db=#{showdocArrivoFTRPAP.formsAdapter.db}&amp;_cd=#{showdocArrivoFTRPAP.formsAdapter.urlEncodedCustomTupleName}" 
+								title="#{i18n['dw4.mostra_fattura']}" 
+								styleClass="btn btn-primary" 
+								target="_blank">
+							#{i18n['dw4.mostra_fattura']}
+						</h:outputLink>
+					</h:panelGroup>
+				</div>
+			</div>
+		</h:panelGroup>
+		<!-- toolbar: fine -->
+		
+		<!-- scheda show: inizio -->
+		<div class="contenuto-doc row clearfix">
+			<h:panelGroup rendered="#{!showdocArrivoFTRPAP.popupPage}">
+				<div class="col-xs-12 col-sm-2 col-md-2 col-lg-2 col-sm-push-10 col-md-push-10 col-lg-push-10 text-right">
+					<!-- azioni rapide: inizio -->
+					
+					<ui:include src="../smartActions.xhtml">
+						<ui:param name="bean" value="#{showdocArrivoFTRPAP}"/>
+					</ui:include>
+					
+					<!-- azioni rapide: fine -->
+				</div>
+			</h:panelGroup>
+			<div class="col-xs-12 #{(showdocArrivoFTRPAP.popupPage) ? 'col-sm-12 col-md-12 col-lg-12' : 'col-sm-10 col-md-10 col-lg-10 col-sm-pull-2 col-md-pull-2 col-lg-pull-2'}">
+				<!-- contenuto doc: inizio -->
+				
+				<h:panelGroup rendered="#{empty showdocArrivoFTRPAP.doc.non_disponibile.estremi}">
+					<ui:include src="../showdoc@title.xhtml">
+						<ui:param name="doc" value="#{showdocArrivoFTRPAP.doc}"/>
+						<ui:param name="icon" value="glyphicons-pro coins fatturapa-passiva" />
+					</ui:include>
+					
+					<ui:include src="../showdoc@annullato.xhtml"><ui:param name="bean" value="#{showdocArrivoFTRPAP}"/></ui:include>
+					<ui:include src="../showdoc@conservazione.xhtml"><ui:param name="bean" value="#{showdocArrivoFTRPAP}"/></ui:include>
+					
+					<div id="fixedshowdoc" class="fixed-showdoc">
+						<h:panelGroup rendered="#{showdocArrivoFTRPAP.showSectionStatiDocumento or (showdocArrivoFTRPAP.fatturaPA.fileNameFattura ne '' and (!empty showdocArrivoFTRPAP.statoFattura or (empty showdocArrivoFTRPAP.statoFattura and showdocArrivoFTRPAP.doc.annullato ne 'si')))}">
+							<div class="showdoc-section">
+								<div class="title">
+									#{i18n['dw4.stati_del_documento']}
+									
+									<div class="pull-right">
+										<span class="glyphicons-pro ok" title="#{i18n['dw4.stati_del_documento']}"></span>
+									</div>
+								</div>
+								<div class="stati-doc-holder">
+									<dl class="dl-horizontal">
+										<ui:include src="../showdoc@statidoc@content.xhtml">
+					                        <ui:param name="bean" value="#{showdocArrivoFTRPAP}"/>
+					                    </ui:include>
+					                    
+					                    <h:panelGroup rendered="#{showdocArrivoFTRPAP.fatturaPA.fileNameFattura ne ''}">
+						                    <h:panelGroup rendered="#{showdocArrivoFTRPAP.statoFattura eq 'DT'}">
+						                    	<dt>
+							                    	<span class="glyphicons-pro alarm ftrpap-decorrenza-termini popoveritem" data-toggle="popover" data-placement="bottom" data-trigger="hover" data-content="#{i18n['dw4.ftrpap_decorrenza_termini_descr']}"></span>
+							                    </dt>
+							                    <dd>#{i18n['dw4.ftrpap_decorrenza_termini_descr']} (#{i18n['dw4.guarda_la_sezione_di_notifiche_delle_fatture_per_maggiori_dettagli']})</dd>
+						                    </h:panelGroup>
+						                    <h:panelGroup rendered="#{showdocArrivoFTRPAP.statoFattura eq 'EC'}">
+						                    	<dt>
+													<span class="glyphicons-pro alarm ftrpap-esito-committente popoveritem" data-toggle="popover" data-placement="bottom" data-trigger="hover" data-content="#{i18n['dw4.ftrpap_esito_committente_descr']}"></span>
+							                    </dt>
+							                    <dd>#{i18n['dw4.ftrpap_esito_committente_descr']} (#{i18n['dw4.guarda_la_sezione_di_notifiche_delle_fatture_per_maggiori_dettagli']})</dd>
+						                    </h:panelGroup>
+						                    <h:panelGroup rendered="#{empty showdocArrivoFTRPAP.statoFattura and showdocArrivoFTRPAP.doc.annullato ne 'si'}">
+						                    	<dt>
+													<span class="glyphicons-pro history ftrpap-attesa-esito-committente popoveritem" data-toggle="popover" data-placement="bottom" data-trigger="hover" data-content="#{i18n['dw4.ftrpap_attesa_esito_committente_descr']}"></span>
+							                    </dt>
+							                    <dd>#{i18n['dw4.ftrpap_attesa_esito_committente_descr']}</dd>
+						                    </h:panelGroup>
+					                    </h:panelGroup>
+									</dl>
+								</div>
+							</div>
+						</h:panelGroup>
+						
+						<ui:include src="../showdoc@datidoc.xhtml">
+							<ui:param name="bean" value="#{showdocArrivoFTRPAP}"/>
+						</ui:include>
+						
+						<ui:include src="../showdoc@datiarchivio.xhtml">
+							<ui:param name="bean" value="#{showdocArrivoFTRPAP}"/>
+						</ui:include>
+						
+						<ui:include src="./showdoc@datifattura.xhtml">
+							<ui:param name="bean" value="#{showdocArrivoFTRPAP}"/>
+						</ui:include>
+						
+						<ui:include src="../aspects.xhtml">
+							<ui:param name="bean" value="#{showdocArrivoFTRPAP}"/>
+						</ui:include>
+						
+						<ui:include src="../showdoc@responsabilita.xhtml">
+							<ui:param name="bean" value="#{showdocArrivoFTRPAP}"/>
+						</ui:include>
+						
+						<ui:include src="../showdoc@xwfiles.xhtml">
+							<ui:param name="bean" value="#{showdocArrivoFTRPAP}"/>
+						</ui:include>
+						
+						<ui:include src="../showdoc@workflow.xhtml">
+							<ui:param name="bean" value="#{showdocArrivoFTRPAP}"/>
+						</ui:include>
+						
+						<ui:include src="../showdoc@postit.xhtml">
+							<ui:param name="bean" value="#{showdocArrivoFTRPAP}"/>
+						</ui:include>
+						
+						<ui:include src="../showdoc@datialtro.xhtml">
+							<ui:param name="bean" value="#{showdocArrivoFTRPAP}"/>
+						</ui:include>					
+						
+						<ui:include src="../history.xhtml">
+							<ui:param name="bean" value="#{showdocArrivoFTRPAP.doc}"/>
+							<ui:param name="viewbean" value="#{showdocArrivoFTRPAP}"/>
+							<ui:param name="visible" value="#{showdocArrivoFTRPAP.formsAdapter.funzionalitaDisponibili['showHistory']}" />
+						</ui:include>
+					</div>
+					
+				</h:panelGroup>
+				<h:panelGroup rendered="#{!empty showdocArrivoFTRPAP.doc.non_disponibile.estremi}">
+				
+					<ui:include src="../showdoc@docnondisponibile.xhtml">
+						<ui:param name="bean" value="#{showdocArrivoFTRPAP}"/>
+					</ui:include>
+					
+				</h:panelGroup>
+				
+				<h:inputTextarea value="#{showdocArrivoFTRPAP.xml}" rendered="#{showdocArrivoFTRPAP.debugMode}" styleClass="form-control" rows="10" />	
+				
+				<!-- contenuto doc: fine -->
+			</div>
+		</div>
+		<!-- scheda show: fine -->
+		
+		<ui:include src="../postit.xhtml"><ui:param name="pageBean" value="#{docwayPostit}"/></ui:include>
+		<ui:include src="../verificaFirma.xhtml"><ui:param name="pageBean" value="#{docwayVerificaFirma}"/></ui:include>
+		<ui:include src="../annullamentoDoc.xhtml"><ui:param name="pageBean" value="#{docwayAnnullamentoDoc}"/></ui:include>
+		<ui:include src="../doc_response@openChkinPage.xhtml"><ui:param name="pageBean" value="#{docwayCheckinAttach}"/></ui:include>
+		<ui:include src="../selectRaccoglitori.xhtml"><ui:param name="bean" value="#{showdocArrivoFTRPAP}"/><ui:param name="current" value="#{showdocArrivoFTRPAP.doc}"/></ui:include>
+		<ui:include src="../rifinterni@RPA.xhtml"><ui:param name="bean" value="#{rifInt}"/></ui:include>
+		<ui:include src="../rifinterni@OP.xhtml"><ui:param name="bean" value="#{rifInt}"/></ui:include>
+		<ui:include src="../rifinterni@CC.xhtml"><ui:param name="bean" value="#{rifInt}"/></ui:include>
+		<ui:include src="../rifinterni@CDS.xhtml"><ui:param name="bean" value="#{rifInt}"/></ui:include>
+		<ui:include src="../lookup.xhtml"> <ui:param name="pageBean" value="#{rifInt}"/></ui:include>
+		<ui:include src="../rifintLookup.xhtml"> <ui:param name="pageBean" value="#{rifInt}"/></ui:include>
+		<ui:include src="../show@task@vars.xhtml"><ui:param name="bean" value="#{docwayWfTaskVars}"/></ui:include>
+		<ui:include src="../showPersoneRuolo.xhtml"><ui:param name="bean" value="#{docwayShowPersoneRuolo}"/></ui:include>
+		<c:choose>
+			<c:when test="#{showdocArrivoFTRPAP.fatturaPA.lottoFatture}">
+				<ui:include src="./selectFattureEsitoCommittente.xhtml"></ui:include>
+			</c:when>
+			<c:otherwise>
+				<ui:include src="./editMotivazioneRifiutoEsitoCommittente.xhtml"></ui:include>
+			</c:otherwise>
+		</c:choose>
+		
+	</div>
+</ui:define>
+
+</ui:composition>

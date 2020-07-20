@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" 
+	  xmlns:h="http://java.sun.com/jsf/html" 
+	  xmlns:ui="http://java.sun.com/jsf/facelets" 
+	  xmlns:f="http://java.sun.com/jsf/core">
+<ui:composition>
+
+	<ui:param name="datiClassif" value="#{(!empty bean.doc.minuta.voce_indice.text or !empty bean.doc.minuta.voce_indice.text or (!bean.customfields.hiddenFields['classificazione'] and !empty bean.doc.minuta.classif.text and (empty hideClassificazione or hideClassificazione ne 'true')) or (!bean.formsAdapter.funzionalitaDisponibili['nascondifascicoli'] and !empty bean.doc.fasc_rpam.num) or !empty bean.doc.voce_indice.text or (!bean.customfields.hiddenFields['classificazione'] and !empty bean.doc.classif.text  and (empty hideClassificazione or hideClassificazione ne 'true'))) ? 'true' : 'false'}" />
+	<ui:param name="datiFascicoli" value="#{(!bean.formsAdapter.funzionalitaDisponibili['nascondifascicoli'] and ((bean.doc.tipo eq 'interno' and !empty bean.doc.fasc_rpa.num and !empty bean.doc.assegnazioneRPAM.diritto) or (bean.doc.tipo ne 'interno' and !empty bean.doc.fasc_rpa.num and empty bean.doc.assegnazioneRPAM.diritto) or fn:length(bean.doc.fascicoli_collegati) > 0)) ? 'true' : 'false'}" />
+	<ui:param name="datiRaccoglitore" value="#{(bean.formsAdapter.funzionalitaDisponibili['enableRaccoglitori'] and fn:length(bean.doc.contenuto_in) > 0) ? 'true' : 'false'}" />
+	<ui:param name="datiDocumentiCollegati" value="#{(fn:length(bean.doc.link_interni) > 0) ? 'true' : 'false'}" />
+
+	<h:panelGroup rendered="#{datiClassif eq 'true' or datiFascicoli eq 'true' or datiRaccoglitore eq 'true' or datiDocumentiCollegati eq 'true'}">
+		<div class="showdoc-section">
+			<div class="title">
+				#{i18n['dw4.archivio']}
+				
+				<div class="pull-right">
+					<span class="glyphicon glyphicon-inbox" title="#{i18n['dw4.archivio']}"></span>
+				</div>
+			</div>
+			<dl class="dl-horizontal">
+			
+				<h:panelGroup rendered="#{!empty bean.doc.verbale_di_seduta}">
+					<dt>#{i18n['dw4.seduta_collegata']}</dt>
+					<dd>
+						<h:commandLink action="#{bean.doProjection(bean.doc.nrecord,'sed_verbalenrecord','')}">#{bean.doc.verbale_di_seduta}</h:commandLink>
+					</dd>
+				</h:panelGroup>
+				
+				<h:panelGroup rendered="#{!empty bean.doc.minuta.voce_indice.text}">
+					<dt>#{i18n['dw4.index_minuta']}</dt>
+					<dd>#{bean.doc.minuta.voce_indice.text}</dd>
+				</h:panelGroup>
+				<h:panelGroup rendered="#{!bean.customfields.hiddenFields['classificazione'] and !empty bean.doc.minuta.classif.text and (empty hideClassificazione or hideClassificazione ne 'true')}">
+					<dt>#{i18n['dw4.classif_minuta']}</dt>
+					<dd>
+						<h:outputText value="#{bean.doc.minuta.classif.text}" escape="false"><f:converter converterId="ClassifConverter"/></h:outputText>
+						<h:panelGroup rendered="#{!empty bean.doc.minuta.scarto}">
+							&#160;
+							<h:outputText value="(#{i18n['dw4.scartomsg']} "/>
+							<h:panelGroup rendered="#{bean.doc.minuta.scarto == '99'}"><h:outputText value="#{i18n['dw4.illimitato']}"/></h:panelGroup>
+							<h:panelGroup rendered="#{bean.doc.minuta.scarto == '01'}"><h:outputText value="#{i18n['dw4.1_anno']}"/></h:panelGroup>
+							<h:panelGroup rendered="#{bean.doc.minuta.scarto == '05'}"><h:outputText value="#{i18n['dw4.5_anni']}"/></h:panelGroup>
+							<h:panelGroup rendered="#{bean.doc.minuta.scarto == '10'}"><h:outputText value="#{i18n['dw4.10_anni']}"/></h:panelGroup>
+							<h:outputText value=")"/>
+						</h:panelGroup>
+					</dd>
+					<h:panelGroup rendered="#{bean.doc.minuta.motiv_ogg_div ne ''}">
+						<dt>&#160;</dt>
+						<dd><pre>#{bean.doc.minuta.motiv_ogg_div}</pre></dd>
+					</h:panelGroup>
+				</h:panelGroup>
+				<h:panelGroup rendered="#{!bean.formsAdapter.funzionalitaDisponibili['nascondifascicoli'] and !empty bean.doc.fasc_rpam.num}">
+					<dt>#{i18n['dw4.fasc_minuta']}</dt>
+					<dd>
+						<span>
+							<h:outputText value="#{bean.doc.fasc_rpam.num}">
+								<f:converter converterId="NumFascConverter" />
+							</h:outputText> 
+							<span>&#171;</span>
+							<h:panelGroup rendered="#{bean.formsAdapter.funzionalitaDisponibili['disableSegnatura']}">
+								<h:commandLink value="#{bean.doc.fasc_rpam.oggetto}" action="#{bean.queryFascMinuta}"/>
+							</h:panelGroup>
+							<h:panelGroup rendered="#{!bean.formsAdapter.funzionalitaDisponibili['disableSegnatura']}">#{bean.doc.fasc_rpam.oggetto}</h:panelGroup>
+							<span>&#187;</span>
+							<h:panelGroup rendered="#{bean.formsAdapter.funzionalitaDisponibili['removedocfromfascicolominuta']}">
+								<span class="btn-group">
+									<h:commandLink action="#{bean.removeFromFascMinuta}" title="#{i18n['dw4.rimuovidalfascicolo']}" styleClass="btn btn-default btn-xs">
+										<f:ajax execute="@form" render="@form" />
+										<span class="glyphicon glyphicon-remove"></span>
+									</h:commandLink>
+								</span>
+							</h:panelGroup>
+						</span>
+					</dd>
+				</h:panelGroup>
+			
+				<h:panelGroup rendered="#{!empty bean.doc.voce_indice.text}">
+					<dt>#{i18n['dw4.index']}</dt>
+					<dd>#{bean.doc.voce_indice.text}</dd>
+				</h:panelGroup>
+				<h:panelGroup rendered="#{!bean.customfields.hiddenFields['classificazione'] and !empty bean.doc.classif.text and (empty hideClassificazione or hideClassificazione ne 'true')}">
+					<dt>#{i18n['dw4.classif']}</dt>
+					<dd>
+						<h:outputText value="#{bean.doc.classif.text}" escape="false"><f:converter converterId="ClassifConverter"/><f:attribute name="classifFormat" value="#{bean.classifFormat}" /></h:outputText>
+						<h:panelGroup rendered="#{!empty bean.doc.scarto}">
+							&#160;
+							<h:outputText value="(#{i18n['dw4.scartomsg']} "/>
+							<h:panelGroup rendered="#{bean.doc.scarto == '99'}"><h:outputText value="illimitato"/></h:panelGroup>
+							<h:panelGroup rendered="#{bean.doc.scarto == '01'}"><h:outputText value="1 anno"/></h:panelGroup>
+							<h:panelGroup rendered="#{bean.doc.scarto == '05'}"><h:outputText value="5 anni"/></h:panelGroup>
+							<h:panelGroup rendered="#{bean.doc.scarto == '10'}"><h:outputText value="10 anni"/></h:panelGroup>
+							<h:outputText value=")"/>
+						</h:panelGroup>
+					</dd>
+					<h:panelGroup rendered="#{bean.doc.motiv_ogg_div ne ''}">
+						<dt>&#160;</dt>
+						<dd><pre>#{bean.doc.motiv_ogg_div}</pre></dd>
+					</h:panelGroup>
+				</h:panelGroup>
+				
+				<h:panelGroup rendered="#{!bean.formsAdapter.funzionalitaDisponibili['nascondifascicoli']}">
+					<h:panelGroup rendered="#{bean.doc.tipo eq 'interno' and !empty bean.doc.fasc_rpa.num and !empty bean.doc.assegnazioneRPAM.diritto}">
+						<dt><h:outputText value="#{i18n['dw4.fasc']}" /></dt>
+						<dd>
+							<h:outputText value="#{bean.doc.fasc_rpa.num}">
+								<f:converter converterId="NumFascConverter" />
+							</h:outputText> 
+							<span>&#171;</span>
+								<h:panelGroup rendered="#{bean.formsAdapter.funzionalitaDisponibili['disableSegnatura']}">
+									<h:commandLink value="#{bean.doc.fasc_rpa.oggetto}" action="#{bean.queryFasc}"/>
+								</h:panelGroup>
+								<h:panelGroup rendered="#{!bean.formsAdapter.funzionalitaDisponibili['disableSegnatura']}">#{bean.doc.fasc_rpa.oggetto}</h:panelGroup>
+							<span>&#187;</span>
+							<h:panelGroup rendered="#{bean.formsAdapter.funzionalitaDisponibili['removedocfromfascicolo']}">
+								<span class="btn-group">
+									<h:commandLink action="#{bean.removeFromFasc}" title="#{i18n['dw4.rimuovidalfascicolo']}" styleClass="btn btn-default btn-xs">
+										<f:ajax execute="@form" render="@form" />
+										<span class="glyphicon glyphicon-remove"></span>
+									</h:commandLink>
+								</span>
+							</h:panelGroup>
+						</dd>
+					</h:panelGroup>
+					<h:panelGroup rendered="#{bean.doc.tipo ne 'interno' and !empty bean.doc.fasc_rpa.num and empty bean.doc.assegnazioneRPAM.diritto}">
+						<dt><h:outputText value="#{i18n['dw4.fasc']}" /></dt>
+						<dd>
+							<h:outputText value="#{bean.doc.fasc_rpa.num}">
+								<f:converter converterId="NumFascConverter" />
+							</h:outputText> 
+							<span>&#171;</span>
+							<h:panelGroup rendered="#{bean.formsAdapter.funzionalitaDisponibili['disableSegnatura']}">
+								<h:commandLink value="#{bean.doc.fasc_rpa.oggetto}" action="#{bean.queryFasc}"/>
+							</h:panelGroup>
+							<h:panelGroup rendered="#{!bean.formsAdapter.funzionalitaDisponibili['disableSegnatura']}">#{bean.doc.fasc_rpa.oggetto}</h:panelGroup>
+							<span>&#187;</span>
+							<h:panelGroup rendered="#{bean.formsAdapter.funzionalitaDisponibili['removedocfromfascicolo']}">
+								<span class="btn-group">
+									<h:commandLink action="#{bean.removeFromFasc}" title="#{i18n['dw4.rimuovidalfascicolo']}" styleClass="btn btn-default btn-xs">
+										<f:ajax execute="@form" render="@form" />
+										<span class="glyphicon glyphicon-remove"></span>
+									</h:commandLink>
+								</span>
+							</h:panelGroup>
+						</dd>
+					</h:panelGroup>
+				</h:panelGroup>
+				
+				<h:panelGroup rendered="#{!bean.formsAdapter.funzionalitaDisponibili['nascondifascicoli'] and fn:length(bean.doc.fascicoli_collegati) > 0}">
+					<ui:repeat var="fasc" value="#{bean.doc.fascicoli_collegati}">
+						<dt>#{i18n['dw4.fasc_collegato']}</dt>
+						<dd>
+							<span>
+								<h:outputText value="#{fasc.cod}">
+									<f:converter converterId="NumFascConverter" />
+								</h:outputText> 
+								
+								&#171;
+								<h:panelGroup rendered="#{bean.formsAdapter.funzionalitaDisponibili['disableSegnatura']}">
+									<h:commandLink value="#{fasc.oggetto}" action="#{bean.queryFascCollegati}" />
+								</h:panelGroup>
+								<h:panelGroup rendered="#{!bean.formsAdapter.funzionalitaDisponibili['disableSegnatura']}">#{fasc.oggetto}</h:panelGroup>
+								&#187;
+							</span>
+							<br/>
+							<span>#{fasc.nome_uff} - #{fasc.nome_persona}</span>
+							<span class="btn-group">
+								<h:commandLink action="#{bean.removeLinkFasc}" title="#{i18n['dw4.rimuovilinkalfascicolo']}" styleClass="btn btn-default btn-xs">
+									<span class="glyphicon glyphicon-remove"></span>
+								</h:commandLink>
+							</span>
+						</dd>
+					</ui:repeat>
+				</h:panelGroup>
+				
+				<h:panelGroup rendered="#{(bean.formsAdapter.funzionalitaDisponibili['enableRaccoglitori'] and fn:length(bean.doc.contenuto_in) > 0)}">
+					<dt>#{i18n['dw4.contenutoin']}</dt>
+					<dd>
+						<ui:repeat var="contenuto" value="#{bean.doc.contenuto_in}">
+							<h:commandLink value="#{contenuto.text}" action="#{bean.navigateToRac}" />
+							<span class="btn-group">
+								<h:commandLink action="#{bean.removeFromRac}" title="#{i18n['dw4.removeFromRac']}" styleClass="btn btn-default btn-xs">
+									<span class="glyphicon glyphicon-remove"></span>
+								</h:commandLink>
+							</span>
+							<br/>
+						</ui:repeat>
+					</dd>
+				</h:panelGroup>
+				
+				<h:panelGroup rendered="#{fn:length(bean.doc.link_interni) > 0}">
+					<dt>#{i18n['dw4.documenti_collegati']}</dt>
+					<dd>
+						<ui:repeat var="link_interno" value="#{bean.doc.link_interni}">
+							<h:panelGroup rendered="#{!empty link_interno.href}">
+								<h:commandLink value="#{link_interno.text}" action="#{bean.navigateInternalLink}"/>
+								<h:panelGroup rendered="#{link_interno.remove =='true'}">
+									<span class="btn-group">
+										<h:commandLink action="#{bean.removeInternalLink}" title="#{i18n['dw4.removeLink']}" onclick="if (!owmConfirm('#{i18n['dw4.rimuovi_collegamento_procedere_con_l_operazione']}')) return false;" styleClass="btn btn-default btn-xs">
+											<span class="glyphicon glyphicon-remove"></span>
+										</h:commandLink>
+									</span>
+								</h:panelGroup>
+								<br/>
+							</h:panelGroup>
+						</ui:repeat>
+					</dd>
+				</h:panelGroup>
+			</dl>
+		</div>
+	</h:panelGroup>
+
+</ui:composition>
+</html>

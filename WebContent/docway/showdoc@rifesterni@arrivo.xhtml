@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" 
+	  xmlns:h="http://java.sun.com/jsf/html" 
+	  xmlns:ui="http://java.sun.com/jsf/facelets" 
+	  xmlns:f="http://java.sun.com/jsf/core"
+	  xmlns:c="http://java.sun.com/jsp/jstl/core">
+<ui:composition>
+
+	<h:panelGroup rendered="#{fn:length(bean.doc.rif_esterni) > 0}">
+		<dt><h:outputText value="#{(!empty labelMittente) ? labelMittente : i18n['dw4.mittente']}" /></dt>
+		<dd>
+			<table class="table table-condensed doc-arrivo-mittente">
+				<tbody><tr>
+					<td class="mitt-btns-email optional">
+						<span class="btn-group">
+							<a href="#" onclick="openCloseSection('mitt#{status.index}'); return false;" onkeypress="openCloseSection('dest#{status.index}'); return false;" title="#{(fn:length(bean.doc.rif_esterni[0].interoperabilita) > 0) ? i18n['dw4.mostra_informazioni_sul_mittente'] : i18n['dw4.nessun_dettaglio_sul_mittente']}" disabled="#{(fn:length(bean.doc.rif_esterni[0].interoperabilita) > 0) ? '' : 'disabled'}" class="btn btn-default btn-xs">
+								<span class="glyphicon glyphicon-info-sign"></span>
+							</a>
+						</span>		
+					</td>
+					<td class="mitt-descr essential">
+						<div class="descr-mittente">
+							<h:panelGroup rendered="#{empty bean.doc.rif_esterni[0].cod_SAP and !empty bean.doc.rif_esterni[0].cod}">
+								<a target="acl" href="#{facesContext.externalContext.requestContextPath}/acl/#{bean.doc.rif_esterni[0].cod}/rifesterno.pf?codammaoo=#{bean.doc.cod_amm_aoo}&amp;db=#{bean.formsAdapter.aclDb}" class="blacklink"><h:outputText value="#{bean.doc.rif_esterni[0].nome}" escape="false" /></a>
+							</h:panelGroup>
+							<h:panelGroup rendered="#{empty bean.doc.rif_esterni[0].cod_SAP and empty bean.doc.rif_esterni[0].cod}">
+								<h:outputText value="#{bean.doc.rif_esterni[0].nome}" escape="false" />
+							</h:panelGroup>
+							<h:panelGroup rendered="#{!empty bean.doc.rif_esterni[0].cod_SAP}">
+								<h:outputText value="#{bean.doc.rif_esterni[0].nome}" escape="false" />
+							</h:panelGroup>
+							<h:panelGroup rendered="#{!empty bean.doc.rif_esterni[0].referente.nominativo}">
+								<em> (<h:outputText value="#{bean.doc.rif_esterni[0].referente.nominativo}" escape="false" /><h:outputText value=" - #{bean.doc.rif_esterni[0].referente.ruolo}" rendered="#{!empty bean.doc.rif_esterni[0].referente.ruolo}"/>)</em>
+							</h:panelGroup>
+							
+							<h:outputText value=", #{bean.doc.rif_esterni[0].indirizzo}" rendered="#{!empty bean.doc.rif_esterni[0].indirizzo}" />
+							<h:panelGroup rendered="#{!empty bean.doc.rif_esterni[0].email_certificata}"> [<a href="mailto:#{bean.doc.rif_esterni[0].email_certificata}" class="blacklink">#{bean.doc.rif_esterni[0].email_certificata}</a>]</h:panelGroup>
+							<h:panelGroup rendered="#{!empty bean.doc.rif_esterni[0].email}"> [<a href="mailto:#{bean.doc.rif_esterni[0].email}" class="blacklink">#{bean.doc.rif_esterni[0].email}</a>]</h:panelGroup>
+							
+							<h:outputText value=" - c.f. #{bean.doc.rif_esterni[0].codice_fiscale}" rendered="#{!empty bean.doc.rif_esterni[0].codice_fiscale}" />
+							<h:outputText value=" - p.iva #{bean.doc.rif_esterni[0].partita_iva}" rendered="#{!empty bean.doc.rif_esterni[0].partita_iva}" />
+							<h:outputText value=" - codice SAP: #{bean.doc.rif_esterni[0].cod_SAP}" rendered="#{!empty bean.doc.rif_esterni[0].cod_SAP}" />
+						</div>
+					
+						<h:panelGroup rendered="#{fn:length(bean.doc.rif_esterni[0].interoperabilita) > 0}">
+							<div id="mitt#{status.index}" class="dettagli-interop" style="display:none">
+								<ui:repeat var="interop" value="#{bean.doc.rif_esterni[0].interoperabilita}">
+									<h:commandLink action="#{bean.downloadInteroperabilita}" title="#{i18n['dw4.scarica_il_file']}" styleClass="blacklink">
+										<h:outputText value="#{interop.info}" />
+									</h:commandLink>
+									(<h:outputText value="#{interop.data}"><f:converter converterId="DateConverter" /></h:outputText> - <h:outputText value="#{interop.ora}" />)<br/>
+								</ui:repeat>
+							</div>
+						</h:panelGroup>
+					</td>
+				</tr></tbody>
+			</table>
+		</dd>
+	</h:panelGroup>
+		
+</ui:composition>   
+</html>

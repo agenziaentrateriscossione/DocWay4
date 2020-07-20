@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml" 
+		xmlns:h="http://java.sun.com/jsf/html" 
+		xmlns:ui="http://java.sun.com/jsf/facelets"
+		xmlns:f="http://java.sun.com/jsf/core"
+		xmlns:fn="http://java.sun.com/jsp/jstl/functions">
+<h:head>
+
+	<title>#{i18n['dw4.validazione_utente']}</title>
+
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+
+	<!-- javascript -->
+	<script src="../common/js/jquery.js"></script>
+	<script src="../bootstrap/js/bootstrap.js"></script>
+	<script src="../common/js/bootstrap-datepicker.js"></script>
+
+	<!-- styles -->
+	<link href="../bootstrap/css/bootstrap.css" rel="stylesheet" />
+	<h:panelGroup rendered="#{docwayInitAdm.languageOrientation eq 'rtl'}">
+		<link href="../bootstrap/css/bootstrap-rtl.css" rel="stylesheet" type="text/css" />
+	</h:panelGroup>
+	<link href="../bootstrap/css/bootstrap-theme.css" rel="stylesheet" />
+	<link href="../common/css/login.css" rel="stylesheet" />
+	
+	<h:panelGroup rendered="#{!empty docwayInitAdm.customDirCss}">
+		<link href="#{facesContext.externalContext.requestContextPath}/common/css/#{docwayInitAdm.customDirCss}/login.css" rel="stylesheet" type="text/css" />
+	</h:panelGroup>
+
+</h:head>
+<h:body styleClass="#{docwayInitAdm.languageOrientation}">
+	
+	<div class="container">
+		<h:form id="initAdmForm" class="form-signin">    
+			<div class="row #{(!empty docwayInitAdm.archivio) ? 'login-archive-' : ''}#{docwayInitAdm.archivio}" style="text-align:center; margin-bottom:20px;">
+				<img src="#{facesContext.externalContext.requestContextPath}/common/css/#{(!empty docwayInitAdm.customDirCss) ? docwayInitAdm.customDirCss.concat('/') : ''}images/logo/docway-big.png" alt="DocWay" />
+			</div>
+			
+			<fieldset>
+				<legend>#{i18n['dw4.selezionare_lo_username_da_impersonificare']}:</legend>
+    
+	    		<div class="login-form" id="loginform">	
+	    			
+	    			<label for="initAdmForm:login" class="string control-label">#{i18n['dw4.username']}</label>
+	    			<h:inputText id="login" value="#{docwayInitAdm.login}" styleClass="form-control" />
+	    			
+	    			<h:commandButton action="#{docwayInitAdm.accedi}" styleClass="btn btn-lg btn-primary btn-block openwaitmsg" value="#{i18n['dw4.login']}" />
+	    		</div>
+	    	</fieldset>
+			
+			<ui:include src="./errormsg.xhtml" />
+    	</h:form>
+    </div>
+
+</h:body>	
+</html>

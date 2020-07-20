@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" 
+	  xmlns:h="http://java.sun.com/jsf/html" 
+	  xmlns:ui="http://java.sun.com/jsf/facelets" 
+	  xmlns:f="http://java.sun.com/jsf/core">
+<ui:composition>
+
+	<h:panelGroup layout="block" id="annullamento">
+		<h:panelGroup rendered="#{pageBean.visible}">
+			<!-- Modal -->
+			<div id="annullamentoModal" class="modal fade in" aria-hidden="false" aria-labelledby="annullamentoModalLabel" role="dialog" tabindex="-1" style="display: block;">
+			<!--div class="modal fade" id="annullamentoModal" tabindex="-1" role="dialog" aria-labelledby="annullamentoModalLabel" aria-hidden="true"-->
+				<div class="modal-dialog modal-lg">
+					<div class="modal-content jsf-modal">
+						<div class="modal-header">
+							<h:commandLink class="close" action="#{pageBean.clearDocument}" value="&#215;">
+		                    	<f:ajax render="annullamento"/>
+		                   	</h:commandLink>
+							
+							<h4 class="modal-title" id="annullamentoModalLabel">#{i18n['dw4.annullamentodoc']}</h4>
+						</div>
+						<div class="modal-body">
+						
+							<h:panelGroup rendered="#{not empty facesContext.messageList}" layout="block" styleClass="alert alert-danger">
+								<h:messages styleClass="" id="validationMessegesAnnullamento" />
+							</h:panelGroup>
+						
+							<fieldset>
+								<div class="form-group">
+									<label class="col-sm-3 control-label">#{i18n['dw4.nprot']}</label>
+									<div class="col-sm-9">#{pageBean.docAnnullato.num_prot}</div>
+								</div>
+								<div class="form-group">
+									<label class="col-sm-3 control-label">#{i18n['dw4.dataprot']}</label>
+									<div class="col-sm-9">#{pageBean.docAnnullato.data_prot}</div>
+								</div>
+								<h:panelGroup rendered="#{!empty pageBean.docAnnullato.mitt_dest}" layout="block" styleClass="form-group">
+									<label class="col-sm-3 control-label">#{i18n['dw4.mittdest']}</label>
+									<div class="col-sm-9">#{pageBean.docAnnullato.mitt_dest}</div>
+								</h:panelGroup>
+								<h:panelGroup rendered="#{!empty pageBean.docAnnullato.oggetto}" layout="block" styleClass="form-group">
+									<label class="col-sm-3 control-label">#{i18n['dw4.object']}</label>
+									<div class="col-sm-9">#{pageBean.docAnnullato.oggetto}</div>
+								</h:panelGroup>
+								<div class="form-group">
+									<label class="col-sm-3 control-label">#{i18n['dw4.annullamentodata']}</label>
+									<div class="col-sm-9">
+										#{pageBean.userInfo}<br/>
+										<h:outputText value="#{pageBean.currDate}"><f:converter converterId="DateConverter"/></h:outputText>
+									</div>
+								</div>
+								<div class="form-group">
+									<label class="col-sm-3 control-label">#{i18n['dw4.estremi_del_provvedimento']}</label>
+									<div class="col-sm-9">
+										<h:inputTextarea id="annullamento_text" value="#{pageBean.text}" rows="4" cols="120" styleClass="#{ component.valid ? '' : 'invalidinput' } form-control" />
+									</div>
+								</div>
+							</fieldset>
+							
+						</div>
+						<div class="modal-footer">
+							<h:commandLink action="#{pageBean.confirmAnnullamento}" styleClass="btn btn-primary openwaitmsg" value="#{i18n['acl.save']}" />
+							
+							<h:commandLink styleClass="btn btn-default" action="#{pageBean.clearDocument}"  value="#{i18n['acl.close']}">
+		                    	<f:ajax render="annullamento"/>
+		                   	</h:commandLink>
+						</div>
+					</div>
+				</div>
+			</div>
+			<!--h:outputScript>
+				$('#annullamentoModal').modal('show');
+			</h:outputScript-->
+		</h:panelGroup>
+	</h:panelGroup>
+
+</ui:composition>   
+</html>

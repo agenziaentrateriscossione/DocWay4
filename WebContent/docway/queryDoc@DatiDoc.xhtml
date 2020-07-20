@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" 
+	  xmlns:h="http://java.sun.com/jsf/html" 
+	  xmlns:ui="http://java.sun.com/jsf/facelets" 
+	  xmlns:f="http://java.sun.com/jsf/core"
+	  xmlns:p="http://xmlns.jcp.org/jsf/passthrough">
+<ui:composition>
+
+	<h:panelGroup id="datiDocPanel" layout="block">
+		<div class="fieldset">
+			<div class="legend">
+				<h:commandLink action="#{bean.openCloseWidgetDati}" styleClass="legend-link">
+					<f:ajax render="templateForm:datiDocPanel"/>
+					#{i18n['dw4.datidoc']}
+					<span class="pull-right">
+						<span class="glyphicon #{bean.dati_documento ? 'glyphicon-collapse-up' : 'glyphicon-collapse-down'}"></span>
+					</span>
+				</h:commandLink>
+			</div>
+			
+			<h:panelGroup rendered="#{bean.dati_documento}" id="datiDocCPanel" layout="block">
+				<ui:include src="./multisocietaFields.xhtml">
+					<ui:param name="beanDoc" value="#{bean}" />
+	        	</ui:include>
+				
+				<div class="form-group">
+					<label for="templateForm:doc_oggetto" class="col-sm-2 control-label">#{i18n['dw4.object']}</label>
+					<div class="col-sm-9">
+						<div class="input-group">
+							<h:inputText styleClass="form-control" value="#{bean.doc_oggetto}" id="doc_oggetto" />
+							<div class="input-group-btn">
+								<h:commandLink title="#{i18n['acl.vocabulary']}" action="#{bean.openIndexOggettoDoc}" styleClass="btn btn-default">
+									<f:ajax execute="@form" render="@form"/>
+									<span class="glyphicon glyphicon-search"></span>
+								</h:commandLink>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="form-group">
+					<label for="templateForm:custom_doc_classif" class="col-sm-2 control-label">#{i18n['dw4.classif']}</label>
+					<div class="col-sm-1">
+						<h:inputText styleClass="form-control" value="#{bean.custom_doc_classifcod}" id="custom_doc_classifcod"/>
+					</div>
+					<div class="col-sm-8">
+						<div class="input-group">
+							<h:inputText styleClass="form-control" value="#{bean.custom_doc_classif}" id="custom_doc_classif"/>
+							<div class="input-group-btn">
+								<h:commandLink title="#{i18n['acl.vocabulary']}" action="#{bean.openIndexClassifDoc}" styleClass="btn btn-default">
+									<f:ajax execute="@form" render="@form"/>
+									<span class="glyphicon glyphicon-search"></span>
+								</h:commandLink>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="form-group">
+					<label for="templateForm:doc_voceindice" class="col-sm-2 control-label">#{i18n['dw4.index']}</label>
+					<div class="col-sm-9">
+						<div class="input-group">
+							<h:inputText styleClass="form-control" value="#{bean.doc_voceindice}" id="doc_voceindice"/>
+							<div class="input-group-btn">
+								<h:commandLink title="#{i18n['acl.vocabulary']}" action="#{bean.openIndexVoceIndice}" styleClass="btn btn-default">
+									<f:ajax execute="@form" render="@form"/>
+									<span class="glyphicon glyphicon-search"></span>
+								</h:commandLink>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="form-group">
+					<label for="templateForm:doc_allegato" class="col-sm-2 control-label">#{i18n['dw4.attachments']}</label>
+					<div class="col-sm-3">
+						<div class="input-group">
+							<h:inputText styleClass="form-control" value="#{bean.doc_allegato}" id="doc_allegato"/>
+							<div class="input-group-btn">
+								<h:commandLink title="#{i18n['acl.vocabulary']}" action="#{bean.openIndexAllegatoDoc}" styleClass="btn btn-default">
+									<f:ajax execute="@form" render="@form"/>
+									<span class="glyphicon glyphicon-search"></span>
+								</h:commandLink>
+							</div>
+						</div>
+					</div>
+					<label for="templateForm:doc_postit" class="col-sm-offset-1 col-sm-2 control-label">#{i18n['dw4.annotazioni']}</label>
+					<div class="col-sm-3">
+						<div class="input-group">
+							<h:inputText styleClass="form-control" value="#{bean.doc_postit}" id="doc_postit"/>
+							<div class="input-group-btn">
+								<h:commandLink title="#{i18n['acl.vocabulary']}" action="#{bean.openIndexPostitDoc}" styleClass="btn btn-default">
+									<f:ajax execute="@form" render="@form"/>
+									<span class="glyphicon glyphicon-search"></span>
+								</h:commandLink>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="form-group">
+					<label for="templateForm:doc_note" class="col-sm-2 control-label">#{i18n['dw4.notes']}</label>
+					<div class="col-sm-3">
+						<div class="input-group">
+							<h:inputText styleClass="form-control" value="#{bean.doc_note}" id="doc_note"/>
+							<div class="input-group-btn">
+								<h:commandLink title="#{i18n['acl.vocabulary']}" action="#{bean.openIndexNoteDoc}" styleClass="btn btn-default">
+									<f:ajax execute="@form" render="@form"/>
+									<span class="glyphicon glyphicon-search"></span>
+								</h:commandLink>
+							</div>
+						</div>
+					</div>
+					<label for="templateForm:doc_keywords" class="col-sm-offset-1 col-sm-2 control-label">#{i18n['dw4.keywords']}</label>
+					<div class="col-sm-3">
+						<div class="input-group">
+							<h:inputText styleClass="form-control" value="#{bean.doc_keywords}" id="doc_keywords"/>
+							<div class="input-group-btn">
+								<h:commandLink title="#{i18n['acl.vocabulary']}" action="#{bean.openIndexKeywordsDoc}" styleClass="btn btn-default">
+									<f:ajax execute="@form" render="@form"/>
+									<span class="glyphicon glyphicon-search"></span>
+								</h:commandLink>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="form-group">
+					<label for="templateForm:mezzoTrasmissioneDoc" class="col-sm-2 control-label">#{i18n['dw4.a_mezzo']}</label>
+					<div class="col-sm-3">
+						<h:selectOneMenu id="mezzoTrasmissioneDoc" value="#{bean.mezzo_trasmissione}" styleClass="form-control">
+							<f:selectItems value="#{bean.arrivo_mezzo_trasmissione_select}" var="option" itemValue="#{option.value}" itemLabel="#{option.label}" itemLabelEscaped="false" />
+							<f:ajax  execute="@form" render="@form"></f:ajax>
+						</h:selectOneMenu>
+					</div>
+					<label for="templateForm:tipologiaDoc" class="col-sm-offset-1 col-sm-2 control-label">#{i18n['acl.tipologia']}</label>
+					<div class="col-sm-3">
+						<h:selectOneMenu id="tipologiaDoc" value="#{bean.tipologia}" styleClass="form-control">
+							<f:selectItems value="#{bean.arrivo_tipologia_select}" var="option" itemValue="#{option.value}" itemLabel="#{option.label}" itemLabelEscaped="false" />
+							<f:ajax  execute="@form" render="@form"></f:ajax>
+						</h:selectOneMenu>
+					</div>
+				</div>
+				
+				<ui:include src="./queryVisibilitaFields.xhtml">
+					<ui:param name="bean" value="#{bean}" />
+	        	</ui:include>
+			</h:panelGroup>
+		</div> <!-- /fieldset -->
+	</h:panelGroup>
+
+</ui:composition>
+</html>

@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+    template="#{queryFascicolo.pageTemplate}"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:c="http://java.sun.com/jsp/jstl/core"
+    xmlns:p="http://xmlns.jcp.org/jsf/passthrough">
+
+<ui:define name="content">
+	<div id="advancedSearch" class="fascicolo submitEnterKey">
+
+		<!-- toolbar: inizio -->
+		<div class="btn-toolbar docway-toolbar margin-bottom" role="toolbar">
+			<div class="btn-group">
+				<h:commandLink id="advancedSearchBtn" action="#{queryFascicolo.queryPlain}" styleClass="btn btn-primary openwaitmsg" value="#{i18n['acl.search']}" />
+				<h:commandLink action="#{queryFascicolo.resetQuery}" styleClass="btn btn-default" value="#{i18n['acl.clear']}">
+					<f:ajax execute="@form" render="@form" />
+				</h:commandLink>
+				
+				<h:commandLink rendered="#{queryFascicolo.formsAdapter.funzionalitaDisponibili['fascicoliinserimento']}" action="#{queryFascicolo.insTableDocFascicolo}" styleClass="btn btn-default">#{i18n['nuovo']}</h:commandLink>
+				
+				<ui:remove>
+					<h:commandLink rendered="#{!queryFascicolo.popupPage and queryFascicolo.formsAdapter.funzionalitaDisponibili['showRefine']}" action="#{queryFascicolo.refine}" styleClass="btn btn-default">#{i18n['dw4.refine']}</h:commandLink>
+				</ui:remove>				
+				
+				<h:commandLink rendered="#{queryFascicolo.popupPage}" onclick="self.close();" styleClass="btn btn-default">#{i18n['acl.close']}</h:commandLink>
+			</div>
+		</div>
+		<!-- toolbar: fine -->
+		
+		<h5 class="sub-header">
+			<span class="glyphicon glyphicon-search"></span>&#160;
+			#{queryFascicolo.searchFascicoloTitle}
+		</h5>
+		
+		<!-- messages: inizio -->
+		<h:panelGroup rendered="#{not empty facesContext.messageList}" layout="block" styleClass="docedit-messages alert alert-danger">
+			<h:messages styleClass="" id="validationMesseges" />
+		</h:panelGroup>
+		<!-- messages: fine -->
+		
+		<!-- scheda query: inizio -->
+		<div class="row-fluid" style="margin-top:10px;">
+			<div id="fixedshowdoc" class="box span12 fixed-showdoc">
+				<div class="box-content">
+					<div class="fieldset">
+						<div class="legend">#{i18n['dw4.datifasc']}</div>
+						
+						<div class="form-group">
+							<div class="col-sm-offset-2 col-sm-3">
+								<h:selectBooleanCheckbox id="soloAttiviCheck" value="#{queryFascicolo.attivi}"/>
+								<label class="normal-weight-text" for="templateForm:soloAttiviCheck">#{i18n['dw4.solo_attivi']}</label>
+							</div>
+							<div class="col-sm-3">
+								<h:selectBooleanCheckbox id="articolazioneSottofascicoliCheck" value="#{queryFascicolo.sottofascicoli}" />
+								<label class="normal-weight-text" for="templateForm:articolazioneSottofascicoliCheck">#{i18n['dw4.mostra_articolazione_sottofascicoli']}</label>
+							</div>
+						</div>
+						<div class="form-group">
+							<div class="col-sm-offset-2 col-sm-9">
+								<h:selectBooleanCheckbox id="fascicoliAssegnatiCheck" value="#{queryFascicolo.rpa}"/>
+								<label class="normal-weight-text" for="templateForm:fascicoliAssegnatiCheck"><h:outputText value="#{i18n['dw4.mostra_solo_fascicoli_assegnati_a']} #{fn:substring(userBean.userInfo,0, fn:indexOf(userBean.userInfo, '('))}" /></label>
+							</div>
+						</div>
+						<h:panelGroup rendered="#{queryFascicolo.formsAdapter.funzionalitaDisponibili['itf']}" layout="block" styleClass="form-group">
+							<div class="col-sm-offset-2 col-sm-9">
+								<h:selectBooleanCheckbox id="isItfCheck" value="#{queryFascicolo.itf}"/>
+								<label class="normal-weight-text" for="templateForm:isItfCheck"><h:outputText value="#{i18n['dw4.mostra_solo_fascicoli_assegnati_in_cui']} #{fn:substring(userBean.userInfo,0, fn:indexOf(userBean.userInfo, '('))} #{i18n['dw4.e_incaricato_tenuta']}" /></label>
+							</div>
+						</h:panelGroup>
+						<div class="form-group endsection">
+							<div class="col-sm-offset-2 col-sm-9">
+								<h:selectBooleanCheckbox id="isCcCheck" value="#{queryFascicolo.cc}"/>
+								<label class="normal-weight-text" for="templateForm:isCcCheck"><h:outputText value="#{i18n['dw4.mostra_solo_fascicoli_assegnati_in_cui']} #{fn:substring(userBean.userInfo,0, fn:indexOf(userBean.userInfo, '('))} #{i18n['dw4.e_cc']}" /></label>
+							</div>
+						</div>
+						
+						<div class="form-group">
+							<label for="templateForm:fasc_anno" class="col-sm-2 control-label">#{i18n['dw4.anno']}</label>
+							<div class="col-sm-2">
+								<div class="input-group">
+									<h:inputText styleClass="form-control" value="#{queryFascicolo.fasc_anno}" id="fasc_anno" />
+									<div class="input-group-btn">
+										<h:commandLink title="#{i18n['acl.vocabulary']}" action="#{queryFascicolo.openIndexAnnoFascicolo}" styleClass="btn btn-default">
+											<f:ajax execute="@form" render="@form"/>
+											<span class="glyphicon glyphicon-search"></span>
+										</h:commandLink>
+									</div>
+								</div>
+							</div>
+							
+							<h:panelGroup rendered="#{queryFascicolo.empty_classif eq 'si' or not queryFascicolo.popupPage}">
+								<label for="templateForm:custom_classiffasccod" class="col-sm-1 control-label">#{i18n['dw4.cod_classif']}</label>
+								<div class="col-sm-2">
+									<h:inputText styleClass="form-control" value="#{queryFascicolo.custom_classiffasccod}" id="custom_classiffasccod"/>
+								</div>
+							</h:panelGroup>
+							
+							<ui:include src="./rangeField.xhtml">
+								<ui:param name="label" value="#{i18n['dw4.num']}" />
+								<ui:param name="id" value="custom_numfasc" />
+								<ui:param name="from_value" value="#{queryFascicolo.custom_da_numfasc}" />
+								<ui:param name="to_value" value="#{queryFascicolo.custom_a_numfasc}" />
+								<ui:param name="is_date" value="false" />
+								<ui:param name="offset" value="#{(queryFascicolo.empty_classif eq 'si' or not queryFascicolo.popupPage) ? '' : '2'}" />
+								<ui:param name="labelsize" value="#{(queryFascicolo.empty_classif eq 'si' or not queryFascicolo.popupPage) ? '1' : '2'}" />
+							</ui:include>
+						</div>
+						
+						<div class="form-group">
+							<label for="templateForm:fasc_classif" class="col-sm-2 control-label">#{i18n['dw4.descr_classif']}</label>
+							<div class="col-sm-9">
+								<h:panelGroup rendered="#{queryFascicolo.empty_classif eq 'si' or not queryFascicolo.popupPage}">
+									<div class="input-group">
+										<h:inputText styleClass="form-control" value="#{queryFascicolo.fasc_classif}" id="fasc_classif" />
+										<div class="input-group-btn">
+											<h:commandLink title="#{i18n['acl.vocabulary']}" action="#{queryFascicolo.openIndexClassifFascicolo}" styleClass="btn btn-default">
+												<f:ajax execute="@form" render="@form"/>
+												<span class="glyphicon glyphicon-search"></span>
+											</h:commandLink>
+										</div>
+									</div>
+								</h:panelGroup>
+								<h:panelGroup rendered="#{queryFascicolo.empty_classif eq 'no' and queryFascicolo.popupPage}">
+									<h:panelGroup rendered="#{!queryFascicolo.showIfInsInFasc or empty queryFascicolo.fascicoloSpecialeInfo.classif.cod}">
+										<p class="form-control-static">
+											<h:outputText value="#{queryFascicolo.fasc_classif}"><f:converter converterId="ClassifConverter"/></h:outputText>
+										</p>
+						        	</h:panelGroup>
+						        	<h:panelGroup rendered="#{queryFascicolo.showIfInsInFasc and !empty queryFascicolo.fascicoloSpecialeInfo.classif.cod}">
+						        		<span class="radio-classif">
+						        			<input type="radio" id="classifRadio1" name="classifRadio" value="#{queryFascicolo.classif_infasc}" checked="checked" />
+						        			<label for="classifRadio1"><h:outputText styleClass="normal-weight-text" value="#{queryFascicolo.classif_infasc}"><f:converter converterId="ClassifConverter"/></h:outputText></label>
+						        			&#160;
+						        			<input type="radio" id="classifRadio2" name="classifRadio" value="#{queryFascicolo.fascicoloSpecialeInfo.classif.text}" onclick="$('#templateForm\\:classif_switchTableFsBtn').trigger('click');" />
+						        			<label for="classifRadio2"><h:outputText styleClass="normal-weight-text" value="#{queryFascicolo.fascicoloSpecialeInfo.classif.text}"><f:converter converterId="ClassifConverter"/></h:outputText></label>
+						        		</span>
+						        		<h:commandLink id="classif_switchTableFsBtn" action="#{queryFascicolo.switchToTableFS}"><f:ajax execute="@form" render="@form" /></h:commandLink>
+						        	</h:panelGroup>
+								</h:panelGroup>
+							</div>
+						</div>
+						
+						<div class="form-group">
+							<label for="templateForm:fasc_oggetto" class="col-sm-2 control-label">#{i18n['dw4.object']}</label>
+							<div class="col-sm-9">
+								<div class="input-group">
+									<h:inputText styleClass="form-control" value="#{queryFascicolo.fasc_oggetto}" id="fasc_oggetto" />
+									<div class="input-group-btn">
+										<h:commandLink title="#{i18n['acl.vocabulary']}" action="#{queryFascicolo.openIndexOggettoFascicolo}" styleClass="btn btn-default">
+											<f:ajax execute="@form" render="@form"/>
+											<span class="glyphicon glyphicon-search"></span>
+										</h:commandLink>
+									</div>
+								</div>
+							</div>
+						</div>
+						
+						<h:panelGroup rendered="#{queryFascicolo.formsAdapter.funzionalitaDisponibili['soggettoFasc']}" layout="block" styleClass="form-group">
+							<label for="templateForm:fasc_soggetto" class="col-sm-2 control-label">#{i18n['dw4.subject']}</label>
+							<div class="col-sm-9">
+								<div class="input-group">
+									<h:inputText styleClass="form-control" value="#{queryFascicolo.fasc_soggetto}" id="fasc_soggetto" />
+									<div class="input-group-btn">
+										<h:commandLink title="#{i18n['acl.vocabulary']}" action="#{queryFascicolo.openIndexSoggettoFascicolo}" styleClass="btn btn-default">
+											<f:ajax execute="@form" render="@form"/>
+											<span class="glyphicon glyphicon-search"></span>
+										</h:commandLink>
+									</div>
+								</div>
+							</div>
+						</h:panelGroup>
+						
+						<div class="form-group">
+							<label for="templateForm:fasc_voceindice" class="col-sm-2 control-label">#{i18n['dw4.index']}</label>
+							<div class="col-sm-9">
+								<div class="input-group">
+									<h:inputText styleClass="form-control" value="#{queryFascicolo.fasc_voceindice}" id="fasc_voceindice" />
+									<div class="input-group-btn">
+										<h:commandLink title="#{i18n['acl.vocabulary']}" action="#{queryFascicolo.openIndexVoceIndiceFascicolo}" styleClass="btn btn-default">
+											<f:ajax execute="@form" render="@form"/>
+											<span class="glyphicon glyphicon-search"></span>
+										</h:commandLink>
+									</div>
+								</div>
+							</div>
+						</div>
+						
+						<div class="form-group">
+							<label for="templateForm:fasc_scarto" class="col-sm-2 control-label">#{i18n['dw4.scarto']}</label>
+							<div class="col-sm-2">
+								<h:selectOneMenu value="#{queryFascicolo.fasc_scarto}" id="fasc_scarto" styleClass="form-control">
+									<f:selectItem itemValue="" itemLabel="" />
+									<f:selectItem itemValue="01" itemLabel="#{i18n['dw4.1_anno']}" />
+									<f:selectItem itemValue="05" itemLabel="#{i18n['dw4.5_anni']}" />
+									<f:selectItem itemValue="10" itemLabel="#{i18n['dw4.10_anni']}" />
+									<f:selectItem itemValue="99" itemLabel="#{i18n['dw4.illimitato']}" />
+								</h:selectOneMenu>
+							</div>
+						</div>
+						
+						<c:if test="#{!empty queryFascicolo.personalDirCliente}">
+							<ui:include src="./#{queryFascicolo.personalDirCliente}query@fascicolo.xhtml">
+								<ui:param name="bean" value="#{queryFascicolo}" />
+							</ui:include>
+						</c:if>
+						
+						<ui:include src="../customfields/query@customfields.xhtml">
+							<ui:param name="key" value="#{queryFascicolo.currentCustomFieldSection}" />
+							<ui:param name="bean" value="#{queryFascicolo}"/>
+			        	</ui:include>
+			        	
+			        	<div class="form-group">
+							<label for="templateForm:fasc_note" class="col-sm-2 control-label">#{i18n['dw4.notes']}</label>
+							<div class="col-sm-9">
+								<div class="input-group">
+									<h:inputText styleClass="form-control" value="#{queryFascicolo.fasc_note}" id="fasc_note" />
+									<div class="input-group-btn">
+										<h:commandLink title="#{i18n['acl.vocabulary']}" action="#{queryFascicolo.openIndexNoteFascicolo}" styleClass="btn btn-default">
+											<f:ajax execute="@form" render="@form"/>
+											<span class="glyphicon glyphicon-search"></span>
+										</h:commandLink>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div> <!-- /fieldset -->
+					
+					<div class="fieldset">
+						<div class="legend">#{i18n['dw4.assegnatari']}</div>
+					
+						<h:panelGroup id="rpa" layout="block" styleClass="form-group">
+							<label for="templateForm:rpanomeuff" class="col-sm-2 control-label">#{i18n['dw4.proprietario']}</label>
+							<div class="col-sm-4">
+								<div class="input-group">
+									<h:inputText styleClass="form-control" value="#{queryFascicolo.rpanomeuff}" id="rpanomeuff" p:placeholder="#{i18n['acl.uff']}" title="#{i18n['acl.uff']}" />
+									<div class="input-group-btn">
+										<h:commandLink title="#{i18n['acl.vocabulary']}" action="#{queryFascicolo.openIndexUORFascicolo}" styleClass="btn btn-default">
+											<f:ajax execute="@form" render="@form"/>
+											<span class="glyphicon glyphicon-search"></span>
+										</h:commandLink>
+									</div>
+								</div>
+							</div>
+							<div class="col-sm-5">
+								<div class="input-group">
+									<h:inputText styleClass="form-control" value="#{queryFascicolo.rpanomepersona}" id="rpanomepersona" p:placeholder="#{i18n['acl.oper']}" title="#{i18n['acl.oper']}" />
+									<div class="input-group-btn">
+										<h:commandLink title="#{i18n['acl.vocabulary']}" action="#{queryFascicolo.openIndexRPAFascicolo}" styleClass="btn btn-default">
+											<f:ajax execute="@form" render="@form"/>
+											<span class="glyphicon glyphicon-search"></span>
+										</h:commandLink>
+									</div>
+								</div>									
+							</div>
+						</h:panelGroup>
+						
+						<h:panelGroup id="itf" layout="block" styleClass="form-group">
+							<label for="templateForm:itfnomeuff" class="col-sm-2 control-label">#{i18n['dw4.itf']}</label>
+							<div class="col-sm-4">
+								<div class="input-group">
+									<h:inputText styleClass="form-control" value="#{queryFascicolo.itfnomeuff}" id="itfnomeuff" p:placeholder="#{i18n['acl.uff']}" title="#{i18n['acl.uff']}" />
+									<div class="input-group-btn">
+										<h:commandLink title="#{i18n['acl.vocabulary']}" action="#{queryFascicolo.openIndexITFUffFascicolo}" styleClass="btn btn-default">
+											<f:ajax execute="@form" render="@form"/>
+											<span class="glyphicon glyphicon-search"></span>
+										</h:commandLink>
+									</div>
+								</div>
+							</div>
+							<div class="col-sm-5">
+								<div class="input-group">
+									<h:inputText styleClass="form-control" value="#{queryFascicolo.itfnomepersona}" id="itfnomepersona" p:placeholder="#{i18n['acl.oper']}" title="#{i18n['acl.oper']}" />
+									<div class="input-group-btn">
+										<h:commandLink title="#{i18n['acl.vocabulary']}" action="#{queryFascicolo.openIndexITFPersonaFascicolo}" styleClass="btn btn-default">
+											<f:ajax execute="@form" render="@form"/>
+											<span class="glyphicon glyphicon-search"></span>
+										</h:commandLink>
+									</div>
+								</div>									
+							</div>
+						</h:panelGroup>
+						
+						<h:panelGroup rendered="#{queryFascicolo.formsAdapter.funzionalitaDisponibili['abilitaCCFascicoli']}" id="cc" layout="block" styleClass="form-group">
+							<label for="templateForm:ccnomeuff" class="col-sm-2 control-label">#{i18n['dw4.cc']}</label>
+							<div class="col-sm-4">
+								<div class="input-group">
+									<h:inputText styleClass="form-control" value="#{queryFascicolo.ccnomeuff}" id="ccnomeuff" p:placeholder="#{i18n['acl.uff']}" title="#{i18n['acl.uff']}" />
+									<div class="input-group-btn">
+										<h:commandLink title="#{i18n['acl.vocabulary']}" action="#{queryFascicolo.openIndexCCUffFascicolo}" styleClass="btn btn-default">
+											<f:ajax execute="@form" render="@form"/>
+											<span class="glyphicon glyphicon-search"></span>
+										</h:commandLink>
+									</div>
+								</div>
+							</div>
+							<div class="col-sm-5">
+								<div class="input-group">
+									<h:inputText styleClass="form-control" value="#{queryFascicolo.ccnomepersona}" id="ccnomepersona" p:placeholder="#{i18n['acl.oper']}" title="#{i18n['acl.oper']}" />
+									<div class="input-group-btn">
+										<h:commandLink title="#{i18n['acl.vocabulary']}" action="#{queryFascicolo.openIndexCCPersonaFascicolo}" styleClass="btn btn-default">
+											<f:ajax execute="@form" render="@form"/>
+											<span class="glyphicon glyphicon-search"></span>
+										</h:commandLink>
+									</div>
+								</div>									
+							</div>
+						</h:panelGroup>
+					</div><!-- /fieldset -->
+					
+					<div class="fieldset">
+						<div class="legend">#{i18n['acl.servicesinformation']}</div>
+						
+						<div class="form-group">
+							<ui:include src="./rangeField.xhtml">
+								<ui:param name="label" value="#{i18n['dw4.datacreazione']}" />
+								<ui:param name="id" value="range_fascstoriacreazionedata" />
+								<ui:param name="from_value" value="#{queryFascicolo.range_fascstoriacreazionedata_from}" />
+								<ui:param name="to_value" value="#{queryFascicolo.range_fascstoriacreazionedata_to}" />
+								<ui:param name="is_date" value="true" />
+							</ui:include>
+						</div>
+						
+						<div class="form-group">
+							<label for="templateForm:ordinamentoFasc" class="col-sm-2 control-label">#{i18n['dw4.ordinamento']}</label>
+							<div class="col-sm-3">
+								<h:selectOneMenu id="ordinamentoFasc" value="#{queryFascicolo.ordinamento}" styleClass="form-control">
+									<f:selectItems value="#{queryFascicolo.ordinamentoFascicoli_select.options}" var="option" itemValue="#{option.value}" itemLabel="#{option.label}"/>
+									<f:ajax  execute="@form" render="@form"></f:ajax>
+								</h:selectOneMenu>
+							</div>
+						</div>
+					</div> <!-- /fieldset -->
+				</div>
+			</div>
+		</div>
+		<!-- scheda query: fine -->
+		
+		<h:inputTextarea value="#{queryFascicolo.xml}" rendered="#{queryFascicolo.debugMode}" styleClass="form-control" rows="10" />
+		
+		<ui:include src="./showindex.xhtml"><ui:param name="pageBean" value="#{queryFascicolo}"/></ui:include>
+	</div>
+	<script type="text/javascript">
+	$(document).ready(function() {
+		// focus su campo oggetto
+		$('#templateForm\\:fasc_oggetto').focus();
+	});
+	</script>
+</ui:define>
+    
+</ui:composition>    

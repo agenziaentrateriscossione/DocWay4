@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html 
+	xmlns="http://www.w3.org/1999/xhtml" 
+	xmlns:h="http://java.sun.com/jsf/html" 
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://xmlns.jcp.org/jsf/passthrough">
+<ui:composition>
+		
+	<!-- header: inizio -->
+	<h:form id="menuForm">
+		<div class="navbar navbar-default navbar-fixed-top" role="navigation">
+			<div class="container-fluid row-navbar-first">
+				<div class="navbar-header">
+					<h:commandLink action="#{docwaymenu.loadDocWayMainPage}" styleClass="fullscreen-logo navbar-brand archive-#{docwayHome.formsAdapter.db}">
+						<img class="application-logo" src="#{facesContext.externalContext.requestContextPath}/common/css/#{(!empty docwayHome.customDirCss) ? docwayHome.customDirCss.concat('/') : ''}images/logo/docway-small.png" alt="docway" />
+					</h:commandLink>
+				</div>
+				<div class="navbar-form navbar-right">
+					<div class="input-group inline">
+						<span class="input-group-addon">
+							<h:selectBooleanCheckbox value="#{docwayHome.estremi}" id="estremiCheck" p:data-toggle="popover" p:data-placement="bottom" p:data-trigger="hover" p:data-content="#{i18n['dw4.solo_estremi']}" styleClass="popoveritem" />
+						</span>
+						<h:inputText id="globalSearchInput" p:placeholder="#{i18n['dw4.search']}..." styleClass="form-control submitsingleinput" value="#{docwayHome.searchTerms}"/>
+					</div>
+					<h:commandLink id="globalSearchInputBtn" action="#{docwayHome.search}" style="display:none;" />
+				</div>
+			</div>
+			<div class="container-fluid">
+				<div class="navbar-header">
+					<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target=".navbar-collapse">
+						<span class="sr-only">Toggle navigation</span>
+						<span class="icon-bar"></span>
+						<span class="icon-bar"></span>
+						<span class="icon-bar"></span>
+					</button>
+					<h:commandLink action="#{docwaymenu.loadDocWayMainPage}" styleClass="resizescreen-logo navbar-brand archive-#{docwayHome.formsAdapter.db}">
+						<img class="application-logo" src="#{facesContext.externalContext.requestContextPath}/common/css/#{(!empty docwayHome.customDirCss) ? docwayHome.customDirCss.concat('/') : ''}images/logo/docway-small.png" alt="docway" />
+					</h:commandLink>
+				</div>
+				<div style="height: 1px;" class="navbar-collapse collapse">
+					<ul class="nav navbar-nav">
+						<h:panelGroup rendered="#{!docwayHome.hide_left_column}">
+							<li class="showhide-vaschette">
+								<h:commandLink action="#{docwayHome.hideLeftColumn}" title="#{i18n['dw4.nascondi_colonna_vaschette']}" styleClass="openclose-vaschette-link app-menu-item">
+									<span class="glyphicon glyphicon-log-in icon-flipped navbar-menu-icon"></span>
+									#{i18n['dw4.nascondi']}
+								</h:commandLink>
+							</li>
+						</h:panelGroup>
+						<h:panelGroup rendered="#{docwayHome.hide_left_column}">
+							<li class="showhide-vaschette">
+								<h:commandLink action="#{docwayHome.showLeftColumn}" title="#{i18n['dw4.mostra_colonna_vaschette']}" styleClass="openclose-vaschette-link app-menu-item">
+									<span class="glyphicon glyphicon-log-out navbar-menu-icon"></span>
+									#{i18n['dw4.mostra']}
+								</h:commandLink>
+							</li>
+						</h:panelGroup>
+						<li class="dropdown">
+							<a data-toggle="dropdown" class="dropdown-toggle" href="#">
+					        	<span class="glyphicon glyphicon-plus navbar-menu-icon"></span>
+					        	#{i18n['acl.insert']} <b class="caret"></b>
+					        </a>
+							<ul class="dropdown-menu">
+								<h:panelGroup rendered="#{!docwayHome.formsAdapter.funzionalitaDisponibili['nascondiprotocollo']}">
+									<h:panelGroup rendered="#{docwayHome.formsAdapter.funzionalitaDisponibili['insArrivo']}">
+			    						<li><h:commandLink value="#{i18n['dw4.arrivo']}" action="#{docwaymenu.insTableDocArrivo}" immediate="true" /></li>
+			    					</h:panelGroup>
+			    					<h:panelGroup rendered="#{docwayHome.formsAdapter.funzionalitaDisponibili['insPartenza']}">
+										<li><h:commandLink value="#{i18n['dw4.partenza']}" action="#{docwaymenu.insTableDocPartenza}" immediate="true" /></li>
+									</h:panelGroup>
+									<h:panelGroup rendered="#{docwayHome.formsAdapter.funzionalitaDisponibili['insArrivo']}">
+			    						<li><h:commandLink value="#{i18n['dw4.differito']}" action="#{docwaymenu.insTableDocArrivoDifferito}" immediate="true" /></li>
+			    					</h:panelGroup>
+			    					<h:panelGroup rendered="#{docwayHome.formsAdapter.funzionalitaDisponibili['insInterno']}">
+										<li><h:commandLink value="#{i18n['dw4.uffici']}" action="#{docwaymenu.insTableDocInterno}" immediate="true" /></li>
+									</h:panelGroup>
+								</h:panelGroup>
+								<h:panelGroup rendered="#{docwayHome.formsAdapter.funzionalitaDisponibili['insVarie']}">
+									<h:panelGroup rendered="#{!docwayHome.formsAdapter.funzionalitaDisponibili['nascondiprotocollo'] and ((docwayHome.formsAdapter.funzionalitaDisponibili['insArrivo']) or (docwayHome.formsAdapter.funzionalitaDisponibili['insPartenza']) or (docwayHome.formsAdapter.funzionalitaDisponibili['insInterno']))}">
+										<li class="divider"></li>
+									</h:panelGroup>
+									<li><h:commandLink value="#{(!docwayHome.formsAdapter.funzionalitaDisponibili['nascondiprotocollo']) ? i18n['dw4.nonprotocollati'] : i18n['dw4.documenti']}" action="#{docwaymenu.insTableDocVarie}" immediate="true" /></li>
+								</h:panelGroup>
+								<h:panelGroup rendered="#{docwayHome.formsAdapter.funzionalitaDisponibili['inserimento_rep'] and !docwayHome.formsAdapter.funzionalitaDisponibili['nascondirepertori']}">
+									<li class="divider"></li>
+									<li><h:commandLink value="#{i18n['dw4.repertori_documenti_personalizzati']}" action="#{docwaymenu.insTableDocAllReps}" immediate="true" /></li>
+								</h:panelGroup>
+								<h:panelGroup rendered="#{(!docwayHome.formsAdapter.funzionalitaDisponibili['nascondifascicoli'] and docwayHome.formsAdapter.funzionalitaDisponibili['fascicoliinserimento']) or docwayHome.formsAdapter.funzionalitaDisponibili['raccoglitorigestione']}">
+									<li class="divider"></li>
+		    						<h:panelGroup rendered="#{!docwayHome.formsAdapter.funzionalitaDisponibili['nascondifascicoli'] and docwayHome.formsAdapter.funzionalitaDisponibili['fascicoliinserimento']}">
+		    							<li><h:commandLink value="#{i18n['dw4.folders']}" action="#{docwaymenu.insTableDocFascicolo}" immediate="true" /></li>
+		    						</h:panelGroup>
+                                    <h:panelGroup rendered="#{docwayHome.formsAdapter.funzionalitaDisponibili['attivaTipologiaFascicoli']}">
+                                        <li><h:commandLink action="#{docwaymenu.insTableDocAllFascicoliCustom}" value="#{i18n['dw4.fascicoli_custom']}" immediate="true" /></li>
+                                    </h:panelGroup>
+		    						
+		    						<h:panelGroup rendered="#{docwayHome.formsAdapter.funzionalitaDisponibili['raccoglitorigestione']}">
+		    							<li><h:commandLink value="#{i18n['dw4.raccoglitori']}" action="#{docwaymenu.insTableDocRaccoglitore}" immediate="true" /></li>
+		    						</h:panelGroup>
+	    						</h:panelGroup>
+	    						<h:panelGroup rendered="#{!docwayHome.formsAdapter.funzionalitaDisponibili['nascondiprotocollo'] and docwayHome.formsAdapter.funzionalitaDisponibili['acquisizionedifferita']}">
+		    						<li class="divider"></li>
+			    					<li><h:commandLink value="#{i18n['dw4.acquisizionedifferita']}" action="#{docwaymenu.insTableDocAcquisizione}" immediate="true" /></li>
+			    					<h:panelGroup rendered="#{docwayHome.formsAdapter.funzionalitaDisponibili['acquisizioneqrcode'] and docwayHome.enableIW}">
+			    						<li><h:commandLink value="#{i18n['dw4.acquisizionemassiva_qrcode']}" action="#{docwaymenu.insTableDocAcquisizioneQrcode}" immediate="true" /></li>
+			    					</h:panelGroup>
+		    					</h:panelGroup>
+							</ul>
+						</li>
+						<li class="dropdown">
+					        <a data-toggle="dropdown" class="dropdown-toggle" href="#">
+					        	<span class="glyphicon glyphicon-search navbar-menu-icon"></span>
+					        	#{i18n['acl.advancedsearch']} <b class="caret"></b>
+					        </a>
+							<ul class="dropdown-menu">
+								<li><h:commandLink value="#{i18n['dw4.documents']}" action="#{docwaymenu.gotoTableQGlobale}" immediate="true"/></li>
+							    <h:panelGroup rendered="#{!docwayHome.formsAdapter.funzionalitaDisponibili['nascondifascicoli']}">
+								    <li><h:commandLink value="#{i18n['dw4.folders']}" action="#{docwaymenu.gotoTableQFascicolo}" immediate="true"/></li>
+								    <h:panelGroup rendered="#{docwayHome.formsAdapter.funzionalitaDisponibili['attivaTipologiaFascicoli']}">
+                                        <li><h:commandLink action="#{docwaymenu.gotoTableQFascicoliCustom}" value="#{i18n['dw4.fascicoli_custom']}" immediate="true" /></li>
+                                    </h:panelGroup>
+								    <h:panelGroup rendered="#{!empty docwayHome.fascicoli_speciali and fn:length(docwayHome.fascicoli_speciali) > 0}">
+								    	<ui:repeat var="fascSpeciale" value="#{docwayHome.fascicoli_speciali}">
+											<li><h:commandLink value="#{fascSpeciale.titolo}" action="#{docwayHome.gotoTableQFascicoloSpeciale}" immediate="true"/></li>	    	
+								    	</ui:repeat>
+								    </h:panelGroup>
+								</h:panelGroup>
+								<h:panelGroup rendered="#{docwayHome.formsAdapter.funzionalitaDisponibili['enableRaccoglitori']}">
+							    	<li><h:commandLink value="#{i18n['dw4.raccoglitori']}" action="#{docwaymenu.gotoTableQRaccoglitore}" immediate="true" /></li>
+							    </h:panelGroup>
+							    <h:panelGroup rendered="#{(docwayHome.formsAdapter.funzionalitaDisponibili['enablePersonalView'] or docwayHome.formsAdapter.funzionalitaDisponibili['enableCustomFieldsQueryPages']) and !docwayHome.formsAdapter.funzionalitaDisponibili['nascondirepertori']}">
+							    	<li class="divider"></li>
+							    	<li><h:commandLink action="#{docwaymenu.gotoTableQPersonalView}" value="#{i18n['dw4.documenti_personalizzati']}" immediate="true" /></li>
+							    </h:panelGroup>
+							</ul>
+						</li>
+						<h:panelGroup rendered="#{!docwayHome.formsAdapter.funzionalitaDisponibili['nascondiprotocollo'] or docwayHome.formsAdapter.funzionalitaDisponibili['enableRegistroFatture']}">
+							<li class="dropdown">
+						        <a data-toggle="dropdown" class="dropdown-toggle" href="#">
+						        	<span class="glyphicon glyphicon-print navbar-menu-icon"></span>
+						        	#{i18n['dw4.prints']} <b class="caret"></b>
+						        </a>
+								<ul class="dropdown-menu">
+									<li><h:commandLink value="#{i18n['dw4.control']}" action="#{docwaymenu.gotoTableQCtrlGestione}" immediate="true"/></li>
+		    						<li><h:commandLink value="#{i18n['dw4.registry']}" action="#{docwaymenu.findAndPrintRegistroGiornaliero}" immediate="true"/></li>
+									<li><h:commandLink value="#{i18n['dw4.stampa_protocolli']}" action="#{docwaymenu.gotoTableQStampe}" immediate="true"/></li>
+									<li><h:commandLink value="#{i18n['dw4.stampa_repertori']}" action="#{docwaymenu.gotoTableQStampe_rep}" immediate="true"/></li>
+		    						<li><h:commandLink value="#{i18n['dw4.repertory']}" action="#{docwaymenu.gotoTableQRep_fasc}" immediate="true"/></li>
+		    						<h:panelGroup rendered="#{!docwayHome.formsAdapter.funzionalitaDisponibili['nascondiprotocollo'] and docwayHome.formsAdapter.funzionalitaDisponibili['enableRegistroFatture']}">
+		    							<li class="divider"></li>
+		    						</h:panelGroup>
+		    						<h:panelGroup rendered="#{docwayHome.formsAdapter.funzionalitaDisponibili['enableRegistroFatture']}">
+		    							<li><h:commandLink value="#{i18n['dw4.registro_delle_fatture']}" action="#{docwaymenu.gotoTableQRegistroFatture}" immediate="true"/></li>
+		    						</h:panelGroup>
+								</ul>
+							</li>
+						</h:panelGroup>
+						<li class="dropdown">
+					        <a data-toggle="dropdown" class="dropdown-toggle" href="#">
+					        	<span class="glyphicon glyphicon-th-list navbar-menu-icon"></span>
+					        	#{i18n['dw4.altre_funzioni']} <b class="caret"></b>
+					        </a>
+							<ul class="dropdown-menu">
+								<h:panelGroup rendered="#{docwayHome.formsAdapter.funzionalitaDisponibili['consoleWfAPV']}">
+									<li><h:commandLink action="#{docwaymenu.gotoConsoleDecretazioniApv}" value="#{i18n['apv.console_decretazioni']}" /></li>
+									<li><h:commandLink action="#{docwaymenu.gotoConsoleOrdiniApv}" value="#{i18n['apv.console_ordini']}" /></li>
+									<li><h:commandLink action="#{docwaymenu.gotoConsoleFattureApv}" value="#{i18n['apv.console_fatture']}" /></li>
+									<li class="divider"></li>
+								</h:panelGroup>
+								<h:panelGroup rendered="#{docwayHome.formsAdapter.funzionalitaDisponibili['abilitaScaricamentoPostaMailboxPersonali']}">
+									<li><h:commandLink action="#{docwaymenu.gotoRicezionePosta}" value="#{i18n['dw4.ricezione_posta']}" /></li>
+									<li class="divider"></li>
+								</h:panelGroup>
+								<h:panelGroup rendered="#{docwayHome.formsAdapter.funzionalitaDisponibili['linkACL']}">
+									<li><a href="#{facesContext.externalContext.requestContextPath}/acl/home.jsf?db=#{docwaymenu.aclDb}" title="#{i18n['dw4.acl']}" target="acl">#{i18n['dw4.acl']}</a></li>
+								</h:panelGroup>
+								<h:panelGroup rendered="#{docwayHome.formsAdapter.funzionalitaDisponibili['linkXDocWayProc']}">
+									<li><a href="#{facesContext.externalContext.requestContextPath}/docwayproc/home.jsf?db=#{fn:replace(docwaymenu.formsAdapter.db, 'xdocwaydoc', 'xdocwayproc')}" title="#{i18n['dw4.archivio_procedimenti']}" target="docwayproc">#{i18n['dw4.archivio_procedimenti']}</a></li>
+								</h:panelGroup>
+								
+								<h:panelGroup rendered="#{docwayHome.formsAdapter.funzionalitaDisponibili['enableTO']}">
+									<li><h:commandLink action="#{docwaymenu.gotoTableQTo}">#{i18n['dw4.docway_delibere']}</h:commandLink></li>
+								</h:panelGroup>
+								
+								<h:panelGroup rendered="#{docwayHome.formsAdapter.funzionalitaDisponibili['invioNotifDiff'] or docwayHome.formsAdapter.funzionalitaDisponibili['enableAdmTools']}">
+									<li class="divider"></li>
+									<h:panelGroup rendered="#{docwayHome.formsAdapter.funzionalitaDisponibili['invioNotifDiff']}">
+										<li><h:commandLink action="#{docwaymenu.invioNotifDifferite}" value="#{i18n['dw4.invio_mail_differito']}" /></li>
+									</h:panelGroup>
+									<h:panelGroup rendered="#{docwayHome.formsAdapter.funzionalitaDisponibili['enableAdmTools']}">
+										<li><h:commandLink action="#{docwaymenu.gotoTableQAdmTools}" value="#{i18n['dw4.amministrazione']}" /></li>
+									</h:panelGroup>
+								</h:panelGroup> 
+		    					
+		    					<h:panelGroup rendered="#{docwayHome.formsAdapter.funzionalitaDisponibili['abilitaSoginSAP']}">
+                					<li class="divider"></li>
+                					<li><a href="#{facesContext.externalContext.requestContextPath}/soginSAP/home.jsf" class="openwaitmsg">#{i18n['soginSAP.extramenuEntry']}</a></li>
+					            </h:panelGroup>
+							</ul>
+						</li>
+						<li class="dropdown">
+					        <a data-toggle="dropdown" class="dropdown-toggle" href="#">
+					        	<span class="glyphicon glyphicon-book navbar-menu-icon"></span>
+					        	#{i18n['dw4.help']} <b class="caret"></b>
+					        </a>
+							<ul class="dropdown-menu">
+								<li><h:commandLink action="#{docwaymenu.showVersioni}" value="#{i18n['dw4.about_docway']}" /></li>
+								<h:panelGroup rendered="#{!empty docwaymenu.urlPaginaWikiManualeDocWay}">
+									<li><h:outputLink value="#{docwaymenu.urlPaginaWikiManualeDocWay}" target="manuale" title="#{i18n['dw4.manuale_online']}">#{i18n['dw4.manuale_online']}</h:outputLink></li>
+								</h:panelGroup>
+							</ul>
+						</li>
+					</ul>
+					<ul class="nav navbar-nav navbar-right">
+						<li class="dropdown">
+					        <a data-toggle="dropdown" class="dropdown-toggle #{(docwayHome.accessoADM) ? 'user-login-adm' : ''}" title="#{userBean.userInfo}" href="#">
+					        	<span class="glyphicon glyphicon-user navbar-menu-icon"></span>
+					        	#{fn:substring(userBean.userInfo,0, fn:indexOf(userBean.userInfo, '('))} <b class="caret"></b>
+					        </a>
+							<ul class="dropdown-menu">
+								<li><h:commandLink action="#{docwaymenu.gotoTableQProfiloPersonale}" value="#{i18n['dw4.profilo_personale']}" /></li>
+								<li class="divider"></li>
+								<li><h:commandLink action="#{userBean.logout}" value="#{i18n['dw4.esci']}" /></li>
+							</ul>
+						</li>
+					</ul>
+				</div>
+			</div>
+		</div>
+		
+		<ui:include src="./loadingbar@stampe.xhtml"><ui:param name="pageBean" value="#{docwaymenu}"/></ui:include>
+		<ui:include src="./loadingbar@notif_diff.xhtml"><ui:param name="pageBean" value="#{docwaymenu}"/></ui:include>
+		<ui:include src="./query@versioni.xhtml"><ui:param name="pageBean" value="#{queryVersioni}"/></ui:include>
+	</h:form>
+	<!-- header: fine -->
+		
+</ui:composition>
+</html>

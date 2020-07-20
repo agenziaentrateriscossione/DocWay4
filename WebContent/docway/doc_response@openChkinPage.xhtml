@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" 
+	  xmlns:h="http://java.sun.com/jsf/html" 
+	  xmlns:ui="http://java.sun.com/jsf/facelets" 
+	  xmlns:f="http://java.sun.com/jsf/core"
+	  xmlns:c="http://java.sun.com/jsp/jstl/core"
+	  xmlns:p="http://xmlns.jcp.org/jsf/passthrough">
+<ui:composition>
+
+	<h:panelGroup layout="block" id="checkinFilePopup">
+		<h:panelGroup rendered="#{pageBean.visible}">
+			<!-- Modal -->
+			<div id="checkinModal" class="modal fade in" aria-hidden="false" aria-labelledby="checkinModalLabel" role="dialog" tabindex="-1" style="display: block;">
+			<!--div class="modal fade" id="checkinModal" tabindex="-1" role="dialog" aria-labelledby="checkinModalLabel" aria-hidden="true"-->
+				<div class="modal-dialog modal-lg">
+					<div class="modal-content jsf-modal">
+						<div class="modal-header">
+							<h:commandLink class="close" action="#{pageBean.clearDocument}" value="&#215;">
+		                    	<f:ajax render="checkinFilePopup"/>
+		                   	</h:commandLink>
+		                   	
+							<h4 class="modal-title" id="checkinModalLabel">#{i18n['dw4.aggiornamento_file_associato']}</h4>
+						</div>
+						<div class="modal-body">
+						
+							<div class="alert alert-info">
+								#{i18n['dw4.si_prega_di_indicare_il_nome_del_file_che_andra_a_sostituire_la_versione_precedentemente_prenotata']}
+							</div>
+							
+							<h:panelGroup rendered="#{not empty facesContext.messageList}" layout="block" styleClass="alert alert-danger">
+								<h:messages styleClass="" id="checkInValidationMesseges" />
+							</h:panelGroup>
+							
+							<div class="form-group">
+								<label class="col-sm-2 control-label emphasis-title">#{i18n['dw4.file']}</label>
+								<div class="col-sm-9 check-selection">
+									<h:selectBooleanCheckbox id="agentPdf" value="#{pageBean.agent_pdf}" styleClass="first-checkbox" />
+									<label for="templateForm:agentPdf"><h:outputText value="#{i18n['dw4.converti_in_pdf']}" /></label>
+									&#160;&#160;
+									<h:selectBooleanCheckbox id="agentXml" value="#{pageBean.agent_xml}" />
+									<label for="templateForm:agentXml"><h:outputText value="#{i18n['dw4.converti_in_xml']}" /></label>
+								</div>
+							</div>
+							
+							<!-- TODO coming from workflow, firma digitale -->
+							
+							<div class="form-group">
+								<label class="col-sm-2 control-label emphasis-title">#{i18n['dw4.nuova_descrizione']}</label>
+								<div class="col-sm-9">
+									<c:if test="#{!pageBean.signingEnabled}">
+										<h:inputText id="chkinFileTitle" value="#{pageBean.xwFile.title}" styleClass="#{ component.valid ? '' : 'invalidinput' } form-control" />
+									</c:if>
+									<c:if test="#{pageBean.signingEnabled}">
+										<div class="input-group">
+											<span class="input-group-addon">
+												<h:selectBooleanCheckbox id="firmaDigitale" immediate="true" value="#{pageBean.firmaDigitale}" p:data-toggle="popover" p:data-placement="bottom" p:data-trigger="hover" p:data-content="#{i18n['dw4.firma_digitale']}" styleClass="popoveritem" />
+											</span>
+											<h:inputText id="chkinFileTitle" value="#{pageBean.xwFile.title}" styleClass="#{ component.valid ? '' : 'invalidinput' } form-control" />
+										</div>
+									</c:if>
+								</div>
+							</div>
+							
+							<div class="form-group">
+								<label class="col-sm-2 control-label emphasis-title">#{i18n['dw4.nuova_versione_file']}</label>
+								<div class="col-sm-9">
+									<h:inputHidden id="nFileId" value="#{pageBean.xwFileIdsAttached}" />
+									<h:inputHidden id="nFileName" value="#{pageBean.xwFileNamesAttached}" />
+									<h:inputHidden id="nFileTitle" value="#{pageBean.xwFileTitlesAttached}" />
+									<h:commandLink id="addFilesButton" action="#{pageBean.addFiles}" style="display:none;">
+										<f:ajax execute="@form" render="@form" />
+									</h:commandLink>
+									
+									<div class="input-group">
+										<h:inputHidden id="xwayId" value="#{pageBean.xwFile.xwayId}" />
+										
+										<c:if test="#{pageBean.xwFile.xwayId ne ''}">
+											<h:inputText id="fileName" value="#{pageBean.xwFile.name}" readonly="true" styleClass="readonlyinput form-control" />	
+										</c:if>
+										<c:if test="#{pageBean.xwFile.xwayId eq ''}">
+											<h:inputHidden id="fileName" value="#{pageBean.xwFile.name}" />
+											<input type="text" id="fileNameFake" value="" readonly="readonly" class="readonlyinput form-control" />
+										</c:if>
+										<div class="input-group-btn">
+											<h:panelGroup rendered="#{pageBean.enableIW}">
+												<h:commandLink onclick="return IwxRuntime.Client.addDocIWX();" styleClass="btn btn-default sfogliaButton">#{i18n['dw4.sfoglia']}</h:commandLink>
+											</h:panelGroup>
+											<h:panelGroup rendered="#{!pageBean.enableIW}">
+												<span id="swfupload-files-control">
+													<span id="swfuploadFilesHolder"></span>
+													<h:commandLink id="swfuploadFilesBtn" onclick="return false;" styleClass="btn btn-default sfogliaButton">#{i18n['dw4.sfoglia']}</h:commandLink>
+												</span>
+											</h:panelGroup>
+										</div>
+									</div>
+								</div>
+							</div>
+							
+							<ui:remove>
+								<h:panelGroup rendered="#{pageBean.formsAdapter.toDo != null and pageBean.formsAdapter.toDo == '@openChkinPage' and pageBean.attach != null}">
+									<h:commandLink id="filePrelevato" action="#{pageBean.downloadFile}" />
+									<script type="text/javascript">
+									$(document).ready(function() {
+										setTimeout("autoDownloadFile()", 150); // scaricamento del file (senza timeout ci sarebbe un blocco su Chrome)
+										//$('#templateForm\\:filePrelevato').trigger('click'); // scaricamento del file
+									});
+									
+									function autoDownloadFile() {
+										$('#templateForm\\:filePrelevato').trigger('click');
+									}
+									</script>
+								</h:panelGroup>
+							</ui:remove>
+							<h:panelGroup rendered="#{ !pageBean.enableIW }">
+								<script type="text/javascript">
+								var docInformaticiUploadUrl = "#{facesContext.externalContext.requestContextPath}/fileupload";
+								var docInformaticiFileLimit = "0"; // TODO dim massima files, recuperarla da file di properties
+								//var docInformaticiFileDescription = "#{i18n['dw4.all_files']}";
+				                var docInformaticiFileDescription = "#{pageBean.docInformaticiFileDescription}";
+				                //var docInformaticiFileTypes = "*.*";
+				                var docInformaticiFileTypes = "#{pageBean.docInformaticiFileTypes}";
+				                var docInformaticiImageLimit = "0"; // TODO dim massima images, recuperarla da file di properties
+				                //var docInformaticiImageTypesDescription = "#{i18n['dw4.image_files']}";
+				                var docInformaticiImageTypesDescription = "#{pageBean.docInformaticiImageDescription}";
+				                //var docInformaticiImageTypes = "*.tif; *.tiff; *.jpg; *.jpeg; *.bmp; *.png";
+				                var docInformaticiImageTypes = "#{pageBean.docInformaticiImageTypes}";
+								
+								window.loadSWFUpload = function() {
+									initSWFU(docInformaticiUploadUrl, "doc", "#{userBean.login}", "#{userBean.matricola}", "#{pageBean.formsAdapter.customTupleName}", "#{pageBean.formsAdapter.db}", docInformaticiFileLimit, '1', docInformaticiFileDescription, docInformaticiFileTypes);
+								}
+								
+								$(window).load(function() {
+									jsf.ajax.addOnEvent(function(data) { 
+										if (data.status == 'success') {
+											initSWFU(docInformaticiUploadUrl, "doc", "#{userBean.login}", "#{userBean.matricola}", "#{pageBean.formsAdapter.customTupleName}", "#{pageBean.formsAdapter.db}", docInformaticiFileLimit, '1', docInformaticiFileDescription, docInformaticiFileTypes);
+										}
+									});
+								});
+								</script>
+							</h:panelGroup>
+							
+							<h:inputTextarea styleClass="form-control" rows="10" value="#{pageBean.xml}" rendered="#{pageBean.debugMode}"/>
+							
+						</div>
+						<div class="modal-footer">
+							<h:commandLink action="#{pageBean.saveDocument}" styleClass="btn btn-primary openwaitmsg #{(empty pageBean.xwFile.xwayId) ? 'disabled' : ''}" value="#{i18n['dw4.aggiorna']}" />
+							
+							<h:commandLink styleClass="btn btn-default" action="#{pageBean.clearDocument}"  value="#{i18n['acl.close']}">
+		                    	<f:ajax render="checkinFilePopup"/>
+		                   	</h:commandLink>
+						</div>
+					</div>
+				</div>
+			</div>
+			<!--h:outputScript>
+				$('#checkinModal').modal('show');
+			</h:outputScript-->
+		</h:panelGroup>
+	</h:panelGroup>
+
+</ui:composition>
+</html>

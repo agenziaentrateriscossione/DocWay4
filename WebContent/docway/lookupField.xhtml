@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" 
+	  xmlns:h="http://java.sun.com/jsf/html" 
+	  xmlns:ui="http://java.sun.com/jsf/facelets" 
+	  xmlns:f="http://java.sun.com/jsf/core"
+	  xmlns:c="http://java.sun.com/jsp/jstl/core"
+	  xmlns:p="http://xmlns.jcp.org/jsf/passthrough">
+<ui:composition>
+
+	<div class="input-group">
+		<c:if test="#{!empty placeholder}">
+			<h:inputText id="#{id}_input" p:placeholder="#{placeholder}" value="#{field}" onblur="executeAction(this);" onfocus="setDefaultValue(this);" styleClass="#{ component.valid ? '' : 'invalidinput' } lookup-field #{styleclass}">
+				<f:ajax execute="@form" render="#{refresh}"/>
+			</h:inputText>
+		</c:if>
+		<c:if test="#{empty placeholder}">
+			<h:inputText id="#{id}_input" value="#{field}" onblur="executeAction(this);" onfocus="setDefaultValue(this);" styleClass="#{ component.valid ? '' : 'invalidinput' } lookup-field #{styleclass}">
+				<f:ajax execute="@form" render="#{refresh}"/>
+			</h:inputText>
+		</c:if>
+		
+		<div class="input-group-btn">
+			<h:commandLink style="display:none;" title="#{title}" action="#{bean[clearaction]}" id="#{id}_clear">
+	  			<f:ajax execute="@form" render="#{refresh}"/>
+			</h:commandLink>
+			
+			<h:commandLink title="#{title}" action="#{bean[action]}" id="#{id}_button" onclick="setFocusLookup(this); return confirmLookup('#{confirmOnAction}', '#{id}_input');" styleClass="btn btn-default">
+	   			<f:ajax execute="@form" render="#{refresh}"/>
+	   			<span class="glyphicon glyphicon-search"></span>
+	   		</h:commandLink>
+  		</div>
+	</div>
+
+</ui:composition>
+</html>

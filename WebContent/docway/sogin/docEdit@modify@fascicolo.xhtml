@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" 
+	xmlns:h="http://java.sun.com/jsf/html" 
+	xmlns:ui="http://java.sun.com/jsf/facelets" 
+	xmlns:f="http://java.sun.com/jsf/core">
+<ui:composition>
+	
+	<div class="form-group">
+		<label for="templateForm:extraTipologiaFascicolo" class="col-sm-2 control-label">#{i18n['dw4.tipologia_fascicolo']}</label>
+		<div class="col-sm-4">
+			<h:selectOneMenu id="extraTipologiaFascicolo" value="#{bean.fascicolo.extra.tipologia_fascicolo}" valueChangeListener="#{bean.tipologiaFascicoloValueChange}" styleClass="form-control">
+				<f:ajax execute="@form" render="@form" />
+				<f:selectItem itemValue="" itemLabel="" />
+				<f:selectItem itemValue="Fascicolo di Gara" itemLabel="Fascicolo di Gara" />
+				<f:selectItem itemValue="Fascicolo di Qualifica" itemLabel="Fascicolo di Qualifica" />
+			</h:selectOneMenu>
+		</div>
+	</div>
+	
+	<div class="form-group">
+		<ui:include src="../dateField.xhtml">
+			<ui:param name="label" value="#{i18n['dw4.data_apertura']}" />
+			<ui:param name="id" value="dataAperturaFasc" />
+			<ui:param name="value" value="#{bean.data_apertura}" />
+		</ui:include>
+		
+		<ui:include src="../dateField.xhtml">
+			<ui:param name="label" value="#{i18n['dw4.data_chiusura']}" />
+			<ui:param name="id" value="dataChisuraFasc" />
+			<ui:param name="value" value="#{bean.data_chiusura}" />
+			<ui:param name="offset" value="2" />
+		</ui:include>
+	</div>
+
+	<h:panelGroup rendered="#{bean.show_numero_gara_oda_sap}" layout="block" styleClass="form-group">
+		<label for="templateForm:numGaraFascicolo" class="col-sm-2 control-label">#{i18n['dw4.num_gara']}</label>
+		<div class="col-sm-3">
+			<h:inputText id="numGaraFascicolo" value="#{bean.fascicolo.extra.numero_gara}" styleClass="#{ component.valid ? '' : 'invalidinput' } form-control" />
+		</div>
+		<label for="templateForm:numOdaSapFascicolo" class="col-sm-offset-1 col-sm-2 control-label">#{i18n['dw4.num_oda_sap']}</label>
+		<div class="col-sm-3">
+			<h:inputText id="numOdaSapFascicolo" value="#{bean.fascicolo.extra.numero_oda_sap}" styleClass="#{ component.valid ? '' : 'invalidinput' } form-control" />
+		</div>
+	</h:panelGroup>
+
+	<h:panelGroup rendered="#{bean.show_fornitore}">
+		<div class="form-group">
+			<label for="templateForm:fornitore_input" class="col-sm-2 control-label">#{i18n['dw4.fornitore']}</label>
+			<div class="col-sm-9">
+				<ui:include src="/docway/lookupField.xhtml">
+	        		<ui:param name="id" value="fornitore" />
+	        		<ui:param name="field" value="#{bean.fascicolo.extra.fornitore}" />
+	        		<ui:param name="bean" value="#{docEditModifyFascicolo}" />
+	        		<ui:param name="action" value="lookupFornitore"/>
+	        		<ui:param name="clearaction" value="clearLookupFornitore"/>
+	        		<ui:param name="title" value="#{i18n['dw4.lookup_fornitore']}"/>
+	        		<ui:param name="styleclass" value="form-control"/>
+	        		<ui:param name="refresh" value="templateForm:fornitore_input templateForm:codiceFornitoreFascicolo templateForm:lookup templateForm:errormsg" />
+	        	</ui:include>
+			</div>
+		</div>
+		
+		<div class="form-group">
+			<label for="templateForm:codiceFornitoreFascicolo" class="col-sm-2 control-label">#{i18n['dw4.codice_sap_e_proc']}</label>
+			<div class="col-sm-9">
+				<h:inputText id="codiceFornitoreFascicolo" value="#{bean.fascicolo.extra.fornitore_codice}" styleClass="readonlyinput form-control" readonly="true" />
+			</div>
+		</div>
+	</h:panelGroup>
+		
+</ui:composition>
+</html>

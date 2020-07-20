@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+    template="#{queryGlobale_to.pageTemplate}"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:c="http://java.sun.com/jsp/jstl/core"
+    xmlns:p="http://xmlns.jcp.org/jsf/passthrough">
+
+<ui:define name="content">
+	<div id="advancedSearch" class="globale submitEnterKey">
+	
+		<!-- toolbar: inizio -->
+		<div class="btn-toolbar docway-toolbar" role="toolbar">
+			<div class="btn-group">
+				<h:commandLink id="advancedSearchBtn" action="#{queryGlobale_to.queryPlain}" styleClass="btn btn-primary openwaitmsg" value="#{i18n['acl.search']}" />
+				
+				<h:commandLink action="#{queryGlobale_to.resetQuery}" styleClass="btn btn-default" value="#{i18n['acl.clear']}">
+					<f:ajax execute="@form" render="@form" />
+				</h:commandLink>
+			</div>
+		</div>
+		<!-- toolbar: fine -->
+		
+		<h5 class="sub-header">
+			<span class="glyphicon glyphicon-search"></span>&#160;
+			#{i18n['dw4.globale_search']}
+		</h5>
+		
+		<!-- messages: inizio -->
+		<h:panelGroup rendered="#{not empty facesContext.messageList}" layout="block" styleClass="docedit-messages alert alert-danger">
+			<h:messages styleClass="" id="validationMesseges" />
+		</h:panelGroup>
+		<!-- messages: fine -->
+		
+		<!-- scheda query: inizio -->
+		<div class="row-fluid" style="margin-top:10px;">
+		<div id="fixedshowdoc" class="box span12 fixed-showdoc">
+			<div class="box-content">
+				<div class="fieldset">
+					<div class="legend">#{i18n['acl.freesearch']}</div>
+					
+					<h:panelGroup rendered="#{queryGlobale_to.queryType eq 'query4standard'}">
+						<div class="form-group">
+							<label for="templateForm:doc_globale" class="col-sm-2 control-label">#{i18n['dw4.ricerca_full_text']}</label>
+							<div class="col-sm-9">
+								<h:inputText id="doc_globale" styleClass="form-control" value="#{queryGlobale_to.custom_fulltext}"/>
+							</div>
+						</div>
+					</h:panelGroup>
+					
+					<div class="form-group">
+						<div class="col-sm-offset-2 col-sm-9">
+							<h:selectOneRadio id="tipoRicerca" value="#{queryGlobale_to.queryType}" layout="pageDirection" styleClass="radio-selection">
+								<f:selectItem itemValue="query4standard" itemLabel="#{i18n['dw4.ricerca_standard']}" />
+								<f:selectItem itemValue="query4comp" itemLabel="#{i18n['dw4.ricerca_per_componenti']}" />
+								<f:ajax event="click" render="@form"></f:ajax>
+							</h:selectOneRadio>
+						</div>
+					</div>
+					
+					<div class="form-group">
+						<label for="templateForm:selectOrgano" class="col-sm-2 control-label">#{i18n['dw4.organo']}</label>
+						<div class="col-sm-9">
+							<h:selectOneMenu id="selectOrgano" class="form-control" value="#{queryGlobale_to.selectedOrgano}">
+								<f:selectItems value="#{queryGlobale_to.organi}" var="option" itemValue="#{option.cod}" itemLabel="#{option.nome}" />
+							</h:selectOneMenu>
+						</div>
+					</div>
+					
+					<h:panelGroup styleClass="form-group" id="tipoDocumento">
+						<label for="templateForm:tipoDocumento" class="col-sm-2 control-label">#{i18n['dw4.tipodocumento']}</label>
+						<div class="col-sm-9">
+							<h:panelGroup rendered="#{queryGlobale_to.queryType eq 'query4standard'}">
+								<span class="margin-right-20" style="white-space:nowrap;">
+									<h:selectBooleanCheckbox value="#{queryGlobale_to.custom_verbale}" id="custom_verbale" valueChangeListener="#{queryGlobale_to.existsCustomFields}">
+										<f:ajax execute="@form" render="templateForm:bloccoarrivo templateForm:customFields templateForm:rpa templateForm:rpam templateForm:repertori" event="click"/>
+									</h:selectBooleanCheckbox>
+									<label for="templateForm:custom_verbale" class="normal-weight-text">#{i18n['dw4.verbali']}</label>
+								</span>
+							</h:panelGroup>
+							<h:panelGroup rendered="#{queryGlobale_to.queryType eq 'query4comp'}">
+								<span class="margin-right-20" style="white-space:nowrap;">
+									<h:selectBooleanCheckbox value="#{queryGlobale_to.custom_seduta}" id="custom_seduta" valueChangeListener="#{queryGlobale_to.existsCustomFields}">
+										<f:ajax execute="@form" render="templateForm:bloccoarrivo templateForm:customFields templateForm:rpa templateForm:rpam templateForm:repertori" event="click"/>
+									</h:selectBooleanCheckbox>
+									<label for="templateForm:custom_seduta" class="normal-weight-text">#{i18n['dw4.sedute']}</label>
+								</span>
+							</h:panelGroup>
+							<span class="margin-right-20" style="white-space:nowrap;">
+								<h:selectBooleanCheckbox value="#{queryGlobale_to.custom_delibera}" id="custom_delibera" valueChangeListener="#{queryGlobale_to.existsCustomFields}">
+									<f:ajax execute="@form" render="templateForm:bloccoarrivo templateForm:customFields templateForm:rpa templateForm:rpam templateForm:repertori" event="click"/>
+								</h:selectBooleanCheckbox>
+								<label for="templateForm:custom_delibera" class="normal-weight-text">#{i18n['dw4.delibere']}</label>
+							</span>
+							<h:panelGroup rendered="#{queryGlobale_to.queryType eq 'query4standard'}">
+								<span class="margin-right-20" style="white-space:nowrap;">
+									<h:selectBooleanCheckbox value="#{queryGlobale_to.custom_proposta}" id="custom_proposta" valueChangeListener="#{queryGlobale_to.existsCustomFields}">
+										<f:ajax execute="@form" render="templateForm:customFields templateForm:rpa templateForm:rpam templateForm:repertori" event="click" />
+									</h:selectBooleanCheckbox>
+									<label for="templateForm:custom_proposta" class="normal-weight-text">#{i18n['dw4.proposte_in_lavorazione']}</label>
+								</span>
+								<span class="margin-right-20" style="white-space:nowrap;">
+									<h:selectBooleanCheckbox value="#{queryGlobale_to.custom_comunicazione}" id="custom_comunicazione" valueChangeListener="#{queryGlobale_to.existsCustomFields}">
+										<f:ajax execute="@form" render="templateForm:customFields templateForm:repertori" event="click" />
+									</h:selectBooleanCheckbox>
+									<label for="templateForm:custom_comunicazione" class="normal-weight-text">#{queryGlobale_to.comunicazioniLabel}</label>
+								</span>
+							</h:panelGroup>
+						</div>
+					</h:panelGroup>
+			
+					<!-- query4standard -->
+					<h:panelGroup id="query4standard" layout="block">
+					<h:panelGroup rendered="#{queryGlobale_to.queryType eq 'query4standard'}" layout="block" styleClass="arrivo">
+						<div class="fieldset">
+							<div class="legend">
+								#{i18n['dw4.ricerca_standard']}
+							</div>
+							
+							<div class="form-group">
+								<label for="templateForm:seduta_anno" class="col-sm-2 control-label">#{i18n['dw4.anno_seduta']}</label>
+								<div class="col-sm-2">
+									<div class="input-group">
+										<h:inputText styleClass="form-control" value="#{queryGlobale_to.custom_sedannoconvocazione}" id="seduta_anno" />
+									</div>
+								</div>
+								<ui:include src="./rangeField.xhtml">
+									<ui:param name="label" value="#{i18n['dw4.data_seduta']}" />
+									<ui:param name="id" value="custom_rep" />
+									<ui:param name="from_value" value="#{queryGlobale_to.range_docodgsedutadataconvocazione_from}" />
+									<ui:param name="to_value" value="#{queryGlobale_to.range_docodgsedutadataconvocazione_to}" />
+									<ui:param name="is_date" value="true" />
+									<ui:param name="offset" value="2" />
+								</ui:include>
+							</div>
+							
+							<div class="form-group">
+								<label for="templateForm:delibera_verbale_anno" class="col-sm-2 control-label">#{i18n['dw4.anno_delibera_verbale']}</label>
+								<div class="col-sm-2">
+									<div class="input-group">
+										<h:inputText styleClass="form-control" value="#{queryGlobale_to.custom_annodelverb}" id="delibera_verbale_anno" />
+									</div>
+								</div>
+								<ui:include src="./rangeField.xhtml">
+									<ui:param name="label" value="#{i18n['dw4.n_delibera_verbale']}" />
+									<ui:param name="id" value="n_delibera_verbale" />
+									<ui:param name="from_value" value="#{queryGlobale_to.custom_numdelibverb_da}" />
+									<ui:param name="to_value" value="#{queryGlobale_to.custom_numdelibverb_a}" />
+									<ui:param name="is_date" value="false" />
+									<ui:param name="offset" value="2" />
+								</ui:include>
+							</div>
+							
+							<div class="form-group">
+								<label for="templateForm:uor" class="col-sm-2 control-label">#{i18n['dw4.uor']}</label>
+								<div class="col-sm-9">
+									<h:inputText id="uor" styleClass="form-control" value="#{queryGlobale_to.uor}"/>
+								</div>
+							</div>
+							
+							<div class="form-group">
+								<label for="templateForm:oggetto" class="col-sm-2 control-label">#{i18n['dw4.object']}</label>
+								<div class="col-sm-9">
+									<h:inputText id="oggetto" styleClass="form-control" value="#{queryGlobale_to.doc_oggetto}"/>
+								</div>
+							</div>
+							
+						</div> <!-- /fieldset -->
+					</h:panelGroup>
+				</h:panelGroup>
+				
+				<!-- query4comp -->
+				<h:panelGroup id="query4comp" layout="block">
+					<h:panelGroup rendered="#{queryGlobale_to.queryType eq 'query4comp'}" layout="block" styleClass="arrivo">
+						<div class="fieldset">
+							<div class="legend">
+								#{i18n['dw4.ricerca_per_componenti']}
+							</div>
+							
+							<div class="form-group">
+								<div class="col-sm-offset-2 col-sm-9">
+									<h:selectOneRadio id="relComponenti" value="#{queryGlobale_to.relComponenti}" styleClass="radio-selection">
+										<f:selectItem itemValue="OR" itemLabel="#{i18n['dw4.or']}" />
+										<f:selectItem itemValue="AND" itemLabel="#{i18n['dw4.and']}" />
+									</h:selectOneRadio>
+								</div>
+							</div>
+							
+							<ui:repeat var="componente" value="#{queryGlobale_to.componenti}" varStatus="loop">
+								<div class="form-group">
+									<label for="templateForm:custom_comp_#{loop.index}" class="col-sm-2 control-label">#{i18n['acl.name']}</label>
+									<div class="col-sm-6">
+										<h:inputText id="custom_comp_#{loop.index}" styleClass="form-control" value="#{componente.value}"/>
+									</div>
+									<div class="col-sm-4">
+										<span class="margin-right-20" style="white-space:nowrap;">
+											<h:selectBooleanCheckbox value="#{componente.custom_pres}" id="custom_pres_#{loop.index}"></h:selectBooleanCheckbox>
+											<label for="templateForm:custom_pres_#{loop.index}" class="normal-weight-text">#{i18n['dw4.presente']}</label>
+										</span>
+										<span class="margin-right-20" style="white-space:nowrap;">
+											<h:selectBooleanCheckbox value="#{componente.custom_ass}" id="custom_ass_#{loop.index}"></h:selectBooleanCheckbox>
+											<label for="templateForm:custom_ass_#{loop.index}" class="normal-weight-text">#{i18n['dw4.assente']}</label>
+										</span>
+										<span class="margin-right-20" style="white-space:nowrap;">
+											<h:selectBooleanCheckbox value="#{componente.custom_assng}" id="custom_assng_#{loop.index}"></h:selectBooleanCheckbox>
+											<label for="templateForm:custom_assng_#{loop.index}" class="normal-weight-text">#{i18n['dw4.assente_ng']}</label>
+										</span>
+									</div>
+								</div>
+							</ui:repeat>
+						</div>
+					</h:panelGroup>
+				</h:panelGroup>
+				</div>
+			</div>
+		</div>
+		</div>
+		<!-- scheda query: fine -->
+		
+		<script type="text/javascript">
+		$(document).ready(function() {
+			// focus su campo globale
+			$('#templateForm\\:doc_globale').focus();
+		});
+		</script>
+
+		<h:inputTextarea value="#{queryGlobale_to.xml}" rendered="#{queryGlobale_to.debugMode}" styleClass="form-control" rows="10" />
+	</div>
+	
+	<ui:include src="./showindex.xhtml"><ui:param name="pageBean" value="#{queryGlobale_to}"/></ui:include>
+</ui:define>
+    
+</ui:composition>    

@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+    template="#{showdocNotifDiff.pageTemplate}"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:f="http://java.sun.com/jsf/core">
+
+<ui:define name="content">
+	
+	<script type="text/javascript">
+	function notif_diff_showTitoloNonSelezionato() {
+		alert("#{i18n['dw4.selezionare_il_documento_prima_dell_inoltro_via_email']}");
+		return false;
+	}
+	
+	function notif_diff_showTitoloNoAllegati() {
+		alert("#{i18n['dw4.non_ci_sono_allegati_che_possono_essere_inoltrati_via_email']}");
+		return false;
+	}
+	</script>
+	<div class="notif-diff row clearfix">
+		<div class="col-xs-12 col-sm-5 col-md-4 col-lg-4">
+			
+			<ui:include src="./showdoc@notif_diff@titles.xhtml">
+				<ui:param name="bean" value="#{showdocNotifDiff}" />
+				<ui:param name="titles" value="#{showdocNotifDiff.titoliArrivo}" />
+        		<ui:param name="headerTitle" value="#{i18n['dw4.documenti_in_arrivo']}" />
+        	</ui:include>
+			
+			<ui:include src="./showdoc@notif_diff@titles.xhtml">
+				<ui:param name="bean" value="#{showdocNotifDiff}" />
+				<ui:param name="titles" value="#{showdocNotifDiff.titoliPartenza}" />
+        		<ui:param name="headerTitle" value="#{i18n['dw4.documenti_in_partenza']}" />
+        	</ui:include>
+        	
+        	<ui:include src="./showdoc@notif_diff@titles.xhtml">
+        		<ui:param name="bean" value="#{showdocNotifDiff}" />
+				<ui:param name="titles" value="#{showdocNotifDiff.titoliDifferito}" />
+        		<ui:param name="headerTitle" value="#{i18n['dw4.differito']}" />
+        	</ui:include>
+        	
+        	<ui:include src="./showdoc@notif_diff@titles.xhtml">
+        		<ui:param name="bean" value="#{showdocNotifDiff}" />
+				<ui:param name="titles" value="#{showdocNotifDiff.titoliTraUffici}" />
+        		<ui:param name="headerTitle" value="#{i18n['dw4.uffici']}" />
+        	</ui:include>
+        	
+        	<ui:include src="./showdoc@notif_diff@titles.xhtml">
+        		<ui:param name="bean" value="#{showdocNotifDiff}" />
+				<ui:param name="titles" value="#{showdocNotifDiff.titoliVarie}" />
+        		<ui:param name="headerTitle" value="#{i18n['dw4.abbr_nonprotocollati']}" />
+        	</ui:include>
+			
+		</div>
+		<div class="col-xs-12 col-sm-7 col-md-8 col-lg-8">
+			
+			<!-- eventuale toolbar -->
+			
+			<div class="sub-header">#{i18n['dw4.vista_documenti_con_notifica_differita']}</div>
+		
+		
+			<h:panelGroup rendered="#{showdocNotifDiff.errore ne ''}" layout="block" styleClass="docedit-messages alert alert-danger">
+				#{showdocNotifDiff.errore}
+			</h:panelGroup>
+			
+			<h:panelGroup rendered="#{showdocNotifDiff.doc != null}" styleClass="notif-diff-doc" layout="block">
+				<div class="#{showdocNotifDiff.doc.tipo}">
+					
+					<h:panelGroup rendered="#{showdocNotifDiff.formsAdapter.funzionalitaDisponibili['mostraBustaSezAllegati']}">
+						<!-- toolbar: inizio -->
+						<div class="btn-toolbar margin-bottom" role="toolbar">
+							<div class="btn-group">
+								<h:commandLink action="#{showdocNotifDiff.showEMailFormDoc}" title="#{i18n['dw4.inoltra_il_documento_via_email']}" styleClass="btn btn-default auto-width">
+									<span class="glyphicon glyphicon-envelope normal-size-icon" title="#{i18n['dw4.inoltra_il_documento_via_email']}"></span>
+								</h:commandLink>
+							</div>
+						</div>
+						<!-- toolbar: fine -->
+					</h:panelGroup>
+					
+					<ui:include src="./showdoc@title.xhtml">
+						<ui:param name="doc" value="#{showdocNotifDiff.doc}"/>
+					</ui:include>
+					
+					<ui:include src="./showdoc@notif_diff@files.xhtml">
+						<ui:param name="bean" value="#{showdocNotifDiff}" />
+					</ui:include>
+				</div>
+			</h:panelGroup>
+			
+		</div>
+	</div>
+	
+	<h:inputTextarea value="#{showdocNotifDiff.xml}" rendered="#{showdocNotifDiff.debugMode}" styleClass="form-control" rows="10" />
+</ui:define>
+
+</ui:composition>

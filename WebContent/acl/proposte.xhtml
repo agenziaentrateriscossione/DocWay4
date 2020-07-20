@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" 
+	  xmlns:h="http://java.sun.com/jsf/html" 
+	  xmlns:ui="http://java.sun.com/jsf/facelets" 
+	  xmlns:f="http://java.sun.com/jsf/core">
+<ui:composition>
+	
+	<h:panelGroup rendered="#{!empty organo.proposte}" layout="block" id="proposte">
+		<div class="fieldset">
+			<div class="legend">
+	            #{i18n['dw4.tipologie_di_proposte']}
+	             <div class="pull-right">
+	                 <span class="glyphicons-pro notes" title="#{i18n['dw4.tipologie_di_proposte']}"></span>
+	             </div>
+       		</div>
+       		
+       		<ui:repeat id="proposta" var="proposta" value="#{organo.proposte}" varStatus="indice">
+       			<div class="form-group">
+      				<label class="col-sm-2 control-label">#{i18n['dw4.proposta']}</label>
+	       				<div class="col-sm-4">
+		       				<div class="input-group">
+			       				<div class="btn-group">
+									<h:commandLink action="#{organo.deleteProposta}" title="#{i18n['dw4.elimina_istanza']}" styleClass="btn btn-default">
+							 			<f:ajax execute="@form" render=":templateForm:proposte :templateForm:errormsg"/>
+							 			<span class="glyphicon glyphicon-minus"></span>
+									</h:commandLink>
+									
+									<h:commandLink action="#{organo.addProposta}" title="#{i18n['dw4.aggiungi_istanza']}" styleClass="btn btn-default">
+							 			<f:ajax execute="@form" render=":templateForm:proposte :templateForm:errormsg"/>
+							 			<span class="glyphicon glyphicon-plus"></span>
+									</h:commandLink>
+								</div>
+							</div>
+						</div>
+	       			</div>
+				<div class="form-group">
+					<label class="col-sm-2 control-label">#{i18n['acl.name']}</label>
+					<div class="col-sm-4">
+						<h:inputText id="descrizione" rendered="#{!readOnly}" value="#{proposta.text}" styleClass="form-control" />
+						<h:panelGroup rendered="#{readOnly}">
+							<p class="form-control-static">
+								<h:outputText value="#{proposta.text}" />
+							</p>
+						</h:panelGroup>
+					</div>
+
+					<label class="col-sm-1 control-label"><span>#{i18n['acl.cod']}</span></label>
+					<div class="col-sm-1">
+						<h:inputText id="cod" value="#{proposta.cod}" rendered="#{!readOnly}" styleClass="form-control" />
+						<h:panelGroup rendered="#{readOnly}">
+							<p class="form-control-static">
+								<h:outputText value="#{proposta.cod}" />
+							</p>
+						</h:panelGroup>
+					</div>
+					<label class="col-sm-1 control-label"><span>#{i18n['acl.type']}</span></label>
+					<div class="col-sm-2">
+						<h:panelGroup rendered="#{!readOnly}">
+							<h:selectOneMenu value="#{proposta.tipo}" class="form-control">
+								<f:selectItem itemValue="delibera" itemLabel="#{i18n['dw4.delibera']}"></f:selectItem>
+								<f:selectItem itemValue="comunicazione" itemLabel="#{bean.comunicazioneMinLabel}"></f:selectItem>
+							</h:selectOneMenu>
+						</h:panelGroup>
+						<h:panelGroup rendered="#{readOnly}">
+							<p class="form-control-static">
+								<h:outputText value="#{proposta.tipo}" />
+							</p>
+						</h:panelGroup>
+					</div>
+				</div>
+				<div class="form-group">
+					<label for="templateForm:workflow_#{indice.index}_input" class="col-sm-2 control-label requiredField"><span>#{i18n['dw4.workflow']}</span></label>
+					<div class="col-sm-4">
+						<ui:include src="./lookupField.xhtml">
+		        			<ui:param name="id" value="workflow_#{indice.index}" />
+	                        <ui:param name="field" value="#{proposta.workflow.name}" />
+	                        <ui:param name="bean" value="#{bean}" />
+	                        <ui:param name="action" value="lookupWorkflow"/>
+	                        <ui:param name="clearaction" value="clearLookupWorkflow"/>
+	                        <ui:param name="title" value="#{i18n['acl.workflowLookup']}"/>
+	                        <ui:param name="styleclass" value="form-control"/>
+	                        <ui:param name="refresh" value="templateForm:workflow_#{indice.index}_input templateForm:proposte templateForm:lookup templateForm:errormsg"/>
+			        	</ui:include>
+			        </div>
+					
+					<h:panelGroup rendered="#{readOnly}">
+						<p class="form-control-static">
+							<h:outputText value="#{proposta.workflow.text}" />
+						</p>
+					</h:panelGroup>
+				</div>
+			</ui:repeat>
+		</div> <!-- /fieldset -->
+	</h:panelGroup>
+
+</ui:composition>
+</html>

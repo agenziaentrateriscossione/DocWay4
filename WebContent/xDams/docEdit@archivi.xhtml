@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core">
+<ui:composition>
+	
+	<h:panelGroup id="archivi_holder" layout="block"
+		styleClass="xdams-archivi-holder" style="margin-top:15px;">
+		<ui:repeat var="archivio" value="#{pageBean.archivi}" varStatus="indice">
+		
+			<div class="form-group">
+				<label class="col-sm-2 control-label">#{i18n['dw4.archivio']}</label>
+				<div class="col-sm-4">
+					<h:inputHidden value="#{archivio.id}" id="archivio_id" />
+					<ui:include src="../acl/lookupRepeatField.xhtml">
+						<ui:param name="id" value="archivio_text" />
+						<ui:param name="field" value="#{archivio.descr}" />
+						<ui:param name="element" value="#{archivio}" />
+						<ui:param name="bean" value="#{aspect}" />
+						<ui:param name="action" value="lookupArchivio" />
+						<ui:param name="clearaction" value="clearLookupArchivio" />
+						<ui:param name="title" value="#{i18n['acl.archiviolookup']}" />
+						<ui:param name="styleclass" value="form-control" />
+						<ui:param name="refresh" value=":templateForm:archivi_holder :templateForm:lookup :templateForm:errormsg" />
+					</ui:include>
+				</div>
+				<label class="col-sm-1 control-label">#{i18n['dw4.livello']}</label>
+				<div class="col-sm-2">
+					<h:selectOneMenu value="#{archivio.level}" styleClass="form-control">
+						<f:selectItem itemValue="3" itemLabel="#{i18n['acl.lettore']}" />
+						<f:selectItem itemValue="2" itemLabel="#{i18n['acl.archivista']}" />
+						<f:selectItem itemValue="1" itemLabel="#{i18n['acl.amministratore']}" />
+					</h:selectOneMenu>
+				</div>
+				<div class="col-sm-2 input-group">
+					<div class="btn-group">
+						<h:commandLink action="#{pageBean.deleteArchivio}" title="#{i18n['dw4.elimina_istanza']}" styleClass="btn btn-default">
+							<f:ajax execute="@form" render="@form" />
+							<span class="glyphicon glyphicon-minus"></span>
+						</h:commandLink>
+						<h:commandLink action="#{pageBean.addArchivio}" title="#{i18n['dw4.aggiungi_istanza']}" styleClass="btn btn-default">
+							<f:ajax execute="@form" render="@form" />
+							<span class="glyphicon glyphicon-plus"></span>
+						</h:commandLink>
+						<h:commandLink action="#{pageBean.moveUpArchivio}" title="#{i18n['dw4.sposta_su']}" rendered="#{(indice.index) > 0}" styleClass="btn btn-default">
+							<f:ajax execute="@form" render="@form" />
+							<span class="glyphicon glyphicon-chevron-up"></span>
+						</h:commandLink>
+						<h:commandLink action="#{pageBean.moveDownArchivio}" title="#{i18n['dw4.sposta_giu']}" rendered="#{fn:length(pageBean.archivi) > (indice.index+1)}" styleClass="btn btn-default">
+							<f:ajax execute="@form" render="@form" />
+							<span class="glyphicon glyphicon-chevron-down"></span>
+						</h:commandLink>
+					</div>
+				</div>
+			</div>
+		</ui:repeat>
+	</h:panelGroup>
+	
+</ui:composition>
+</html>

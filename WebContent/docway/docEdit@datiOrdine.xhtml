@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" 
+	  xmlns:h="http://java.sun.com/jsf/html" 
+	  xmlns:ui="http://java.sun.com/jsf/facelets" 
+	  xmlns:f="http://java.sun.com/jsf/core">
+<ui:composition>
+	
+	<script type="text/javascript" src="#{facesContext.externalContext.requestContextPath}/docway/js/custom/ordini.js"></script>
+	
+	<h:panelGroup id="offertaHolder" layout="block" styleClass="fieldset">
+		<div class="legend">
+			#{titoloBlocco}
+			
+			<div class="pull-right">
+				<span class="glyphicon glyphicon-euro" title="#{titoloBlocco}"></span>
+			</div>
+		</div>
+	
+		<h:panelGroup layout="block" id="tipologieHolder" style="margin-bottom:30px;">
+			<ui:remove>
+				<div class="form-group">
+					<label class="col-sm-2 control-label emphasis-title">#{i18n['dw4.tipologie']}</label>
+				</div>
+			</ui:remove>
+			<ui:repeat id="docEditTipologia" var="tipologia" value="#{bean.doc.datiOrdine.tipologia_ordine}" varStatus="indice">
+				<div class="form-group">
+					<label class="col-sm-2 control-label">#{i18n['acl.tipologia']}</label>
+					<div class="col-sm-4">
+						<ui:include src="./thField.xhtml">
+			        		<ui:param name="id" value="off_tipologia" />
+			        		<ui:param name="field" value="#{tipologia.text}" />
+			        		<ui:param name="bean" value="#{bean}" />
+			        		<ui:param name="action" value="thVincolatoTipologia"/>
+			        		<ui:param name="title" value="#{i18n['dw4.thtipologia']}"/>
+			        		<ui:param name="styleclass" value="form-control"/>
+			        		<ui:param name="refresh" value=":templateForm:tipologieHolder :templateForm:errormsg"/>
+			        	</ui:include>
+					</div>
+					<div class="col-sm-1 input-group">
+						<div class="btn-group">
+							<h:commandLink action="#{bean.deleteTipologia}" title="#{i18n['dw4.elimina_istanza']}" styleClass="btn btn-default">
+					 			<f:ajax execute="@form" render=":templateForm:tipologieHolder :templateForm:errormsg"/>
+					 			<span class="glyphicon glyphicon-minus"></span>
+							</h:commandLink>
+							<h:commandLink action="#{bean.addTipologia}" title="#{i18n['dw4.aggiungi_istanza']}" styleClass="btn btn-default">
+				 				<f:ajax execute="@form" render=":templateForm:tipologieHolder :templateForm:errormsg"/>
+					 			<span class="glyphicon glyphicon-plus"></span>
+							</h:commandLink>
+						</div>
+					</div>
+				</div>
+			</ui:repeat>
+		</h:panelGroup>
+		
+		<h:panelGroup layout="block" id="serviziHolder" style="margin-bottom:30px;">
+			<ui:remove>
+				<div class="form-group">
+					<label class="col-sm-2 control-label emphasis-title">#{i18n['dw4.services']}</label>
+				</div>
+			</ui:remove>
+			<ui:repeat id="docEditServizio" var="servizio" value="#{bean.doc.datiOrdine.servizio}" varStatus="indice">
+				<div class="form-group">
+					<label class="col-sm-2 control-label">#{i18n['dw4.service']}</label>
+					<div class="col-sm-4">
+						<ui:include src="./thField.xhtml">
+				        		<ui:param name="id" value="off_servizio" />
+				        		<ui:param name="field" value="#{servizio.text}" />
+				        		<ui:param name="bean" value="#{bean}" />
+				        		<ui:param name="action" value="thVincolatoServizio"/>
+				        		<ui:param name="title" value="#{i18n['dw4.thservizio']}"/>
+				        		<ui:param name="styleclass" value="form-control"/>
+				        		<ui:param name="refresh" value=":templateForm:serviziHolder :templateForm:errormsg"/>
+				        	</ui:include>
+					</div>
+					<label class="col-sm-1 control-label">#{i18n['dw4.costo']}</label>
+					<div class="col-sm-3">
+						<h:inputText id="costo" value="#{servizio.costo}" styleClass="form-control" onblur="calcolaTotaliOfferta('docEditServizio', '#{indice.index}');" />
+					</div>
+					<div class="col-sm-1 input-group">
+						<div class="btn-group">
+							<h:commandLink action="#{bean.deleteServizio}" title="#{i18n['dw4.elimina_istanza']}" styleClass="btn btn-default">
+					 			<f:ajax execute="@form" render=":templateForm:serviziHolder :templateForm:errormsg"/>
+					 			<span class="glyphicon glyphicon-minus"></span>
+							</h:commandLink>
+							<h:commandLink action="#{bean.addServizio}" title="#{i18n['dw4.aggiungi_istanza']}" styleClass="btn btn-default">
+				 				<f:ajax execute="@form" render=":templateForm:serviziHolder :templateForm:errormsg"/>
+					 			<span class="glyphicon glyphicon-plus"></span>
+							</h:commandLink>
+						</div>
+					</div>
+				</div>
+			</ui:repeat>
+			<div class="form-group">
+				<label class="col-sm-offset-6 col-sm-1 control-label">#{i18n['dw4.totale']}</label>
+				<div class="col-sm-3">
+					<p class="form-control-static">
+						<h:outputText id="totale_servizio_id" value="#{bean.doc.datiOrdine.totale_servizio}">
+							<f:converter converterId="CostConverter"/>
+						</h:outputText>
+					</p>
+				</div>
+			</div>
+		</h:panelGroup>
+		
+		<h:panelGroup layout="block" id="licenzeHolder" style="margin-bottom:30px;">
+			<ui:remove>
+				<div class="form-group">
+					<label class="col-sm-2 control-label emphasis-title">#{i18n['dw4.licenze']}</label>
+				</div>
+			</ui:remove>
+			<ui:repeat id="docEditLicenza" var="licenza" value="#{bean.doc.datiOrdine.licenza}" varStatus="indice">
+				<div class="form-group">
+					<label class="col-sm-2 control-label">#{i18n['dw4.licenza']}</label>
+					<div class="col-sm-4">
+						<ui:include src="./thField.xhtml">
+			        		<ui:param name="id" value="off_licenza" />
+			        		<ui:param name="field" value="#{licenza.text}" />
+			        		<ui:param name="bean" value="#{bean}" />
+			        		<ui:param name="action" value="thVincolatoLicenza"/>
+			        		<ui:param name="title" value="#{i18n['dw4.thlicenza']}"/>
+			        		<ui:param name="styleclass" value="form-control"/>
+			        		<ui:param name="refresh" value=":templateForm:licenzeHolder :templateForm:errormsg"/>
+			        	</ui:include>
+					</div>
+					<label class="col-sm-1 control-label">#{i18n['dw4.costo']}</label>
+					<div class="col-sm-3">
+						<h:inputText id="costo" value="#{licenza.costo}" styleClass="form-control" onblur="calcolaTotaliOfferta('docEditLicenza', '#{indice.index}');" />
+					</div>
+					<div class="col-sm-1 input-group">
+						<div class="btn-group">
+							<h:commandLink action="#{bean.deleteLicenza}" title="#{i18n['dw4.elimina_istanza']}" styleClass="btn btn-default">
+					 			<f:ajax execute="@form" render=":templateForm:licenzeHolder :templateForm:errormsg"/>
+					 			<span class="glyphicon glyphicon-minus"></span>
+							</h:commandLink>
+							<h:commandLink action="#{bean.addLicenza}" title="#{i18n['dw4.aggiungi_istanza']}" styleClass="btn btn-default">
+				 				<f:ajax execute="@form" render=":templateForm:licenzeHolder :templateForm:errormsg"/>
+					 			<span class="glyphicon glyphicon-plus"></span>
+							</h:commandLink>
+						</div>
+					</div>
+				</div>
+			</ui:repeat>
+			<div class="form-group">
+				<label class="col-sm-offset-6 col-sm-1 control-label">#{i18n['dw4.totale']}</label>
+				<div class="col-sm-3">
+					<p class="form-control-static">
+						<h:outputText id="totale_licenza_id" value="#{bean.doc.datiOrdine.totale_licenza}">
+							<f:converter converterId="CostConverter"/>
+						</h:outputText>
+					</p>
+				</div>
+			</div>
+		</h:panelGroup>
+		
+		<h:panelGroup layout="block" id="contrattiHolder" style="margin-bottom:30px;">
+			<ui:remove>
+				<div class="form-group">
+					<label class="col-sm-2 control-label emphasis-title">#{i18n['dw4.contratti']}</label>
+				</div>
+			</ui:remove>
+			<ui:repeat id="docEditContratto" var="contratto" value="#{bean.doc.datiOrdine.contratto}" varStatus="indice">
+				<div class="form-group">
+					<label class="col-sm-2 control-label">#{i18n['dw4.contratto']}</label>
+					<div class="col-sm-4">
+						<ui:include src="./thField.xhtml">
+			        		<ui:param name="id" value="off_contratto" />
+			        		<ui:param name="field" value="#{contratto.text}" />
+			        		<ui:param name="bean" value="#{bean}" />
+			        		<ui:param name="action" value="thVincolatoContratto"/>
+			        		<ui:param name="title" value="#{i18n['dw4.thcontratto']}"/>
+			        		<ui:param name="styleclass" value="form-control"/>
+			        		<ui:param name="refresh" value=":templateForm:contrattiHolder :templateForm:errormsg"/>
+			        	</ui:include>
+					</div>
+					<label class="col-sm-1 control-label">#{i18n['dw4.costo']}</label>
+					<div class="col-sm-3">
+						<h:inputText id="costo" value="#{contratto.costo}" styleClass="form-control" onblur="calcolaTotaliOfferta('docEditContratto', '#{indice.index}');" />
+					</div>
+					<div class="col-sm-1 input-group">
+						<div class="btn-group">
+							<h:commandLink action="#{bean.deleteContratto}" title="#{i18n['dw4.elimina_istanza']}" styleClass="btn btn-default">
+					 			<f:ajax execute="@form" render=":templateForm:contrattiHolder :templateForm:errormsg"/>
+					 			<span class="glyphicon glyphicon-minus"></span>
+							</h:commandLink>
+							<h:commandLink action="#{bean.addContratto}" title="#{i18n['dw4.aggiungi_istanza']}" styleClass="btn btn-default">
+				 				<f:ajax execute="@form" render=":templateForm:contrattiHolder :templateForm:errormsg"/>
+					 			<span class="glyphicon glyphicon-plus"></span>
+							</h:commandLink>
+						</div>
+					</div>
+				</div>
+			</ui:repeat>
+			<div class="form-group">
+				<label class="col-sm-offset-6 col-sm-1 control-label">#{i18n['dw4.totale']}</label>
+				<div class="col-sm-3">
+					<p class="form-control-static">
+						<h:outputText id="totale_contratto_id" value="#{bean.doc.datiOrdine.totale_contratto}">
+							<f:converter converterId="CostConverter"/>
+						</h:outputText>
+					</p>
+				</div>
+			</div>
+		</h:panelGroup>
+		
+		<h:panelGroup layout="block" id="altroHolder" style="margin-bottom:30px;">
+			<ui:remove>
+				<div class="form-group">
+					<label class="col-sm-2 control-label emphasis-title">#{i18n['dw4.other']}</label>
+				</div>
+			</ui:remove>
+			<ui:repeat id="docEditAltro" var="altro" value="#{bean.doc.datiOrdine.altro}" varStatus="indice">
+				<div class="form-group">
+					<label class="col-sm-2 control-label">#{i18n['dw4.other']}</label>
+					<div class="col-sm-4">
+						<ui:include src="./thField.xhtml">
+			        		<ui:param name="id" value="off_altro" />
+			        		<ui:param name="field" value="#{altro.text}" />
+			        		<ui:param name="bean" value="#{bean}" />
+			        		<ui:param name="action" value="thVincolatoAltro"/>
+			        		<ui:param name="title" value="#{i18n['dw4.thaltro']}"/>
+			        		<ui:param name="styleclass" value="form-control"/>
+			        		<ui:param name="refresh" value=":templateForm:altroHolder :templateForm:errormsg"/>
+			        	</ui:include>
+					</div>
+					<label class="col-sm-1 control-label">#{i18n['dw4.costo']}</label>
+					<div class="col-sm-3">
+						<h:inputText id="costo" value="#{altro.costo}" styleClass="form-control" onblur="calcolaTotaliOfferta('docEditAltro', '#{indice.index}');" />
+					</div>
+					<div class="col-sm-1 input-group">
+						<div class="btn-group">
+							<h:commandLink action="#{bean.deleteAltro}" title="#{i18n['dw4.elimina_istanza']}" styleClass="btn btn-default">
+					 			<f:ajax execute="@form" render=":templateForm:altroHolder :templateForm:errormsg"/>
+					 			<span class="glyphicon glyphicon-minus"></span>
+							</h:commandLink>
+							<h:commandLink action="#{bean.addAltro}" title="#{i18n['dw4.aggiungi_istanza']}" styleClass="btn btn-default">
+				 				<f:ajax execute="@form" render=":templateForm:altroHolder :templateForm:errormsg"/>
+					 			<span class="glyphicon glyphicon-plus"></span>
+							</h:commandLink>
+						</div>
+					</div>
+				</div>
+			</ui:repeat>
+			<div class="form-group">
+				<label class="col-sm-offset-6 col-sm-1 control-label">#{i18n['dw4.totale']}</label>
+				<div class="col-sm-3">
+					<p class="form-control-static">
+						<h:outputText id="totale_altro_id" value="#{bean.doc.datiOrdine.totale_altro}">
+							<f:converter converterId="CostConverter"/>
+						</h:outputText>
+					</p>
+				</div>
+			</div>
+		</h:panelGroup>
+		
+		<div class="form-group">
+			<label class="col-sm-offset-5 col-sm-2 control-label">#{titoloTotale}</label>
+			<div class="col-sm-3" style="border-top: 1px solid #ccc;">
+				<p class="form-control-static">
+					<strong>
+						<h:outputText id="totale_id" value="#{bean.doc.datiOrdine.totale}">
+							<f:converter converterId="CostConverter"/>
+						</h:outputText>
+						&#8364;
+					</strong> 
+					&#160;(<h:outputText id="str_totale_id" value="#{bean.doc.datiOrdine.str_totale}" /> &#8364;)
+					
+					<h:commandLink id="calcolaOffertaBtn" action="#{bean.calcolaOfferta}" style="display:none;"><f:ajax execute="@form" render=":templateForm:totale_servizio_id :templateForm:totale_licenza_id :templateForm:totale_contratto_id :templateForm:totale_altro_id :templateForm:totale_id :templateForm:str_totale_id"/></h:commandLink>
+				</p>
+			</div>
+		</div>	
+	</h:panelGroup> <!-- /fieldset -->
+
+</ui:composition>
+</html>

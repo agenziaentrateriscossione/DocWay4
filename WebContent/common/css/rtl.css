@@ -1,0 +1,76 @@
+.sidebar {
+	left: auto;
+}
+
+.navbar-nav .openclose-vaschette-link {
+	border-right: none;
+    border-left: 1px solid #FFFFFF;
+}
+
+.pull-right {
+	float: left !important;
+	margin-left: 5px;
+	margin-right: 0;
+}
+
+.navbar-right {
+	float: left !important;
+}
+
+.paginate-results .btn-group.pull-right > .btn .glyphicon, .openclose-vaschette-link .glyphicon,
+.glyphicon-arrow-right, .glyphicon-arrow-left, .glyphicon-chevron-left, .glyphicon-chevron-right {
+	/* stessi stili di icon-flipped */
+	transform: scaleX(-1);
+	-moz-transform: scaleX(-1);
+	-webkit-transform: scaleX(-1);
+	-ms-transform: scaleX(-1);	
+}
+
+.paginate-results .btn-group.pull-right > .btn .glyphicon.icon-flipped, .openclose-vaschette-link .glyphicon.icon-flipped {
+	/* opporto di icon-flipped */
+	transform: scaleX(1);
+	-moz-transform: scaleX(1);
+	-webkit-transform: scaleX(1);
+	-ms-transform: scaleX(1);	
+}
+
+.btn-toolbar {
+	margin-left: -5px;
+	padding-left: 5px;
+} 
+
+.sidebar .panel-title.pull-left {
+	float: right !important;
+}
+
+.datepicker.dropdown-menu  {
+	width: 200px;	
+}
+
+.margin-right-10 {
+	margin-right: 0;
+	margin-left: 10px;
+}
+
+.margin-right-20 {
+	margin-right: 0;
+	margin-left: 20px;
+}
+
+.margin-left-20 {
+	margin-left: 0;
+	margin-right: 20px;
+}
+
+.table td.resp-type, .workflow-history-table td.workflow-history-first {
+	text-align: left;
+}
+
+.table td.resp-name {
+	padding-left: 0;
+	padding-right: 15px;
+}
+
+.documenti-informatici .pull-left {
+    float: right !important;
+}

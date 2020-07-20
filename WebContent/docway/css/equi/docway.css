@@ -1,0 +1,154 @@
+
+/*############################### STILI PER IDENTIFICAZIONE ARCHIVIO - INIZIO ###############################*/
+
+.fullscreen-logo.archive-xdocwaydoc-centro {
+	background: url('images/logo/xdocwaydoc-centro.png') no-repeat center;
+}
+
+.fullscreen-logo.archive-xdocwaydoc-centro img {
+	visibility: hidden;
+	width: 190px;
+}
+
+.resizescreen-logo.archive-xdocwaydoc-centro, .resizescreen-logo.archive-xdocwaydoc-centro:hover {
+	background: url('images/logo/xdocwaydoc-centro.png') no-repeat center;
+	background-size: 85%; 
+	background-color: #fff !important;
+}
+
+.resizescreen-logo.archive-xdocwaydoc-centro img {
+	visibility: hidden;
+}
+
+/* commentati perche' i loghi BIG in login non devono essere personalizzati, viene mostrato il logo classico di DocWay */
+/*
+.login-archive-xdocwaydoc-centro {
+	background: url('images/logo/xdocwaydoc-centro.png') no-repeat center;
+}
+
+.login-archive-xdocwaydoc-centro img {
+	visibility: hidden;
+}
+*/
+
+.fullscreen-logo.archive-xdocwaydoc-nord {
+	background: url('images/logo/xdocwaydoc-nord.png') no-repeat center;
+}
+
+.fullscreen-logo.archive-xdocwaydoc-nord img {
+	visibility: hidden;
+	width: 190px;
+}
+
+.resizescreen-logo.archive-xdocwaydoc-nord, .resizescreen-logo.archive-xdocwaydoc-nord:hover {
+	background: url('images/logo/xdocwaydoc-nord.png') no-repeat center;
+	background-size: 85%; 
+	background-color: #fff !important;
+}
+
+.resizescreen-logo.archive-xdocwaydoc-nord img {
+	visibility: hidden;
+}
+
+/* commentati perche' i loghi BIG in login non devono essere personalizzati, viene mostrato il logo classico di DocWay */
+/*
+.login-archive-xdocwaydoc-nord {
+	background: url('images/logo/xdocwaydoc-nord.png') no-repeat center;
+}
+
+.login-archive-xdocwaydoc-nord img {
+	visibility: hidden;
+}
+*/
+
+.fullscreen-logo.archive-xdocwaydoc-sud {
+	background: url('images/logo/xdocwaydoc-sud.png') no-repeat center;
+}
+
+.fullscreen-logo.archive-xdocwaydoc-sud img {
+	visibility: hidden;
+	width: 190px;
+}
+
+.resizescreen-logo.archive-xdocwaydoc-sud, .resizescreen-logo.archive-xdocwaydoc-sud:hover {
+	background: url('images/logo/xdocwaydoc-sud.png') no-repeat center;
+	background-size: 85%; 
+	background-color: #fff !important;
+}
+
+.resizescreen-logo.archive-xdocwaydoc-sud img {
+	visibility: hidden;
+}
+
+/* commentati perche' i loghi BIG in login non devono essere personalizzati, viene mostrato il logo classico di DocWay */
+/*
+.login-archive-xdocwaydoc-sud {
+	background: url('images/logo/xdocwaydoc-sud.png') no-repeat center;
+}
+
+.login-archive-xdocwaydoc-sud img {
+	visibility: hidden;
+}
+*/
+
+.fullscreen-logo.archive-xdocwaydoc-giustizia {
+	background: url('images/logo/xdocwaydoc-giustizia.png') no-repeat center;
+}
+
+.fullscreen-logo.archive-xdocwaydoc-giustizia img {
+	visibility: hidden;
+	width: 190px;
+}
+
+.resizescreen-logo.archive-xdocwaydoc-giustizia, .resizescreen-logo.archive-xdocwaydoc-giustizia:hover {
+	background: url('images/logo/xdocwaydoc-giustizia.png') no-repeat center;
+	background-size: 85%; 
+	background-color: #fff !important;
+}
+
+.resizescreen-logo.archive-xdocwaydoc-giustizia img {
+	visibility: hidden;
+}
+
+/* commentati perche' i loghi BIG in login non devono essere personalizzati, viene mostrato il logo classico di DocWay */
+/*
+.login-archive-xdocwaydoc-giustizia {
+	background: url('images/logo/xdocwaydoc-giustizia.png') no-repeat center;
+}
+
+.login-archive-xdocwaydoc-giustizia img {
+	visibility: hidden;
+}
+*/
+
+.fullscreen-logo.archive-xdocwaydoc-spa {
+	background: url('images/logo/xdocwaydoc-spa.png') no-repeat center;
+}
+
+.fullscreen-logo.archive-xdocwaydoc-spa img {
+	visibility: hidden;
+	width: 190px;
+}
+
+.resizescreen-logo.archive-xdocwaydoc-spa, .resizescreen-logo.archive-xdocwaydoc-spa:hover {
+	background: url('images/logo/xdocwaydoc-spa.png') no-repeat center;
+	background-size: 85%; 
+	background-color: #fff !important;
+}
+
+.resizescreen-logo.archive-xdocwaydoc-spa img {
+	visibility: hidden;
+}
+
+/* commentati perche' i loghi BIG in login non devono essere personalizzati, viene mostrato il logo classico di DocWay */
+/*
+.login-archive-xdocwaydoc-spa {
+	background: url('images/logo/xdocwaydoc-spa.png') no-repeat center;
+}
+
+.login-archive-xdocwaydoc-spa img {
+	visibility: hidden;
+}
+*/
+
+/*############################### STILI PER IDENTIFICAZIONE ARCHIVIO - FINE ###############################*/

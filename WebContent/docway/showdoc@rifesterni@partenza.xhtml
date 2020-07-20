@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" 
+	  xmlns:h="http://java.sun.com/jsf/html" 
+	  xmlns:ui="http://java.sun.com/jsf/facelets" 
+	  xmlns:f="http://java.sun.com/jsf/core"
+	  xmlns:c="http://java.sun.com/jsp/jstl/core">
+<ui:composition>
+
+	<h:panelGroup rendered="#{fn:length(bean.doc.rif_esterni) > 0}">
+		<ui:repeat var="rifEsterno" value="#{bean.doc.rif_esterni}" varStatus="status">
+			<dt>
+				<h:outputText value="#{(!empty labelDestinatario) ? labelDestinatario : i18n['dw4.destinatario']}" />
+				<h:outputText rendered="#{rifEsterno.copia_conoscenza}" value=" CC" styleClass="label-destinatario-cc" />
+			</dt>
+			<dd>
+				<table class="table table-condensed doc-partenza-destinatari">
+					<tbody><tr>
+						<h:panelGroup rendered="#{empty hideInvioTelematico or !hideInvioTelematico eq 'true'}">
+							<td class="dest-btns-#{(bean.formsAdapter.funzionalitaDisponibili['interop_webservice']) ? 'ws' : ((bean.formsAdapter.funzionalitaDisponibili['invioTelematicoEnabled']) ? 'email' : 'email-disabled')} optional">
+								<span class="btn-group">
+									<h:panelGroup rendered="#{ bean.formsAdapter.funzionalitaDisponibili['interop_webservice'] }">
+										<h:commandLink rendered="#{ rifEsterno.interop_webservice }" title="#{i18n['dw4.invio_telematico_con_web_service']}" action="#{bean.invioTelematicoWS}" onclick="if (!owmConfirm('#{fn:length(rifEsterno.interoperabilita) == 0 ? i18n['dw4.procedere_con_l_invio_telematico_del_documento'] : i18n['dw4.il_documento_e_gia_stato_inviato_Si_e_sicuri_di_voler_procedere_nuovamento_all_invio']}')) return false;" styleClass="btn btn-default btn-xs">
+											<f:ajax execute="@this" render="@form" />
+											<span class="glyphicon glyphicon-open"></span>
+										</h:commandLink>
+									</h:panelGroup>
+									<h:panelGroup rendered="#{ !bean.formsAdapter.funzionalitaDisponibili['interop_webservice'] and bean.formsAdapter.funzionalitaDisponibili['invioTelematicoEnabled'] }">
+										<h:commandLink title="#{i18n['dw4.cerca_aggiorna_indirizzi_pec']}" action="#{bean.updatePEC}" onclick="if (!owmConfirm('#{i18n['dw4.aggiornare_l_indirizzo_pec']}')) return false;" styleClass="btn btn-default btn-xs">
+											<f:ajax execute="@this" render="@form" />
+											<span class="glyphicon glyphicon-search"></span>
+										</h:commandLink>
+										
+										<ui:param name="invioPecAttivo" value="#{!empty rifEsterno.email_certificata and !bean.doc.bozza and bean.doc.annullato ne 'si' and !empty bean.doc.classif.cod}" />
+										<ui:param name="invioEmailAttivo" value="#{bean.formsAdapter.funzionalitaDisponibili['invEmailNoPEC'] and !empty rifEsterno.email and empty rifEsterno.email_certificata and !bean.doc.bozza and bean.doc.annullato ne 'si' and !empty bean.doc.classif.cod}" />
+										
+										<h:panelGroup rendered="#{invioPecAttivo}">
+											<h:commandLink title="#{i18n['dw4.invio_telematico']}" action="#{bean.invioTelematico}" onclick="if (!owmConfirm('#{fn:length(rifEsterno.interoperabilita) == 0 ? i18n['dw4.procedere_con_l_invio_telematico_del_documento'] : i18n['dw4.il_documento_e_gia_stato_inviato_Si_e_sicuri_di_voler_procedere_nuovamento_all_invio']}')) return false;" styleClass="btn btn-default btn-xs">
+												<f:ajax execute="@this" render="@form" />
+												<span class="glyphicon glyphicon-envelope pec"></span>
+											</h:commandLink>
+										</h:panelGroup>
+										<h:panelGroup rendered="#{invioEmailAttivo}">
+											<h:commandLink title="#{i18n['dw4.invio_telematico']}" action="#{bean.invioTelematico}" onclick="if (!owmConfirm('#{fn:length(rifEsterno.interoperabilita) == 0 ? i18n['dw4.procedere_con_l_invio_telematico_del_documento'] : i18n['dw4.il_documento_e_gia_stato_inviato_Si_e_sicuri_di_voler_procedere_nuovamento_all_invio']}')) return false;" styleClass="btn btn-default btn-xs">
+												<f:ajax execute="@this" render="@form" />
+												<span class="glyphicon glyphicon-envelope"></span>
+											</h:commandLink>
+										</h:panelGroup>
+										<h:panelGroup rendered="#{!invioPecAttivo and !invioEmailAttivo}">
+											<button type="button" class="btn btn-default btn-xs" disabled="disabled"><span class="glyphicon glyphicon-envelope disabled"></span></button>
+										</h:panelGroup>
+									</h:panelGroup>
+									
+									<a href="#" onclick="openCloseSection('dest#{status.index}'); return false;" onkeypress="openCloseSection('dest#{status.index}'); return false;" title="#{(fn:length(rifEsterno.interoperabilita) > 0) ? i18n['dw4.mostra_informazioni_relative_all_invio'] : i18n['dw4.nessun_dettaglio_sul_destinatario']}" disabled="#{(fn:length(rifEsterno.interoperabilita) > 0) ? '' : 'disabled'}" class="btn btn-default btn-xs">
+										<span class="glyphicon glyphicon-info-sign"></span>
+									</a>
+									
+									<h:commandLink rendered="#{ rifEsterno.interop_webservice }" title="#{i18n['dw4.invio_telematico_con_web_service']}" action="#{bean.invioTelematicoWS}" onclick="if (!owmConfirm('#{fn:length(rifEsterno.interoperabilita) == 0 ? i18n['dw4.procedere_con_l_invio_telematico_del_documento'] : i18n['dw4.il_documento_e_gia_stato_inviato_Si_e_sicuri_di_voler_procedere_nuovamento_all_invio']}')) return false;" styleClass="btn btn-default btn-xs">
+										<f:ajax execute="@this" render="@form" />
+										<span class="glyphicon glyphicon-open"></span>
+									</h:commandLink>
+								</span>		
+							</td>
+						</h:panelGroup>
+						<td class="dest-descr essential">
+							<div class="descr-destinatario">
+								<h:panelGroup rendered="#{rifEsterno.statoInvio eq 'errore'}" styleClass="label label-danger">#{i18n['dw4.non_ricevuto']}</h:panelGroup>
+								
+								<h:panelGroup rendered="#{empty rifEsterno.cod_SAP and !empty rifEsterno.cod}">
+									<a target="acl" href="#{facesContext.externalContext.requestContextPath}/acl/#{rifEsterno.cod}/rifesterno.pf?codammaoo=#{bean.doc.cod_amm_aoo}&amp;db=#{bean.formsAdapter.aclDb}"><strong><h:outputText value="#{rifEsterno.nome}" escape="false" /></strong></a>
+								</h:panelGroup>
+								<h:panelGroup rendered="#{empty rifEsterno.cod_SAP and empty rifEsterno.cod}">
+									<h:outputText value="#{rifEsterno.nome}" escape="false" />
+								</h:panelGroup>
+								<h:panelGroup rendered="#{!empty rifEsterno.cod_SAP}">
+									<h:outputText value="#{rifEsterno.nome}" escape="false" />
+								</h:panelGroup>
+								<h:panelGroup rendered="#{!empty rifEsterno.referente.nominativo}">
+									<em> (<h:outputText value="#{rifEsterno.referente.nominativo}" escape="false" /><h:outputText value=" - #{rifEsterno.referente.ruolo}" rendered="#{!empty rifEsterno.referente.ruolo}"/>)</em>
+								</h:panelGroup>
+								<h:outputText value=", #{rifEsterno.indirizzo}" rendered="#{!empty rifEsterno.indirizzo}" />
+								<h:panelGroup rendered="#{!empty rifEsterno.email_certificata}"> [<a href="mailto:#{rifEsterno.email_certificata}" class="blacklink">#{rifEsterno.email_certificata}</a>]</h:panelGroup>
+								<h:panelGroup rendered="#{!empty rifEsterno.email}"> [<a href="mailto:#{rifEsterno.email}" class="blacklink">#{rifEsterno.email}</a>]</h:panelGroup>
+								<h:outputText value=" - c.f. #{rifEsterno.codice_fiscale}" rendered="#{!empty rifEsterno.codice_fiscale}" />
+								<h:outputText value=" - p.iva #{rifEsterno.partita_iva}" rendered="#{!empty rifEsterno.partita_iva}" />
+								<h:outputText value=" - codice SAP: #{rifEsterno.cod_SAP}" rendered="#{!empty rifEsterno.cod_SAP}" />
+							</div>
+						
+							<h:panelGroup rendered="#{fn:length(rifEsterno.interoperabilita) > 0}">
+								<div id="dest#{status.index}" class="dettagli-interop" style="display:none">
+									<ui:repeat var="interop" value="#{rifEsterno.interoperabilita}">
+										<h:commandLink action="#{bean.downloadInteroperabilita}" title="#{i18n['dw4.scarica_il_file']}" styleClass="blacklink">
+											<h:outputText value="#{interop.info}" />
+										</h:commandLink>
+										(<h:outputText value="#{interop.data}"><f:converter converterId="DateConverter" /></h:outputText> - <h:outputText value="#{interop.ora}" />)<br/>
+									</ui:repeat>
+								</div>
+							</h:panelGroup>
+						</td>
+					</tr></tbody>
+				</table>
+			</dd>
+		</ui:repeat>
+		<h:panelGroup rendered="#{(empty hideInvioTelematico or !hideInvioTelematico eq 'true') and bean.formsAdapter.funzionalitaDisponibili['invio_multiplo_PEC'] and bean.formsAdapter.funzionalitaDisponibili['invioTelematicoEnabled']}">
+			<dt>
+				<h:commandLink title="#{i18n['dw4.invio_telematico_a_tutti_i_destinatari']}" action="#{bean.invioTelematicoPECMultiplo}" onclick="if (!owmConfirm('#{i18n['dw4.procedere_con_l_invio_telematico_del_documento_a_tutti_i_destinatari_pec']}')) return false;" styleClass="btn btn-default btn-xs">
+					<f:ajax execute="@form" render="@form" />
+					<span class="glyphicon glyphicon-envelope pec"></span>
+				</h:commandLink>
+			</dt>
+			<dd>
+				<h:commandLink title="#{i18n['dw4.invio_telematico_a_tutti_i_destinatari']}" action="#{bean.invioTelematicoPECMultiplo}" onclick="if (!owmConfirm('#{i18n['dw4.procedere_con_l_invio_telematico_del_documento_a_tutti_i_destinatari_pec']}')) return false;">
+					<f:ajax execute="@form" render="@form" />
+					<h:outputText value="#{i18n['dw4.invio_telematico_a_tutti_i_destinatari']}" />
+				</h:commandLink>
+			</dd>
+		</h:panelGroup>
+	</h:panelGroup>
+		
+</ui:composition>   
+</html>

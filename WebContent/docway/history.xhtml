@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" 
+	  xmlns:h="http://java.sun.com/jsf/html" 
+	  xmlns:ui="http://java.sun.com/jsf/facelets" 
+	  xmlns:f="http://java.sun.com/jsf/core"
+	  xmlns:fn="http://java.sun.com/jsp/jstl/functions">
+<ui:composition>
+
+	<div class="showdoc-section">
+		<div class="title">
+			#{i18n['acl.servicesinformation']}
+			
+			<div class="pull-right">
+				<span class="glyphicons-pro settings" title="#{i18n['acl.servicesinformation']}"></span>
+			</div>
+		</div>
+	
+		<dl class="dl-horizontal">
+			<dt>Id</dt>
+			<dd>
+				#{bean.nrecord}
+				<h:panelGroup rendered="#{viewbean.linkToDoc ne ''}">
+					<span class="btn-group">
+						<h:commandLink title="#{i18n['dw4.copia_il_link_al_documento_negli_appunti']}" onclick="fnJsCopiaLinkDocInClipboard('#{viewbean.linkToDoc}'); return false;" styleClass="btn btn-default btn-xs">
+							<span class="glyphicon glyphicon-share"></span>
+						</h:commandLink>
+						<ui:param name="myquotes" value="'" />
+						<ui:param name="myconvetedquotes" value="\\'" />
+						<ui:param name="mynewline" value="\n" />
+						<ui:param name="myconvertednewline" value=" " />
+						<h:commandLink title="#{i18n['dw4.invia_il_link_al_documento_tramite_email']}" onclick="mailUrlTo('#{fn:replace(fn:replace(bean.oggetto, myquotes, myconvetedquotes), mynewline, myconvertednewline)}', '#{bean.converted_data_prot}', '#{viewbean.linkToDoc}'); return false;" styleClass="btn btn-default btn-xs">
+							<span class="glyphicon glyphicon-envelope"></span>
+						</h:commandLink> 
+					</span>
+				</h:panelGroup>
+			</dd>
+			<dt>#{i18n['acl.registration']}</dt>
+			<dd>
+				<strong>#{bean.creazione.uff_oper}</strong> - 
+				<a target="acl" href="#{facesContext.externalContext.requestContextPath}/acl/loadrif.pf?db=#{viewbean.formsAdapter.aclDb}&amp;codammaoo=#{bean.cod_amm_aoo}&amp;searchKey=#{(!empty bean.creazione.cod_oper) ? 'persint_matricola' : 'persint_nomcogn'}&amp;value=#{(!empty bean.creazione.cod_oper) ? bean.creazione.cod_oper : bean.creazione.oper}">#{bean.creazione.oper}</a>
+				&#160;#{bean.creazione.dateLong} #{bean.creazione.ora}
+			</dd>
+			<h:panelGroup rendered="#{!empty(bean.ultima_modifica.dateLong)}">
+				<dt>#{i18n['acl.lastmodify']}</dt>
+				<dd>
+					<strong>#{bean.ultima_modifica.uff_oper}</strong> - 
+					<a target="acl" href="#{facesContext.externalContext.requestContextPath}/acl/loadrif.pf?db=#{viewbean.formsAdapter.aclDb}&amp;codammaoo=#{bean.cod_amm_aoo}&amp;searchKey=#{(!empty bean.ultima_modifica.cod_oper) ? 'persint_matricola' : 'persint_nomcogn'}&amp;value=#{(!empty bean.ultima_modifica.cod_oper) ? bean.ultima_modifica.cod_oper : bean.ultima_modifica.oper}">#{bean.ultima_modifica.oper}</a>
+					&#160;#{bean.ultima_modifica.dateLong} #{bean.ultima_modifica.ora}
+				</dd>
+			</h:panelGroup>
+			<h:panelGroup rendered="#{!empty(bean.protocollazione.dateLong)}">
+				<dt>#{i18n['dw4.protocollazione']}</dt>
+				<dd>
+					<strong>#{bean.protocollazione.uff_oper}</strong> - 
+					<a target="acl" href="#{facesContext.externalContext.requestContextPath}/acl/loadrif.pf?db=#{viewbean.formsAdapter.aclDb}&amp;codammaoo=#{bean.cod_amm_aoo}&amp;searchKey=#{(!empty bean.protocollazione.cod_oper) ? 'persint_matricola' : 'persint_nomcogn'}&amp;value=#{(!empty bean.protocollazione.cod_oper) ? bean.protocollazione.cod_oper : bean.protocollazione.oper}">#{bean.protocollazione.oper}</a>
+					&#160;#{bean.protocollazione.dateLong} #{bean.protocollazione.ora}
+				</dd>
+			</h:panelGroup>
+			<h:panelGroup rendered="#{visible}">
+				<dt>&#160;</dt>
+				<dd>
+					<h:panelGroup id="storiaCommand">
+						<h:commandLink rendered="#{fn:length(bean.history)==0}" title="#{i18n['acl.viewmodify']}" action="#{viewbean.openHistory}" >
+							<f:ajax execute="@form" render="templateForm:storiaCommand templateForm:historyPanel templateForm:errormsg" />
+							#{i18n['dw4.visualizza_storia']}
+						</h:commandLink>
+						<h:commandLink rendered="#{fn:length(bean.history)>0}" title="#{i18n['acl.viewmodify']}" action="#{viewbean.closeHistory}" >
+							<f:ajax execute="@form" render="templateForm:storiaCommand templateForm:historyPanel templateForm:errormsg" />
+							#{i18n['dw4.nascondi_storia']}
+						</h:commandLink>
+					</h:panelGroup>
+				</dd>
+			</h:panelGroup>
+		</dl>
+			
+		<h:panelGroup id="historyPanel">
+			<h:panelGroup rendered="#{fn:length(bean.history)>0 and visible}">
+				<table class="table table-bordered">
+					<thead>
+						<tr>
+							<th colspan="2">#{i18n['acl.type']}</th>
+							<th>#{i18n['dw4.persona_ufficio']}</th>
+							<th>#{i18n['acl.operator']}</th>
+							<th>#{i18n['dw4.data']}</th>
+						</tr>
+					</thead>
+					<tbody>
+						<ui:repeat var="storia" value="#{bean.history}">
+							<ui:param name="id" value="dw4.#{storia.tipo}"/>
+							<tr>
+								<td class="history-icon-td">
+									<span class="glyphicons-pro doc-history #{storia.tipo} normal-size-icon" title="#{!empty storia.azione ? storia.azione : i18n[id]}"></span>
+								</td>
+								<td>
+									#{!empty storia.azione ? storia.azione : i18n[id]}
+								</td>
+								<td>
+									<h:panelGroup rendered="#{fn:startsWith(storia.cod_uff, 'RL')==true or storia.nome_persona=='Tutti'}">#{storia.nome_uff}</h:panelGroup>
+									
+									<h:panelGroup rendered="#{not(fn:startsWith(storia.cod_uff, 'RL')==true or storia.nome_persona=='Tutti')}">
+										<strong><h:outputText value="#{storia.nome_persona}"/></strong>
+										<h:outputText rendered="#{!empty storia.nome_uff}" value="&#160;-&#160;#{storia.nome_uff}"/>
+									</h:panelGroup>
+								</td>
+								<td>
+									<h:panelGroup rendered="#{!empty storia.operatore and storia.operatore.contains('(')}">
+										<strong>#{fn:substringBefore(storia.operatore, '(')}</strong>&#160;-&#160;#{fn:substringBefore(fn:substringAfter(storia.operatore, '('), ')')}
+									</h:panelGroup>
+									<h:panelGroup rendered="#{!empty storia.operatore and !storia.operatore.contains('(')}">
+										<strong>#{storia.operatore}</strong>
+									</h:panelGroup>
+								</td>
+								<td>
+									<h:outputText value="#{storia.data}"><f:converter converterId="DateConverter"/></h:outputText> #{storia.ora}
+								</td>
+							</tr>
+						</ui:repeat>
+					</tbody>
+				</table>
+			</h:panelGroup>
+		</h:panelGroup>
+	</div>
+
+</ui:composition>
+</html>

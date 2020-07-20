@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+    template="template.xhtml"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:f="http://java.sun.com/jsf/core">
+
+<ui:define name="content">
+	<div class="workflow">
+		
+		<div class="sub-header">#{i18n['dw4.workflow']}</div>
+		
+		<!-- toolbar: inizio -->
+		<div class="btn-toolbar margin-bottom" role="toolbar">
+			<div class="pull-right">
+				<ui:include src="./navigationBar.xhtml">
+					<ui:param name="bean" value="#{showdocWorkflow}"/>
+					<ui:param name="customPage" value="false"/>
+					<ui:param name="customPageId" value="showdocId"/>
+				</ui:include>
+			</div>
+			<div class="btn-group">
+				<h:commandLink action="#{docwayprocMenu.gotoTableQWorkflow}" styleClass="btn btn-default">#{i18n['acl.ricerca']}</h:commandLink>
+				<h:commandLink rendered="#{showdocWorkflow.formsAdapter.paginaTitoliEnabled}" action="#{showdocWorkflow.paginaTitoli}" styleClass="btn btn-default">#{i18n['acl.titles']}</h:commandLink>
+			</div>
+			<h:panelGroup rendered="#{showdocWorkflow.formsAdapter.funzionalitaDisponibili['insertWF']}">
+				<div class="btn-group">
+					<ui:remove>
+						<!-- TODO da aggiungere quando verranno gestiti eventuali vincoli di attivazione da gestire su archivio xdocwayproc -->
+						<h:commandLink action="#{showdocWorkflow.modifyTableDoc}" styleClass="btn btn-default">#{i18n['dw4.modify']}</h:commandLink>
+					</ui:remove>
+					<h:commandLink rendered="#{!showdocWorkflow.workflow.active}" action="#{showdocWorkflow.nuovaVersioneWorkflow}" styleClass="btn btn-default">#{i18n['dw4.nuova_versione']}</h:commandLink>
+					<h:commandLink rendered="#{showdocWorkflow.workflow.active}" onclick="return showInfoNewVersion();" styleClass="btn btn-default">#{i18n['dw4.nuova_versione']}</h:commandLink>
+					<h:commandLink rendered="#{showdocWorkflow.workflow.active}" action="#{showdocWorkflow.disabilitaWorkflow}" onclick="if (!confirmDisable()) return false;" styleClass="btn btn-warning">#{i18n['dw4.disabilita']}</h:commandLink>
+					<h:commandLink rendered="#{!showdocWorkflow.workflow.active}" action="#{showdocWorkflow.abilitaWorkflow}" styleClass="btn btn-success">#{i18n['dw4.abilita']}</h:commandLink>
+					<h:commandLink rendered="#{!showdocWorkflow.workflow.active}" action="#{showdocWorkflow.openConfirmDelete}" styleClass="btn btn-danger"><f:ajax render="@form"/>#{i18n['dw4.rimuoviDoc']}</h:commandLink>
+				</div>
+			</h:panelGroup>
+		</div>
+		<script type="text/javascript">
+		function showInfoNewVersion() {
+			alert('#{i18n['dw4.prima_di_agganciare_una_nuova_versione_del_workflow_occorre_disabilitare_quella_corrente']}');
+			return false;
+		}
+		
+		function confirmDisable() {
+			return owmConfirm('#{i18n['dw4.se_si_disabilita_il_workflow_non_sara_piu_possibile_l_avvio_da_parte_di_un_utente']}\n#{i18n['dw4.istanze_del_workflow_gia_avviate_potranno_essere_concluse']}\n\n#{i18n['dw4.procedere_con_l_operazione']}');
+		}
+		</script>
+		<!-- toolbar: fine -->
+	
+		<!-- titolo del workflow: inizio -->
+		<div class="showdoc-title clearfix">
+			<div class="row">
+				<div class="col-xs-12">
+					<div class="showdoc-second-row-title" title="#{showdocWorkflow.workflow.label}">
+						#{(!empty showdocWorkflow.workflow.label) ? showdocWorkflow.workflow.label : showdocWorkflow.workflow.name}
+					</div>
+				</div>
+			</div>
+		</div>
+		<!-- titolo del workflow: fine -->
+		
+		<!-- dati del workflow: inizio -->
+		<div class="showdoc-section">
+			<div class="title">#{i18n['dw4.workflow']}</div>
+			
+			<dl class="dl-horizontal">
+				<dt>#{i18n['dw4.id_bonita']}</dt>
+				<dd><h:outputText value="#{showdocWorkflow.workflow.name}" /></dd>
+				<dt>#{i18n['dw4.workflowdefinition_version']}</dt>
+				<dd><h:outputText value="#{showdocWorkflow.workflow.version}" /></dd>
+				<dt>#{i18n['dw4.abilitato']}</dt>
+				<dd>
+					<h:outputText rendered="#{showdocWorkflow.workflow.active}" value="#{i18n['dw4.yes']}" style="color:green;" />
+					<h:outputText rendered="#{!showdocWorkflow.workflow.active}" value="#{i18n['dw4.no']}" style="color:red;" />
+				</dd>
+				<dt>#{i18n['dw4.sotto_flusso']}</dt>
+                <dd>
+                    <h:outputText rendered="#{showdocWorkflow.workflow.subprocess}" value="#{i18n['dw4.yes']}"  />
+                    <h:outputText rendered="#{!showdocWorkflow.workflow.subprocess}" value="#{i18n['dw4.no']}"  />
+                </dd>
+				<h:panelGroup rendered="#{!empty showdocWorkflow.workflow.label}">
+					<dt>#{i18n['dw4.workflowdefinition_name']}</dt>
+					<dd><h:outputText value="#{showdocWorkflow.workflow.label}" /></dd>
+				</h:panelGroup>
+				<h:panelGroup rendered="#{!empty showdocWorkflow.workflow.description}">
+					<dt>#{i18n['acl.description']}</dt>
+					<dd><h:outputText value="#{showdocWorkflow.workflow.description}" /></dd>
+				</h:panelGroup>
+			</dl>
+		</div>
+		<!-- dati del workflow: fine -->
+		
+		<div class="showdoc-section">
+			<div class="title">#{i18n['acl.servicesinformation']}</div>
+			
+			<dl class="dl-horizontal">
+				<dt>Id</dt>
+				<dd>#{showdocWorkflow.workflow.nrecord}</dd>
+				<dt>#{i18n['acl.registration']}</dt>
+				<dd>
+					<strong>#{showdocWorkflow.workflow.creazione.uff_oper}</strong> - 
+					<a target="acl" href="#{facesContext.externalContext.requestContextPath}/acl/loadrif.pf?db=#{showdocWorkflow.formsAdapter.aclDb}&amp;searchKey=#{(!empty showdocWorkflow.workflow.creazione.cod_oper) ? 'persint_matricola' : 'persint_nomcogn'}&amp;value=#{(!empty showdocWorkflow.workflow.creazione.cod_oper) ? showdocWorkflow.workflow.creazione.cod_oper : showdocWorkflow.workflow.creazione.oper}">#{showdocWorkflow.workflow.creazione.oper}</a>
+					&#160;#{showdocWorkflow.workflow.creazione.dateLong} #{showdocWorkflow.workflow.creazione.ora}
+				</dd>
+				<h:panelGroup rendered="#{!empty(showdocWorkflow.workflow.ultima_modifica.dateLong)}">
+					<dt>#{i18n['acl.lastmodify']}</dt>
+					<dd>
+						<strong>#{showdocWorkflow.workflow.ultima_modifica.uff_oper}</strong> - 
+						<a target="acl" href="#{facesContext.externalContext.requestContextPath}/acl/loadrif.pf?db=#{showdocWorkflow.formsAdapter.aclDb}&amp;searchKey=#{(!empty showdocWorkflow.workflow.ultima_modifica.cod_oper) ? 'persint_matricola' : 'persint_nomcogn'}&amp;value=#{(!empty showdocWorkflow.workflow.ultima_modifica.cod_oper) ? showdocWorkflow.workflow.ultima_modifica.cod_oper : showdocWorkflow.workflow.ultima_modifica.oper}">#{showdocWorkflow.workflow.ultima_modifica.oper}</a>
+						&#160;#{showdocWorkflow.workflow.ultima_modifica.dateLong} #{showdocWorkflow.workflow.ultima_modifica.ora}
+					</dd>
+				</h:panelGroup>
+			</dl>
+		</div>
+	</div>
+
+	<ui:include src="./deleteworkflow@confirm.xhtml"/>
+	
+	<h:inputTextarea value="#{showdocWorkflow.xml}" rendered="#{showdocWorkflow.debugMode}" styleClass="form-control" rows="10" />
+</ui:define>
+
+</ui:composition>

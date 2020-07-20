@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" 
+	  xmlns:h="http://java.sun.com/jsf/html" 
+	  xmlns:ui="http://java.sun.com/jsf/facelets" 
+	  xmlns:f="http://java.sun.com/jsf/core"
+	  xmlns:p="http://xmlns.jcp.org/jsf/passthrough">
+<ui:composition>
+
+	<h:panelGroup id="sceltaUor" layout="block">
+		<h:panelGroup rendered="#{docwayHome.uor_popup_active}">
+			<!-- Modal -->
+			<!--div id="sceltaUorModal" class="modal fade in" aria-hidden="false" aria-labelledby="sceltaUorModalLabel" role="dialog" tabindex="-1" style="display: block;"-->
+			<div class="modal fade" id="sceltaUorModal" role="dialog" aria-labelledby="sceltaUorModalLabel" aria-hidden="true">
+				<div class="modal-dialog">
+					<div class="modal-content jsf-modal">
+						<div class="modal-header">
+							<h:commandButton styleClass="close" title="#{i18n['acl.close']}" action="#{docwayHome.closeUORSelection}" p:data-dismiss="modal"  value="&#215;" >
+			        			<f:ajax render="@form"/>
+			        		</h:commandButton>
+			        		
+			        		<h4 class="modal-title" id="sceltaUorModalLabel">#{i18n['dw4.scelta_uor']}</h4>
+						</div>
+						<div class="modal-body">
+							
+							<div class="form-group">
+								<label for="leftsideContentForm:uorselect" class="col-sm-2 control-label">#{i18n['acl.uff']}</label>
+								<div class="col-sm-10">
+									<h:selectOneMenu id="uorselect" value="#{docwayHome.selected_uor}" styleClass="form-control" onchange="$('#leftsideContentForm\\:changeUorPopupBtn').trigger('click');">
+										<f:selectItems value="#{docwayHome.uor_complete_select}" var="option" itemValue="#{option.value}" itemLabel="#{option.label}" />
+									</h:selectOneMenu>
+									<h:commandLink id="changeUorPopupBtn" action="#{docwayHome.changeUORTendina}" style="display:none;"><f:ajax execute="@form" render="@form :templateForm:errormsg" /></h:commandLink>
+								</div>
+							</div>
+											
+						</div>
+						<div class="modal-footer">
+							<h:commandButton styleClass="btn btn-default" title="#{i18n['acl.close']}" action="#{docwayHome.closeUORSelection}" p:data-dismiss="modal"  value="#{i18n['acl.close']}" >
+			        			<f:ajax render="@form"/>
+			        		</h:commandButton>
+						</div>
+					</div>
+				</div>
+			</div>
+			<script type="text/javascript">
+			$('#sceltaUorModal').modal('show');
+			</script>
+		</h:panelGroup>
+	</h:panelGroup>
+
+</ui:composition>	
+</html>

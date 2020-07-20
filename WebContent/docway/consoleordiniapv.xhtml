@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+    template="#{docwayConsoleOrdiniApv.pageTemplate}"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:c="http://java.sun.com/jsp/jstl/core">
+
+<ui:define name="content">
+	<div class="webmail">
+		
+		<div class="webmail row clearfix">
+			<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+				
+				<div class="sub-header">#{i18n['apv.console_ordini']}</div>
+			
+				<!-- messages: inizio -->
+				<h:panelGroup rendered="#{not empty facesContext.messageList}" layout="block" styleClass="docedit-messages alert alert-danger">
+					<h:messages styleClass="" id="validationMesseges" />
+				</h:panelGroup>
+				<!-- messages: fine -->
+
+				<ui:include src="./consoleordiniapv@showtitles.xhtml">
+	        		<ui:param name="bean" value="#{docwayConsoleOrdiniApv}" />
+	        	</ui:include>
+				
+			</div>
+		</div>
+		
+		<ui:include src="./consoleapvinviosollecitomsg.xhtml"><ui:param name="pageBean" value="#{docwayConsoleDecretazioniApv}"/></ui:include>
+
+		<h:inputTextarea value="#{docwayConsoleOrdiniApv.xml}" rendered="#{docwayConsoleOrdiniApv.debugMode}" styleClass="form-control" rows="10" />
+	</div>
+</ui:define>
+
+</ui:composition>

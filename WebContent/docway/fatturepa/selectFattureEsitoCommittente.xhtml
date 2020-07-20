@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" 
+	  xmlns:h="http://java.sun.com/jsf/html" 
+	  xmlns:ui="http://java.sun.com/jsf/facelets" 
+	  xmlns:f="http://java.sun.com/jsf/core"
+	  xmlns:p="http://xmlns.jcp.org/jsf/passthrough">
+<ui:composition>
+
+	<h:panelGroup id="esitoCommittente">
+		<h:panelGroup rendered="#{showdocArrivoFTRPAP.esitoCommittentePopupOpened}">
+			<!-- Modal -->
+			<div id="esitoCommittenteModal" class="modal fade in" aria-hidden="false" aria-labelledby="esitoCommittenteModalLabel" role="dialog" tabindex="-1" style="display: block;">
+			<!--div class="modal fade" id="esitoCommittenteModal" tabindex="-1" role="dialog" aria-labelledby="esitoCommittenteModalLabel" aria-hidden="true"-->
+				<div class="modal-dialog">
+					<div class="modal-content jsf-modal">
+						<div class="modal-header">
+							<h:commandLink class="close" action="#{showdocArrivoFTRPAP.closePopupEsitoCommittente}" p:data-dismiss="modal" value="&#215;">
+		                    	<f:ajax render="@form"/>
+		                   	</h:commandLink>
+							
+							<h4 class="modal-title" id="esitoCommittenteModalLabel">#{i18n['dw4.notifica_esito_committente']}</h4>
+						</div>
+						<div class="modal-body">
+						
+							<h:panelGroup rendered="#{showdocArrivoFTRPAP.notificaEsitoCommittente.accettazioneInteroDocumentoEnabled}">
+								<div class="form-group endsection">
+									<label for="templateForm:notificaCommittenteDoc" class="col-sm-5 control-label emphasis-title">#{i18n['dw4.esito_su_intero_lotto']}</label>
+									<div class="col-sm-5">
+										<h:selectOneMenu id="notificaCommittenteDoc" value="#{showdocArrivoFTRPAP.notificaEsitoCommittente.esitoInteroDocumento}" styleClass="lotto-selector form-control" onchange="checkEsitoSelection(this, 1);">
+											<f:selectItem itemValue="" itemLabel="" />
+											<f:selectItem itemValue="EC01" itemLabel="#{i18n['dw4.accettazione']}" />
+											<f:selectItem itemValue="EC02" itemLabel="#{i18n['dw4.rifiuto']}" />
+										</h:selectOneMenu>
+									</div>
+								</div>
+							</h:panelGroup>
+							<div class="form-group">
+								<label class="col-sm-5 control-label emphasis-title">#{i18n['dw4.esito_su_singole_fatture']}</label>
+							</div>
+							<ui:repeat var="esitoFattura" value="#{showdocArrivoFTRPAP.notificaEsitoCommittente.esitiFatture}" varStatus="status">
+								<div class="form-group">
+									<label class="col-sm-5 control-label">
+										#{i18n['dw4.fatturapa_tipodocumento_'.concat(esitoFattura.tipoDocumento)]} #{esitoFattura.numero} #{i18n['dw4.del']} <h:outputText value="#{esitoFattura.data}"><f:converter converterId="DateConverter"/></h:outputText>
+									</label>
+									<div class="col-sm-5">
+										<h:selectOneMenu id="notificaCommittenteDoc" value="#{esitoFattura.esito}" styleClass="singola-fattura-selector form-control" onchange="checkEsitoSelection(this, 2);">
+											<f:selectItem itemValue="" itemLabel="" />
+											<f:selectItem itemValue="EC01" itemLabel="#{i18n['dw4.accettazione']}" />
+											<f:selectItem itemValue="EC02" itemLabel="#{i18n['dw4.rifiuto']}" />
+										</h:selectOneMenu>
+									</div>
+								</div>
+							</ui:repeat>
+							<h:panelGroup layout="block" id="motivazioneRifiutoHolder" styleClass="form-group margin-top-30" style="display:none;">
+								<label for="templateForm:notificaCommittenteMotivazioneRifiuto" class="col-sm-5 control-label emphasis-title">
+									#{i18n['dw4.motivazione_rifiuto']}
+									<span data-toggle="popover" data-placement="bottom" data-trigger="hover" data-content="#{i18n['dw4.in_caso_di_rifiuto_multiplo_la_motivazione_sara_applicata_su_tutte_le_fatture_rifiutate']}" class="popoveritem">
+				      					<span class="glyphicon glyphicon-info-sign popoveritem"></span>
+				      				</span>
+								</label>
+								<div class="col-sm-7">
+									<h:inputTextarea id="notificaCommittenteMotivazioneRifiuto" value="#{showdocArrivoFTRPAP.notificaEsitoCommittente.motivazioneRifiuto}" rows="4" cols="120" p:maxlength="255" styleClass="#{ component.valid ? '' : 'invalidinput' } form-control" />
+								</div>
+							</h:panelGroup>
+							<h:outputScript>
+							function checkEsitoSelection(inputSelect, tipo) {
+								var currentValue = '';
+								if (inputSelect != null &#038;&#038; inputSelect != undefined) {
+									var e = document.getElementById(inputSelect.id);
+									if (e != null &#038;&#038; e != undefined)
+										currentValue = e.options[e.selectedIndex].value; 
+								}
+								
+								//alert('checkEsitoSelection.currentValue = ' + currentValue);
+								if (currentValue != null &#038;&#038; currentValue != undefined &#038;&#038; currentValue != '') {
+									if (tipo == 1) {
+										// selezione su intero lotto
+										$("select[class*='singola-fattura-selector']").val("");
+									}
+									else if (tipo == 2) {
+										// selezione su singola fattura
+										$("select[class*='lotto-selector']").val("");
+									}
+								}
+								
+								showHideMotivazioneRifiuto();
+							}
+							
+							function showHideMotivazioneRifiuto() {
+								var abilitaRifiuto = false;
+								$("select[class*='singola-fattura-selector']").each(function() {
+									if ($(this).val() == 'EC02')
+										abilitaRifiuto = true; 
+								});
+								$("select[class*='lotto-selector']").each(function() {
+									if ($(this).val() == 'EC02')
+										abilitaRifiuto = true;
+								});
+								if (abilitaRifiuto) {
+									$("#templateForm\\:motivazioneRifiutoHolder").show();
+								}
+								else {
+									$("#templateForm\\:motivazioneRifiutoHolder").hide();
+									$("#templateForm\\:notificaCommittenteMotivazioneRifiuto").val(""); // azzeramento di un'eventuale motivazione inserita
+								}
+							}
+							</h:outputScript>
+							
+						</div>
+						<div class="modal-footer">
+							<h:commandLink styleClass="btn btn-primary" action="#{showdocArrivoFTRPAP.sendEsitoCommittenteSingoleFatture}" value="#{i18n['dw4.notifica']}">
+								<f:ajax execute="@form" render="@form"/>
+							</h:commandLink>
+							<h:commandLink styleClass="btn btn-default" action="#{showdocArrivoFTRPAP.closePopupEsitoCommittente}" p:data-dismiss="modal" value="#{i18n['acl.close']}">
+		                    	<f:ajax render="@form"/>
+		                   	</h:commandLink>
+						</div>
+					</div>
+				</div>
+			</div>
+			<!--h:outputScript>
+				$('#esitoCommittenteModal').modal('show');
+			</h:outputScript-->
+		</h:panelGroup>
+	</h:panelGroup>
+
+</ui:composition>	
+</html>

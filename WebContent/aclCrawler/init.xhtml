@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" 
+		xmlns:h="http://java.sun.com/jsf/html" 
+		xmlns:ui="http://java.sun.com/jsf/facelets"
+		xmlns:f="http://java.sun.com/jsf/core"
+		xmlns:fn="http://java.sun.com/jsp/jstl/functions">
+	<h:head>
+        <title>#{(aclCrawlerInit.currentLoginStep eq 'societa') ? i18n['acl.selectsocieta'] : i18n['acl.selectuser']}</title>
+        
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    
+        <!-- javascript -->
+	    <script type="text/javascript" src="../common/js/jquery.js"></script>
+	    <script type="text/javascript" src="../common/js/jquery.formatCurrency-1.4.0.js"></script>
+	    <script type="text/javascript" src="../bootstrap/js/bootstrap.js"></script>
+	    <script type="text/javascript" src="../common/js/bootstrap-datepicker.js"></script>
+	    <script type="text/javascript" src="../common/js/common.js"></script>
+	    
+	    <!-- styles -->
+	    <link href="../bootstrap/css/bootstrap.css" rel="stylesheet" type="text/css" />
+	    <h:panelGroup rendered="#{aclCrawlerInit.languageOrientation eq 'rtl'}">
+	        <link href="../bootstrap/css/bootstrap-rtl.css" rel="stylesheet" type="text/css" />
+	    </h:panelGroup>
+	    <link href="../bootstrap/css/bootstrap-theme.css" rel="stylesheet" type="text/css" />
+	    <link href="../common/css/login.css" rel="stylesheet" type="text/css" />
+	</h:head>
+	
+	<h:body styleClass="aclCrawlerInit">
+	
+	<div class="container">
+        <h:form id="initForm" class="form-signin #{(aclCrawlerInit.currentLoginStep eq 'societa' and fn:length(aclCrawlerInit.societaL) > 0) ? 'large' : ''}">    
+            <div class="row" style="text-align:center; margin-bottom:20px;">
+                <img src="#{facesContext.externalContext.requestContextPath}/common/css/#{(!empty aclCrawlerInit.customDirCss) ? aclCrawlerInit.customDirCss.concat('/') : ''}images/logo/docway-big.png" alt="DocWay" />
+            </div>
+    
+            <h:panelGroup rendered="#{aclCrawlerInit.currentLoginStep eq 'login' and fn:length(aclCrawlerInit.matricoleL) > 0}">
+                <fieldset>
+                    <legend>#{i18n['acl.selectusertoaccess']}:</legend>
+                    
+                    <div class="row">
+                        <ul class="nav nav-pills nav-stacked">
+                            <ui:repeat var="item" value="#{aclCrawlerInit.matricoleL}">
+                                <li>
+                                    <h:commandLink styleClass="matricolaItem acl openwaitmsg" action="#{aclCrawlerInit.loginWithMatricola}">
+                                        <span class="string control-label">#{item.descr}</span>
+                                    </h:commandLink>
+                                </li>
+                            </ui:repeat>
+                        </ul>
+                    </div>
+                </fieldset>
+            </h:panelGroup>
+            
+            <h:panelGroup rendered="#{aclCrawlerInit.currentLoginStep eq 'societa' and fn:length(aclCrawlerInit.societaL) > 0}">
+                <fieldset>
+                    <legend>#{i18n['acl.selectsocietaaccess']}:</legend>
+                    
+                    <div class="form-group">
+                        <div class="col-sm-10">
+                            <h:selectOneMenu id="selectSocieta" value="#{aclCrawlerInit.societaSelezionata}" valueChangeListener="#{aclCrawlerInit.societaChangeListener}">
+                                <f:ajax execute="@this" render="@form" />
+                                <f:selectItems value="#{aclCrawlerInit.societaL}" var="societa" itemValue="#{societa.cod}" itemLabel="#{societa.text}"></f:selectItems>
+                            </h:selectOneMenu>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-sm-10">
+                            <div class="checkbox">
+                                <h:selectBooleanCheckbox id="tutteSocieta" immediate="true" value="#{aclCrawlerInit.allSocieta}" />
+                                <label for="initForm:tutteSocieta">#{i18n['acl.tutte']}</label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-sm-10">
+                            <h:commandLink id="societaBtn" action="#{aclCrawlerInit.loginWithSocieta}" styleClass="btn btn-primary openwaitmsg"><span>#{i18n['acl.entra']}</span></h:commandLink>
+                        </div>
+                    </div>
+                </fieldset>
+            </h:panelGroup>
+            
+            <ui:include src="../acl/errormsg.xhtml" />
+        </h:form>
+    </div>
+	
+	</h:body>
+	
+	<ui:remove>
+    <h:body class="bodyDoc" >
+	<h:form id="initForm">    
+    
+    <div id="content">
+    <div class="divider30"></div>
+    <div class="logo3di"></div>
+
+    <div class="buttons_holder">
+        <div class="Floats_holder">
+            <div class="right aclButton"></div>
+            <div class="right docwayButton"></div>
+        </div>
+    </div>
+    <div class="divider30"></div>
+    	<h:panelGroup rendered="#{aclCrawlerInit.currentLoginStep eq 'login' and fn:length(aclCrawlerInit.matricoleL) > 0}" layout="block" >
+			<div  class="Floats_holder loginList_holder">
+			<div class="logout"><h:commandLink styleClass="matricolaItem" action="#{userBean.logout}" title="Logout"/></div>		
+				<h3>#{i18n['acl.selectusertoaccess']}</h3>
+				<div class="loginList">
+					<ul>
+			     	<ui:repeat var="item" value="#{aclCrawlerInit.matricoleL}" >
+			     		<li>
+			      			<h:commandLink styleClass="matricolaItem acl" action="#{aclCrawlerInit.loginWithMatricola}"><b>#{item.descr}</b>
+								<f:param name="item" value="#{item}"></f:param>
+							</h:commandLink>
+						</li>
+					</ui:repeat>
+					</ul>
+				</div>
+			</div>
+		</h:panelGroup>
+		
+		<h:panelGroup rendered="#{aclCrawlerInit.currentLoginStep eq 'societa' and fn:length(aclCrawlerInit.societaL) > 0}" layout="block">
+			<div  class="Floats_holder loginList_holder">
+			<div class="logout"><h:commandLink styleClass="matricolaItem" action="#{userBean.logout}" title="Logout"/></div>		
+				<h3>#{i18n['acl.selectsocietaaccess']}</h3>
+				<div class="loginList societaList">
+					<table class="scelta-multisocieta" width="100%"><tbody>
+						<tr><td class="multisocieta-form-row">
+							<h:selectOneMenu id="selectSocieta" value="#{aclCrawlerInit.societaSelezionata}" valueChangeListener="#{aclCrawlerInit.societaChangeListener}">
+								<f:ajax execute="@this" render="@form" />
+								<f:selectItems value="#{aclCrawlerInit.societaL}" var="societa" itemValue="#{societa.cod}" itemLabel="#{societa.text}"></f:selectItems>
+							</h:selectOneMenu>
+						</td></tr>
+						<tr><td class="multisocieta-form-row">
+							<label for="initForm:tutteSocieta">#{i18n['acl.tutte']}</label>
+							<h:selectBooleanCheckbox id="tutteSocieta" immediate="true" value="#{aclCrawlerInit.allSocieta}" />
+						</td></tr>
+						<tr><td class="multisocieta-form-row">
+							<h:commandLink id="societaBtn" action="#{aclCrawlerInit.loginWithSocieta}" styleClass="iconButton"><span>#{i18n['acl.entra']}</span></h:commandLink>
+						</td></tr>
+					</tbody></table>
+				</div>
+			</div>
+		</h:panelGroup>
+					
+    	<ui:include src="../docway/errormsg.xhtml"/>	
+    
+    </div>
+    
+    </h:form>
+    </h:body>	
+    
+    </ui:remove>
+</html>

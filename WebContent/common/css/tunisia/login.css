@@ -1,0 +1,24 @@
+a {color: #830202;}
+a:hover{color:#5d822e;}
+
+.btn-primary {
+background-image: -webkit-linear-gradient(top, #ce3535 0%, #830202 100%);
+background-image: linear-gradient(to bottom, #ce3535 0%, #830202 100%);
+filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ffce3535', endColorstr='#ff830202', GradientType=0);
+border-color: #830202;
+}
+
+.btn-primary:hover, .btn-primary:focus {background-color: #830202;}
+
+.form-control:focus {
+  border-color: #ce3535;
+  outline: 0;
+  -webkit-box-shadow: inset 0 1px 1px rgba(0,0,0,.075), 0 0 8px rgba(225, 225, 225, 0.6);
+  box-shadow: inset 0 1px 1px rgba(0,0,0,.075), 0 0 8px rgba(225, 225, 225, 0.6);
+}
+
+input:-webkit-autofill, textarea:-webkit-autofill, select:-webkit-autofill {
+  background-color: rgb(225, 225, 225) !important;
+  background-image: none !important;
+  color: rgb(0, 0, 0) !important;
+}

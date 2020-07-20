@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" 
+	  xmlns:h="http://java.sun.com/jsf/html" 
+	  xmlns:ui="http://java.sun.com/jsf/facelets" 
+	  xmlns:f="http://java.sun.com/jsf/core"
+	  xmlns:c="http://java.sun.com/jsp/jstl/core"
+	  xmlns:p="http://xmlns.jcp.org/jsf/passthrough">
+<ui:composition>
+	
+	<h:panelGroup id="docInformatici" layout="block" styleClass="showdoc-section documenti-informatici">
+		<div class="title">
+			#{i18n['dw4.modelli']}
+			
+			<div class="pull-right">
+				<span class="glyphicon glyphicon-floppy-disk" title="#{i18n['dw4.modelli']}"></span>
+			</div>
+		</div>
+		
+		<h:panelGroup>
+			<div class="row" style="margin-top:20px;">
+				<ui:repeat id="xwfiles" var="modello" value="#{bean.organo.modelli}" varStatus="indice">
+					<h:panelGroup rendered="#{!empty modello.file.title}">
+						<div class="col-md-6">
+							<div class="media">
+								<h:commandLink action="#{bean.downloadFile(modello.file.name,modello.file.title)}" title="#{i18n['dw4.scarica_il_file']}" styleClass="pull-left">
+									<span class="filetype #{modello.file.iconName} img-thumbnail media-object" title="#{modello.file.title}"></span>
+								</h:commandLink>
+								<div class="media-body">
+									<p class="media-heading">
+										<span class="media-heading-label">#{i18n['dw4.nome_descrizione_file']}:</span><br/>
+										<span class="media-heading-text">
+											<h:panelGroup rendered="#{modello.file.da_firmare}">
+												<span class="glyphicons-pro pen firma-digitale popoveritem" data-toggle="popover" data-placement="#{(!empty bean.languageOrientation and bean.languageOrientation eq 'rtl') ? 'top' : 'right'}" data-trigger="hover" data-content="#{i18n['dw4.richiesta_di_firma_digitale_sul_file_da_parte_del_responsabile']}"></span>
+												&#160;	
+											</h:panelGroup>
+											<h:commandLink action="#{bean.downloadFile(modello.file.name,modello.file.title)}" title="#{i18n['dw4.scarica_il_file']}">
+												<h:outputText value="#{modello.nome}" escape="false" />
+											</h:commandLink>
+											<h:panelGroup rendered="#{modello.file.usedFile}">
+												<span class="fileprenotato-icon glyphicon glyphicon-lock normal-size-icon popoveritem" data-toggle="popover" data-placement="top" data-trigger="hover" data-content="#{i18n['dw4.prenotato_da']} #{modello.file.chkout.operatore}"></span>
+											</h:panelGroup>
+											<h:panelGroup rendered="#{modello.file.checkinFile}">
+												<span class="fileprenotatomio-icon glyphicon glyphicon-lock normal-size-icon popoveritem" data-toggle="popover" data-placement="top" data-trigger="hover" data-content="#{i18n['dw4.prenotato_da']} #{modello.file.chkout.operatore}"></span>
+											</h:panelGroup>
+										</span>
+									</p>
+									<div class="btn-group">
+										<a id="fileinfo#{indice.index}" class="btn btn-default btn-xs info-btn" title="#{i18n['dw4.visualizza_dettagli']}" href="#" onclick="return openCloseSection('fileinfo#{indice.index}Content');" onkeypress="return openCloseSection('fileinfo#{indice.index}Content');">
+											<i class="glyphicon glyphicon-info-sign"></i>
+										</a>
+										<h:panelGroup rendered="#{modello.file.metadata != null and not empty modello.file.metadata.dati}" title="#{i18n['dw4.visualizza_metadati']}">
+											<a id="filemetadata#{indice.index}" class="btn btn-default btn-xs metadati-btn" title="#{i18n['dw4.visualizza_metadati']}" href='#' onclick="return openCloseSection('filemetadata#{indice.index}Content');" onkeypress="return openCloseSection('filemetadata#{indice.index}Content');">
+												<i class="glyphicon glyphicon-list-alt"></i>
+											</a>
+										</h:panelGroup>
+										<ui:remove>
+											<ui:repeat var="derFromXwfile" value="#{bean.doc.files}">
+												<h:panelGroup rendered="#{not empty derFromXwfile.der_from and derFromXwfile.der_from eq xwfile.name and derFromXwfile.extension ne 'txt'}">
+													<h:commandLink action="#{bean.downloadFileConvertito}" title="#{i18n['dw4.download_documento_convertito']}: #{derFromXwfile.extension}" styleClass="btn btn-default btn-xs">
+														<span class="glyphicon glyphicon-file #{derFromXwfile.extension}"></span> #{fn:toUpperCase(derFromXwfile.extension)}
+													</h:commandLink>
+												</h:panelGroup>
+											</ui:repeat>
+										</ui:remove>
+										<ui:param name="azioniSuFirma" value="#{(bean.formsAdapter.funzionalitaDisponibili['abilitaFirmaAppletActalis']) or (bean.formsAdapter.funzionalitaDisponibili['abilitaFirmaApplet3di']) or (((fn:contains(xwfile.name, '.p7m') or fn:contains(xwfile.name, '.s@s') or xwfile.force_sign=='true')) and bean.formsAdapter.funzionalitaDisponibili['enableVerificaFirmaVOL'])}" />
+										<ui:param name="azioniSuCheckInCheckOut" value="#{(bean.formsAdapter.funzionalitaDisponibili['addFile'] and bean.formsAdapter.funzionalitaDisponibili['disableSegnatura']) and (xwfile.checkoutFile or xwfile.checkinFile)}" />
+										<ui:param name="azioniSuVersioniPrecedenti" value="#{(xwfile.withVersions) or (bean.formsAdapter.funzionalitaDisponibili['versionsDiffEnable'] and xwfile.withVersions)}" />
+										
+										<div class="btn-group">
+											<button class="btn btn-default btn-xs dropdown-toggle" type="button" data-toggle="dropdown" title="#{i18n['dw4.azioni_sul_file']}">
+												<span class="glyphicon glyphicon-cog"></span> <span class="caret"></span>
+											</button>
+											<ul class="dropdown-menu">
+												<li><h:commandLink action="#{bean.downloadFile(modello.file.name,modello.file.title)}" title="#{i18n['dw4.scarica_il_file']}" value="#{i18n['dw4.salva_il_file']}" styleClass="#{modello.file.name}_btn" /></li>
+												<h:panelGroup rendered="#{azioniSuCheckInCheckOut or azioniSuVersioniPrecedenti}">
+													<li class="divider"></li>
+												</h:panelGroup>
+												
+												<h:panelGroup rendered="#{azioniSuCheckInCheckOut}">
+													<h:panelGroup rendered="#{modello.file.checkoutFile}">
+														<li><h:commandLink rendered="#{modello.file.checkoutFile}" action="#{bean.checkout}" title="#{i18n['dw4.xwfile_prenota']}">
+															<f:ajax execute="@form" render="@form" />
+															<h:outputText value="#{i18n['dw4.xwfile_prenota']}" />
+														</h:commandLink></li>
+													</h:panelGroup>
+													<h:panelGroup rendered="#{modello.file.checkinFile}">
+														<li><h:commandLink action="#{bean.checkin}" title="#{i18n['dw4.xwfile_aggiorna']}" styleClass="#{modello.file.name}_chkin_btn">
+															<h:outputText value="#{i18n['dw4.xwfile_aggiorna']}" />
+														</h:commandLink></li>
+														<li><h:commandLink action="#{bean.abandonChkout}" title="#{i18n['dw4.xwfile_abbandona']}" >
+															<f:ajax execute="@form" render="@form" />
+															<h:outputText value="#{i18n['dw4.xwfile_abbandona']}" />
+														</h:commandLink></li>
+													</h:panelGroup>
+													<h:panelGroup rendered="#{azioniSuVersioniPrecedenti}">
+														<li class="divider"></li>
+													</h:panelGroup>
+												</h:panelGroup>
+												
+												<h:panelGroup rendered="#{azioniSuVersioniPrecedenti}">
+													<h:panelGroup rendered="#{modello.file.withVersions}">
+														<li><h:commandLink action="#{bean.fileVersions}" value="#{i18n['dw4.versioni_precedenti']}" onclick="openCenterPopup('', 'fileVersionsPopup', 800, 650)" target="fileVersionsPopup" /></li>
+													</h:panelGroup>
+													<h:panelGroup rendered="#{bean.formsAdapter.funzionalitaDisponibili['versionsDiffEnable'] and modello.file.withVersions}">
+														<li><h:commandLink action="#{bean.showDiffBetweenVersionsPDF}" title="#{i18n['dw4.differenze_fra_l_ultima_e_la_prima_versione_in_formato_pdf']}" value="#{i18n['dw4.differenze_in_formato_pdf']}" /></li>
+														<li><h:commandLink action="#{bean.showDiffBetweenVersionsOD}" title="#{i18n['dw4.differenze_fra_l_ultima_e_la_prima_versione_in_formato_od']}" value="#{i18n['dw4.differenze_in_formato_od']}" /></li>
+													</h:panelGroup>
+												</h:panelGroup>
+											</ul>
+										</div>
+										
+										<h:panelGroup rendered="#{azioniSuFirma}" layout="block" styleClass="btn-group">
+											<button class="btn btn-default btn-xs dropdown-toggle" type="button" data-toggle="dropdown" title="#{i18n['dw4.firma']}">
+												<span class="glyphicons-pro pen firma-digitale-btn"></span> <span class="caret"></span>
+											</button>
+											<ul class="dropdown-menu">
+												<h:panelGroup rendered="#{bean.formsAdapter.funzionalitaDisponibili['abilitaFirmaAppletActalis']}">
+													<li><h:commandLink action="#{bean.firmaAppletActalis}" onclick="openCenterPopup('', 'firmaDigitaleActalis', 430, 340)" value="#{i18n['dw4.firma_del_documento_con_applet_actalis']}" target="firmaDigitaleActalis" /></li>
+												</h:panelGroup>
+												<h:panelGroup rendered="#{bean.formsAdapter.funzionalitaDisponibili['abilitaFirmaApplet3di']}">
+													<li><h:commandLink action="#{bean.firmaApplet3di}" onclick="openCenterPopup('', 'firmaDigitale3di', 430, 290)" value="#{i18n['dw4.firma_del_documento']}" target="firmaDigitale3di" /></li>
+												</h:panelGroup>
+												<h:panelGroup rendered="#{((fn:contains(modello.file.name, '.p7m') or fn:contains(modello.file.name, '.s@s') or modello.file.force_sign=='true')) and bean.formsAdapter.funzionalitaDisponibili['enableVerificaFirmaVOL']}">
+													<li><h:commandLink action="#{bean.verificaFirma}" value="#{i18n['dw4.verifica_firma_digitale']}" /></li>
+												</h:panelGroup>
+											</ul>
+										</h:panelGroup>
+									</div>
+									<div id="fileinfo#{indice.index}Content" style="display:none;" class="file-info-holder">
+										<table class="table table-condensed docinfo-table fileinfo-table">
+											<tbody>
+												<tr>
+													<td class="fileinfo-icon"><span class="checkin-icon glyphicon glyphicon-save normal-size-icon" title="#{i18n['dw4.checkin_del_file']}"></span></td>
+													<td class="fileinfo-descr"><h:outputText value="#{modello.file.chkin.data}"><f:converter converterId="DateConverter"/></h:outputText> #{modello.file.chkin.ora}</td>
+												</tr>
+												<h:panelGroup rendered="#{(fn:contains(modello.file.name, '.p7m') or fn:contains(modello.file.name, '.s@s') or modello.file.force_sign=='true')}">
+													<tr>
+														<td class="fileinfo-icon"><span class="firmato-icon glyphicon glyphicon-edit normal-size-icon" title="#{i18n['dw4.file_firmato_digitalmente']}"></span></td>
+														<td class="fileinfo-descr"><span class="file-firmato">#{i18n['dw4.file_firmato_digitalmente']}</span></td>
+													</tr>
+												</h:panelGroup>
+												<h:panelGroup rendered="#{(empty modello.file.metadata or empty modello.file.metadata.fileSize) and not empty modello.file.size}">
+													<tr>
+														<td class="fileinfo-icon"><span class="filesize-icon glyphicon glyphicon-stats normal-size-icon" title="#{i18n['dw4.informazioni_sul_file']}"></span></td>
+														<td class="fileinfo-descr">
+															<h:outputText value="#{modello.file.sizeKB}" />
+														</td>
+													</tr>
+												</h:panelGroup>
+												<h:panelGroup rendered="#{not empty modello.file.metadata and not empty modello.file.metadata.pageCount or not empty modello.file.metadata.fileSize}">
+													<tr>
+														<td class="fileinfo-icon"><span class="filesize-icon glyphicon glyphicon-stats normal-size-icon" title="#{i18n['dw4.informazioni_sul_file']}"></span></td>
+														<td class="fileinfo-descr">
+															<h:outputText rendered="#{not empty modello.file.metadata.fileSize}" value="#{modello.file.metadata.fileSize}" />
+															<h:outputText rendered="#{not empty modello.file.metadata.pageCount and not empty modello.file.metadata.fileSize}" value=", " />
+															<h:panelGroup rendered="#{not empty modello.file.metadata.pageCount}">
+																<h:outputText value="#{modello.file.metadata.pageCount}" />
+																<h:outputText value=" #{i18n['dw4.pag']}" />
+															</h:panelGroup>
+														</td>
+													</tr>
+												</h:panelGroup>
+												<h:panelGroup rendered="#{modello.file.usedFile}">
+													<tr>
+														<td class="fileinfo-icon"><span class="fileprenotato-icon glyphicon glyphicon-lock normal-size-icon" title="#{i18n['dw4.prenotato_da']} #{modello.file.chkout.operatore}"></span></td>
+														<td class="fileinfo-descr"><span class="file-prenotato">#{i18n['dw4.prenotato_da']} #{modello.file.chkout.operatore}</span></td>
+													</tr>
+												</h:panelGroup>
+												<h:panelGroup rendered="#{modello.file.checkinFile}">
+													<tr>
+														<td class="fileinfo-icon"><span class="fileprenotatomio-icon glyphicon glyphicon-lock normal-size-icon" title="#{i18n['dw4.prenotato_da']} #{modello.file.chkout.operatore}"></span></td>
+														<td class="fileinfo-descr"><span class="file-prenotatomio">#{i18n['dw4.prenotato_da']} #{modello.file.chkout.operatore}</span></td>
+													</tr>
+												</h:panelGroup>
+											</tbody>
+										</table>
+									</div>
+									<div id="filemetadata#{indice.index}Content" style="display:none;" class="metadata-holder">
+										<h:dataTable value="#{modello.file.metadata.datiKeys}" var="key" styleClass="table table-condensed docinfo-table filemeta-table" columnClasses="filemeta-label,filemeta-value">
+											<h:column><h:outputText value="#{key}:" /></h:column>
+						                    <h:column><h:outputText value="#{modello.file.metadata.dati[key]}" /></h:column>
+										</h:dataTable>
+										<h:panelGroup rendered="#{modello.file.metadata.documentMetadata != null and not empty modello.file.metadata.documentMetadata.dati}">
+											<h:dataTable value="#{modello.file.metadata.documentMetadata.datiKeys}" var="key" styleClass="table table-condensed docinfo-table filemeta-table" columnClasses="filemeta-label,filemeta-value">
+												<h:column><h:outputText value="#{key}:" /></h:column>
+							                    <h:column><h:outputText value="#{modello.file.metadata.documentMetadata.dati[key]}" /></h:column>
+											</h:dataTable>
+										</h:panelGroup>
+									</div>
+								</div>
+							</div>
+						</div>
+					</h:panelGroup>
+				</ui:repeat>
+			</div>
+			<h:panelGroup id="downloadFileHolder" layout="block">
+				<h:panelGroup rendered="#{bean.formsAdapter.toDo != null and bean.formsAdapter.toDo == '@openChkinPage' and bean.formsAdapter.attach != null}">
+					<script type="text/javascript">
+					$(document).ready(function() {
+						setTimeout("autoDownloadFile()", 500); /* scaricamento del file (senza timeout ci sarebbe un blocco su Chrome) */
+					});
+					function autoDownloadFile() {
+						$('a[class~=\'#{bean.formsAdapter.attach}_btn\']').trigger('click');
+					}
+					</script>
+				</h:panelGroup>
+			</h:panelGroup>
+		</h:panelGroup>
+		
+	</h:panelGroup>
+	
+</ui:composition>   
+</html>

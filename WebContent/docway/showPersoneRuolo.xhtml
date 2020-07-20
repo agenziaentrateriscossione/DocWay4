@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" 
+	  xmlns:h="http://java.sun.com/jsf/html" 
+	  xmlns:ui="http://java.sun.com/jsf/facelets" 
+	  xmlns:f="http://java.sun.com/jsf/core"
+	  xmlns:c="http://java.sun.com/jsp/jstl/core">
+<ui:composition>
+
+	<h:panelGroup id="showPersoneRuolo" layout="block">
+		<h:panelGroup rendered="#{bean.active}">
+			<!-- Modal -->
+			<div id="showpersoneruoloModal" class="modal fade in" aria-hidden="false" aria-labelledby="showpersoneruoloModalLabel" role="dialog" tabindex="-1" style="display: block;">
+				<div class="modal-dialog modal-lg">
+					<div class="modal-content jsf-modal">
+						<div class="modal-header">
+							<h:commandButton styleClass="close" title="#{i18n['acl.close']}" action="#{bean.close}" data-dismiss="modal"  value="&#215;" >
+			        			<f:ajax render="templateForm:showPersoneRuolo" />
+			        		</h:commandButton>
+			        		
+			        		<h4 class="modal-title" id="showpersoneruoloModalLabel">#{i18n['dw4.dettaglio_ruolo']}</h4>
+						</div>
+						<div class="modal-body">
+							
+							<table class="table table-striped">
+								<thead>
+									<tr>
+										<th class="personeruolo-matricola optional">#{i18n['acl.code']}</th>
+										<th class="personeruolo-nome essential">#{i18n['acl.surname_name']}</th>
+										<th class="personeruolo-email optional">#{i18n['acl.email']}</th>
+									</tr>
+								</thead>
+								<tbody>
+									<ui:repeat var="persona" value="#{bean.personeRuolo.persone}" varStatus="status">
+										<tr>
+											<td class="optional">
+												#{persona.matricola}
+											</td>
+											<td class="essential">
+												<h:outputText value="#{persona.nome}" escape="false" />
+											</td>
+											<td class="optional">
+												#{persona.email} &#160;
+											</td>
+										</tr>
+									</ui:repeat>
+								</tbody>
+							</table>
+							
+					       	<h:inputTextarea value="#{bean.xml}" rendered="#{bean.debugMode}" styleClass="form-control" rows="10"/>
+						</div>
+						<div class="modal-footer">
+							<h:commandButton styleClass="btn btn-default" title="#{i18n['acl.close']}" action="#{bean.close}" data-dismiss="modal"  value="#{i18n['acl.close']}" >
+			        			<f:ajax render="templateForm:showPersoneRuolo" />
+			        		</h:commandButton>
+						</div>
+					</div>
+				</div>
+			</div>
+		</h:panelGroup>
+	</h:panelGroup>
+	
+</ui:composition>
+</html>

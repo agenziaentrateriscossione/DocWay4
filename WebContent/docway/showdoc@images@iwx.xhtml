@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" 
+	  xmlns:h="http://java.sun.com/jsf/html" 
+	  xmlns:ui="http://java.sun.com/jsf/facelets" 
+	  xmlns:f="http://java.sun.com/jsf/core"
+	  xmlns:c="http://java.sun.com/jsp/jstl/core">
+<ui:composition>
+
+	<h:panelGroup id="iwxBox" layout="block" styleClass="iwx-box" style="margin-top:13px;">
+		<div class="iwx-button-bar iwx-button-bar-showdoc clearfix">
+			<div class="iwx-buttons pull-left">
+				<span id="iwx-image-selection">
+					<strong>#{fn:length(bean.doc.immagini)}</strong> #{i18n['dw4.doc_abbrev']}:
+					<h:selectOneMenu id="iwxImageSelector" value="#{bean.doc.showIwxSelectedImage}" immediate="true" styleClass="iwx-image-select form-control">
+						<f:ajax execute="@form" render="templateForm:iwxBox" />
+						<f:selectItems value="#{bean.doc.immagini}" var="image" itemLabel="#{image.title}" itemValue="#{image.name}" />
+					</h:selectOneMenu>
+					
+					<c:forEach var="image" items="#{bean.doc.immagini}" varStatus="indice">
+						<h:panelGroup rendered="#{!empty image.title}">
+							<h:inputHidden value="#{image.name}" id="xwImages_#{indice.index}_fileName" class="iwxImageFileName" />
+							<h:inputHidden value="#{image.iwxGuId}" id="xwImages_#{indice.index}_iwxGuId" />
+						</h:panelGroup>
+					</c:forEach>
+				</span>
+				<span id="iwx-images-der_froms">
+					<ui:repeat var="derFromXwfile" value="#{bean.doc.files}">
+						<h:panelGroup rendered="#{not empty derFromXwfile.der_from and derFromXwfile.extension ne 'txt'}" styleClass="iwx_der_from_image_#{derFromXwfile.der_from} iwx_der_froms" style="#{bean.doc.showIwxSelectedImage ne derFromXwfile.der_from ? 'display:none;' : '' }">
+							<h:commandLink action="#{bean.downloadFileConvertito}" title="#{i18n['dw4.download_documento_convertito']}: #{derFromXwfile.extension}" styleClass="btn btn-default btn-xs">
+								<span class="glyphicon glyphicon-file #{derFromXwfile.extension}"></span> #{fn:toUpperCase(derFromXwfile.extension)}
+								<ui:remove>
+									<span class="filetype #{derFromXwfile.extension} icon" title="#{i18n['dw4.download_documento_convertito']}: #{derFromXwfile.extension}"></span>
+								</ui:remove>
+							</h:commandLink>
+						</h:panelGroup>
+					</ui:repeat>
+				</span>
+				
+				<h:panelGroup rendered="#{bean.formsAdapter.funzionalitaDisponibili['abilitaFirmaAppletActalis']}">
+					<h:graphicImage url="/docway/css/images/spazio.png" alt="space" style="width:3px;" />
+					<span id="iwx-images-signatures">
+						<ui:repeat id="xwImagesSignature" var="image" value="#{bean.doc.immagini}" varStatus="index">
+							<h:commandLink action="#{bean.firmaImageAppletActalis}" onclick="openCenterPopup('', 'firmaDigitaleActalis', 385, 250)" target="firmaDigitaleActalis" style="#{bean.doc.showIwxSelectedImage ne image.name ? 'display:none;' : '' }" styleClass="btn btn-default btn-xs">
+								<span class="glyphicons-pro pen firma-digitale icon" title="#{i18n['dw4.firma_del_documento_con_applet_actalis']}"></span>
+							</h:commandLink>
+						</ui:repeat>
+					</span>
+				</h:panelGroup>
+				
+				<h:graphicImage url="/docway/css/images/spazio.png" alt="space" style="width:3px;" />
+				<span id="iwx-resize-buttons">
+					<div class="btn-group">
+						<h:commandLink title="#{i18n['dw4.adapt_to_page']}" onclick="return IwxRuntime.Client.adaptToPageIWX();" styleClass="btn btn-default btn-xs"><span class="glyphicons-pro text_height"></span></h:commandLink>
+						<h:commandLink title="#{i18n['dw4.adapt_to_width']}" onclick="return IwxRuntime.Client.adaptToWidthIWX();" styleClass="btn btn-default btn-xs"><span class="glyphicons-pro text_width"></span></h:commandLink>
+						<h:commandLink title="#{i18n['dw4.original_size']}" onclick="return IwxRuntime.Client.originalSizeIWX();" styleClass="btn btn-default btn-xs"><span class="glyphicons-pro fullscreen"></span></h:commandLink>
+					</div>
+				</span>
+				<h:graphicImage url="/docway/css/images/spazio.png" alt="space" style="width:3px;" />
+				<span id="iwx-pages-buttons" style="display:none;">
+					<div class="btn-group">
+						<h:commandLink id="iwx_first_page_btn" styleClass="btn btn-default btn-xs" title="#{i18n['dw4.first_page']}" onclick="return IwxRuntime.Client.firstPageIWX();"><span class="glyphicon glyphicon-fast-backward"></span></h:commandLink>
+						<h:commandLink id="iwx_prev_page_btn" styleClass="btn btn-default btn-xs" title="#{i18n['dw4.prev_page']}" onclick="return IwxRuntime.Client.prevPageIWX();"><span class="glyphicon glyphicon-play icon-flipped"></span></h:commandLink>
+					</div>
+					&#160;<h:outputText value="#{i18n['dw4.page']}" />&#160;<span id="iwx-pages-curpage" style="font-weight:bold;"></span>&#160;<h:outputText value="#{i18n['dw4.of']}" />&#160;<span id="iwx-pages-maxpage" style="font-weight:bold;"></span>&#160;
+					<div class="btn-group">
+						<h:commandLink id="iwx_next_page_btn" styleClass="btn btn-default btn-xs" title="#{i18n['dw4.next_page']}" onclick="return IwxRuntime.Client.nextPageIWX();"><span class="glyphicon glyphicon-play"></span></h:commandLink>
+						<h:commandLink id="iwx_last_page_btn" styleClass="btn btn-default btn-xs" title="#{i18n['dw4.last_page']}" onclick="return IwxRuntime.Client.lastPageIWX();"><span class="glyphicon glyphicon-fast-forward"></span></h:commandLink>
+					</div>
+				</span>
+				<h:graphicImage url="/docway/css/images/spazio.png" alt="space" style="width:3px;" />
+				<span id="iwx-rotate-buttons">
+					<div class="btn-group">
+						<h:commandLink title="#{i18n['dw4.ruota_di_90_gradi_in_senso_antiorario']}" styleClass="btn btn-default btn-xs" onclick="return IwxRuntime.Client.rotateLeftIWX();"><span class="glyphicons-pro repeat icon-flipped"></span></h:commandLink>
+						<h:commandLink title="#{i18n['dw4.ruota_di_90_gradi_in_senso_orario']}" styleClass="btn btn-default btn-xs" onclick="return IwxRuntime.Client.rotateRightIWX();"><span class="glyphicons-pro repeat"></span></h:commandLink>
+					</div>
+				</span>
+				
+				<h:graphicImage url="/docway/css/images/spazio.png" alt="space" style="width:3px;" />
+				<span id="iwx-print-buttons">
+					<h:inputHidden id="iwxSITesto" value="#{bean.siTesto}" />
+					<div class="btn-group dropup">
+						<h:commandLink title="#{i18n['dw4.print']}" styleClass="btn btn-default btn-xs" onclick="return IwxRuntime.Client.printImageIWX();"><span class="glyphicons-pro print"></span></h:commandLink>
+						<a href="#" class="btn btn-default btn-xs dw4-splitted-button dropdown-toggle" data-toggle="dropdown">
+							<span class="caret"></span>
+						</a>
+						<ul class="dropdown-menu" role="menu">
+							<li><h:commandLink onclick="return IwxRuntime.Client.printImageIWX();" value="#{i18n['dw4.stampa_del_documento_corrente']}"/></li>
+							<li><h:commandLink onclick="return IwxRuntime.Client.printAllImagesIWX();" value="#{i18n['dw4.stampa_di_tutti_i_documenti']}"/></li>
+						</ul>
+					</div>
+				</span>
+				
+				<h:graphicImage url="/docway/css/images/spazio.png" alt="space" style="width:3px;" />
+				<span id="iwx-save-buttons">
+					<div class="btn-group dropup">
+						<h:commandLink title="#{i18n['acl.save']}" styleClass="btn btn-default btn-xs" onclick="return IwxRuntime.Client.saveImageIWX();"><span class="glyphicons-pro floppy_save"></span></h:commandLink>
+						<a href="#" class="btn btn-default btn-xs dw4-splitted-button dropdown-toggle" data-toggle="dropdown">
+							<span class="caret"></span>
+						</a>
+						<ul class="dropdown-menu" role="menu">
+							<li><h:commandLink onclick="return IwxRuntime.Client.saveImageIWX();" value="#{i18n['dw4.salvataggio_del_documento_corrente']}"/></li>
+							<li><h:commandLink onclick="return IwxRuntime.Client.saveAllImagesIWX();" value="#{i18n['dw4.salvataggio_di_tutti_i_documenti']}"/></li>
+						</ul>
+					</div>
+				</span>
+				
+				<h:panelGroup rendered="#{bean.formsAdapter.funzionalitaDisponibili['improntacheck'] and empty bean.doc.impronta.valore}">
+					<h:graphicImage url="/docway/css/images/spazio.png" alt="space" style="width:3px;" />
+					<span id="iwx-images-checkimpronta">
+						<ui:repeat id="xwImagesCheckImpronta" var="image" value="#{bean.doc.immagini}" varStatus="index">
+							<h:commandLink title="#{i18n['dw4.verifica_impronta']}" action="#{bean.checkImprontaImage}" style="#{bean.doc.showIwxSelectedImage ne image.name ? 'display:none;' : '' }" styleClass="btn btn-default btn-xs">
+								<f:ajax execute="@form" render="@form" /><span class="glyphicons-pro shoe_steps"></span>
+							</h:commandLink>
+						</ui:repeat>
+					</span>
+				</h:panelGroup>
+			</div>
+			<div class="iwx-version pull-right">
+				<input type="hidden" id="iwx_required_version" value="#{bean.requiredVersionIWX}" />
+				<input type="hidden" id="iwx_current_version" value="#{bean.currentVersionIWX}" />
+				#{i18n['dw4.iwx_version']}: <span id="iwx_version" style="font-weight:bold;"></span>
+			</div>
+			<div style="clear:both; display:none; height:0px; width:0px;"></div>
+		</div>
+		<div id="iwx_error_messages" class="iwx-error-logs"></div>
+		<div id="iwx_holder" style="min-height:25px; width:100%;"></div>
+		
+		<script type="text/javascript">
+		window.loadIWX = function() {
+			// inizializzazione di iwx con apertura in visualizzazione dell'immagine selezionata
+			initIwxAfterReload('#{facesContext.externalContext.requestContextPath}/fileupload', '#{cookie.JSESSIONID.value}', '#{userBean.login}', '#{userBean.matricola}', '#{bean.formsAdapter.customTupleName}', '#{bean.formsAdapter.db}', resetJobsIwx, 'downloadCurrentImage', null, null, '#{bean.iwxFileTypes}', '#{bean.iwxImageTypes}');
+		}
+		
+		$(window).load(function() {
+			jsf.ajax.addOnEvent(function(data) {
+				if (data.status == 'success') {
+					// inizializzazione di iwx con apertura in visualizzazione dell'immagine selezionata
+					initIwxAfterAjax('#{facesContext.externalContext.requestContextPath}/fileupload', '#{cookie.JSESSIONID.value}', '#{userBean.login}', '#{userBean.matricola}', '#{bean.formsAdapter.customTupleName}', '#{bean.formsAdapter.db}', 'downloadCurrentImage', null, null, '#{bean.iwxFileTypes}', '#{bean.iwxImageTypes}');
+				}
+			});
+		});
+		</script>
+	</h:panelGroup>
+	
+</ui:composition>   
+</html>

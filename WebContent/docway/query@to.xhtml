@@ -1,0 +1,86 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+    template="#{queryTo.pageTemplate}"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:f="http://java.sun.com/jsf/core">
+
+    <ui:define name="content">
+    	<!-- INFO ORGANO SELEZIONATO -->
+   		<div class="sub-header">
+			<h:panelGroup rendered="#{fn:length(queryTo.organi) > 0 and !empty queryTo.organoSelezionatoNome}">
+				<span class="glyphicons-pro group"></span>&#160;
+				#{queryTo.organoSelezionato.nome}
+			</h:panelGroup>
+			<h:panelGroup rendered="#{fn:length(queryTo.organi) > 0 and empty queryTo.organoSelezionatoNome}">
+				<span class="glyphicons-pro warning_sign"></span>&#160;
+				#{i18n['dw4.nessun_organo_selezionato']}
+			</h:panelGroup>
+			<h:panelGroup rendered="#{fn:length(queryTo.organi) == 0}">
+				<span class="glyphicons-pro warning_sign"></span>&#160;
+				#{i18n['dw4.nessun_organo_disponibile']}
+			</h:panelGroup>
+		</div>
+		
+    	<!-- RIGA 1 MENU DOCWAY 3 -->
+		<h:panelGroup rendered="#{!empty queryTo.organoSelezionato and queryTo.organoSelezionato.visualizza}">
+			<div class="btn-toolbar delibere-btn-toolbar" role="toolbar">
+				<div class="btn-group">
+					<h:commandLink styleClass="btn btn-default openwaitmsg" action="#{queryTo.seduteConcluse}" value="#{i18n['dw4.sedute_concluse']}" />
+					<h:commandLink styleClass="btn btn-default openwaitmsg" action="#{queryTo.seduteAllaFirma}" value="#{i18n['dw4.sedute_alla_firma']}" />
+					<h:commandLink styleClass="btn btn-default openwaitmsg" action="#{queryTo.seduteACalendario}" value="#{i18n['dw4.sedute_a_calendario']}" />
+					<h:commandLink styleClass="btn btn-default openwaitmsg" action="#{queryTo.proposteInCorso}" value="#{i18n['dw4.proposte_in_corso']}" />
+					<h:commandLink styleClass="btn btn-default openwaitmsg" action="#{queryTo.proposteSospese}" value="#{i18n['dw4.proposte_sospese']}" />
+				</div>	
+			</div>	
+		</h:panelGroup>
+    
+    
+    	<!-- INFO PROSSIMA SEDUTA UTILE -->
+    	<h:panelGroup rendered="#{!empty queryTo.organoSelezionato and empty queryTo.organoSelezionato.sedutaUtile}">
+			<div class="alert alert-info">#{i18n['dw4.nessuna_seduta_utile']}</div>
+		</h:panelGroup>
+		<h:panelGroup rendered="#{!empty queryTo.organoSelezionato and !empty queryTo.organoSelezionato.sedutaUtile}">
+			<div class="showdoc-title clearfix alert alert-info">
+				<div class="row">
+					<div class="col-xs-1">
+						<span class="doc-tipo-seduta glyphicons-pro"></span>
+					</div>
+					<div class="col-xs-10">
+						<div class="showdoc-first-row-title">
+							<h:commandLink action="#{queryTo.gotoDocsInGestioneProssimaSeduta}" styleClass="openwaitmsg">
+								<strong><span>#{i18n['dw4.prossima_seduta_utile_convocazione']}</span>&#160;
+								#{queryTo.organoSelezionato.sedutaUtile.data_convocazione}</strong>
+							</h:commandLink>
+						</div>
+						<div class="showdoc-second-row-title">
+							<h:panelGroup rendered="#{!empty queryTo.organoSelezionato.sedutaUtile.ora_presentazione or !empty queryTo.organoSelezionato.sedutaUtile.data_presentazione}">
+								<span>#{i18n['dw4.prossima_seduta_utile_presentazione_entro']}</span>&#160;
+								<h:panelGroup rendered="#{!empty queryTo.organoSelezionato.sedutaUtile.ora_presentazione}">
+									<span>#{i18n['dw4.le_ore']}</span>&#160;
+									<strong>#{queryTo.organoSelezionato.sedutaUtile.ora_presentazione}</strong>&#160;
+									<h:panelGroup rendered="#{!empty queryTo.organoSelezionato.sedutaUtile.data_presentazione}">
+										<span>#{i18n['dw4.del']}</span>&#160;
+									</h:panelGroup>
+								</h:panelGroup>
+								<h:panelGroup rendered="#{empty queryTo.organoSelezionato.sedutaUtile.ora_presentazione}">
+									<span>#{i18n['dw4.prossima_seduta_utile_presentazione_giorno']}</span>&#160;
+								</h:panelGroup>
+								<h:panelGroup rendered="#{!empty queryTo.organoSelezionato.sedutaUtile.data_presentazione}">
+									<strong>#{queryTo.organoSelezionato.sedutaUtile.data_presentazione}</strong>
+								</h:panelGroup>
+							</h:panelGroup>
+						</div>
+					</div>
+					<div class="col-xs-1"></div>
+				</div>
+			</div>
+		</h:panelGroup>
+		
+		<script type="text/javascript">
+		$('#menuForm\\:globalSearchInput').focus();
+		</script>
+		
+		<h:inputTextarea styleClass="textareainput form-control" value="#{queryTo.xml}" rendered="#{queryTo.debugMode}" rows="10"></h:inputTextarea>
+    </ui:define>
+</ui:composition>    

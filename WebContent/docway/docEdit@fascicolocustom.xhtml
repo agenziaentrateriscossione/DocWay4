@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+    template="#{docEditRepertorio.pageTemplate}"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:c="http://java.sun.com/jsp/jstl/core">
+
+<ui:define name="content">
+	<div class="repertorio">
+	
+		<div class="sub-header">#{i18n['dw4.fascicoli_custom']} - #{i18n['acl.insert']}</div>
+		
+		<div class="list-group">
+			<ui:repeat var="titoloFascicolocustom" value="#{docEditFascicolocustom.listof_tipologie}" varStatus="status">
+				
+				<h:panelGroup>
+						<h:commandLink styleClass="list-group-item" action="#{docEditFascicolocustom.insTableDocFascicolocustom}" >
+							<span class="glyphicon glyphicon-folder-open normal-size-icon"></span>
+						
+							<span style="margin-left: 4px;">#{titoloFascicolocustom.descrizione}</span>
+							<f:param name="titoloFascicolocustom" value="#{titoloFascicolocustom}"></f:param>
+						</h:commandLink>
+						
+				</h:panelGroup>
+				
+			</ui:repeat>
+		</div>
+		
+		<h:inputTextarea value="#{docEditFascicolocustom.xml}" rendered="#{docEditFascicolocustom.debugMode}" styleClass="form-control" rows="10" />
+	</div>
+</ui:define>
+
+</ui:composition>

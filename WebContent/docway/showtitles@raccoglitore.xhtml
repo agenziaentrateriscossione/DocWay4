@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+    template="#{docwayTitles.pageTemplate}"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:f="http://java.sun.com/jsf/core">
+
+<ui:define name="content">
+	<ui:remove>
+		<h5 class="sub-header">#{i18n['dw4.elenco_risultati']} #{i18n['dw4.from']} #{docwayTitles.firstPosition} #{i18n['dw4.to']} #{docwayTitles.lastPosition} (#{i18n['dw4.on']} #{docwayTitles.count})</h5>
+	</ui:remove>
+
+
+	<!-- toolbar: inizio -->
+	<div class="btn-toolbar" role="toolbar">
+		<div class="pull-right">
+			<ui:include src="./ajaxNavigationBar.xhtml"><ui:param name="bean" value="#{docwayTitles}"/><ui:param name="customPage" value="true"/><ui:param name="customPageId" value="titlesId"/></ui:include>
+		</div>
+		<div class="btn-group">
+			<h:panelGroup rendered="#{!docwayTitles.popupPage}">
+				<ui:remove> <!-- richiesta eliminazione del pulsante -->
+					<h:commandLink rendered="#{docwayTitles.formsAdapter.funzionalitaDisponibili['menuMode']}" action="#{docwayTitles.raccogli}" onclick="return raccogli(#{docwayTitles.countSelection});" styleClass="btn btn-default">
+						#{i18n['dw4.raccogli']}
+					</h:commandLink>
+				</ui:remove>
+				
+				<h:panelGroup rendered="#{docwayTitles.formsAdapter.funzionalitaDisponibili['abilitaEsportazioneCSVBase'] and docwayTitles.formsAdapter.funzionalitaDisponibili['abilitaEsportazioneCSVAvanzata']}">
+					<div class="btn-group">
+						<button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+							#{i18n['dw4.esportazione_csv']} <span class="caret"></span>
+						</button>
+						<ul class="dropdown-menu">
+							<li><h:commandLink action="#{docwayTitles.exportCSV}" value="#{i18n['dw4.base']}" onclick="return exportCSV(#{docwayTitles.countSelection});" /></li>
+							<li><h:commandLink action="#{docwayTitles.startExportCSVAdvanced}" value="#{i18n['dw4.avanzata']}" onclick="return exportCSV(#{docwayTitles.countSelection});" /></li>
+						</ul>
+					</div>
+				</h:panelGroup>
+				<h:commandLink rendered="#{!docwayTitles.formsAdapter.funzionalitaDisponibili['abilitaEsportazioneCSVBase'] and docwayTitles.formsAdapter.funzionalitaDisponibili['abilitaEsportazioneCSVAvanzata']}" action="#{docwayTitles.startExportCSVAdvanced}" styleClass="btn btn-default" onclick="return exportCSV(#{docwayTitles.countSelection});">#{i18n['dw4.esportazione_csv']}</h:commandLink>
+                <h:commandLink rendered="#{docwayTitles.formsAdapter.funzionalitaDisponibili['abilitaEsportazioneCSVBase'] and !docwayTitles.formsAdapter.funzionalitaDisponibili['abilitaEsportazioneCSVAvanzata']}" action="#{docwayTitles.exportCSV}" styleClass="btn btn-default" onclick="return exportCSV(#{docwayTitles.countSelection});">#{i18n['dw4.esportazione_csv']}</h:commandLink>
+					
+				<h:commandLink rendered="#{docwayTitles.formsAdapter.funzionalitaDisponibili['menuMode']}" action="#{docwayTitles.addRPA}" onclick="return confirmTrasferimento(#{docwayTitles.countSelection});" styleClass="btn btn-default">
+					#{i18n['dw4.trasferisci']}
+				</h:commandLink>
+					
+				<h:commandLink rendered="#{docwayTitles.formsAdapter.funzionalitaDisponibili['queryInSearchHierarchy'] and docwayTitles.formsAdapter.funzionalitaDisponibili['enableVaschettePersonalizzate']}" action="#{docwayTitles.openAddVaschetta}" styleClass="btn btn-default">
+					<f:ajax execute="@form" render="@form" />#{i18n['dw4.nuova_vaschetta']}
+				</h:commandLink>
+			</h:panelGroup>
+		</div>
+	</div>
+	<!-- toolbar: fine -->
+
+	<div class="raccoglitore" style="margin-top:15px;">
+		<div id="fixedshowdoc" class="showtitles fixed-showdoc">
+			<table class="table table-hover doc-titles-table">
+				<thead>
+					<tr>
+						<th class="coltipo #{docwayTitles.formsAdapter.funzionalitaDisponibili['mostraGerarchiaFascicoli'] ? 'colgerarchia' : ''} essential">&#160;</th>
+						<th class="colcheck essential">
+							<h:selectBooleanCheckbox id="selectAll" title="#{i18n['dw4.seleziona_tutti']}" immediate="true" value="#{docwayTitles.selectAll}" valueChangeListener="#{docwayTitles.selectAll}">
+								<f:ajax execute="@this" render="@form" />
+							</h:selectBooleanCheckbox>
+						</th>
+						<th class="cologgetto essential">
+							#{i18n['dw4.object']}
+						</th>
+					</tr>
+				</thead>
+				<tbody>
+					<ui:repeat id="titoli" var="title" value="#{docwayTitles.titles}" varStatus="status">
+						<tr>      
+							<td>
+								<h:commandLink action="#{docwayTitles.mostraDocumento}" title="#{i18n['dw4.vai_al_raccoglitore']}" styleClass="openwaitmsg">
+									<f:param name="titolo" value="#{title}"></f:param>
+									<span class="doc-tipo-fascicolo glyphicon glyphicon-inbox"></span>
+								</h:commandLink>
+							</td>
+							<td>
+								<input id="checkTit#{status.index}" type="checkbox" class="titlescheckbox" checked="#{(title.select) ? 'cheched' : ''}" onclick="changeSelectionTitles('#{status.index}');" />
+								<h:inputHidden value="#{title.select}" id="tit" />
+								<h:commandLink id="updateTitoliSelezionatiBtn" action="#{docwayTitles.updateSelectionTitles}" style="display:none;">
+									<f:ajax execute="@form" render="@form"/>
+								</h:commandLink>
+							</td>
+							<td>
+								<h:commandLink action="#{docwayTitles.mostraDocumento}" title="#{i18n['dw4.vai_al_raccoglitore']}" styleClass="openwaitmsg">
+									#{title.split[13]}
+								</h:commandLink>
+							</td>
+						</tr>
+					</ui:repeat>
+				</tbody>
+			</table>
+		</div>
+	
+		<ui:include src="./rifinterni@RPA.xhtml"><ui:param name="bean" value="#{rifInt}"/></ui:include>
+		<ui:include src="./loadingbar@assegnazioneRPA.xhtml"><ui:param name="pageBean" value="#{rifInt}"/></ui:include>
+		<ui:include src="./lookup.xhtml"> <ui:param name="pageBean" value="#{rifInt}"/></ui:include>
+		<ui:include src="./rifintLookup.xhtml"> <ui:param name="pageBean" value="#{rifInt}"/></ui:include>
+		<ui:include src="./addVaschettaCustom.xhtml"> <ui:param name="pageBean" value="#{docwayTitles}"/></ui:include>
+		<ui:include src="./loadingbar@exportCSV.xhtml"><ui:param name="pageBean" value="#{docwayTitles}"/></ui:include>
+		<ui:include src="./exportCSVAdvanced.xhtml"> <ui:param name="pageBean" value="#{docwayTitles}"/></ui:include>
+		
+		<h:inputTextarea value="#{docwayTitles.xml}" rendered="#{docwayTitles.debugMode}" styleClass="form-control" rows="10" />
+	</div>
+</ui:define>
+
+</ui:composition>

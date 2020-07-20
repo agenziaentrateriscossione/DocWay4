@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" 
+	  xmlns:h="http://java.sun.com/jsf/html" 
+	  xmlns:ui="http://java.sun.com/jsf/facelets" 
+	  xmlns:f="http://java.sun.com/jsf/core">
+<ui:composition>
+
+	<!-- sfondo opaco visualizzato in caso di apertura di finestre popup (no modali) -->
+	<h:panelGroup id="waitmsgdiv" layout="block"> </h:panelGroup>	
+	
+	<!-- immagine di loading in caso di chiamata AJAX -->
+	<h:graphicImage url="/acl/css/images/ajax-loader.gif" id="loading-indicator" styleClass="loading-indicator-icon" style="display:none;" alt="loading..." />
+		
+</ui:composition>
+</html>

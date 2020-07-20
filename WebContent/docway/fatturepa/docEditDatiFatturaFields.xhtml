@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" 
+	  xmlns:h="http://java.sun.com/jsf/html" 
+	  xmlns:ui="http://java.sun.com/jsf/facelets" 
+	  xmlns:f="http://java.sun.com/jsf/core"
+	  xmlns:c="http://java.sun.com/jsp/jstl/core">
+<ui:composition>
+
+	<div class="fieldset">
+		<div class="legend">
+			#{i18n['dw4.dati_fattura']}
+			
+			<div class="pull-right">
+				<span class="glyphicons-pro euro" title="#{i18n['dw4.dati_fattura']}"></span>
+			</div>
+		</div>
+	
+		<div class="form-group">
+			<label for="templateForm:tipoDocFattura" class="col-sm-2 control-label requiredField"><span>* #{i18n['dw4.tipodocumento']}</span></label>
+			<div class="col-sm-3">
+	        	<h:selectOneMenu id="tipoDocFattura" value="#{bean.fatturaPA.datiFattura[0].datiGeneraliDocumento.tipoDocumento}" styleClass="form-control">
+					<f:selectItems value="#{bean.tipodocumento_list}" var="option" itemValue="#{option.value}" itemLabel="#{option.label}"></f:selectItems>
+				</h:selectOneMenu>
+	        </div>
+	        <label for="templateForm:divisaFattura" class="col-sm-2 control-label requiredField"><span>* #{i18n['dw4.divisa']}</span></label>
+	        <div class="col-sm-2">
+	        	<h:inputText id="divisaFattura" value="#{bean.fatturaPA.datiFattura[0].datiGeneraliDocumento.divisa}" styleClass="#{ component.valid ? '' : 'invalidinput' } form-control" />
+	        </div>
+		</div>
+		<div class="form-group">
+			<label for="templateForm:numeroFattura" class="col-sm-2 control-label requiredField"><span>* #{i18n['dw4.num']}</span></label>
+			<div class="col-sm-3">
+	        	<h:inputText id="numeroFattura" value="#{bean.fatturaPA.datiFattura[0].datiGeneraliDocumento.numero}" styleClass="#{ component.valid ? '' : 'invalidinput' } form-control" />
+	        </div>
+	        <ui:include src="../dateField.xhtml">
+				<ui:param name="label" value="#{i18n['dw4.data']}" />
+				<ui:param name="id" value="dataFattura" />
+				<ui:param name="value" value="#{bean.fatturaPA.datiFattura[0].datiGeneraliDocumento.data}" />
+				<ui:param name="required" value="true" />
+			</ui:include>
+		</div>
+		<div class="form-group">
+			<label for="templateForm:causaleFattura" class="col-sm-2 control-label requiredField"><span>* #{i18n['dw4.causale']}</span></label>
+			<div class="col-sm-9">
+				<h:inputTextarea id="causaleFattura" value="#{bean.fatturaPA.datiFattura[0].datiGeneraliDocumento.causale}" rows="2" cols="120" styleClass="#{ component.valid ? '' : 'invalidinput' } form-control" />
+			</div>
+		</div>
+		<div class="form-group">
+			<label for="templateForm:importoTotaleFattura" class="col-sm-2 control-label"><span>#{i18n['dw4.importo_totale']}</span></label>
+			<div class="col-sm-3">
+				<h:inputText id="importoTotaleFattura" value="#{bean.fatturaPA.datiFattura[0].datiGeneraliDocumento.importoTotaleDocumento}" styleClass="#{ component.valid ? '' : 'invalidinput' } form-control currencyField" />
+	        </div>
+		</div>
+		
+		<h:panelGroup id="datiBeniServiziHolder" layout="block">
+			<div class="form-group">
+				<label class="col-sm-2 control-label emphasis-title"><span>#{i18n['dw4.dati_beni_servizi']}</span></label>
+			</div>
+			
+			<ui:repeat id="lineaBeniServizi" var="linea" value="#{bean.fatturaPA.datiFattura[0].datiBeniServizi.lineaBeniServizi}" varStatus="indice">
+				<div class="docedit-customfield-group customfield-group-fields-multi">
+					<div class="form-group">
+						<label class="col-sm-2 control-label"><span>#{i18n['dw4.linea']} #{indice.index+1}</span></label>
+						<div class="col-sm-2">
+							<div class="input-group">
+								<div class="btn-group">
+									<h:commandLink action="#{bean.fatturaPA.datiFattura[0].datiBeniServizi.deleteLineaBeniServizi}" title="#{i18n['dw4.elimina_istanza']}" styleClass="btn btn-default">
+							 			<f:ajax execute="@form" render=":templateForm:datiBeniServiziHolder :templateForm:errormsg"/>
+							 			<span class="glyphicon glyphicon-minus"></span>
+									</h:commandLink>
+									<h:commandLink action="#{bean.fatturaPA.datiFattura[0].datiBeniServizi.addLineaBeniServizi}" title="#{i18n['dw4.aggiungi_istanza']}" styleClass="btn btn-default">
+							 			<f:ajax execute="@form" render=":templateForm:datiBeniServiziHolder :templateForm:errormsg"/>
+							 			<span class="glyphicon glyphicon-plus"></span>
+									</h:commandLink>
+									<h:commandLink action="#{bean.fatturaPA.datiFattura[0].datiBeniServizi.moveUpLineaBeniServizi}" title="#{i18n['acl.up']}" styleClass="btn btn-default #{(indice.index == 0) ? 'disabled' : ''}">
+							 			<f:ajax execute="@form" render=":templateForm:datiBeniServiziHolder :templateForm:errormsg"/>
+							 			<span class="glyphicon glyphicon-chevron-up"></span>
+									</h:commandLink>
+									<h:commandLink action="#{bean.fatturaPA.datiFattura[0].datiBeniServizi.moveDownLineaBeniServizi}" title="#{i18n['acl.down']}" styleClass="btn btn-default #{(indice.index == fn:length(bean.fatturaPA.datiFattura[0].datiBeniServizi.lineaBeniServizi)-1) ? 'disabled' : ''}">
+							 			<f:ajax execute="@form" render=":templateForm:datiBeniServiziHolder :templateForm:errormsg"/>
+							 			<span class="glyphicon glyphicon-chevron-down"></span>
+									</h:commandLink>
+								</div>
+							</div>
+						</div>
+					</div>
+					
+					<div class="form-group">
+						<label class="col-sm-2 control-label requiredField"><span>* #{i18n['acl.description']}</span></label>
+						<div class="col-sm-9">
+							<h:inputText id="descrizioneLinea" value="#{linea.descrizione}" styleClass="#{ component.valid ? '' : 'invalidinput' } form-control" />
+				        </div>
+					</div>
+					<div class="form-group">
+						<label class="col-sm-2 control-label requiredField"><span>* #{i18n['dw4.prezzo_unitario']}</span></label>
+						<div class="col-sm-2">
+							<h:inputText id="prezzoUnitario" value="#{linea.prezzoUnitario}" styleClass="#{ component.valid ? '' : 'invalidinput' } form-control currencyField" />
+				        </div>
+						<label class="col-sm-2 control-label requiredField"><span>* #{i18n['dw4.aliquota_iva']}</span></label>
+						<div class="col-sm-1">
+							<h:inputText id="aliquotaIva" value="#{linea.aliquotaIva}" styleClass="#{ component.valid ? '' : 'invalidinput' } form-control currencyField" />
+				        </div>
+						<label class="col-sm-2 control-label requiredField"><span>* #{i18n['dw4.prezzo_totale']}</span></label>
+						<div class="col-sm-2">
+							<h:inputText id="prezzoTotale" value="#{linea.prezzoTotale}" styleClass="#{ component.valid ? '' : 'invalidinput' } form-control currencyField" />
+				        </div>
+					</div>
+				</div>
+			</ui:repeat>
+		</h:panelGroup>
+		
+		<h:panelGroup id="datiRiepilogoHolder" layout="block">
+			<div class="form-group">
+				<label class="col-sm-2 control-label emphasis-title"><span>#{i18n['dw4.dati_di_riepilogo']}</span></label>
+			</div>
+			
+			<ui:repeat id="lineaRiepilogo" var="riepilogo" value="#{bean.fatturaPA.datiFattura[0].datiBeniServizi.riepilogoBeniServizi}" varStatus="indice">
+				<div class="docedit-customfield-group customfield-group-fields-multi">
+					<div class="form-group">
+						<label class="col-sm-2 control-label"><span>#{i18n['dw4.riepilogo']} #{indice.index+1}</span></label>
+						<div class="col-sm-2">
+							<div class="input-group">
+								<div class="btn-group">
+									<h:commandLink action="#{bean.fatturaPA.datiFattura[0].datiBeniServizi.deleteRiepilogoBeniServizi}" title="#{i18n['dw4.elimina_istanza']}" styleClass="btn btn-default">
+							 			<f:ajax execute="@form" render=":templateForm:datiRiepilogoHolder :templateForm:errormsg"/>
+							 			<span class="glyphicon glyphicon-minus"></span>
+									</h:commandLink>
+									<h:commandLink action="#{bean.fatturaPA.datiFattura[0].datiBeniServizi.addRiepilogoBeniServizi}" title="#{i18n['dw4.aggiungi_istanza']}" styleClass="btn btn-default">
+							 			<f:ajax execute="@form" render=":templateForm:datiRiepilogoHolder :templateForm:errormsg"/>
+							 			<span class="glyphicon glyphicon-plus"></span>
+									</h:commandLink>
+									<h:commandLink action="#{bean.fatturaPA.datiFattura[0].datiBeniServizi.moveUpRiepilogoBeniServizi}" title="#{i18n['acl.up']}" styleClass="btn btn-default #{(indice.index == 0) ? 'disabled' : ''}">
+							 			<f:ajax execute="@form" render=":templateForm:datiRiepilogoHolder :templateForm:errormsg"/>
+							 			<span class="glyphicon glyphicon-chevron-up"></span>
+									</h:commandLink>
+									<h:commandLink action="#{bean.fatturaPA.datiFattura[0].datiBeniServizi.moveDownRiepilogoBeniServizi}" title="#{i18n['acl.down']}" styleClass="btn btn-default #{(indice.index == fn:length(bean.fatturaPA.datiFattura[0].datiBeniServizi.riepilogoBeniServizi)-1) ? 'disabled' : ''}">
+							 			<f:ajax execute="@form" render=":templateForm:datiRiepilogoHolder :templateForm:errormsg"/>
+							 			<span class="glyphicon glyphicon-chevron-down"></span>
+									</h:commandLink>
+								</div>
+							</div>
+						</div>
+					</div>
+					
+					<div class="form-group">
+						<label class="col-sm-2 control-label requiredField"><span>* #{i18n['dw4.aliquota_iva']}</span></label>
+						<div class="col-sm-1">
+							<h:inputText id="aliquotaIva" value="#{riepilogo.aliquotaIVA}" styleClass="#{ component.valid ? '' : 'invalidinput' } form-control currencyField" />
+				        </div>
+						<label class="col-sm-2 control-label requiredField"><span>* #{i18n['dw4.imponibile']}</span></label>
+						<div class="col-sm-2">
+							<h:inputText id="imponibile" value="#{riepilogo.imponibileImporto}" styleClass="#{ component.valid ? '' : 'invalidinput' } form-control currencyField" />
+				        </div>
+						<label class="col-sm-2 control-label requiredField"><span>* #{i18n['dw4.imposta']}</span></label>
+						<div class="col-sm-2">
+							<h:inputText id="imposta" value="#{riepilogo.imposta}" styleClass="#{ component.valid ? '' : 'invalidinput' } form-control currencyField" />
+				        </div>
+					</div>
+				</div>
+			</ui:repeat>
+		</h:panelGroup>
+	</div>
+	
+</ui:composition>
+</html>

@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:c="http://java.sun.com/jsp/jstl/core">
+<ui:composition>
+	
+	<h:panelGroup rendered="#{field.type eq 'calendar'}">
+		<div class="input-group date" data-date-format="dd/mm/yyyy">
+			<h:inputText id="calendarfield" value="#{fieldInstance.value}" readonly="#{(field.readonly) ? true : false}" styleClass="#{ component.valid ? '' : 'invalidinput' } form-control datepicker #{(field.readonly) ? 'readonly' : ''}" onblur="#{ (!empty onblur) ? onblur : ''}">
+				<f:converter converterId="DateConverter"/>
+			</h:inputText>
+			<span class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></span>
+		</div>
+	</h:panelGroup>
+	
+	<h:panelGroup rendered="#{field.type eq 'checkbox'}">
+		<ui:repeat id="itemInstance" var="item" value="#{fieldInstance.items}" varStatus="itemStatus">
+			<span class="margin-right-20" style="white-space:nowrap;">
+				<input type="checkbox" id="#{groupfieldId}:itemInstance:#{itemStatus.index}:itemCheckbox" checked="#{(item.selected) ? 'checked' : ''}" onclick="changeSelectionCustomFieldCheckbox('#{groupfieldId}:itemInstance:#{itemStatus.index}:itemCheckbox', '#{groupfieldId}:itemInstance:#{itemStatus.index}:item');" />
+				<h:inputHidden id="item" value="#{item.selected}" />
+				<label for="#{groupfieldId}:itemInstance:#{itemStatus.index}:itemCheckbox" class="normal-weight-text">#{item.label}</label>
+			</span>
+		</ui:repeat>
+	</h:panelGroup>
+	
+	<h:panelGroup rendered="#{field.type eq 'radio'}">
+		<h:selectOneRadio id="radiofield" value="#{fieldInstance.value}" readonly="#{(field.readonly) ? true : false}" styleClass="#{ component.valid ? '' : 'invalidinput' } radio-selection #{(field.readonly) ? 'readonly' : ''}">
+			<f:selectItems value="#{fieldInstance.items}" var="item" itemValue="#{item.value}" itemLabel="#{item.label}"></f:selectItems>
+		</h:selectOneRadio>
+	</h:panelGroup>
+	
+	<h:panelGroup rendered="#{field.type eq 'select'}">
+		<h:selectOneMenu id="selectfield" value="#{fieldInstance.value}" readonly="#{(field.readonly) ? true : false}" styleClass="#{ component.valid ? '' : 'invalidinput' } form-control #{(field.readonly) ? 'readonly' : ''}">
+			<f:selectItems value="#{fieldInstance.items}" var="item" itemValue="#{item.value}" itemLabel="#{item.label}"></f:selectItems>
+		</h:selectOneMenu>
+	</h:panelGroup>
+	
+	<h:panelGroup rendered="#{field.type eq 'textarea'}">
+		<h:inputTextarea id="textareafield" value="#{fieldInstance.value}" rows="4" cols="120" readonly="#{(field.readonly) ? true : false}" styleClass="#{ component.valid ? '' : 'invalidinput' } form-control #{(field.readonly) ? 'readonly' : ''}" />
+	</h:panelGroup>
+	
+	<h:panelGroup rendered="#{field.type eq 'text'}">
+		<h:inputText id="textfield" value="#{fieldInstance.value}" readonly="#{(field.readonly) ? true : false}" styleClass="#{ component.valid ? '' : 'invalidinput' } form-control #{(field.readonly) ? 'readonly' : ''}" />
+	</h:panelGroup>	
+	
+	<h:panelGroup rendered="#{field.type eq 'lookup'}">
+		<div class="input-group">
+			<h:inputText id="lookup_input" value="#{fieldInstance.value}" onblur="executeAction(this);" onfocus="setDefaultValue(this);" styleClass="#{ component.valid ? '' : 'invalidinput' } lookup-field form-control">
+				<f:ajax execute="@form" render="templateForm:customFieldsHolder templateForm:lookup templateForm:errormsg" />
+			</h:inputText>
+			
+			<div class="input-group-btn">
+				<h:commandLink style="display:none;" action="#{bean.clearLookupCustomField(instancesId)}" id="lookup_clear">
+		  			<f:ajax execute="@form" render="templateForm:customFieldsHolder templateForm:lookup templateForm:errormsg"/>
+				</h:commandLink>
+				<h:commandLink title="Lookup" id="lookup_button" action="#{bean.lookupCustomField(instancesId)}" onclick="setFocusLookup(this);" styleClass="btn btn-default">
+		   			<f:ajax execute="@form" render="templateForm:customFieldsHolder templateForm:lookup templateForm:errormsg"/>
+		   			<span class="glyphicon glyphicon-search"></span>
+		   		</h:commandLink>
+	  		</div>
+		</div>
+	</h:panelGroup>
+
+</ui:composition>
+</html>

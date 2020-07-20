@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+    template="#{docEditAcquisizione.pageTemplate}"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:c="http://java.sun.com/jsp/jstl/core">
+
+<ui:define name="content">
+	<div class="#{docEditAcquisizione.tipoDoc} docedit">
+	
+		<!-- toolbar: inizio -->
+		<div class="btn-toolbar" role="toolbar">
+			<div class="btn-group">
+				<h:commandLink id="saveBtn" action="#{docEditAcquisizione.saveDocument}" styleClass="btn btn-primary openwaitmsg">#{i18n['acl.save']}</h:commandLink>
+				<h:commandLink rendered="#{docEditAcquisizione.formsAdapter.funzionalitaDisponibili['acquisizione_differita']}" action="#{docEditAcquisizione.pulisciAcquisizioneImmagini}" onclick="IwxRuntime.Client.resetJobIWX();" styleClass="btn btn-default">#{i18n['acl.clear']}</h:commandLink>
+				<h:commandLink rendered="#{docEditAcquisizione.formsAdapter.funzionalitaDisponibili['foto_originale']}" action="#{docEditAcquisizione.abbandonaFotoOriginale}" styleClass="btn btn-default">#{i18n['acl.back']}</h:commandLink>	
+			</div>
+		</div>
+		<!-- toolbar: fine -->
+		
+		<h5 class="sub-header">
+			<h:panelGroup rendered="#{!empty docEditAcquisizione.tipoDoc and docEditAcquisizione.tipoDoc ne 'acquisizione'}">
+				<span class="doc-tipo-#{docEditAcquisizione.tipoDoc} glyphicon glyphicon-file"></span>&#160;
+			</h:panelGroup>
+			<h:outputText value="#{docEditAcquisizione.docEditTitle}" escape="false" />
+		</h5>
+	
+		<!-- messages: inizio -->
+		<h:panelGroup rendered="#{not empty facesContext.messageList}" layout="block" styleClass="docedit-messages alert alert-danger">
+			<h:messages styleClass="" id="validationMesseges" />
+		</h:panelGroup>
+		<h:inputHidden id="errorFieldIds" value="#{docEditAcquisizione.errorFieldIds}" />
+		<!-- messages: fine -->
+		
+		<script type="text/javascript">
+		$(document).ready(function() {
+			setInvalidInputFields();
+		});
+		</script>
+		
+		<!-- scheda edit: inizio -->
+		<div class="row-fluid" style="margin-top:10px;">
+			<div class="box span12">
+				<div class="box-content">
+				
+					<div class="fieldset">
+						<div class="legend">
+							#{i18n['dw4.datidoc']}
+						
+							<div class="pull-right">
+								<span class="glyphicon glyphicon-envelope" title="#{i18n['dw4.datidoc']}"></span>
+							</div>
+						</div>
+						
+						<h:panelGroup layout="block" rendered="#{docEditAcquisizione.formsAdapter.funzionalitaDisponibili['foto_originale']}" styleClass="form-group">
+							<label class="col-sm-2 control-label">#{i18n['dw4.protocollo_n']}</label>
+							<div class="col-sm-9">
+			        			<p class="form-control-static">	
+			        				<h:outputText value="#{fn:substringAfter(fn:substringAfter(docEditAcquisizione.doc.num_prot, '-'), '-')}">
+										<f:converter converterId="NumConverter"/>
+									</h:outputText>&#160;
+		
+									<h:outputText value="#{i18n['dw4.del']}" />&#160;
+									<h:outputText value="#{docEditAcquisizione.doc.data_prot}" >
+										<f:converter converterId="DateConverter"/>
+									</h:outputText>&#160;
+									
+									<h:outputText value="(" />
+									<h:outputText value="#{docEditAcquisizione.doc.num_prot}" />
+									<h:outputText value=")" />
+			        			</p>
+			        		</div>
+						</h:panelGroup>
+						
+						<ui:include src="./multisocietaFields.xhtml">
+							<ui:param name="beanDoc" value="#{docEditAcquisizione.doc}" />
+			        	</ui:include>
+			        	
+			        	<h:panelGroup rendered="#{docEditAcquisizione.formsAdapter.funzionalitaDisponibili['acquisizione_differita']}" layout="block"  styleClass="form-group">
+							<label class="col-sm-2 control-label">#{i18n['dw4.sigla_strutt']}</label>
+							<div class="col-sm-1">
+								<p class="form-control-static"><h:outputText value="#{docEditAcquisizione.doc.cod_amm_aoo}" /></p>
+							</div>
+							<label for="templateForm:acqanno" class="col-sm-1 control-label">#{i18n['dw4.anno']}</label>
+							<div class="col-sm-2">
+								<h:inputText id="acqanno" value="#{docEditAcquisizione.currYear}" styleClass="form-control" />
+							</div>
+							<label for="templateForm:numProt" class="col-sm-2 control-label">#{i18n['dw4.nprot']}</label>
+							<div class="col-sm-2">
+								<h:inputText id="numProt" value="#{docEditAcquisizione.numProt}" immediate="true" onblur="cercaProtocollo()" styleClass="#{ component.valid ? '' : 'invalidinput' } form-control" />
+								<script type="text/javascript">
+								function cercaProtocollo() {
+									$("#templateForm\\:cercaProtocolloBtn").trigger("click");
+								}
+								</script>
+								<h:commandLink id="cercaProtocolloBtn" action="#{docEditAcquisizione.cercaProtocollo}" styleClass="context-menu-one box menu-1 iconButton openwaitmsg" style="display:none;" />
+							</div>
+						</h:panelGroup>
+						
+						<h:panelGroup rendered="#{docEditAcquisizione.doc.nrecord ne '' and docEditAcquisizione.doc.nrecord ne '.'}">
+							<h:panelGroup rendered="#{docEditAcquisizione.doc.tipo eq 'arrivo' and fn:length(docEditAcquisizione.doc.mittente.rif_esterni) > 0}">
+								<ui:repeat var="rif" value="#{docEditAcquisizione.doc.mittente.rif_esterni}">
+									<div class="form-group">
+										<label class="col-sm-2 control-label">#{i18n['dw4.mittente']}</label>
+										<div class="col-sm-9">
+											<p class="form-control-static">
+												#{rif.nome}
+												<h:panelGroup rendered="#{!empty rif.referente.nominativo}">
+													<em> (#{rif.referente.nominativo}<h:outputText value=" - #{rif.referente.ruolo}" rendered="#{!empty rif.referente.ruolo}"/>)</em>
+												</h:panelGroup>
+												
+												<h:outputText value=", #{rif.indirizzo}" rendered="#{!empty rif.indirizzo}" />
+												
+												<h:panelGroup rendered="#{!empty rif.email_certificata}"> [#{rif.email_certificata}]</h:panelGroup>
+												<h:panelGroup rendered="#{!empty rif.email}"> [#{rif.email}]</h:panelGroup>
+												
+												<h:outputText value=" - c.f. #{rif.codice_fiscale}" rendered="#{!empty rif.codice_fiscale}" />
+												<h:outputText value=" - p.iva #{rif.partita_iva}" rendered="#{!empty rif.partita_iva}" />
+												<h:outputText value=" - codice SAP: #{rif.cod_SAP}" rendered="#{!empty rif.cod_SAP}" />
+											</p>
+										</div>
+									</div>
+								</ui:repeat>
+							</h:panelGroup>
+							
+							<h:panelGroup rendered="#{docEditAcquisizione.doc.tipo eq 'partenza' and fn:length(docEditAcquisizione.doc.destinatari.rif_esterni) > 0}">
+								<ui:repeat var="rif" value="#{docEditAcquisizione.doc.destinatari.rif_esterni}">
+									<div class="form-group">
+										<label class="col-sm-2 control-label">
+											#{i18n['dw4.destinatario']}
+											<h:outputText rendered="#{rif.copia_conoscenza}" value=" CC" styleClass="label-destinatario-cc" />
+										</label>
+										<div class="col-sm-9">
+											<p class="form-control-static">
+												#{rif.nome}
+												<h:panelGroup rendered="#{!empty rif.referente.nominativo}">
+													<em> (#{rif.referente.nominativo}<h:outputText value=" - #{rif.referente.ruolo}" rendered="#{!empty rif.referente.ruolo}"/>)</em>
+												</h:panelGroup>
+												
+												<h:outputText value=", #{rif.indirizzo}" rendered="#{!empty rif.indirizzo}" />
+												
+												<h:panelGroup rendered="#{!empty rif.email_certificata}"> [#{rif.email_certificata}]</h:panelGroup>
+												<h:panelGroup rendered="#{!empty rif.email}"> [#{rif.email}]</h:panelGroup>
+												
+												<h:outputText value=" - c.f. #{rif.codice_fiscale}" rendered="#{!empty rif.codice_fiscale}" />
+												<h:outputText value=" - p.iva #{rif.partita_iva}" rendered="#{!empty rif.partita_iva}" />
+												<h:outputText value=" - codice SAP: #{rif.cod_SAP}" rendered="#{!empty rif.cod_SAP}" />
+											</p>
+										</div>
+									</div>
+								</ui:repeat>
+							</h:panelGroup>
+							
+							<h:panelGroup rendered="#{docEditAcquisizione.doc.tipo eq 'interno' or docEditAcquisizione.doc.tipo eq 'varie'}">
+								<h:panelGroup rendered="#{!empty docEditAcquisizione.doc.assegnazioneRPAM.diritto}">
+									<div class="form-group">
+										<label class="col-sm-2 control-label">#{i18n['dw4.mittente']}</label>
+										<div class="col-sm-9">
+											<p class="form-control-static">
+												<h:panelGroup rendered="#{empty docEditAcquisizione.doc.assegnazioneRPAM.tipo_uff or docEditAcquisizione.doc.assegnazioneRPAM.tipo_uff =='ufficio'}">
+													#{docEditAcquisizione.doc.assegnazioneRPAM.nome_uff} - #{docEditAcquisizione.doc.assegnazioneRPAM.nome_persona}
+												</h:panelGroup>
+												<h:panelGroup rendered="#{docEditAcquisizione.doc.assegnazioneRPAM.tipo_uff =='ruolo'}">
+													#{docEditAcquisizione.doc.assegnazioneRPAM.nome_uff}
+												</h:panelGroup>
+											</p>
+										</div>
+									</div>
+								</h:panelGroup>
+								<h:panelGroup rendered="#{!empty docEditAcquisizione.doc.assegnazioneRPA.diritto}">
+									<div class="form-group">
+										<label class="col-sm-2 control-label">#{i18n['dw4.destinatario']}</label>
+										<div class="col-sm-9">
+											<p class="form-control-static">
+												<h:panelGroup rendered="#{empty docEditAcquisizione.doc.assegnazioneRPA.tipo_uff or docEditAcquisizione.doc.assegnazioneRPA.tipo_uff =='ufficio'}">
+													#{docEditAcquisizione.doc.assegnazioneRPA.nome_uff} - #{docEditAcquisizione.doc.assegnazioneRPA.nome_persona}
+												</h:panelGroup>
+												<h:panelGroup rendered="#{docEditAcquisizione.doc.assegnazioneRPA.tipo_uff =='ruolo'}">
+													#{docEditAcquisizione.doc.assegnazioneRPA.nome_uff}
+												</h:panelGroup>
+											</p>
+										</div>
+									</div>
+								</h:panelGroup>
+							</h:panelGroup>
+							
+							<div class="form-group" style="margin-top:15px;">
+								<label class="col-sm-2 control-label">#{i18n['dw4.object']}</label>
+								<div class="col-sm-9">
+									<p class="form-control-static oggetto-documento-value">
+										<h:outputText value="#{docEditAcquisizione.doc.oggetto}" />
+									</p>
+								</div>	
+							</div>
+						</h:panelGroup>
+					</div> <!-- /fieldset -->
+					
+					<h:panelGroup rendered="#{docEditAcquisizione.doc.nrecord ne '' and docEditAcquisizione.doc.nrecord ne '.'}">
+						<ui:include src="./docInformaticiFields.xhtml">
+							<ui:param name="bean" value="#{docEditAcquisizione}" />
+			        		<ui:param name="beanDoc" value="#{docEditAcquisizione.doc}" />
+			        		<ui:param name="enableFiles" value="false" />
+			        		<ui:param name="enableImages" value="true" />
+			        		<ui:param name="enableFileAgentPDF" value="false" />
+			        		<ui:param name="enableImageAgentPDF" value="true" />
+			        	</ui:include>
+			        </h:panelGroup>
+				</div>
+			</div>
+		</div>
+	
+	</div>
+	
+	<h:inputTextarea value="#{docEditAcquisizione.xml}" rendered="#{docEditAcquisizione.debugMode}" styleClass="form-control" rows="10" />
+			
+	<ui:include src="./lookup.xhtml"> <ui:param name="pageBean" value="#{docEditAcquisizione}"/></ui:include>
+</ui:define>
+	
+</ui:composition>

@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+    template="#{showdocRaccoglitore.pageTemplate}"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:f="http://java.sun.com/jsf/core">
+
+<ui:define name="content">
+	<div class="raccoglitore">
+		<ui:remove>
+			<h5 class="sub-header">#{i18n['dw4.view_raccoglitore']}</h5>
+		</ui:remove>
+		
+		<!-- toolbar: inizio -->
+		<ui:include src="./buttonBarRacc.xhtml">
+			<ui:param name="bean" value="#{showdocRaccoglitore}" />
+		</ui:include>
+		<!-- toolbar: fine -->
+		
+		<!-- scheda show: inizio -->
+		<div class="contenuto-doc clearfix">
+			<!-- titolo del raccoglitore: inizio -->
+			<div class="showdoc-title doc-tipo-raccoglitore clearfix">
+				<div class="row">
+					<div class="col-xs-1">
+						<span class="doc-tipo-raccoglitore glyphicon glyphicon-inbox"></span>
+					</div>
+					<div class="col-xs-11">
+						<div class="showdoc-first-row-title">
+							<h:outputText value="#{showdocRaccoglitore.raccoglitore.creazione.dateLong}"></h:outputText>
+						</div>
+						<div class="showdoc-second-row-title" title="#{showdocRaccoglitore.raccoglitore.oggetto}">
+							#{showdocRaccoglitore.raccoglitore.oggetto}
+						</div>
+					</div>
+				</div>
+			</div>
+			<!-- titolo del raccoglitore: fine -->
+			
+			<div id="fixedshowdoc" class="fixed-showdoc">
+				<!-- dati del raccoglitore: inizio -->
+				<div class="showdoc-section">
+					<div class="title">
+						#{i18n['dw4.datiracc']}
+						
+						<div class="pull-right">
+							<span class="glyphicon glyphicon-inbox" title="#{i18n['dw4.datiracc']}"></span>
+						</div>
+					</div>
+					<dl class="dl-horizontal">
+						<dt>#{i18n['dw4.object']}</dt>
+						<dd>#{showdocRaccoglitore.raccoglitore.oggetto}</dd>
+						<dt>#{i18n['dw4.opendate']}</dt>
+						<dd><h:outputText value="#{showdocRaccoglitore.raccoglitore.creazione.dateLong}" /></dd>
+						<h:panelGroup rendered="#{showdocRaccoglitore.raccoglitore.stato == 'chiuso'}">
+							<dt>#{i18n['dw4.closedate']}</dt>
+							<dd>
+								<h:outputText value="#{showdocRaccoglitore.raccoglitore.data_chiusura}">
+									<f:converter converterId="DateConverter"/>	
+								</h:outputText>
+							</dd>
+						</h:panelGroup>
+						<h:panelGroup rendered="#{showdocRaccoglitore.formsAdapter.funzionalitaDisponibili['enableRaccoglitori'] and fn:length(showdocRaccoglitore.raccoglitore.contenuto_in) > 0}">
+							<dt>#{i18n['dw4.contenutoin']}</dt>
+							<dd>
+								<ui:repeat var="contenuto" value="#{showdocRaccoglitore.raccoglitore.contenuto_in}">
+									<h:panelGroup rendered="#{!empty contenuto.cod}">
+										<h:commandLink value="#{contenuto.text}" action="#{showdocRaccoglitore.navigateToRac}" />
+										&#160;
+										<h:panelGroup rendered="#{showdocRaccoglitore.formsAdapter.funzionalitaDisponibili['raccoglitorigestione'] and showdocRaccoglitore.formsAdapter.funzionalitaDisponibili['disableSegnatura']}">
+											<span class="btn-group">
+												<h:commandLink action="#{showdocRaccoglitore.removeFromRac}" title="#{i18n['dw4.removeFromRac']}" styleClass="btn btn-default btn-xs">
+													<span class="glyphicon glyphicon-remove"></span>
+												</h:commandLink>
+											</span>
+										</h:panelGroup>
+										<br/>
+									</h:panelGroup>
+								</ui:repeat>
+							</dd>
+						</h:panelGroup>
+						<h:panelGroup rendered="#{showdocRaccoglitore.formsAdapter.funzionalitaDisponibili['enableRaccoglitori'] and fn:length(showdocRaccoglitore.raccoglitore.link_interni) > 0}">
+							<dt>#{i18n['dw4.collegamenti']}</dt>
+							<dd>
+								<ui:repeat var="link_interno" value="#{showdocRaccoglitore.raccoglitore.link_interni}">
+									<h:panelGroup rendered="#{!empty link_interno.href}">
+										<h:commandLink action="#{showdocRaccoglitore.navigateInternalLink}">
+											#{link_interno.text}
+										</h:commandLink>
+										&#160;
+										<h:panelGroup rendered="#{link_interno.remove =='true'}">
+											<span class="btn-group">
+												<h:commandLink action="#{showdocRaccoglitore.removeInternalLink}" title="#{i18n['dw4.removeLink']}" onclick="if (!owmConfirm('#{i18n['dw4.rimuovi_collegamento_procedere_con_l_operazione']}')) return false;" styleClass="btn btn-default btn-xs">
+													<span class="glyphicon glyphicon-remove"></span>
+												</h:commandLink>
+											</span>
+										</h:panelGroup>
+										<br/>
+									</h:panelGroup>
+								</ui:repeat>
+							</dd>
+						</h:panelGroup>
+					</dl>
+				</div>
+				<!-- dati del raccoglitore: fine -->
+				
+				<ui:include src="../customfields/showdoc@customfields.xhtml">
+					<ui:param name="bean" value="#{showdocRaccoglitore}"/>
+	        	</ui:include>
+			
+				<ui:include src="./showdoc@raccoglitore@responsabilita.xhtml">
+					<ui:param name="bean" value="#{showdocRaccoglitore}"/>
+				</ui:include>
+				
+				<h:panelGroup rendered="#{!empty showdocRaccoglitore.raccoglitore.note.text}">
+					<!-- dati altro: inizio -->
+					<div class="showdoc-section">
+						<div class="title">
+							#{i18n['dw4.other']}
+							
+							<div class="pull-right">
+								<span class="glyphicon glyphicon-list-alt" title="#{i18n['dw4.other']}"></span>
+							</div>
+						</div>
+						
+						<dl class="dl-horizontal">
+							<h:panelGroup rendered="#{!empty showdocRaccoglitore.raccoglitore.note.text}">
+								<dt>#{i18n['acl.notes']}</dt>
+								<dd><pre>#{showdocRaccoglitore.raccoglitore.note.text}</pre></dd>
+							</h:panelGroup>
+						</dl>
+					</div>
+					<!-- dati altro: fine -->
+				</h:panelGroup>
+				
+				<ui:include src="./history.xhtml">
+					<ui:param name="bean" value="#{showdocRaccoglitore.raccoglitore}"/>
+					<ui:param name="viewbean" value="#{showdocRaccoglitore}"/>
+					<ui:param name="visible" value="true" />
+				</ui:include>
+			</div>
+		</div>
+		<!-- scheda show: fine -->
+		
+		<ui:include src="./rifinterni@RPA.xhtml"><ui:param name="bean" value="#{rifInt}"/></ui:include>
+		<ui:include src="./lookup.xhtml"> <ui:param name="pageBean" value="#{rifInt}"/></ui:include>
+		<ui:include src="./rifintLookup.xhtml"> <ui:param name="pageBean" value="#{rifInt}"/></ui:include>
+		<ui:include src="./showPersoneRuolo.xhtml"><ui:param name="bean" value="#{docwayShowPersoneRuolo}"/></ui:include>
+		
+		<h:inputTextarea value="#{showdocRaccoglitore.xml}" rendered="#{showdocRaccoglitore.debugMode}" styleClass="form-control" rows="10" />
+	</div>
+
+	<ui:fragment rendered="#{showdocRaccoglitore.close}">
+		<script type="text/javascript">
+		window.opener.$('#templateForm\\:reloadPage').trigger("click");
+		self.close();
+		</script>
+	</ui:fragment>
+</ui:define>
+
+</ui:composition>

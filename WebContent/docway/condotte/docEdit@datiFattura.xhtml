@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" 
+	  xmlns:h="http://java.sun.com/jsf/html" 
+	  xmlns:ui="http://java.sun.com/jsf/facelets" 
+	  xmlns:f="http://java.sun.com/jsf/core">
+<ui:composition>
+	
+	<div class="fieldset">
+		<div class="legend">
+	    	#{i18n['dw4.dati_fattura']}
+	    				
+	    	<div class="pull-right">
+				<span class="glyphicons-pro euro" title="#{i18n['dw4.dati_fattura']}"></span>
+			</div>
+		</div>
+	    			
+	    <h:panelGroup rendered="#{ !fn:contains(bean.hideDivs, 'centro_costo,') }" id="centrocosto_holder" layout="block" styleClass="form-group">
+	   		<label for="templateForm:centrocosto_input" class="col-sm-2 control-label"><span>#{i18n['dw4.centro_di_costo']}</span></label>
+			<div class="col-sm-9">
+				<ui:include src="../lookupField.xhtml">
+	        		<ui:param name="id" value="centrocosto" />
+	        		<ui:param name="field" value="#{bean.dati_fattura.centro_costo.name}" />
+	        		<ui:param name="bean" value="#{bean}" />
+	        		<ui:param name="action" value="lookupCentroCosto"/>
+	        		<ui:param name="clearaction" value="clearLookupCentroCosto"/>
+	        		<ui:param name="title" value="#{i18n['dw4.lookup_centro_costo']}"/>
+	        		<ui:param name="styleclass" value="#{ component.valid ? '' : 'invalidinput' } form-control"/>
+	        		<ui:param name="refresh" value="templateForm:centrocosto_holder templateForm:lookup templateForm:errormsg" />
+	        	</ui:include>
+	       	</div>
+	       	<h:inputHidden id="centro_costo_cod" value="#{bean.dati_fattura.centro_costo.cod}" />
+		</h:panelGroup>
+		
+		<h:panelGroup rendered="#{ !fn:contains(bean.hideDivs, 'piva,') }" layout="block" styleClass="form-group">
+			<label for="templateForm:piva" class="col-sm-2 control-label"><span>#{i18n['dw4.codice_organizzatore']}</span></label>
+			<div class="col-sm-4">
+				<h:inputText id="piva" value="#{bean.dati_fattura.partita_iva}" styleClass="#{ component.valid ? '' : 'invalidinput' } form-control" />
+	       	</div>
+		</h:panelGroup>
+		
+		<h:panelGroup rendered="#{bean.formsAdapter.funzionalitaDisponibili['rppVisualizzaData']}" layout="block" styleClass="form-group">
+			<label for="templateForm:dataAcquisizioneFattura" class="col-sm-2 control-label"><span>#{i18n['dw4.data_acquisizione_fattura']}</span></label>
+			<div class="col-sm-9">
+				<p class="form-control-static"><h:outputText value="#{bean.doc.data_prot}"><f:converter converterId="DateConverter" /></h:outputText></p>
+			</div>
+		</h:panelGroup>
+		
+		<div class="form-group">
+			<ui:include src="../dateField.xhtml">
+				<ui:param name="label" value="#{i18n['dw4.data_emissione_fattura']}" />
+				<ui:param name="id" value="dataEmissioneFattura" />
+				<ui:param name="value" value="#{bean.dati_fattura.data_fatt}" />
+				<ui:param name="required" value="true" />
+			</ui:include>
+			<h:inputHidden id="hidden_data_prot" value="#{bean.doc.data_prot}"><f:converter converterId="DateConverter" /></h:inputHidden>
+		</div>
+		
+		<h:panelGroup rendered="#{ !fn:contains(bean.hideDivs, 'dati_fattura,') }" layout="block" styleClass="form-group">
+			<label for="templateForm:numero_fatt" class="col-sm-2 control-label"><span>#{i18n['dw4.numero_fattura']}</span></label>
+			<div class="col-sm-3">
+				<h:inputText id="numero_fatt" value="#{bean.dati_fattura.numero_fatt}" styleClass="#{ component.valid ? '' : 'invalidinput' } form-control" />
+	       	</div>
+	       	<label for="templateForm:importo" class="col-sm-2 control-label"><span>#{i18n['dw4.importo_iva_compresa']}</span></label>
+			<div class="col-sm-4">
+				<h:inputText id="importo" value="#{bean.dati_fattura.importo}" styleClass="#{ component.valid ? '' : 'invalidinput' } form-control" />
+	       	</div>
+		</h:panelGroup>
+		
+		<div class="form-group">
+			<label class="col-sm-2 control-label"><span>#{i18n['dw4.stato_fattura']}</span></label>
+			<div class="col-sm-9">
+				<p class="form-control-static"><h:outputText value="#{bean.dati_fattura.stato}" /></p>
+			</div>
+		</div>
+		
+		<div class="form-group">
+			<label class="col-sm-2 control-label requiredField"><span>* #{i18n['dw4.ragione_sociale_fornitore']}</span></label>
+			<div class="col-sm-9">
+				<ui:include src="../lookupRepeatField.xhtml">
+	       			<ui:param name="id" value="ragioneSocialeFornitore" />
+	       			<ui:param name="field" value="#{bean.doc.rif_esterni[0].nome}" />
+	        		<ui:param name="element" value="#{bean.doc.rif_esterni[0]}" />
+	        		<ui:param name="bean" value="#{bean}" />
+	        		<ui:param name="action" value="lookupFornitore"/>
+	        		<ui:param name="clearaction" value="clearLookupFornitore"/>
+	        		<ui:param name="title" value="#{i18n['dw4.lookup_fornitore']}"/>
+	        		<ui:param name="styleclass" value="#{ component.valid ? '' : 'invalidinput' } form-control"/>
+	        		<ui:param name="refresh" value="@form"/>
+	        		<ui:param name="notConstraint" value="#{bean.formsAdapter.funzionalitaDisponibili['mittenteNonVincolato']}"/>
+	        	</ui:include>
+			</div>
+		</div>
+	</div>
+	
+
+</ui:composition>
+</html>

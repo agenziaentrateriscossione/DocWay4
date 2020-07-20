@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	template="template.xhtml" xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core">
+
+	<ui:define name="content">
+
+		<div class="profilo docedit">
+			<!-- toolbar: inizio -->
+			<div class="btn-toolbar margin-bottom" role="toolbar">
+				<div class="btn-group">
+					<h:commandLink id="saveBtn" action="#{docEditModifyRuolo.saveDocument}"
+						styleClass="btn btn-primary openwaitmsg">#{i18n['acl.save']}</h:commandLink>
+					<h:commandLink action="#{docEditModifyRuolo.clearDocument}"
+						styleClass="btn btn-default">#{i18n['acl.back']}</h:commandLink>
+				</div>
+			</div>
+			<!-- toolbar: fine -->
+
+			<h5 class="sub-header">
+				<span class="ruoli glyphicons-pro"></span>&#160;
+				<h:outputText value="#{i18n['acl.mod_roles']}" escape="false" />
+			</h5>
+
+			<!-- messages: inizio -->
+			<h:panelGroup rendered="#{not empty facesContext.messageList}"
+				layout="block" styleClass="docedit-messages alert alert-danger">
+				<h:messages styleClass="" id="validationMesseges" />
+			</h:panelGroup>
+			<!-- messages: fine -->
+			
+			<script type="text/javascript">
+			$(document).ready(function() {
+				// disabilita link esterni al form per rilascio del lock sul documento
+				disableNoTemplateFormLinks("#{i18n['dw4.abbandona_alert_msg']}");
+			});
+			</script>
+
+			<!-- scheda edit: inizio -->
+			<div class="row-fluid" style="margin-top:10px;">
+				<div id="fixedshowdoc" class="box span12 fixed-showdoc">
+					<div class="box-content">
+
+						<div class="fieldset">
+							<div class="legend">
+								#{i18n['acl.informazioni_di_base']}
+								<div class="pull-right">
+									<span class="glyphicons-pro briefcase"
+										title="#{i18n['acl.informazioni_di_base']}"></span>
+								</div>
+							</div>
+
+							<div class="form-group">
+								<label class="col-sm-2 control-label requiredField"><span>*
+										#{i18n['acl.name']}</span></label>
+								<div class="col-sm-6">
+									<h:inputText id="ruolo_nome"
+										value="#{docEditModifyRuolo.ruolo.nome}"
+										styleClass="#{ component.valid ? '' : 'invalidinput' } form-control" />
+								</div>
+							</div>
+
+							<div class="form-group">
+								<label class="col-sm-2 control-label requiredField"><span>#{i18n['acl.cod_amm']}</span></label>
+								<div class="col-sm-2">
+									<h:inputText id="ruolo_codamm" value="#{docEditModifyRuolo.ruolo.cod_amm}" readonly="true" styleClass="#{ component.valid ? '' : 'invalidinput' } form-control" maxlength="4" />
+								</div>
+								<label class="col-sm-2 control-label requiredField"><span>#{i18n['acl.cod_aoo']}</span></label>
+								<div class="col-sm-2">
+									<h:inputText id="ruolo_codaoo" value="#{docEditModifyRuolo.ruolo.cod_aoo}" readonly="true" styleClass="#{ component.valid ? '' : 'invalidinput' } form-control" maxlength="3" />
+								</div>
+							</div>
+
+							<h:panelGroup
+								rendered="#{docEditModifyRuolo.formsAdapter.funzionalitaDisponibili['multiSocieta']}"
+								styleClass="form-control">
+								<div class="form-group">
+									<label class="col-sm-2 control-label"> <span>#{i18n['acl.society']}</span>
+									</label>
+									<div class="col-sm-6">
+										<h:selectOneMenu
+											value="#{docEditModifyRuolo.ruolo.societa.text}"
+											valueChangeListener="#{docEditModifyRuolo.societaValueChange}">
+											<f:selectItems value="#{docEditModifyRuolo.societa}"
+												var="societa" itemLabel="#{societa.text}"
+												itemValue="#{societa.text}" />
+											<f:ajax execute="@form" render="@form"></f:ajax>
+										</h:selectOneMenu>
+									</div>
+								</div>
+							</h:panelGroup>
+
+							<div class="form-group">
+								<label class="col-sm-2 control-label"><span>#{i18n['acl.description']}</span></label>
+								<div class="col-sm-9">
+									<h:inputTextarea
+										value="#{docEditModifyRuolo.ruolo.descrizione}" rows="4"
+										cols="120" styleClass="form-control" />
+								</div>
+							</div>
+
+						</div>
+					</div>
+				</div>
+			</div>
+			<!-- scheda edit: fine -->
+
+		</div>
+
+		<h:inputTextarea value="#{docEditModifyRuolo.xml}"
+			styleClass="form-control" rows="10" rendered="#{docEditModifyRuolo.debugMode}" />
+	</ui:define>
+</ui:composition>

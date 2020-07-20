@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" 
+	  xmlns:h="http://java.sun.com/jsf/html" 
+	  xmlns:ui="http://java.sun.com/jsf/facelets" 
+	  xmlns:f="http://java.sun.com/jsf/core">
+<ui:composition>
+	
+	<h:panelGroup rendered="#{ !fn:contains(bean.hideDivs, 'dati_approvazione,') }" layout="block" styleClass="fieldset">
+		<div class="legend">
+			#{i18n['dw4.dati_approvazione']}
+	    				
+	    	<div class="pull-right">
+				<span class="glyphicons-pro log_book" title="#{i18n['dw4.dati_approvazione']}"></span>
+			</div>
+		</div>
+		
+		<ui:include src="../contenutoInFields.xhtml">
+			<ui:param name="bean" value="#{bean}" />
+       	</ui:include>
+       	
+       	<div class="form-group">
+			<label for="templateForm:da_note" class="col-sm-2 control-label">#{i18n['acl.notes']}</label>
+			<div class="col-sm-9">
+				<h:inputTextarea id="da_note" value="#{bean.dati_approvazione.note}" rows="4" cols="120" styleClass="form-control" />
+			</div>		
+		</div>
+		
+		<div class="form-group">
+			<label for="templateForm:da_timestamp" class="col-sm-2 control-label">#{i18n['dw4.timestamp']}</label>
+			<div class="col-sm-4">
+				<h:inputText id="da_timestamp" value="#{bean.dati_approvazione.timestamp}" styleClass="#{ component.valid ? '' : 'invalidinput' } form-control" />
+			</div>		
+		</div>
+	</h:panelGroup>
+
+</ui:composition>
+</html>

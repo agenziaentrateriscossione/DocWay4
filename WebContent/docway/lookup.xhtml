@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" 
+	  xmlns:h="http://java.sun.com/jsf/html" 
+	  xmlns:ui="http://java.sun.com/jsf/facelets" 
+	  xmlns:f="http://java.sun.com/jsf/core"
+	  xmlns:c="http://java.sun.com/jsp/jstl/core">
+<ui:composition>
+
+	<h:panelGroup id="lookup" layout="block">
+		<h:panelGroup rendered="#{pageBean.lookupActive}">
+			<!-- Modal -->
+			<div id="lookupModal" class="modal fade in" aria-hidden="false" aria-labelledby="lookupModalLabel" role="dialog" tabindex="-1" style="display: block;">
+			<!--div class="modal fade" id="loadingbarModal" tabindex="-1" role="dialog" aria-labelledby="loadingbarModalLabel" aria-hidden="true"-->
+				<div class="modal-dialog">
+					<div class="modal-content jsf-modal">
+						<div class="modal-header">
+							<h:commandButton styleClass="close" title="#{i18n['acl.close']}" action="#{pageBean.lookup.close}" data-dismiss="modal"  value="&#215;" >
+			        			<f:ajax render="lookup"/>
+			        		</h:commandButton>
+			        		
+			        		<h4 class="modal-title" id="lookupModalLabel">Lookup</h4>
+						</div>
+						<div class="modal-body">
+						
+							<!-- toolbar -->
+							<div class="row btn-toolbar dw-modal-content-buttons margin-bottom">
+								<div class="col-md-6">
+									<div class="btn-group">
+										<h:panelGroup rendered="#{pageBean.lookup.formsAdapter.lookupNew != '' and not fn:contains(pageBean.lookup.formsAdapter.lookupNew, 'persona_esterna') and not fn:contains(pageBean.lookup.formsAdapter.lookupNew, 'struttura_esterna') and not fn:contains(pageBean.lookup.formsAdapter.lookupNew, 'comune')}">
+											<h:commandLink rendered="#{pageBean.lookup.formsAdapter.funzionalitaDisponibili['ins_record']}" 
+													action="#{pageBean.lookup.newRecord}" onclick="openCenterPopup('', 'popupNewLookupRecord');" 
+													target="popupNewLookupRecord" 
+													value="#{i18n['nuovo']}" styleClass="btn btn-default" />
+										</h:panelGroup>
+										
+										<h:panelGroup rendered="#{pageBean.lookup.formsAdapter.lookupNew != '' and fn:contains(pageBean.lookup.formsAdapter.lookupNew, 'comune')}">
+											<h:outputLink rendered="#{pageBean.lookup.formsAdapter.funzionalitaDisponibili['ins_record']}" 
+													value="#{facesContext.externalContext.requestContextPath}/acl/docEdit@comune.pf" 
+													onclick="openCenterPopup('', 'popupNewLookupRecordDocWay');" target="popupNewLookupRecordDocWay" 
+													class="btn btn-default">
+												<f:param name="db" value="#{pageBean.formsAdapter.aclDb}" />
+												<f:param name="lookupFieldVal" value="#{pageBean.lookup.lookupFieldVal}" />
+												#{i18n['dw4.nuovo_comune']}
+											</h:outputLink>
+										</h:panelGroup>
+										<h:panelGroup rendered="#{pageBean.lookup.formsAdapter.lookupNew != '' and (fn:contains(pageBean.lookup.formsAdapter.lookupNew, 'persona_esterna') or fn:contains(pageBean.lookup.formsAdapter.lookupNew, 'struttura_esterna'))}">
+											<h:outputLink rendered="#{pageBean.lookup.formsAdapter.funzionalitaDisponibili['ins_record'] and fn:contains(pageBean.lookup.formsAdapter.lookupNew, 'struttura_esterna')}" 
+													value="#{facesContext.externalContext.requestContextPath}/acl/docEdit@struttura_esterna.pf" 
+													onclick="openCenterPopup('', 'popupNewLookupRecordDocWay');" 
+													target="popupNewLookupRecordDocWay" class="btn btn-default">
+												<f:param name="db" value="#{pageBean.formsAdapter.aclDb}" />
+												<f:param name="lookupFieldVal" value="#{pageBean.lookup.lookupFieldVal}" />
+												#{i18n['dw4.nuova_struttura']}
+											</h:outputLink>
+											<h:outputLink rendered="#{(pageBean.lookup.formsAdapter.funzionalitaDisponibili['ins_record'] and fn:contains(pageBean.lookup.formsAdapter.lookupNew, 'persona_esterna')) or (pageBean.lookup.formsAdapter.funzionalitaDisponibili['ins_persona'] and fn:contains(pageBean.lookup.formsAdapter.lookupNew, 'struttura_esterna'))}" 
+													value="#{facesContext.externalContext.requestContextPath}/acl/docEdit@persona_esterna.pf" 
+													onclick="openCenterPopup('', 'popupNewLookupRecordDocWay');" 
+													target="popupNewLookupRecordDocWay" class="btn btn-default">
+												<f:param name="db" value="#{pageBean.formsAdapter.aclDb}" />
+												<f:param name="lookupFieldVal" value="#{pageBean.lookup.lookupFieldVal}" />
+												<f:param name="xverb" value="#{(!empty pageBean.lookup.lookupXq and fn:startsWith(pageBean.lookup.lookupXq, '[persest_appartenenzacoduff]=')) ? fn:substringAfter(pageBean.lookup.lookupXq, '=') : ''}#{(!empty pageBean.lookup.lookupXq and fn:startsWith(pageBean.lookup.lookupXq, '[persest_appartenenzacoduff]=')) ? '||' : ''}" />
+												#{i18n['dw4.nuova_persona']}
+											</h:outputLink>
+										</h:panelGroup>
+											
+									</div>
+								</div>
+								<div class="col-md-6 text-right">
+									<h:panelGroup rendered="#{fn:length(pageBean.lookup.titoli) > 0}">
+										<ui:include src="./ajaxNavigationBar.xhtml">
+											<ui:param name="bean" value="#{pageBean.lookup}"/>
+										</ui:include>
+									</h:panelGroup>
+								</div>
+							</div>
+							
+							<!-- titles -->
+							<h:panelGroup rendered="#{fn:length(pageBean.lookup.titoli) > 0}">
+								<table class="table table-striped">
+									<thead>
+										<tr>
+											<th class="essential">#{i18n['acl.title']}</th>
+										</tr>
+									</thead>
+									<tbody>
+										<h:panelGroup rendered="#{pageBean.lookup.lookupType eq '' or pageBean.lookup.lookupType eq 'standard'}">
+											<!-- lookup standard -->
+											<ui:repeat var="title" value="#{pageBean.lookup.titoli}" varStatus="status">
+												<tr>
+													<td class="essential">
+														<h:commandLink action="#{pageBean.lookup.confirm}" value="#{title.testo}">
+															<f:ajax execute="@form" render="@form" />
+														</h:commandLink>
+													</td>
+												</tr>
+											</ui:repeat>
+										</h:panelGroup>
+										
+										<h:panelGroup rendered="#{pageBean.lookup.lookupType eq 'mittente'}">
+											<!-- lookup su campo mittente -->
+												<ui:repeat var="compositeTitle" value="#{pageBean.lookup.titoliComposti}" varStatus="status">
+													<tr>
+														<td class="essential">
+															<ui:repeat var="title" value="#{compositeTitle.titoli}" varStatus="titoliStatus">
+																<h:panelGroup rendered="#{fn:length(compositeTitle.titoli) == 1}">
+																	<span class="lookup-span-link">
+																		<h:commandLink styleClass="openwaitmsg" action="#{pageBean.lookup.confirm}">
+																			#{title.testo}
+																			<f:param name="title" value="#{title}"></f:param>
+																			<f:ajax execute="@form" render="@form" />
+																		</h:commandLink>
+																	</span>
+																	<h:panelGroup rendered="#{fn:length(title.subtitle) > 0}"> 
+																		&#160;-&#160;<h:outputText value="#{fn:substring(title.subtitle, 1, fn:length(title.subtitle))}" />
+																	</h:panelGroup>
+																</h:panelGroup>
+																<h:panelGroup rendered="#{fn:length(compositeTitle.titoli) > 1}">
+																	<h:panelGroup rendered="#{titoliStatus.index == 0}">
+																		<div class="lookup-multivalue-span">#{title.testo}</div>
+																	</h:panelGroup>
+																	<div class="lookup-span-link">
+																		<h:panelGroup rendered="#{fn:substring(title.subtitle, 0, 1) eq 'A'}">
+																			<span class="glyphicons-pro factory ind-attiv normal-size-icon" title="#{i18n['dw4.indirizzo_attivita']}"></span>&#160;
+																		</h:panelGroup>
+																		<h:panelGroup rendered="#{fn:substring(title.subtitle, 0, 1) eq 'P'}">
+																			<span class="glyphicons-pro home ind-pers normal-size-icon" title="#{i18n['dw4.indirizzo_personale']}"></span>&#160;
+																		</h:panelGroup>
+																		<h:commandLink styleClass="openwaitmsg" action="#{pageBean.lookup.confirm}">
+																			<h:outputText value="#{fn:substring(title.subtitle, 1, fn:length(title.subtitle))}" />
+																			<f:ajax execute="@form" render="@form" />
+																		</h:commandLink>
+																	</div>
+																</h:panelGroup>
+															</ui:repeat>
+														</td>
+													</tr>
+												</ui:repeat>
+										</h:panelGroup>
+										
+										<h:panelGroup rendered="#{pageBean.lookup.lookupType eq 'firmatario'}">
+											<!-- lookup su campo firmatario -->
+											<ui:repeat var="title" value="#{pageBean.lookup.titoli}" varStatus="status">
+												<tr>
+													<td class="essential">
+														<span class="lookup-span-link">
+															<h:commandLink styleClass="openwaitmsg" action="#{pageBean.lookup.confirm}">#{title.testo}
+																<f:param name="title" value="#{title}"></f:param>
+																<f:ajax execute="@form" render="@form" />
+															</h:commandLink>
+														</span>
+														<h:panelGroup rendered="#{fn:length(title.subtitle) > 0}"> 
+															&#160;-&#160;<h:outputText value="#{title.subtitle}" />
+														</h:panelGroup>
+													</td>
+												</tr>
+											</ui:repeat>
+										</h:panelGroup>
+										
+										<h:panelGroup rendered="#{pageBean.lookup.lookupType eq 'voceIndice'}">
+											<!-- lookup su voci di indice -->
+											<ui:repeat var="compositeTitle" value="#{pageBean.lookup.titoliComposti}" varStatus="status">
+												<tr class="lookup-voci-indice">
+													<td class="essential">
+														<ui:repeat var="title" value="#{compositeTitle.titoli}" varStatus="titoliStatus">
+															<h:panelGroup rendered="#{fn:length(compositeTitle.titoli) == 1}">
+																<div class="lookup-span-link">
+																	<h:commandLink styleClass="openwaitmsg" action="#{pageBean.lookup.confirm}">
+																		#{title.testo}
+																		<f:param name="title" value="#{title}"></f:param>
+																		<f:ajax execute="@form" render="@form" />
+																	</h:commandLink>
+																</div>
+															</h:panelGroup>
+															<h:panelGroup rendered="#{fn:length(compositeTitle.titoli) > 1}">
+																<h:panelGroup rendered="#{titoliStatus.index == 0}">
+																	<div class="lookup-span-link">
+																		<h:panelGroup rendered="#{fn:indexOf(title.campiTitolo['tit_rpa_cc'], 'CC') != -1 or fn:indexOf(title.campiTitolo['tit_rpa_cc'], 'CDS') != -1}">
+																			<h:inputText class="vociIndice_overrideCC_#{status.index}_#{titoliStatus.index}" value="#{title.overrideCC}" style="display:none;" />
+																			<h:commandLink styleClass="openwaitmsg" action="#{pageBean.lookup.confirm}" onclick="return appendCC('vociIndice_overrideCC_#{status.index}_#{titoliStatus.index}');">
+																				<h:outputText value="#{title.testo}" />
+																				<f:ajax execute="@form" render="@form" />
+																			</h:commandLink>
+																		</h:panelGroup>
+																		<h:panelGroup rendered="#{fn:indexOf(title.campiTitolo['tit_rpa_cc'], 'CC') == -1 and fn:indexOf(title.campiTitolo['tit_rpa_cc'], 'CDS') == -1}">
+																			<h:commandLink styleClass="openwaitmsg" action="#{pageBean.lookup.confirm}">
+																				<h:outputText value="#{title.testo}" />
+																				<f:ajax execute="@form" render="@form" />
+																			</h:commandLink>
+																		</h:panelGroup>
+																	</div>
+																</h:panelGroup>
+																<h:panelGroup rendered="#{title.subtitle ne ''}">
+																	<div class="lookup-span-link">
+																		<h:panelGroup rendered="#{fn:indexOf(title.campiTitolo['tit_rpa_cc'], 'CC') != -1 or fn:indexOf(title.campiTitolo['tit_rpa_cc'], 'CDS') != -1}">
+																			<span style="padding-left:15px; padding-right:5px;"><span class="glyphicon glyphicon-asterisk"></span></span>
+																			<h:inputText class="vociIndice_overrideCC_#{status.index}_#{titoliStatus.index}" value="#{title.overrideCC}" style="display:none;" />
+																			<h:commandLink styleClass="openwaitmsg" action="#{pageBean.lookup.confirm}" onclick="return appendCC('vociIndice_overrideCC_#{status.index}_#{titoliStatus.index}');">
+																				<h:outputText value="#{title.subtitle}" />
+																				<f:ajax execute="@form" render="@form" />
+																			</h:commandLink>
+																		</h:panelGroup>
+																		<h:panelGroup rendered="#{fn:indexOf(title.campiTitolo['tit_rpa_cc'], 'CC') == -1 and fn:indexOf(title.campiTitolo['tit_rpa_cc'], 'CDS') == -1}">
+																			<span style="padding-left:15px; padding-right:5px;"><span class="glyphicon glyphicon-asterisk"></span></span>
+																			<h:commandLink styleClass="openwaitmsg" action="#{pageBean.lookup.confirm}">
+																				<h:outputText value="#{title.subtitle}" />
+																				<f:ajax execute="@form" render="@form" />
+																			</h:commandLink>
+																		</h:panelGroup>
+																	</div>
+																</h:panelGroup>
+															</h:panelGroup>
+														</ui:repeat>
+													</td>
+												</tr>
+											</ui:repeat>
+											<h:outputScript>
+											function appendCC(styleClass) {
+												var uffCC = $('input:text[class*="cc_nome_uff"][value!=""]');
+												var ruoloCC = $('input:text[class*="cc_nome_ruolo"][value!=""]'); 
+												//alert(uffCC.length + ' - ' + ruoloCC.length);
+												var uffCDS = $('input:text[class*="cds_nome_uff"][value!=""]');
+												var ruoloCDS = $('input:text[class*="cds_nome_ruolo"][value!=""]'); 
+												//alert(uffCDS.length + ' - ' + ruoloCDS.length);
+												if ((uffCC.length != 0) || (ruoloCC.length != 0) || (uffCDS.length != 0) || (ruoloCDS.length != 0)) {
+													if (!confirm('#{i18n['dw4.sovrascrivere_i_cc_esistenti']}\n#{i18n['dw4.ok_per_sovrascrivere']}\n#{i18n['dw4.annulla_per_accodare']}')) {
+														$('.' + styleClass).val(false);
+													}
+												}
+												return true;
+											}
+											</h:outputScript>
+										</h:panelGroup>
+									</tbody>
+								</table>
+							</h:panelGroup>
+							<h:panelGroup rendered="#{fn:length(pageBean.lookup.titoli) == 0}">
+								<div style="margin-top:15px;" class="alert alert-info">#{i18n['acl.emptysearch']}</div>
+							</h:panelGroup>
+				        	
+					       	<h:inputTextarea value="#{pageBean.lookup.xml}" rendered="#{pageBean.debugMode}" styleClass="form-control" rows="10"/>
+						</div>
+						<div class="modal-footer">
+							<h:commandButton styleClass="btn btn-default" title="#{i18n['acl.close']}" action="#{pageBean.lookup.close}" data-dismiss="modal"  value="#{i18n['acl.close']}" >
+			        			<f:ajax render="lookup"/>
+			        		</h:commandButton>
+						</div>
+					</div>
+				</div>
+			</div>
+		</h:panelGroup>
+		
+		<h:inputHidden id="focusElementLookup"></h:inputHidden>
+		<h:outputScript>
+		// gestione del ritorno da lookup. focus su campo successivo al campo di lookup
+		setGlobalFocusFieldId($('#templateForm\\:focusElementLookup').val());
+		</h:outputScript>
+		    
+	    <h:inputHidden id="lookupNewPhysDoc" rendered="#{pageBean.lookup != null}" value="#{pageBean.lookup.physDoc}" />
+	    <h:commandLink style="display:none;" id="redoLookupAfterInsert" action="#{pageBean.lookup.redoLookupAfterInsert}" >
+			<f:ajax execute="@form" render="@form" />
+		</h:commandLink>
+	</h:panelGroup>
+
+</ui:composition>   
+</html>

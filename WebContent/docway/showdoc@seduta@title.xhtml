@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" 
+	  xmlns:h="http://java.sun.com/jsf/html" 
+	  xmlns:ui="http://java.sun.com/jsf/facelets" 
+	  xmlns:f="http://java.sun.com/jsf/core">
+<ui:composition>
+
+	<div class="doc-tipo-#{bean.doc.tipo} showdoc-title clearfix">
+		<div class="row">
+			<div class="col-xs-1">
+				<h:panelGroup rendered="#{empty icon}">
+					<span class="doc-tipo-#{bean.doc.tipo} glyphicons-pro"></span>
+				</h:panelGroup>
+				<h:panelGroup rendered="#{!empty icon}">
+					<span class="showdoc-custom-title-icon">
+						<span class="doc-tipo-custom #{icon} #{(bean.doc.annullato =='si') ? 'annullato' : ''}" title="#{(!empty bean.doc.repertorio.text) ? bean.doc.repertorio.text : bean.doc.tipo}"></span>
+						<ui:remove>
+							<h:graphicImage url="#{icon}" alt="#{(!empty bean.doc.repertorio.text) ? bean.doc.repertorio.text : bean.doc.tipo}" title="#{(!empty bean.doc.repertorio.text) ? bean.doc.repertorio.text : bean.doc.tipo}" />
+						</ui:remove>
+					</span>
+				</h:panelGroup>
+			</div>
+			<div class="col-xs-10">
+				<h:panelGroup rendered="#{empty bean.doc.non_disponibile.estremi}">
+					<div class="showdoc-first-row-title">
+						<h:panelGroup rendered="#{bean.doc.stato eq 'sospesa'}">
+							#{i18n['dw4.proposte_sospese_del']} #{bean.doc.organo} 
+						</h:panelGroup>
+						<h:panelGroup rendered="#{!(bean.doc.stato eq 'sospesa')}">
+							#{i18n['dw4.seduta_del']} #{bean.doc.organo}
+							<h:panelGroup rendered="#{! (bean.doc.stato eq 'sospesa') }">
+								#{i18n['dw4.del']} #{bean.doc.data_convocazione}
+							</h:panelGroup>
+							(<strong>#{i18n['dw4.seduta']} #{bean.doc.stato}</strong>)
+							<div class="showdoc-second-row-title">
+								<h:panelGroup rendered="#{bean.formsAdapter.funzionalitaDisponibili['maschComp']}">
+									(#{i18n['dw4.verifica_presenze']})
+								</h:panelGroup>
+								<h:panelGroup rendered="#{bean.formsAdapter.funzionalitaDisponibili['maschRis']}">
+									(#{i18n['dw4.comunicazione_risultati']})
+								</h:panelGroup>
+								<h:panelGroup rendered="#{bean.formsAdapter.funzionalitaDisponibili['maschDelib']}">
+									(#{i18n['dw4.redazione_testo_delibera']})
+								</h:panelGroup>
+								<h:panelGroup rendered="#{!bean.formsAdapter.funzionalitaDisponibili['maschComp'] and !bean.formsAdapter.funzionalitaDisponibili['maschRis'] and !bean.formsAdapter.funzionalitaDisponibili['maschDelib']}">
+									(#{i18n['dw4.visualizzazione']})
+								</h:panelGroup>
+							</div>
+						</h:panelGroup>
+					</div>
+				</h:panelGroup>
+				<h:panelGroup rendered="#{!empty bean.doc.non_disponibile.estremi}">
+					<span class="showdoc-title-nondisponibile">#{bean.doc.non_disponibile.estremi}<br/></span>
+				</h:panelGroup>
+			</div>
+			<div class="col-xs-1">
+			</div>
+		</div>
+	</div>
+					
+</ui:composition>
+</html>

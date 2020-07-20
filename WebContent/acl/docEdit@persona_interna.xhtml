@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+    template="template.xhtml"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:f="http://java.sun.com/jsf/core">
+
+	<ui:define name="content">
+	   <div class="persint docedit">
+	        <!-- toolbar: inizio -->
+	        <div class="btn-toolbar margin-bottom" role="toolbar">
+	            <div class="btn-group">
+	                <h:commandLink id="saveBtn" action="#{docEditPersonaInterna.saveDocument}" styleClass="btn btn-primary openwaitmsg">#{i18n['acl.save']}</h:commandLink>
+	                <h:commandLink action="#{docEditPersonaInterna.clearDocument}" styleClass="btn btn-default">#{i18n['acl.clear']}</h:commandLink>
+	            </div>
+	        </div>
+	        <!-- toolbar: fine -->
+	        
+	        <h5 class="sub-header">
+	            <span class="persone-interne glyphicons-pro"></span>&#160;
+	            <h:outputText value="#{i18n['acl.ins_persint']}" escape="false" />
+	        </h5>
+	   
+		    <!-- messages: inizio -->
+	        <h:panelGroup rendered="#{not empty facesContext.messageList}" layout="block" styleClass="docedit-messages alert alert-danger">
+	            <h:messages styleClass="" id="validationMesseges" />
+	        </h:panelGroup>
+	        <!-- messages: fine -->
+	        
+	        <!-- scheda edit: inizio -->
+	        <div class="row-fluid" style="margin-top:10px;">
+	        	<div id="fixedshowdoc" class="box span12 fixed-showdoc"> 
+	                <div class="box-content">
+	                
+	                    <div class="fieldset">
+	                        <div class="legend">#{i18n['acl.informazioni_di_base']}
+	                            <div class="pull-right">
+	                                <span class="glyphicons-pro user" title="#{i18n['acl.informazioni_di_base']}"></span>
+	                            </div>
+	                        </div>
+	                        
+	                        <div class="form-group">
+				                <label class="col-sm-2 control-label"><span>#{i18n['acl.code']}</span></label>
+				                <div class="col-sm-3">
+				                <h:inputText value="#{docEditPersonaInterna.persona_interna.matricola}" styleClass="form-control"/>
+				                </div>          
+                            </div>
+				            <div class="form-group">
+				                <label for="templateForm:demsi_titolodeferenza_input" class="col-sm-2 control-label">#{i18n['acl.deferenza']}</label>
+				                <div class="col-sm-3">
+				                    <ui:include src="./thField.xhtml">
+				                        <ui:param name="id" value="demsi_titolodeferenza" />
+				                        <ui:param name="field" value="#{docEditPersonaInterna.persona_interna.titolo_deferenza}" />
+				                        <ui:param name="bean" value="#{docEditPersonaInterna}" />
+				                        <ui:param name="action" value="thVincolatoTitoloDeferenza" />
+				                        <ui:param name="title" value="#{i18n['acl.thdeferenza']}" />
+				                        <ui:param name="styleclass" value="form-control" />
+				                        <ui:param name="refresh" value="templateForm:demsi_titolodeferenza_input" />
+				                    </ui:include>
+				                </div>
+				                <label class="col-sm-2 control-label"><span>#{i18n['acl.title']}</span></label>
+				                <div class="col-sm-3">
+	                                <ui:include src="./thField.xhtml">
+			                        <ui:param name="id" value="demsi_titolo" />
+			                        <ui:param name="field" value="#{docEditPersonaInterna.persona_interna.titolo}" />
+			                        <ui:param name="bean" value="#{docEditPersonaInterna}" />
+			                        <ui:param name="action" value="thVincolatoTitolo"/>
+			                        <ui:param name="title" value="#{i18n['acl.thtitle']}"/>
+			                        <ui:param name="styleclass" value="form-control"/>
+			                        <ui:param name="refresh" value="templateForm:demsi_titolo_input"/>
+	                                </ui:include>
+	                            </div>
+				            </div>
+				            <div class="form-group">
+				                <label class="col-sm-2 control-label requiredField"><span>* #{i18n['acl.surname']}</span></label>
+                                <div class="col-sm-4">
+                                    <h:inputText id="demsi_cognome" value="#{docEditPersonaInterna.persona_interna.cognome}" styleClass="#{ component.valid ? '' : 'invalidinput' } form-control"/>
+                                </div>
+                                <label class="col-sm-1 control-label requiredField"><span>* #{i18n['acl.name']}</span></label>
+                                <div class="col-sm-4">
+                                    <h:inputText id="demsi_nome" value="#{docEditPersonaInterna.persona_interna.nome}" styleClass="#{ component.valid ? '' : 'invalidinput' } form-control"/>
+                                </div>
+				            </div>
+	                        
+	                        <div class="form-group">
+                                <label class="col-sm-2 control-label"><span>#{i18n['acl.secondname']}</span></label>
+                                <div class="col-sm-4">
+                                    <h:inputText value="#{docEditPersonaInterna.persona_interna.secondo_nome}" styleClass="form-control"/>
+                                </div>
+                                <label class="col-sm-1 control-label"><span>#{i18n['acl.nickname']}</span></label>
+                                <div class="col-sm-4">
+                                    <h:inputText value="#{docEditPersonaInterna.persona_interna.soprannome}" styleClass="form-control"/>
+                                </div>
+	                        </div>
+	                        
+	                        <ui:repeat id="logins" var="login" value="#{docEditPersonaInterna.persona_interna.login}" varStatus="indice">
+	                           <div class="form-group">
+	                                <label class="col-sm-2 control-label"><span>#{indice.index == 0 ? i18n['acl.login'] : '&#xa0;'}</span></label>
+	                                <div class="col-sm-3">
+			                        <h:inputText id="login" value="#{login.name}" styleClass="form-control"></h:inputText>
+			                        </div>
+			                        <div class="col-sm-1 input-group">
+                                    <div class="btn-group">
+				                        <h:commandLink action="#{docEditPersonaInterna.persona_interna.deleteLogin}" title="#{i18n['dw4.elimina_istanza']}" styleClass="btn btn-default">
+				                            <f:param name="login" value="#{login}"/>
+				                            <f:ajax execute="@form" render="@form"/>
+				                            <span class="glyphicon glyphicon-minus"></span>
+				                        </h:commandLink>
+				                        <h:commandLink action="#{docEditPersonaInterna.persona_interna.addLogin}" title="#{i18n['dw4.aggiungi_istanza']}" styleClass="btn btn-default">
+				                            <f:param name="login" value="#{login}"/>
+				                            <f:ajax execute="@form" render="@form"/>
+				                            <span class="glyphicon glyphicon-plus"></span>
+				                        </h:commandLink>
+				                        <h:commandLink action="#{docEditPersonaInterna.persona_interna.moveUpLogin}" title="#{i18n['dw4.sposta_su']}" rendered="#{indice.index > 0}" styleClass="btn btn-default">
+				                            <f:param name="login" value="#{login}"/>
+				                            <f:ajax execute="@form" render="@form"/>
+				                            <span class="glyphicon glyphicon-chevron-up"></span>
+				                        </h:commandLink>
+				                        <h:commandLink action="#{docEditPersonaInterna.persona_interna.moveDownLogin}" title="#{i18n['dw4.sposta_giu']}" rendered="#{fn:length(docEditPersonaInterna.persona_interna.login) > (indice.index+1)}" styleClass="btn btn-default">
+				                            <f:param name="login" value="#{login}"/>
+				                            <f:ajax execute="@form" render="@form"/>
+				                            <span class="glyphicon glyphicon-chevron-down"></span>
+				                        </h:commandLink>
+			                        </div>
+			                        </div>
+	                           </div>
+	                        </ui:repeat>
+	                        
+	                        <div class="form-group">
+				                 <label class="col-sm-2 control-label"><span>#{i18n['acl.sex']}</span></label>
+				                 <div class="col-sm-3">
+				                 <h:selectOneRadio value="#{docEditPersonaInterna.persona_interna.sesso}" styleClass="radio-selection">
+				                     <f:selectItem itemLabel="M" itemValue="M" />
+				                     <f:selectItem itemLabel="F" itemValue="F" />
+				                 </h:selectOneRadio>
+				                 </div>
+			                 </div>
+	                        
+	                        <div class="form-group">
+	                            <label class="col-sm-2 control-label requiredField"><span>#{i18n['acl.cod_amm']}</span></label>
+                                <div class="col-sm-2">
+                                	<h:inputText id="persint_codamm" value="#{docEditPersonaInterna.persona_interna.cod_amm}" readonly="true" styleClass="#{ component.valid ? '' : 'invalidinput' } form-control" maxlength="4" />
+                                </div>
+                                <label class="col-sm-offset-1 col-sm-2 control-label requiredField"><span>#{i18n['acl.cod_aoo']}</span></label>
+                                <div class="col-sm-2">
+                                	<h:inputText id="persint_codaoo" value="#{docEditPersonaInterna.persona_interna.cod_aoo}" readonly="true" styleClass="#{ component.valid ? '' : 'invalidinput' } form-control" maxlength="3" />
+                                </div>
+	                        </div>
+	                        
+	                        <div class="form-group">
+	                            <label class="col-sm-2 control-label requiredField"><span>* #{i18n['acl.assigned']}</span></label>
+			                    <div class="col-sm-9">
+			                    <ui:include src="./lookupField.xhtml">
+			                        <ui:param name="id" value="demsi_appartenenza" />
+			                        <ui:param name="field" value="#{docEditPersonaInterna.persona_interna.nomeufficio}" />
+			                        <ui:param name="bean" value="#{docEditPersonaInterna}" />
+			                        <ui:param name="action" value="lookupAppartenenza"/>
+			                        <ui:param name="clearaction" value="clearLookupAppartenenza"/>
+			                        <ui:param name="title" value="#{i18n['acl.assignedstructurelookup']}"/>
+			                        <ui:param name="styleclass" value="form-control"/>
+			                        <ui:param name="refresh" value="templateForm:demsi_appartenenza_input templateForm:demsi_cod_uff templateForm:persint_codamm templateForm:persint_codaoo templateForm:validationMesseges templateForm:lookup templateForm:errormsg"/>
+			                    </ui:include>
+			                    <h:inputHidden value="#{docEditPersonaInterna.persona_interna.cod_uff}" id="demsi_cod_uff"/>
+			                    </div>        
+	                        </div>
+	                        
+	                        <div class="form-group">
+	                            <label class="col-sm-2 control-label"><span>#{i18n['acl.qualifica']}</span></label>
+	                            <div class="col-sm-3">
+			                    <ui:include src="./thField.xhtml">
+			                        <ui:param name="id" value="demsi_qualifica" />
+			                        <ui:param name="field" value="#{docEditPersonaInterna.persona_interna.qualifica.text}" />
+			                        <ui:param name="bean" value="#{docEditPersonaInterna}" />
+			                        <ui:param name="action" value="thVincolatoQualifica"/>
+			                        <ui:param name="title" value="#{i18n['acl.thqualifica']}"/>
+			                        <ui:param name="styleclass" value="form-control"/>
+			                        <ui:param name="refresh" value="templateForm:demsi_qualifica_input"/>
+			                    </ui:include>
+			                    </div>
+	                        </div>
+	                        
+	                        <ui:repeat var="mansione" value="#{docEditPersonaInterna.persona_interna.mansione}" >
+	                        <div class="form-group">
+                            <label class="col-sm-2 control-label"><span>#{docEditPersonaInterna.persona_interna.mansione[0] == mansione ? i18n['acl.roles-skills'] : '&#xa0;'}</span></label>
+                            <div class="col-sm-3">
+                            <ui:include src="./lookupRepeatField.xhtml">
+                                <ui:param name="id" value="demsi_mansione_text" />
+                                <ui:param name="field" value="#{mansione.text}" />
+                                <ui:param name="element" value="#{mansione}" />
+                                <ui:param name="bean" value="#{docEditPersonaInterna}" />
+                                <ui:param name="action" value="lookupMansione"/>
+                                <ui:param name="clearaction" value="clearLookupMansione"/>
+                                <ui:param name="title" value="#{i18n['acl.mansionelookup']}"/>
+                                <ui:param name="styleclass" value="form-control"/>
+                                <ui:param name="refresh" value="@form"/>
+                            </ui:include>
+                            <h:inputHidden value="#{mansione.cod}" id="demsi_mansione_cod"/>
+                            </div>
+                            <div class="col-sm-1 input-group">
+                                <div class="btn-group">
+	                            <h:commandLink action="#{docEditPersonaInterna.persona_interna.deleteMansione}" title="#{i18n['dw4.elimina_istanza']}" styleClass="btn btn-default">
+	                                <f:param name="mansione" value="#{mansione}"/>
+	                                <f:ajax execute="@form" render="@form"/>
+	                                <span class="glyphicon glyphicon-minus"></span>
+	                            </h:commandLink>
+	                            <h:commandLink action="#{docEditPersonaInterna.persona_interna.addMansione}" title="#{i18n['dw4.aggiungi_istanza']}" styleClass="btn btn-default">
+	                                <f:ajax execute="@form" render="@form"/>
+	                                <span class="glyphicon glyphicon-plus"></span>
+	                            </h:commandLink>
+	                            <h:commandLink action="#{docEditPersonaInterna.persona_interna.moveUpMansione}" title="#{i18n['dw4.sposta_su']}" rendered="#{docEditPersonaInterna.persona_interna.mansione[0] != mansione}" styleClass="btn btn-default">
+	                                <f:param name="mansione" value="#{mansione}"/>
+	                                <f:ajax execute="@form" render="@form"/>
+	                                <span class="glyphicon glyphicon-chevron-up"></span>
+	                            </h:commandLink>
+	                            <h:commandLink action="#{docEditPersonaInterna.persona_interna.moveDownMansione}" title="#{i18n['dw4.sposta_giu']}" rendered="#{docEditPersonaInterna.persona_interna.mansione[fn:length(docEditPersonaInterna.persona_interna.mansione)-1] != mansione}" styleClass="btn btn-default">
+	                                <f:param name="mansione" value="#{mansione}"/>
+	                                <f:ajax execute="@form" render="@form"/>
+	                                <span class="glyphicon glyphicon-chevron-down"></span>
+	                            </h:commandLink>
+	                            </div>
+                            </div>
+                            </div>
+	                        </ui:repeat>
+	                        
+	                        <ui:repeat var="gruppo_appartenenza" value="#{docEditPersonaInterna.persona_interna.gruppo_appartenenza}" >
+	                        <div class="form-group">
+	                            <label class="col-sm-2 control-label"><span>#{docEditPersonaInterna.persona_interna.gruppo_appartenenza[0] == gruppo_appartenenza ? i18n['acl.groups'] : '&#xa0;'}</span></label>
+	                            <div class="col-sm-3">
+	                            <ui:include src="./lookupRepeatField.xhtml">
+	                                <ui:param name="id" value="demsi_gruppo_appartenenza_nome" />
+	                                <ui:param name="field" value="#{gruppo_appartenenza.nome}" />
+	                                <ui:param name="element" value="#{gruppo_appartenenza}" />
+	                                <ui:param name="bean" value="#{docEditPersonaInterna}" />
+	                                <ui:param name="action" value="lookupGruppoAppartenenza"/>
+	                                <ui:param name="clearaction" value="clearLookupGruppoAppartenenza"/>
+	                                <ui:param name="title" value="#{i18n['acl.grouplookup']}"/>
+	                                <ui:param name="styleclass" value="form-control"/>
+	                                <ui:param name="refresh" value="@form"/>
+	                            </ui:include>
+	                            <h:inputHidden value="${gruppo_appartenenza.cod}" id="demsi_gruppo_appartenenza_cod"/>
+	                            </div>
+	                            <div class="col-sm-1 input-group">
+                                <div class="btn-group">
+		                            <h:commandLink action="#{docEditPersonaInterna.persona_interna.deleteGruppoAppartenenza}" title="#{i18n['dw4.elimina_istanza']}" styleClass="btn btn-default">
+		                                <f:param name="gruppo_appartenenza" value="#{gruppo_appartenenza}"/>
+		                                <f:ajax execute="@form" render="@form"/>
+		                                 <span class="glyphicon glyphicon-minus"></span>
+		                            </h:commandLink>
+		                            <h:commandLink action="#{docEditPersonaInterna.persona_interna.addGruppoAppartenenza}" title="#{i18n['dw4.aggiungi_istanza']}" styleClass="btn btn-default">
+		                                <f:ajax execute="@form" render="@form"/>
+		                                 <span class="glyphicon glyphicon-plus"></span>
+		                            </h:commandLink>
+		                            <h:commandLink action="#{docEditPersonaInterna.persona_interna.moveUpGruppo}" title="#{i18n['dw4.sposta_su']}" rendered="#{docEditPersonaInterna.persona_interna.gruppo_appartenenza[0] != gruppo_appartenenza}" styleClass="btn btn-default">
+		                                <f:param name="gruppo_appartenenza" value="gruppo_appartenenza"/>
+		                                <f:ajax execute="@form" render="@form"/>
+		                                <span class="glyphicon glyphicon-chevron-up"></span>
+		                            </h:commandLink>
+		                            <h:commandLink action="#{docEditPersonaInterna.persona_interna.moveDownGruppo}" title="#{i18n['dw4.sposta_giu']}" rendered="#{docEditPersonaInterna.persona_interna.gruppo_appartenenza[fn:length(docEditPersonaInterna.persona_interna.gruppo_appartenenza)-1] != gruppo_appartenenza}" styleClass="btn btn-default">
+		                                <f:param name="gruppo_appartenenza" value="gruppo_appartenenza"/>
+		                                <f:ajax execute="@form" render="@form"/>
+		                                <span class="glyphicon glyphicon-chevron-down"></span>
+		                            </h:commandLink>
+		                        </div>
+		                        </div>
+	                        </div>
+	                        </ui:repeat>
+	                        
+	                        <h:panelGroup rendered="#{docEditPersonaInterna.formsAdapter.funzionalitaDisponibili['multiSocieta']}">
+								<div class="form-group">
+									<label class="col-sm-2 control-label"><span>#{i18n['acl.multisocieta']}</span></label>
+									<div class="col-sm-9">
+										<h:inputTextarea value="#{docEditPersonaInterna.persona_interna.multisocieta}" rows="4" cols="120" class="form-control" />
+									</div>
+								</div>
+	                        </h:panelGroup>
+	                    </div> <!--  fieldset -->
+	                    
+	                    <ui:include src="./aspects.xhtml">
+			                 <ui:param name="bean" value="#{docEditPersonaInterna}"/>
+			             </ui:include>
+				        
+				         <div class="fieldset">
+				             <div class="legend">#{i18n['acl.workdata']}
+				                 <div class="pull-right">
+				                     <span class="glyphicons-pro building" title="#{i18n['acl.informazioni_di_base']}"></span>
+				                 </div>
+				             </div>
+				             
+				             <div class="form-group">
+				               <label class="col-sm-2 control-label"><span>#{i18n['acl.street']}</span></label>
+				               <div class="col-sm-9">
+			                        <h:inputText value="#{docEditPersonaInterna.persona_interna.recapito.indirizzo.indirizzo}" styleClass="form-control"/>
+			                   </div>   
+				             </div>
+			
+							<div class="form-group">
+								<label for="templateForm:demsi_indirizzocomune_input"
+									class="col-sm-2 control-label">#{i18n['acl.town']}</label>
+								<div class="col-sm-5">
+									<ui:include src="./lookupField.xhtml">
+										<ui:param name="id" value="demsi_recapito_indirizzocomune" />
+			                            <ui:param name="field" value="#{docEditPersonaInterna.persona_interna.recapito.indirizzo.comune}" />
+			                            <ui:param name="bean" value="#{docEditPersonaInterna}" />
+			                            <ui:param name="action" value="lookupRecapitoComune"/>
+			                            <ui:param name="clearaction" value="clearLookupRecapitoComune"/>
+			                            <ui:param name="title" value="#{i18n['acl.townlookup']}"/>
+			                            <ui:param name="styleclass" value="form-control"/>
+			                            <ui:param name="refresh" value="templateForm:demsi_recapito_indirizzocomune_input templateForm:demsi_recapito_indirizzocap_input templateForm:demsi_recapito_indirizzoprov templateForm:demsi_recapito_indirizzonazione templateForm:lookup templateForm:errormsg"/>
+									</ui:include>
+								</div>
+								<label for="templateForm:demsi_indirizzocap_input"
+									class="col-sm-2 control-label">#{i18n['acl.zip']}</label>
+								<div class="col-sm-2">
+									<ui:include src="./lookupField.xhtml">
+										<ui:param name="id" value="demsi_recapito_indirizzocap" />
+				                        <ui:param name="field" value="#{docEditPersonaInterna.persona_interna.recapito.indirizzo.cap}" />
+				                        <ui:param name="bean" value="#{docEditPersonaInterna}" />
+				                        <ui:param name="action" value="lookupRecapitoCap"/>
+				                        <ui:param name="clearaction" value="clearLookupRecapitoCap"/>
+				                        <ui:param name="title" value="#{i18n['acl.ziplookup']}"/>
+				                        <ui:param name="styleclass" value="form-control"/>
+				                        <ui:param name="refresh" value="templateForm:demsi_recapito_indirizzocomune_input templateForm:demsi_recapito_indirizzocap_input templateForm:demsi_recapito_indirizzoprov templateForm:demsi_recapito_indirizzonazione templateForm:lookup templateForm:errormsg"/>
+									</ui:include>
+								</div>
+							</div>
+							
+							<div class="form-group">
+							    <label class="col-sm-2 control-label"><span>#{i18n['acl.province']}</span></label>
+							    <div class="col-sm-2">
+			                        <h:inputText value="#{docEditPersonaInterna.persona_interna.recapito.indirizzo.prov}" styleClass="form-control" id="demsi_recapito_indirizzoprov"/>
+			                    </div>
+			                    <label class="col-sm-2 control-label"><span>#{i18n['acl.state']}</span></label>
+			                    <div class="col-sm-5">
+			                        <h:inputText value="#{docEditPersonaInterna.persona_interna.recapito.indirizzo.nazione}" styleClass="form-control" id="demsi_recapito_indirizzonazione"/>
+			                    </div>
+							</div>
+			
+							<ui:include src="./phones.xhtml">
+								<ui:param name="pageBean" value="#{docEditPersonaInterna.persona_interna.recapito}" />
+								<ui:param name="idHolder" value="recapito" />
+							</ui:include>
+							<ui:include src="./emails.xhtml">
+								<ui:param name="pageBean" value="#{docEditPersonaInterna.persona_interna.recapito}" />
+								<ui:param name="idHolder" value="recapito" />
+							</ui:include>
+							<ui:include src="./websites.xhtml">
+								<ui:param name="pageBean" value="#{docEditPersonaInterna.persona_interna.recapito}" />
+								<ui:param name="idHolder" value="recapito" />
+							</ui:include>
+			
+						</div> <!--  fieldset -->
+			        
+			            <div class="fieldset">
+			                 <div class="legend">#{i18n['acl.personaldata']}
+			                     <div class="pull-right">
+			                         <span class="glyphicons-pro home" title="#{i18n['acl.informazioni_di_base']}"></span>
+			                     </div>
+			                 </div>
+			                 
+			                 <div class="form-group">
+				                 <label class="col-sm-2 control-label"><span>#{i18n['acl.street']}</span></label>
+			                     <div class="col-sm-9">
+			                     <h:inputText id="demsi_indirizzovia" value="#{docEditPersonaInterna.persona_interna.recapito_personale.indirizzo.indirizzo}" styleClass="#{ component.valid ? '' : 'invalidinput' } form-control" />
+			                     </div>
+			                 </div>
+			                 <div class="form-group">
+			                     <label class="col-sm-2 control-label"><span>#{i18n['acl.town']}</span></label>
+			                     <div class="col-sm-5">
+			                     <ui:include src="./lookupField.xhtml">
+			                         <ui:param name="id" value="demsi_indirizzocomune" />
+			                        <ui:param name="field" value="#{docEditPersonaInterna.persona_interna.recapito_personale.indirizzo.comune}" />
+			                        <ui:param name="bean" value="#{docEditPersonaInterna}" />
+			                        <ui:param name="action" value="lookupRecapitoPersonaleComune"/>
+			                        <ui:param name="clearaction" value="clearLookupRecapitoPersonaleComune"/>
+			                        <ui:param name="title" value="#{i18n['acl.townlookup']}"/>
+			                        <ui:param name="styleclass" value="form-control"/>
+			                        <ui:param name="refresh" value="templateForm:demsi_indirizzocomune_input templateForm:demsi_indirizzocap_input templateForm:demsi_indirizzoprov templateForm:demsi_indirizzonazione templateForm:lookup templateForm:errormsg"/>
+			                     </ui:include>
+			                     </div>
+			                     
+			                     <label class="col-sm-2 control-label"><span>#{i18n['acl.zip']}</span></label>
+			                     <div class="col-sm-2">
+			                     <ui:include src="./lookupField.xhtml">
+			                     <ui:param name="id" value="demsi_indirizzocap" />
+			                        <ui:param name="field" value="#{docEditPersonaInterna.persona_interna.recapito_personale.indirizzo.cap}" />
+			                        <ui:param name="bean" value="#{docEditPersonaInterna}" />
+			                        <ui:param name="action" value="lookupRecapitoPersonaleCap"/>
+			                        <ui:param name="clearaction" value="clearLookupRecapitoPersonaleCap"/>
+			                        <ui:param name="title" value="#{i18n['acl.ziplookup']}"/>
+			                        <ui:param name="styleclass" value="form-control"/>
+			                        <ui:param name="refresh" value="templateForm:demsi_indirizzocomune_input templateForm:demsi_indirizzocap_input templateForm:demsi_indirizzoprov templateForm:demsi_indirizzonazione templateForm:lookup templateForm:errormsg"/>
+			                     </ui:include>
+			                     </div>
+			                 </div>
+			                 
+			                 <div class="form-group">
+			                     <label class="col-sm-2 control-label"><span>#{i18n['acl.province']}</span></label>
+			                     <div class="col-sm-2">
+			                     <h:inputText value="#{docEditPersonaInterna.persona_interna.recapito_personale.indirizzo.prov}" styleClass="form-control" id="demsi_indirizzoprov"/>
+			                     </div>
+			                     <label class="col-sm-2 control-label"><span>#{i18n['acl.state']}</span></label>
+			                     <div class="col-sm-5">
+			                     <h:inputText value="#{docEditPersonaInterna.persona_interna.recapito_personale.indirizzo.nazione}" styleClass="form-control" id="demsi_indirizzonazione"/>
+			                     </div>
+			                 </div>
+			
+							<ui:include src="./phones.xhtml">
+								<ui:param name="pageBean" value="#{docEditPersonaInterna.persona_interna.recapito_personale}" />
+								<ui:param name="idHolder" value="recapito_personale" />
+							</ui:include>
+							<ui:include src="./emails.xhtml">
+								<ui:param name="pageBean" value="#{docEditPersonaInterna.persona_interna.recapito_personale}" />
+								<ui:param name="idHolder" value="recapito_personale" />
+							</ui:include>
+							<ui:include src="./websites.xhtml">
+								<ui:param name="pageBean" value="#{docEditPersonaInterna.persona_interna.recapito_personale}" />
+								<ui:param name="idHolder" value="recapito_personale" />
+							</ui:include>
+			
+						</div> <!--  fieldset -->
+						
+						<div class="fieldset">
+						     <div class="legend">#{i18n['dw4.other']}
+			                     <div class="pull-right">
+			                         <span class="glyphicon glyphicon-list-alt" title="#{i18n['dw4.other']}"></span>
+			                     </div>
+			                 </div>
+							<div class="form-group">
+								<label class="col-sm-2 control-label"><span>#{i18n['acl.skill']}</span></label>
+								<div class="col-sm-9">
+									<h:inputTextarea
+										value="#{docEditPersonaInterna.persona_interna.competenze.text}"
+										rows="4" cols="120" class="form-control" />
+								</div>
+							</div>
+							<div class="form-group">
+								<label class="col-sm-2 control-label"><span>#{i18n['acl.notes']}</span></label>
+								<div class="col-sm-9">
+									<h:inputTextarea
+										value="#{docEditPersonaInterna.persona_interna.note.text}"
+										rows="4" cols="120" class="form-control" />
+								</div>
+							</div>
+						</div>  <!--  fieldset -->
+						
+						<ui:include src="./rightsManager.xhtml">
+							<ui:param name="bean" value="#{docEditPersonaInterna.persona_interna}" />
+							<ui:param name="modify" value="true"/>
+						</ui:include>
+	                 </div>
+	            </div>
+	        </div> 
+		</div>    
+		
+        <ui:include src="./lookup.xhtml"> <ui:param name="pageBean" value="#{docEditPersonaInterna}"/></ui:include>
+        <ui:include src="./thvincolato.xhtml"> <ui:param name="pageBean" value="#{docEditPersonaInterna}"/></ui:include>
+        
+        <h:inputTextarea value="#{docEditPersonaInterna.xml}" rendered="#{docEditPersonaInterna.debugMode}" styleClass="form-control" rows="10" />
+    </ui:define>
+</ui:composition>    

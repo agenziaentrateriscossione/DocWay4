@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" 
+	  xmlns:h="http://java.sun.com/jsf/html" 
+	  xmlns:ui="http://java.sun.com/jsf/facelets" 
+	  xmlns:f="http://java.sun.com/jsf/core">
+<ui:composition>
+	
+	<h:panelGroup rendered="#{fn:length(bean.doc.componenti) > 0}">
+		<div class="showdoc-section">
+			<div class="title">
+				#{i18n['dw4.componenti']}
+				<div class="pull-right">
+					<span class="glyphicons-pro parents" title="#{i18n['dw4.componenti']}"></span>
+				</div>
+			</div>
+			<div class="table-responsive">
+				<table class="table table-bordered show-odg-table">
+					<thead>
+						<tr>
+							<th class="width-20">#{i18n['dw4.nominativo']}</th>
+							<th class="width-10">#{i18n['dw4.carica']}</th>
+							<th class="check-col">#{i18n['dw4.fav']}</th>
+							<th class="check-col">#{i18n['dw4.contr']}</th>
+							<th class="check-col">#{i18n['dw4.ast']}</th>
+							<th class="check-col">#{i18n['dw4.ass_giust']}</th>
+							<th class="check-col">#{i18n['dw4.ass_ng']}</th>
+						</tr>
+					</thead>
+					<tbody>
+						<ui:repeat var="componente" value="#{bean.doc.componenti}" varStatus="status">
+								<tr>
+									<td class="width-30">
+										<h:inputHidden name="NC_#{componente.pos}" value="#{componente.nominativo}"></h:inputHidden>
+										#{componente.nominativo}
+										<div>
+											<strong>
+												<h:panelGroup rendered="#{! empty componente.delega}">
+												<h:inputHidden name="NC_#{componente.pos}" value="#{componente.nominativo}"></h:inputHidden>
+												#{i18n['dw4.del']}. #{componente.delega}
+												</h:panelGroup>
+											</strong>
+										</div>
+									</td>
+									<td class="width-20">
+										#{componente.incarico}
+										<input type="hidden" name="NR_#{componente.pos}" value="#{componente.incarico}"/>
+									</td>
+									<h:panelGroup rendered="#{!(fn:startsWith(componente.presenza,'Assente'))}">
+										<td class="check-col">
+											<ui:remove>
+												<h:selectOneRadio styleClass="radioTable" value="#{componente.delibera}">
+													<f:selectItems value="#{bean.delibereRadioButtons}"></f:selectItems>
+												</h:selectOneRadio>
+											</ui:remove>
+											<input type="radio" name="S_#{componente.pos}" value="F"  onclick='setValueToHidden($(this).val(),"S_#{componente.pos}")' />
+											<h:panelGroup styleClass="hiddenDelibera S_#{componente.pos}">
+												<h:inputHidden value="#{componente.delibera}"></h:inputHidden>
+											</h:panelGroup>
+										</td>
+										<td class="check-col">
+											<input type="radio" name="S_#{componente.pos}" value="C" onclick='setValueToHidden($(this).val(),"S_#{componente.pos}")' />
+										</td>
+										<td class="check-col">
+											<input type="radio" name="S_#{componente.pos}" value="S" onclick='setValueToHidden($(this).val(),"S_#{componente.pos}")' />
+										</td>
+										<td class="check-col">
+											<input type="radio" name="S_#{componente.pos}" value="GD" onclick='setValueToHidden($(this).val(),"S_#{componente.pos}")' />
+										</td>
+										<td class="check-col">
+											<input type="radio" name="S_#{componente.pos}" value="AD" onclick='setValueToHidden($(this).val(),"S_#{componente.pos}")' />
+										</td>
+									</h:panelGroup>
+									<h:panelGroup rendered="#{(fn:startsWith(componente.presenza,'Assente'))}">
+										<td></td>
+										<td></td>
+										<td></td>
+										<td class="check-col">
+											<h:panelGroup rendered="#{componente.presenza eq 'Assente giustificato'}">
+												<span class="glyphicon glyphicon-ok"></span>
+											</h:panelGroup>
+										</td>
+										<td class="check-col">
+											<h:panelGroup rendered="#{componente.presenza eq 'Assente non giustificato'}">
+												<span class="glyphicon glyphicon-ok"></span>
+											</h:panelGroup>
+										</td>
+									</h:panelGroup>
+								</tr>
+						</ui:repeat>
+						<tr>
+							<td colspan="7" class="text-center">
+								<input type="hidden" name="TESTO" value=""/>
+								<div>
+									<h:commandButton name="DocTipo" value="#{i18n['dw4.testo_delibera']}" action="#{bean.setAllegato}" onclick="$('#uploadFileTestoDelibera').show()"/>
+								</div>
+								<div>
+									#{i18n['dw4.testo_delibera_explained']}
+								</div>
+							</td>
+						</tr>
+						<tr id="uploadFileTestoDelibera">
+							<td colspan="7" class="text-center">
+								<div class="form-group" style="margin-top:20px;">
+									<label class="col-sm-2 control-label">#{i18n['dw4.file']}</label>
+									<div class="col-sm-1">
+										<span id="swfupload-testoDelibera-control">
+											<span id="swfuploadTestoDeliberaHolder"></span>
+											<h:commandLink id="swfuploadRepertoriBtn" onclick="return false;" styleClass="btn btn-default">#{i18n['dw4.sfoglia']}</h:commandLink>
+										</span>
+									</div>
+									<div class="col-sm-7 text-left">
+										<p class="form-control-static"><span id="swfuploadTestoDeliberaFileName">#{bean.fileNameTestoDelibera}</span></p>
+										<h:inputHidden id="swfuploadTestoDeliberaFileNameHidden" value="#{bean.fileNameTestoDelibera}" />
+										<h:inputHidden id="swfuploadTestoDeliberaFileIdHidden" value="#{bean.fileIdTestoDelibera}" />
+									</div>
+								</div>
+							</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+		</div>
+		
+		<script type="text/javascript">
+			function setValueToHidden(val,classId){
+				$('.'+classId + ' input:hidden').val(val);
+			};
+			
+			function init(){
+				$('.hiddenDelibera').each(function(i,val){
+					classId = $(val).attr('class').substring(15);
+					val = $('.'+classId + ' input:hidden').val();
+					
+					if (val == 'udefined' || val == '')
+						val = 'F';
+					
+					$('input[name='+classId+'][value='+val+']:radio').click();
+				});
+			}
+			
+			$( document ).ready(function() {
+				init();
+					 if(!#{bean.downloadTestoDelibera}){
+						 $('#uploadFileTestoDelibera').hide();
+					} 
+			}); 
+			
+			window.loadSWFUpload = function() {
+					initDeliberaSWFU("swfupload-testoDelibera-control", "swfuploadTestoDeliberaHolder", "swfuploadTestoDeliberaFile", "#{facesContext.externalContext.requestContextPath}/fileupload", "#{userBean.login}", "#{userBean.matricola}","#{bean.formsAdapter.customTupleName}", "#{bean.formsAdapter.db}");
+				}
+				
+				$(window).load(function() {
+					jsf.ajax.addOnEvent(function(data) { 
+						if (data.status == 'success') {
+							initDeliberaSWFU("swfupload-testoDelibera-control", "swfuploadTestoDeliberaHolder", "swfuploadTestoDeliberaFile", "#{facesContext.externalContext.requestContextPath}/fileupload", "#{userBean.login}", "#{userBean.matricola}","#{bean.formsAdapter.customTupleName}", "#{bean.formsAdapter.db}");
+						}
+					});
+				}); 
+		</script>
+		
+	</h:panelGroup>
+	
+</ui:composition>
+</html>

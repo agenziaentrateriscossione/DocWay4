@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" 
+	  xmlns:h="http://java.sun.com/jsf/html" 
+	  xmlns:ui="http://java.sun.com/jsf/facelets" 
+	  xmlns:f="http://java.sun.com/jsf/core">
+<ui:composition>
+
+	<h:panelGroup id="rifintLookup" layout="block">
+		<h:panelGroup rendered="#{pageBean.rifintLookupActive}">
+			<!-- Modal -->
+			<div id="rifintLookupModal" class="modal fade in" aria-hidden="false" aria-labelledby="rifintLookupModalLabel" role="dialog" tabindex="-1" style="display: block;">
+			<!--div class="modal fade" id="loadingbarModal" tabindex="-1" role="dialog" aria-labelledby="loadingbarModalLabel" aria-hidden="true"-->
+				<div class="modal-dialog">
+					<div class="modal-content jsf-modal">
+						<div class="modal-header">
+							<h:commandButton styleClass="close" title="#{i18n['acl.close']}" action="#{pageBean.rifintLookup.close}" data-dismiss="modal"  value="&#215;" >
+			        			<f:ajax render="rifintLookup"/>
+			        		</h:commandButton>
+			        		
+			        		<h4 class="modal-title" id="rifintLookupModalLabel">Lookup</h4>
+						</div>
+						<div class="modal-body">
+						
+							<!-- toolbar -->
+							<div class="row btn-toolbar dw-modal-content-buttons margin-bottom">
+								<div class="col-md-6">
+									<div class="btn-group">
+										<h:commandLink rendered="#{pageBean.rifintLookup.formsAdapter.funzionalitaDisponibili['ins_record'] and pageBean.rifintLookup.formsAdapter.lookupNew != ''}" 
+													action="#{pageBean.rifintLookup.newRecord}" 
+													onclick="openCenterPopup('', 'popupNewLookupRecord');" 
+													target="popupNewLookupRecord" 
+													value="#{i18n['nuovo']}" styleClass="btn btn-default" />
+									</div>
+								</div>
+								<div class="col-md-6 text-right">
+									<h:panelGroup rendered="#{fn:length(pageBean.rifintLookup.titoli) > 0}">
+										<ui:include src="./ajaxNavigationBar.xhtml">
+											<ui:param name="bean" value="#{pageBean.rifintLookup}"/>
+											<ui:param name="customPage" value="false"/>
+											<ui:param name="customPageId" value="rifintTitlesId"/>
+										</ui:include>
+									</h:panelGroup>
+								</div>
+							</div>
+							
+							<!-- titles -->
+							<h:panelGroup rendered="#{fn:length(pageBean.rifintLookup.titoli) > 0}">
+								<h:panelGroup rendered="#{pageBean.rifintLookup.lookupSuRepertorio}" layout="block" styleClass="alert alert-info">
+									#{i18n['dw4.gli_utenti_mostrati_sono_filtrati_in_base_al_permesso_di_visualizzazione_del_repertorio']}
+								</h:panelGroup>
+								
+								<table class="table table-striped">
+									<thead>
+										<tr>
+											<th class="essential">#{i18n['acl.title']}</th>
+										</tr>
+									</thead>
+									<tbody>
+										<ui:repeat var="title" value="#{pageBean.rifintLookup.titoli}" varStatus="status">
+											<tr>
+												<td class="essential">
+													<h:commandLink action="#{pageBean.rifintLookup.confirm}" value="#{title.testo}">
+														<f:ajax execute="@form" render="@form" />
+													</h:commandLink>
+												</td>
+											</tr>
+										</ui:repeat>
+									</tbody>
+								</table>
+							</h:panelGroup>
+							<h:panelGroup rendered="#{fn:length(pageBean.rifintLookup.titoli) == 0}">
+								<div style="margin-top:15px;" class="alert alert-info">
+									<h:outputText rendered="#{!pageBean.rifintLookup.lookupSuRepertorio}" value="#{i18n['acl.emptysearch']}" />
+									<h:outputText rendered="#{pageBean.rifintLookup.lookupSuRepertorio}" value="#{i18n['dw4.nessun_utente_trovato_in_base_al_filtro_impostato_o_utente_privo_di_permesso_di_visualizzazione_del_repertorio']}" />
+								</div>
+							</h:panelGroup>
+				        	
+					       	<h:inputTextarea value="#{pageBean.rifintLookup.xml}" rendered="#{pageBean.debugMode}" styleClass="form-control" rows="10"/>
+						</div>
+						<div class="modal-footer">
+							<h:commandButton styleClass="btn btn-default" title="#{i18n['acl.close']}" action="#{pageBean.rifintLookup.close}" data-dismiss="modal"  value="#{i18n['acl.close']}" >
+			        			<f:ajax render="rifintLookup"/>
+			        		</h:commandButton>
+						</div>
+					</div>
+				</div>
+			</div>
+		</h:panelGroup>
+		<h:outputScript>
+		// gestione del ritorno da lookup. focus su campo successivo al campo di lookup
+		setGlobalFocusFieldId($('#templateForm\\:focusElementLookup').val());
+		</h:outputScript>
+	</h:panelGroup>
+		 
+</ui:composition>   
+</html>

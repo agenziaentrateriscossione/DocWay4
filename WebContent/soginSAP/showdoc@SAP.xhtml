@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" 
+	  xmlns:h="http://java.sun.com/jsf/html" 
+	  xmlns:ui="http://java.sun.com/jsf/facelets" 
+	  xmlns:f="http://java.sun.com/jsf/core">
+<ui:composition>
+
+	<h:panelGroup rendered="#{!empty aspect.doc.stato}">
+		<div class="showdoc-section">
+			<div class="title">
+				#{i18n['soginSAP.associazione_label']}
+				
+				<div class="pull-right">
+					<span class="glyphicons-pro notes_2" title="#{i18n['soginSAP.associazione_label']}"></span>
+				</div>
+			</div>
+		
+			<dl class="dl-horizontal">
+				<h:panelGroup rendered="#{!empty aspect.doc.causale}">
+					<dt>#{i18n['soginSAP.causale']}</dt>
+					<dd><h:outputText value="#{aspect.doc.causale}"/></dd>
+				</h:panelGroup>
+				<h:panelGroup rendered="#{!empty aspect.doc.stato}">
+					<dt>#{i18n['soginSAP.stato']}</dt>
+					<dd>
+						<h:outputText class="fieldstornato" value="#{aspect.doc.stato}" rendered="#{aspect.doc.stato eq 'stornato'}"/>
+						<h:outputText class="fieldassociato" value="#{aspect.doc.stato}" rendered="#{aspect.doc.stato eq 'associato'}"/>
+					</dd>
+				</h:panelGroup>
+				<h:panelGroup rendered="#{!empty aspect.doc.docSap}">
+					<dt>#{i18n['soginSAP.docSap']}</dt>
+					<dd><h:outputText value="#{aspect.doc.docSap}"/></dd>
+				</h:panelGroup>
+				<h:panelGroup rendered="#{!empty aspect.doc.utente}">
+					<dt>#{i18n['soginSAP.utente']}</dt>
+					<dd><h:outputText value="#{aspect.doc.utente}"/></dd>
+				</h:panelGroup>
+				<h:panelGroup rendered="#{!empty aspect.doc.dataRegistrazione}">
+					<dt>#{i18n['soginSAP.dataRegistrazione']}</dt>
+					<dd><h:outputText value="#{aspect.doc.dataRegistrazione}"><f:converter converterId="DateConverter"/></h:outputText></dd>
+				</h:panelGroup>
+				<h:panelGroup rendered="#{fn:length(aspect.doc.storiaSAP) > 0}">
+					<dt>#{i18n['dw4.storia']}</dt>
+					<dd>
+						<h:commandLink title="#{i18n['acl.viewmodify']}" onclick="soginSAPJS.toggle('templateForm:sapHistoryPanel', this); return false;">
+                            <f:ajax execute="@form" render="@form" />
+                            #{i18n['dw4.apri_chiudi']}
+                        </h:commandLink>
+					</dd>
+				</h:panelGroup>
+			</dl>
+			
+			<h:panelGroup layout="block" id="sapHistoryPanel" styleClass="#{empty viewbean.view ? 'hidden' : 'unhidden'}">
+				<table class="table table-bordered history-table">
+					<thead>
+						<tr>
+							<th style="width:10%;">#{i18n['soginSAP.stato']}</th>
+                        	<th>#{i18n['soginSAP.causale']}</th>
+                        	<th style="width:22%;">#{i18n['soginSAP.utente']}</th>
+                        	<th style="width:20%;">#{i18n['soginSAP.dataRegistrazione']}</th>
+                        	<th style="width:20%;">#{i18n['soginSAP.docSap']}</th>
+						</tr>
+					</thead>
+					<tbody>
+						<ui:repeat var="storia" value="#{aspect.doc.storiaSAP}">
+							<tr>
+								<td>
+									<h:outputText class="fieldassociato" value="#{storia.stato}" rendered="#{storia.stato eq 'associato'}" />
+									<h:outputText class="fieldstornato" value="#{storia.stato}" rendered="#{storia.stato eq 'stornato'}" />
+								</td>
+								<td><h:outputText value="#{storia.causale}" /></td>
+								<td><h:outputText value="#{storia.utente}" /></td>
+								<td>
+									<h:outputText value="#{storia.dataRegistrazione}"><f:converter converterId="DateConverter"/></h:outputText>
+								</td>
+								<td><h:outputText value="#{storia.docSap}" /></td>
+							</tr>
+						</ui:repeat>
+					</tbody>
+				</table>
+			</h:panelGroup>
+		</div>
+	</h:panelGroup>
+
+</ui:composition>   
+</html>

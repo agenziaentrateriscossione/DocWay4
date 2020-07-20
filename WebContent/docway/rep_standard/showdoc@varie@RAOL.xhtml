@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+    template="../#{showdocVarieRAOL.pageTemplate}"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:f="http://java.sun.com/jsf/core">
+
+<ui:define name="content">
+	<div class="varie raol">
+		
+		<!-- toolbar: inizio -->
+		<ui:include src="../buttonBar.xhtml">
+			<ui:param name="bean" value="#{showdocVarieRAOL}"/>
+		</ui:include>
+		<!-- toolbar: fine -->
+		
+		<!-- scheda show: inizio -->
+		<div class="contenuto-doc row clearfix">
+			<h:panelGroup rendered="#{!showdocVarieRAOL.popupPage}">
+				<div class="col-xs-12 col-sm-2 col-md-2 col-lg-2 col-sm-push-10 col-md-push-10 col-lg-push-10 text-right">
+					<!-- azioni rapide: inizio -->
+					
+					<ui:include src="../smartActions.xhtml">
+						<ui:param name="bean" value="#{showdocVarieRAOL}"/>
+					</ui:include>
+					
+					<!-- azioni rapide: fine -->
+				</div>
+			</h:panelGroup>
+			<div class="col-xs-12 #{(showdocVarieRAOL.popupPage) ? 'col-sm-12 col-md-12 col-lg-12' : 'col-sm-10 col-md-10 col-lg-10 col-sm-pull-2 col-md-pull-2 col-lg-pull-2'}">
+				<!-- contenuto doc: inizio -->
+				
+				<h:panelGroup rendered="#{empty showdocVarieRAOL.doc.non_disponibile.estremi}">
+					<ui:include src="../showdoc@title.xhtml">
+						<ui:param name="doc" value="#{showdocVarieRAOL.doc}"/>
+					</ui:include>
+					
+					<ui:include src="../showdoc@annullato.xhtml"><ui:param name="bean" value="#{showdocVarieRAOL}"/></ui:include>
+					<ui:include src="../showdoc@conservazione.xhtml"><ui:param name="bean" value="#{showdocVarieRAOL}"/></ui:include>
+					
+					<div id="fixedshowdoc" class="fixed-showdoc">
+						<ui:include src="../showdoc@statidoc.xhtml">
+							<ui:param name="bean" value="#{showdocVarieRAOL}"/>
+						</ui:include>
+						
+						<div class="showdoc-section">
+							<div class="title">
+								#{i18n['dw4.datidoc']}
+								
+								<div class="pull-right">
+									<span class="glyphicon glyphicon-envelope" title="#{i18n['dw4.datidoc']}"></span>
+								</div>
+							</div>
+							
+							<dl class="dl-horizontal" style="margin-bottom: 15px;">
+								<dt>#{i18n['dw4.pubblicazione']}</dt>
+								<dd>#{i18n['dw4.dal']} &#160;<strong>#{showdocVarieRAOL.doc.pubblicazione.dal}</strong>&#160; #{i18n['dw4.al']} &#160;<strong>#{showdocVarieRAOL.doc.pubblicazione.al}</strong></dd>
+								
+								<h:panelGroup rendered="#{!empty showdocVarieRAOL.richiedente.cod}">
+									<dt>#{i18n['dw4.richiedente']}</dt>
+									<dd>
+										<a target="acl" href="#{facesContext.externalContext.requestContextPath}/acl/loadrif.pf?db=#{showdocVarieRAOL.formsAdapter.aclDb}&amp;searchKey=struint_coduff,persint_matricola,gruppi_id,ruoli_id&amp;value=#{showdocVarieRAOL.richiedente.cod}">#{showdocVarieRAOL.richiedente.nome}</a>
+									</dd>
+								</h:panelGroup>
+								<h:panelGroup rendered="#{fn:length(showdocVarieRAOL.doc.rif_esterni) > 0 and !empty showdocVarieRAOL.doc.rif_esterni[0].cod}">
+									<dt>#{i18n['dw4.richiedente']}</dt>
+									<dd>
+										<div class="descr-mittente">
+											<h:panelGroup rendered="#{empty showdocVarieRAOL.doc.rif_esterni[0].cod_SAP and !empty showdocVarieRAOL.doc.rif_esterni[0].cod}">
+												<a target="acl" href="#{facesContext.externalContext.requestContextPath}/acl/#{showdocVarieRAOL.doc.rif_esterni[0].cod}/rifesterno.pf?codammaoo=#{showdocVarieRAOL.doc.cod_amm_aoo}&amp;db=#{bean.formsAdapter.aclDb}" class="blacklink">#{showdocVarieRAOL.doc.rif_esterni[0].nome}</a>
+											</h:panelGroup>
+											<h:panelGroup rendered="#{empty showdocVarieRAOL.doc.rif_esterni[0].cod_SAP and empty showdocVarieRAOL.doc.rif_esterni[0].cod}">
+												#{showdocVarieRAOL.doc.rif_esterni[0].nome}
+											</h:panelGroup>
+											<h:panelGroup rendered="#{!empty showdocVarieRAOL.doc.rif_esterni[0].cod_SAP}">
+												#{showdocVarieRAOL.doc.rif_esterni[0].nome}
+											</h:panelGroup>
+											<h:panelGroup rendered="#{!empty showdocVarieRAOL.doc.rif_esterni[0].referente.nominativo}">
+												<em> (#{showdocVarieRAOL.doc.rif_esterni[0].referente.nominativo}<h:outputText value=" - #{showdocVarieRAOL.doc.rif_esterni[0].referente.ruolo}" rendered="#{!empty showdocVarieRAOL.doc.rif_esterni[0].referente.ruolo}"/>)</em>
+											</h:panelGroup>
+											
+											<h:outputText value=", #{showdocVarieRAOL.doc.rif_esterni[0].indirizzo}" rendered="#{!empty showdocVarieRAOL.doc.rif_esterni[0].indirizzo}" />
+											<h:panelGroup rendered="#{!empty showdocVarieRAOL.doc.rif_esterni[0].email_certificata}"> [<a href="mailto:#{showdocVarieRAOL.doc.rif_esterni[0].email_certificata}" class="blacklink">#{showdocVarieRAOL.doc.rif_esterni[0].email_certificata}</a>]</h:panelGroup>
+											<h:panelGroup rendered="#{!empty showdocVarieRAOL.doc.rif_esterni[0].email}"> [<a href="mailto:#{showdocVarieRAOL.doc.rif_esterni[0].email}" class="blacklink">#{showdocVarieRAOL.doc.rif_esterni[0].email}</a>]</h:panelGroup>
+											
+											<h:outputText value=" - c.f. #{showdocVarieRAOL.doc.rif_esterni[0].codice_fiscale}" rendered="#{!empty showdocVarieRAOL.doc.rif_esterni[0].codice_fiscale}" />
+											<h:outputText value=" - p.iva #{showdocVarieRAOL.doc.rif_esterni[0].partita_iva}" rendered="#{!empty showdocVarieRAOL.doc.rif_esterni[0].partita_iva}" />
+											<h:outputText value=" - codice SAP: #{showdocVarieRAOL.doc.rif_esterni[0].cod_SAP}" rendered="#{!empty showdocVarieRAOL.doc.rif_esterni[0].cod_SAP}" />
+										</div>
+									</dd>
+								</h:panelGroup>
+								
+								
+								<dt>#{i18n['dw4.forma']}</dt>
+								<dd>
+									<h:outputText rendered="#{showdocVarieRAOL.doc.pubblicazione.tipo eq 'Integrale'}" value="#{i18n['dw4.integrale']}" />
+									<h:outputText rendered="#{showdocVarieRAOL.doc.pubblicazione.tipo eq 'Estratto'}" value="#{i18n['dw4.estratto']}" />
+									&#160;
+								</dd>
+							</dl>
+							
+							<dl class="dl-horizontal">
+								
+								<ui:include src="../showdoc@datidoc@content.xhtml">
+									<ui:param name="bean" value="#{showdocVarieRAOL}"/>
+								</ui:include>
+								
+							</dl>
+						</div>
+						
+						<ui:include src="../showdoc@datiarchivio.xhtml">
+							<ui:param name="bean" value="#{showdocVarieRAOL}"/>
+						</ui:include>
+						
+						<ui:include src="../aspects.xhtml">
+							<ui:param name="bean" value="#{showdocVarieRAOL}"/>
+						</ui:include>
+						
+						<ui:include src="../showdoc@responsabilita.xhtml">
+							<ui:param name="bean" value="#{showdocVarieRAOL}"/>
+						</ui:include>
+						
+						<ui:include src="../showdoc@xwfiles.xhtml">
+							<ui:param name="bean" value="#{showdocVarieRAOL}"/>
+						</ui:include>
+						
+						<ui:include src="../showdoc@workflow.xhtml">
+							<ui:param name="bean" value="#{showdocVarieRAOL}"/>
+						</ui:include>
+						
+						<ui:include src="../showdoc@postit.xhtml">
+							<ui:param name="bean" value="#{showdocVarieRAOL}"/>
+						</ui:include>
+						
+						<ui:include src="../showdoc@datialtro.xhtml">
+							<ui:param name="bean" value="#{showdocVarieRAOL}"/>
+						</ui:include>					
+						
+						<ui:include src="../history.xhtml">
+							<ui:param name="bean" value="#{showdocVarieRAOL.doc}"/>
+							<ui:param name="viewbean" value="#{showdocVarieRAOL}"/>
+							<ui:param name="visible" value="#{showdocVarieRAOL.formsAdapter.funzionalitaDisponibili['showHistory']}" />
+						</ui:include>
+					</div>
+					
+				</h:panelGroup>
+				<h:panelGroup rendered="#{!empty showdocVarieRAOL.doc.non_disponibile.estremi}">
+				
+					<ui:include src="../showdoc@docnondisponibile.xhtml">
+						<ui:param name="bean" value="#{showdocVarieRAOL}"/>
+					</ui:include>
+					
+				</h:panelGroup>
+				
+				<h:inputTextarea value="#{showdocVarieRAOL.xml}" rendered="#{showdocVarieRAOL.debugMode}" styleClass="form-control" rows="10" />	
+				
+				<!-- contenuto doc: fine -->
+			</div>
+		</div>
+		<!-- scheda show: fine -->
+		
+		<ui:include src="../postit.xhtml"><ui:param name="pageBean" value="#{docwayPostit}"/></ui:include>
+		<ui:include src="../verificaFirma.xhtml"><ui:param name="pageBean" value="#{docwayVerificaFirma}"/></ui:include>
+		<ui:include src="../annullamentoDoc.xhtml"><ui:param name="pageBean" value="#{docwayAnnullamentoDoc}"/></ui:include>
+		<ui:include src="../doc_response@openChkinPage.xhtml"><ui:param name="pageBean" value="#{docwayCheckinAttach}"/></ui:include>
+		<ui:include src="../selectRaccoglitori.xhtml"><ui:param name="bean" value="#{showdocVarieRAOL}"/><ui:param name="current" value="#{showdocVarieRAOL.doc}"/></ui:include>
+		<ui:include src="../rifinterni@RPA.xhtml"><ui:param name="bean" value="#{rifInt}"/></ui:include>
+		<ui:include src="../rifinterni@OP.xhtml"><ui:param name="bean" value="#{rifInt}"/></ui:include>
+		<ui:include src="../rifinterni@CC.xhtml"><ui:param name="bean" value="#{rifInt}"/></ui:include>
+		<ui:include src="../rifinterni@CDS.xhtml"><ui:param name="bean" value="#{rifInt}"/></ui:include>
+		<ui:include src="../lookup.xhtml"> <ui:param name="pageBean" value="#{rifInt}"/></ui:include>
+		<ui:include src="../rifintLookup.xhtml"> <ui:param name="pageBean" value="#{rifInt}"/></ui:include>
+		<ui:include src="../show@task@vars.xhtml"><ui:param name="bean" value="#{docwayWfTaskVars}"/></ui:include>
+		<ui:include src="../showPersoneRuolo.xhtml"><ui:param name="bean" value="#{docwayShowPersoneRuolo}"/></ui:include>
+		
+	</div>
+</ui:define>
+
+</ui:composition>

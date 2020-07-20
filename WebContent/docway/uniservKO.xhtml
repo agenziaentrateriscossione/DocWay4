@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" 
+		xmlns:h="http://java.sun.com/jsf/html" 
+		xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+		xmlns:ui="http://java.sun.com/jsf/facelets">
+<h:head>
+	<title>#{i18n['dw4.firma_web_errori_title']}</title>
+	
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<h:panelGroup rendered="#{fn:containsIgnoreCase(header['User-Agent'], 'Trident/7.0;')}"> <!-- TODO identifica correttamente IE11?  -->
+		<!-- Pare ci sia un bug su IE11 per la quale non funziona la registrazione di funzioni su eventi (addEventListener/attachEvent) -->
+		<meta http-equiv="X-UA-Compatible" content="IE=9" />
+	</h:panelGroup>
+	<h:panelGroup rendered="#{!fn:containsIgnoreCase(header['User-Agent'], 'Trident/7.0;')}">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+	</h:panelGroup>
+
+	<!-- javascript -->
+	<script type="text/javascript" src="#{facesContext.externalContext.requestContextPath}/common/js/jquery.js"></script>
+	<script type="text/javascript" src="#{facesContext.externalContext.requestContextPath}/common/js/jquery.formatCurrency-1.4.0.js"></script>
+	<script type="text/javascript" src="#{facesContext.externalContext.requestContextPath}/bootstrap/js/bootstrap.js"></script>
+	<script type="text/javascript" src="#{facesContext.externalContext.requestContextPath}/common/js/bootstrap-datepicker.js"></script>
+	<script type="text/javascript" src="#{facesContext.externalContext.requestContextPath}/common/js/docs.js"></script>
+	<script type="text/javascript" src="#{facesContext.externalContext.requestContextPath}/common/js/iwx.core.js"></script>
+	<script type="text/javascript" src="#{facesContext.externalContext.requestContextPath}/docway/js/iwx.runtime.js"></script>
+	<script type="text/javascript" src="#{facesContext.externalContext.requestContextPath}/docway/js/swfupload/swfupload.js"></script>
+	<script type="text/javascript" src="#{facesContext.externalContext.requestContextPath}/docway/js/swfupload/swfupload.queue.js"></script>
+	<script type="text/javascript" src="#{facesContext.externalContext.requestContextPath}/docway/js/jquery.swfupload.js"></script>
+	<script type="text/javascript" src="#{facesContext.externalContext.requestContextPath}/common/js/common.js"></script>
+	<script type="text/javascript" src="#{facesContext.externalContext.requestContextPath}/docway/js/docway.js"></script>
+
+	<!-- styles -->
+	<link href="#{facesContext.externalContext.requestContextPath}/bootstrap/css/bootstrap.css" rel="stylesheet" type="text/css" />
+	<link href="#{facesContext.externalContext.requestContextPath}/common/css/dashboard.css" rel="stylesheet" type="text/css" />
+	<link href="#{facesContext.externalContext.requestContextPath}/common/css/datepicker.css" rel="stylesheet" type="text/css" />
+	<link href="#{facesContext.externalContext.requestContextPath}/common/css/common.css" rel="stylesheet" type="text/css" />
+	<link href="#{facesContext.externalContext.requestContextPath}/docway/css/docway.css" rel="stylesheet" type="text/css" />
+	<link href="#{facesContext.externalContext.requestContextPath}/docway/taskFormCss/taskform.css" rel="stylesheet" type="text/css" />
+	<link href="#{facesContext.externalContext.requestContextPath}/docway/taskFormCss/skin/jqueryuiskin.css" rel="stylesheet" type="text/css" />
+	
+	<script type="text/javascript">
+	function closeFirmaWeb() {
+		//window.opener.$('#templateForm\\:reloadPage').trigger('click');
+		self.close();
+		
+		return false;
+	}
+	</script>
+</h:head>
+<h:body styleClass="dw-popup-page firma-digitale firma-uniserv">
+
+	<div class="container">
+		<div class="row clearfix">
+			<div class="col-md-12 main">
+				<h:form id="templateForm" styleClass="form-horizontal">
+					<div class="row">
+						
+						<div class="sub-header">#{i18n['dw4.firma_web']}</div>
+						
+						<!-- toolbar: inizio -->
+						<div class="btn-toolbar margin-bottom" role="toolbar">
+							<div class="btn-group">
+								<h:commandLink onclick="return closeFirmaWeb();" styleClass="btn btn-default">#{i18n['acl.close']}</h:commandLink>
+							</div>
+						</div>
+						<!-- toolbar: fine -->
+						
+						<div class="alert alert-danger">
+							<div style="font-size:1.2em; font-weight:bold; margin-bottom:20px;">#{i18n['dw4.riscontrati_errori']}</div>
+							<div>#{i18n['dw4.si_e_verificato_un_errore_durante_la_firma_del_i_documento_i']}</div>
+						</div>
+						
+					</div>
+				</h:form>
+			</div>
+		</div>
+	</div><!--/.container-->
+
+</h:body>
+</html>

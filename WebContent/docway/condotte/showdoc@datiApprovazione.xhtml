@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" 
+	  xmlns:h="http://java.sun.com/jsf/html" 
+	  xmlns:ui="http://java.sun.com/jsf/facelets" 
+	  xmlns:f="http://java.sun.com/jsf/core">
+<ui:composition>
+
+	<h:panelGroup rendered="#{!empty bean.dati_approvazione.note or !empty bean.dati_approvazione.timestamp}" layout="block" styleClass="showdoc-section">
+		<div class="title">
+			#{i18n['dw4.dati_approvazione']}
+			
+			<div class="pull-right">
+				<span class="glyphicons-pro log_book" title="#{i18n['dw4.dati_approvazione']}"></span>
+			</div>
+		</div>
+		<dl class="dl-horizontal">
+		
+			<h:panelGroup rendered="#{!empty bean.dati_approvazione.note}">
+				<dt>#{i18n['dw4.notes']}</dt>
+				<dd><pre><h:outputText value="#{bean.dati_approvazione.note}" escape="false" /></pre></dd>
+			</h:panelGroup>
+			<h:panelGroup rendered="#{!empty bean.dati_approvazione.timestamp}">
+				<dt>#{i18n['dw4.timestamp']}</dt>
+				<dd><h:outputText value="#{bean.dati_approvazione.timestamp}" escape="false" /></dd>
+			</h:panelGroup>
+			
+		</dl>
+	</h:panelGroup>
+
+</ui:composition>
+</html>

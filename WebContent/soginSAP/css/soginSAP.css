@@ -1,0 +1,17 @@
+.fieldstornato, .fieldassociato {
+	font-weight: bold;
+	text-transform: uppercase;
+} 
+
+.fieldstornato { 
+	color: #bf0c0c; 
+}
+
+.fieldassociato { 
+	color: #007300; 
+}
+
+.doc-titles-table .colnumregsap {
+	width: 190px;
+	vertical-align: middle;
+}
