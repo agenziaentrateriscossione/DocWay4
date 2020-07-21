@@ -1,0 +1,53 @@
+# This repository adheres to the publiccode.yml standard by including this 
+# metadata file that makes public software easily discoverable.
+# More info at https://github.com/italia/publiccode.yml
+
+publiccodeYmlVersion: '0.1'
+name: DocWay4
+url: 'https://github.com/agenziaentrateriscossione/DocWay4/'
+logo: logo.png
+releaseDate: '2020-07-21'
+developmentStatus: stable
+softwareVersion: 1.0.0
+softwareType: standalone/backend
+platforms:
+  - web
+categories:
+  - document-management
+  - data-visualization
+dependsOn:
+  proprietary:
+    - name: eXtraWay
+maintenance:
+  type: contract
+  contractors:
+    - name: 3D Informatica srl
+      website: 'http://www.3di.it'
+      until: '2021-01-01'
+legal:
+  license: AGPL-3.0-or-later
+  mainCopyrightOwner: Agenzia delle Entrate-Riscossione (ADER)
+  repoOwner: Agenzia delle Entrate-Riscossione (ADER)
+localisation:
+  localisationReady: false
+  availableLanguages:
+    - it
+it:
+  countryExtensionVersion: '0.2'
+  riuso:
+    codiceIPA: esrsris
+  conforme:
+    misureMinimeSicurezza: true
+    gdpr: true
+  piattaforme:
+    spid: true
+description:
+  it:
+    genericName: Modulo FCA
+    documentation: 'https://github.com/agenziaentrateriscossione/DocWay4'
+    shortDescription: Gestione documentale e protocollo informatico - DocWay
+    longDescription:
+    Docway Xml è una soluzione completa, configurabile e personalizzabile dotata di numerosi moduli integrati che permettono di gestire tutto il ciclo di vita documentale, supportare e automatizzare i processi interni e7o verso l’esterno. Progettato nel rispetto delle più aggiornate normative e buone pratiche archivistiche informatiche, l’ambiente unitario messo a disposizione copre tutte le funzionalità richieste da un vero e proprio sistema di knowledge management, un document management, un protocollo informatico, un workflow management, un record management compatibile con le regole europee MoReq2, un content management e un folder management.
+    features:
+      - Gestione documentale
+      - Protocollo informatico
