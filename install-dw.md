@@ -5,56 +5,14 @@
 Docway4 è stato testato ed è utilizzato con diverse distribuzioni:
 
 * [Redhat Enterprise](http://www.redhat.com/rhel/) (dalla versione 7)
-* [Ubuntu Server Edition 14.04](http://www.ubuntu.com/products/WhatIsUbuntu/serveredition)
+* [Ubuntu Server Edition](http://www.ubuntu.com/products/WhatIsUbuntu/serveredition) (dalla versione 14.04)
 * [Centos](http://www.centos.org/) (dalla versione 7)
+* [Debian](http://www.debian.org/) (dalla versione 6)
 
 Sono consigliati ad ora dal servizio assistenza 3di:
 
 * Centos 7 64bit
-* Ubuntu Server 14.04 LTS 64bit
-
-###### Librerie di sistema richieste
-
-Le librerie di sistema necessarie al corretto funzionamento dei componenti che compongono ExtraWay. Solitamente collocate in /lib e /usr/lib:
-
-* libdl.so.2
-* libz.so.1
-* libstdc++.so.6
-* libm.so.6
-* libgcc_s.so.1
-* libpthread.so.0
-* libc.so.6 (minimo glibc 2.5)
-* libxml2.so.2
-* libxslt.so.1
-* libzip.so.1
-
->ATTENZIONE: Gli eseguibili del motore eXtraWay non hanno ancora una versione dispobibile a 64bit. È necessario pertanto installare le librerie di compatibilita ia32 sulle macchine a 64 bit della maggior parte delle distribuzioni. Inoltre esistono alcuni casi riportati ((Al momento RHEL 5.6)) sul quale è necessario installare manualmente le librerie elencate in versione 32bit. Se non è possibile effettuare questi passaggi o le librerie indicate non sono presenti, la specifica distribuzione non è supportata da Docway 3.10.2.
-
-###### Per installare le librerie su sistemi Ubuntu usare il seguente comando:
-
-    sudo apt-get install libgcc1:i386 libzip2:i386 libc6:i386 libxml2:i386 libxslt1.1:i386 libcurl3:i386 libncurses5:i386 libreadline6:i386 libstdc++6:i386
-
-###### Per installare le librerie su sistemi RedHat/CentOS usare il seguente comando:
-
-    yum install libgcc.i686 libzip.i686 glibc.i686 libxml2.i686 libxslt.i686 libcurl.i686 ncurses-libs.i686 readline.i686 libstdc++.i686
-
-###### Pdftotext
-
-Per l'indicizzazione degli allegati in formato pdf è necessario installare l'utilità pdftotext.
-
-In molte distribuzioni non è compresa nell'installazione di base: in alcune distribuzioni è presente all'interno del pacchetto **xpdf** (centos 4, redhat enterprise) o nel pacchetto **poppler-utils** (gentoo, ubuntu, debian, centos 5).
-
-###### Imagemagick
-
-Per l'indicizzazione e la conversione degli allegati in formato grafico è necessario installare l'utilità imagemagick.
-
-In alcune distribuzioni non è compresa nell'installazione di base: tuttavia il pacchetto omonimo solitamente è presente tra quelli installabili.
-
-###### CLASSPATH per Libreoffice > 5.1
-
-Nel caso in cui si installi la versione di Libreoffice più recente e quindi da 5.1 in poi, bisognerà modificare il CLASSPATH all'interno del file extraway-fcs.conf in questa maniera:
-
-**CLASSPATH=/usr/lib/libreoffice/program:$java_classes_home/../classes:$openoffice_ure/share/java/'*':$openoffice_basis/program/classes/'*':$java_classes_home/'*'**
+* Debian 10
 
 ##### Client
 
@@ -219,13 +177,30 @@ In base alla struttura appena descritta, è quindi possibile utilizzare le libre
 
 **it.tredi.docway-fcs**: Implementazione per DocWay di FCS (aggiornamento dell'esito dei lavori, registrazione dei file convertiti, indicizzazione del testo contenuto negli allegati del documento, etc.).
 
-
 ### Requisiti
 
 Requisiti per l'esecuzione di conversioni e estrazione di testo da parte di FCS:
 - OpenOffice
 - ImageMagick
 - Tesseract
+
+###### Pdftotext
+
+Per l'indicizzazione degli allegati in formato pdf è necessario installare l'utilità pdftotext.
+
+In molte distribuzioni non è compresa nell'installazione di base: in alcune distribuzioni è presente all'interno del pacchetto **xpdf** (centos 4, redhat enterprise) o nel pacchetto **poppler-utils** (gentoo, ubuntu, debian, centos 5).
+
+###### Imagemagick
+
+Per l'indicizzazione e la conversione degli allegati in formato grafico è necessario installare l'utilità imagemagick.
+
+In alcune distribuzioni non è compresa nell'installazione di base: tuttavia il pacchetto omonimo solitamente è presente tra quelli installabili.
+
+###### CLASSPATH per Libreoffice > 5.1
+
+Nel caso in cui si installi la versione di Libreoffice più recente e quindi da 5.1 in poi, bisognerà modificare il CLASSPATH all'interno del file extraway-fcs.conf in questa maniera:
+
+**CLASSPATH=/usr/lib/libreoffice/program:$java_classes_home/../classes:$openoffice_ure/share/java/'*':$openoffice_basis/program/classes/'*':$java_classes_home/'*'**
 ___
 ## [Console Audit](https://github.com/agenziaentrateriscossione/auditConsole)
 
