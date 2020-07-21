@@ -12,8 +12,6 @@ Scaricare il pacchetto eXtraWay Platform per Linux
 
 >ftp://ftp.3di.it/extra/platform/eXtraWay-platform-latest-linux.tar.gz
 
-###### [[Torna su]](https://github.com/agenziaentrateriscossione/riuso#descrizione-del-progetto-di-riuso) - [[Torna a *Istruzioni per le dipendenze eXtraWay e DocWay*]](https://github.com/agenziaentrateriscossione/riuso#istruzioni-per-le-dipendenze-extraway-e-docway)
-
 #### Requisiti Hardware
 
 Le specifiche della macchina server dipendono principalmente dal numero di utenti che utilizzerà l'applicativo e dal tipo di utilizzo.
