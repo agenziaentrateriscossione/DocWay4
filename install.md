@@ -1,12 +1,4 @@
-# Descrizione del progetto di Riuso
-
-3D Informatica vanta oltre trent’anni di esperienza al servizio di Pubbliche Amministrazioni, locali e centrali, complesse e articolate, alle quali viene offerto un supporto totale rispetto a tutti i processi di progettazione, sviluppo, mantenimento e miglioramento di sistemi informativi.
-
-Nel rispetto delle novità introdotte dal piano triennale per l’informatica nella Pubblica Amministrazione e delle linee guida su acquisizione e riuso di software per le Pubbliche Amministrazioni, e grazie al supporto di ADER (Agenzia Delle Entrate/Riscossione) l'azienda ha avviato come incaricata il progetto di riuso di alcuni moduli software, sviluppati per conto di ADER ed imperniati attorno al sistema di gestione documentale e protocollo informatico DocWay.
-
-## Installazione delle dipendenze necessarie all'utilizzo della suite documentale DocWay4
-___
-### - Installazione su piattaforma Linux di ExtraWay Platform
+## - Installazione su piattaforma Linux di ExtraWay Platform
 
 Scaricare il pacchetto eXtraWay Platform per Linux 
 
