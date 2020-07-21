@@ -1,4 +1,4 @@
-## - Installazione su piattaforma Linux di ExtraWay Platform
+## Installazione su piattaforma Linux di ExtraWay Platform
 
 Scaricare il pacchetto eXtraWay Platform per Linux 
 
