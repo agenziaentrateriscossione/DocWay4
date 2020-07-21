@@ -9,6 +9,7 @@ Progettato nel rispetto **delle più aggiornate normative e buone pratiche archi
 Moduli di gestione della corrispondenza elettronica, compreso le PEC, moduli per interfacciarsi con i CMS per il web e i sistemi di conservazione a norma e moduli per la gestione dei media, ne completano il quadro funzionale.
 
 |Pacchetto|Link|
+|--|--|
 |eXtraWay||
 |DocWay||
 
