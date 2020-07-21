@@ -8,10 +8,12 @@ Progettato nel rispetto **delle più aggiornate normative e buone pratiche archi
 
 Moduli di gestione della corrispondenza elettronica, compreso le PEC, moduli per interfacciarsi con i CMS per il web e i sistemi di conservazione a norma e moduli per la gestione dei media, ne completano il quadro funzionale.
 
+PER INSTALLARE LA SUITE DOCUMENTALE DOCWAY4 E' NECESSARIO ANZITUTTO INSTALLARE IL DATABASE EXTRAWAY A SUPPORTO DELLA STESSA, RILASCIATO COME DIPENDENZA IN FORMATO ESEGUIBILE. SEGUIRE I DUE LINK DI SEGUITO RIPORTATI IN TABELLA PER INSTALLARE LE APPLIAZIONI.
+
 |Pacchetto|Link|
 |--|--|
-|eXtraWay||
-|DocWay|(https://github.com/agenziaentrateriscossione/DocWay4/blob/master/install-dw.md)|
+|eXtraWay|https://github.com/agenziaentrateriscossione/DocWay4/blob/master/install.md|
+|DocWay|https://github.com/agenziaentrateriscossione/DocWay4/blob/master/install-dw.md|
 
 ## Versione 
 4.6.0
