@@ -209,8 +209,6 @@ All'interno della platform sono disponibili le routine systemd
 ___
 ### Uso di Antivirus nelle installazioni eXtraWay
 
-###### [[Torna su]](https://github.com/agenziaentrateriscossione/riuso#descrizione-del-progetto-di-riuso) - [[Torna a *Istruzioni per le dipendenze eXtraWay e DocWay*]](https://github.com/agenziaentrateriscossione/riuso#istruzioni-per-le-dipendenze-extraway-e-docway)
-
 La presenza di un antivirus nelle installazioni della piattaforma eXtraWay può comportare due distinti ordini di problemi: di natura prestazionale e di natura funzionale.
 
 #### Aspetto Prestazionale
@@ -474,11 +472,7 @@ Se non sono presenti errori tentare un login su DocWay e verificare la presenza 
 
 È buona norma comunicare al referente del progetto l'avvenuta installazione o aggiornamento degli applicativi.
 ___
-###### [[Torna su]](https://github.com/agenziaentrateriscossione/riuso#descrizione-del-progetto-di-riuso) - [[Torna a *Istruzioni per le dipendenze eXtraWay e DocWay*]](https://github.com/agenziaentrateriscossione/riuso#istruzioni-per-le-dipendenze-extraway-e-docway)
-___
 ## [FCA](https://github.com/agenziaentrateriscossione/docway-fca)/[FCS](https://github.com/agenziaentrateriscossione/docway-fcs)
-
-###### [[Torna su]](https://github.com/agenziaentrateriscossione/riuso#descrizione-del-progetto-di-riuso)
 
 FCA (File Conversion Agent) e FCS (File Conversion Service) consistono in due processi che permettono l'**estrazione del testo da files** e la **conversione di files in un differente formato** (es. da DOC a PDF).
 
@@ -590,8 +584,6 @@ Di seguito è descritto il formato del record di AUDIT registrato su archivio Mo
 | changes | Elenco di modifiche apportate al record (per ogni campo viene indicato il valore precedente alla modifica e quello successivo) |
 ___
 ## [MSA](https://github.com/agenziaentrateriscossione/docway-msa)
-
-###### [[Torna su]](https://github.com/agenziaentrateriscossione/riuso#descrizione-del-progetto-di-riuso)
 
 MSA (Mail Storage Agent) è un servizio Java multi-processo che si occupa delle seguenti operazioni:
 * archiviazione delle email PEC e non (le mail vengono trasformate e salvate in documenti in DocWay XML);
