@@ -1,4 +1,4 @@
-### - Installazione su piattaforma Linux di DocWay 4
+## Installazione su piattaforma Linux di DocWay 4
 
 ###### Distribuzioni Linux Supportate
 
