@@ -11,7 +11,7 @@ Moduli di gestione della corrispondenza elettronica, compreso le PEC, moduli per
 |Pacchetto|Link|
 |--|--|
 |eXtraWay||
-|DocWay||
+|DocWay|(https://github.com/agenziaentrateriscossione/DocWay4/blob/master/install-dw.md)|
 
 ## Versione 
 4.6.0
