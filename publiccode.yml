@@ -43,7 +43,7 @@ it:
     spid: true
 description:
   it:
-    genericName: Modulo FCA
+    genericName: DocWay4
     documentation: 'https://github.com/agenziaentrateriscossione/DocWay4'
     shortDescription: Gestione documentale e protocollo informatico - DocWay
     longDescription:
