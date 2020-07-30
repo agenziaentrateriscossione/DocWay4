@@ -1,4 +1,4 @@
-![Logo DocWay4](https://raw.githubusercontent.com/agenziaentrateriscossione/DocWay4/blob/master/logo.png)
+![Logo DocWay4](https://github.com/agenziaentrateriscossione/DocWay4/blob/master/logo.png)
 
 # DocWay4
 
