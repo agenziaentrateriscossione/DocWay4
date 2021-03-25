@@ -1,6 +1,6 @@
 ![Logo DocWay4](https://github.com/agenziaentrateriscossione/DocWay4/blob/master/logo.png)
 
-# DocWay4
+# DocWay
 
 Docway Xml è una soluzione completa, configurabile e personalizzabile dotata di numerosi moduli integrati che vi permetteranno di gestire tutto il ciclo di vita documentale, supportare e automatizzare i processi interni e/o verso l&rsquo;esterno.
 
