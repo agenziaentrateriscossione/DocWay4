@@ -50,7 +50,18 @@ description:
     documentation: 'https://github.com/agenziaentrateriscossione/DocWay4'
     shortDescription: Gestione documentale e protocollo informatico - DocWay
     longDescription:
-      Docway è una soluzione completa, configurabile e personalizzabile dotata di numerosi moduli integrati che permettono di gestire tutto il ciclo di vita documentale, supportare e automatizzare i processi interni e7o verso l’esterno. Progettato nel rispetto delle più aggiornate normative e buone pratiche archivistiche informatiche, l’ambiente unitario messo a disposizione copre tutte le funzionalità richieste da un vero e proprio sistema di knowledge management, un document management, un protocollo informatico, un workflow management, un record management compatibile con le regole europee MoReq2, un content management e un folder management.
+      Docway è una soluzione web completa, configurabile e personalizzabile dotata di numerosi moduli integrati che permettono di gestire tutto il ciclo di vita documentale, supportare e automatizzare i processi interni e7o verso l’esterno. Progettato nel rispetto delle più aggiornate normative e buone pratiche archivistiche informatiche, l’ambiente unitario messo a disposizione copre tutte le funzionalità richieste da un vero e proprio sistema di knowledge management, un document management, un protocollo informatico, un workflow management, un record management compatibile con le regole europee MoReq2, un content management e un folder management.
     features:
       - Gestione documentale
       - Protocollo informatico
+      - Gestione procedimenti
+      - Gestione processi con modulo workflow
+      - Campi custom per generare maschere personalizzate
+      - Archiviatore mail e PEC
+      - Modulo di audit 
+      - Deleghe e prese in carico
+      - Repertori
+      - Firma digitale
+      - Invio in conservazione
+      - Interoperabilità delle PP.AA
+      - Strumenti di collaborazione
