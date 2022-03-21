@@ -26,7 +26,7 @@ maintenance:
   contractors:
     - name: 3D Informatica srl
       website: 'http://www.3di.it'
-      until: '2021-01-01'
+      until: '2022-06-30'
 legal:
   license: AGPL-3.0-or-later
   mainCopyrightOwner: Agenzia delle Entrate-Riscossione (ADER)
