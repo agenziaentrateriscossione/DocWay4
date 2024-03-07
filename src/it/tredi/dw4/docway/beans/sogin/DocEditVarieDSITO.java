@@ -12,29 +12,30 @@ import java.util.List;
 import org.dom4j.Document;
 
 public class DocEditVarieDSITO extends DocEditVarie {
-	
+
 	private List<Option> select_customSelectSedeArchivio = new ArrayList<Option>();
-	
+
 	public DocEditVarieDSITO() throws Exception {
 		super();
 	}
-		
+
 	public boolean isDocEditModify() {
 		return false;
 	}
-	
+
 	@Override
 	@SuppressWarnings("unchecked")
 	public void init(Document domDocumento) {
 		super.init(domDocumento);
-		
+
 		// per questo repertorio viene forzata la classificazione
 		getDoc().getClassif().setCod("00/00");
 		getDoc().getClassif().setText("00/00 - non classificato");
-		
+
 		select_customSelectSedeArchivio = XMLUtil.parseSetOfElement(domDocumento, "/response/select_customSelectSedeArchivio/option", new Option());
 	}
-	
+
+
 	@Override
 	public String saveDocument() throws Exception {
 		try {
@@ -45,32 +46,32 @@ public class DocEditVarieDSITO extends DocEditVarie {
 					getDoc().getAllegati().get(0).setText("0 - nessun allegato");
 				}
 			}
-						
+
 			if (checkRequiredField()) return null;
-			
+
 			formsAdapter.getDefaultForm().addParams(getDoc().asFormAdapterParams("", false, true));
 			XMLDocumento response = super._saveDocument("doc", "list_of_doc");
-		
+
 			if (handleErrorResponse(response)) {
 				formsAdapter.fillFormsFromResponse(formsAdapter.getLastResponse()); //restore delle form
 				return null;
 			}
-			
+
 			ShowdocVarieDSITO showdocVarieDSITO = new ShowdocVarieDSITO();
 			showdocVarieDSITO.getFormsAdapter().fillFormsFromResponse(response);
 			showdocVarieDSITO.init(response.getDocument());
 			showdocVarieDSITO.loadAspects("@varie", response, "showdoc");
 			setSessionAttribute("showdocVarieDSITO", showdocVarieDSITO);
-			
+
 			return "sogin_showdoc@varie@DSITO@reload";
 		}
 		catch (Throwable t) {
 			handleErrorResponse(ErrormsgFormsAdapter.buildErrorResponse(t));
 			formsAdapter.fillFormsFromResponse(formsAdapter.getLastResponse()); //restore delle form
-			return null;			
+			return null;
 		}
 	}
-	
+
 	public List<Option> getSelect_customSelectSedeArchivio() {
 		return select_customSelectSedeArchivio;
 	}

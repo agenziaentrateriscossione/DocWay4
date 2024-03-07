@@ -8,17 +8,17 @@
 
 <ui:define name="content">
 	<div class="varie">
-		
+
 		<ui:remove>
 			<h5 class="sub-header">#{(showdocVarieComunicazione.formsAdapter.funzionalitaDisponibili['nascondiprotocollo']) ? i18n['dw4.view_doc'] : i18n['dw4.view_varie']}</h5>
 		</ui:remove>
-	
+
 		<!-- toolbar: inizio -->
 		<ui:include src="./buttonBarInternoProposta.xhtml">
 			<ui:param name="bean" value="#{showdocVarieComunicazione}"/>
 		</ui:include>
 		<!-- toolbar: fine -->
-		
+
 		<!-- scheda show: inizio -->
 		<div class="contenuto-doc row clearfix">
 			<h:panelGroup rendered="#{!showdocVarieComunicazione.popupPage}">
@@ -35,20 +35,20 @@
 			<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 withoutSmartActions">
 			<!-- div class="col-xs-12 #{(showdocSeduta.popupPage) ? 'col-sm-12 col-md-12 col-lg-12' : 'col-sm-10 col-md-10 col-lg-10 col-sm-pull-2 col-md-pull-2 col-lg-pull-2'}"  -->
 				<!-- contenuto doc: inizio -->
-				
+
 				<h:panelGroup rendered="#{empty showdocVarieComunicazione.doc.non_disponibile.estremi}">
 					<ui:include src="./showdoc@title@comunicazione.xhtml">
 						<ui:param name="doc" value="#{showdocVarieComunicazione.doc}"/>
 						<ui:param name="bean" value="#{showdocVarieComunicazione}" />
 					</ui:include>
-					
+
 					<ui:include src="./showdoc@annullato.xhtml"><ui:param name="bean" value="#{showdocVarieComunicazione}"/></ui:include>
-					
+
 					<div id="fixedshowdoc" class="fixed-showdoc">
 						<ui:include src="./showdoc@statidoc.xhtml">
 							<ui:param name="bean" value="#{showdocVarieComunicazione}"/>
 						</ui:include>
-						
+
 						<ui:include src="./showdoc@datidoc.xhtml">
 							<ui:param name="bean" value="#{showdocVarieComunicazione}"/>
 							<ui:param name="personalViewToUse" value="comunicazione"/>
@@ -61,62 +61,62 @@
 						<ui:include src="./showdoc@componentiDelibere.xhtml">
 							<ui:param name="bean" value="#{showdocVarieComunicazione}"/>
 						</ui:include>
-						
+
 						<ui:include src="./showdoc@datiarchivio@proposta.xhtml">
 							<ui:param name="bean" value="#{showdocVarieComunicazione}"/>
 						</ui:include>
-						
+
 						<ui:include src="../customfields/showdoc@customfields.xhtml">
 							<ui:param name="bean" value="#{showdocVarieComunicazione}"/>
 			        	</ui:include>
-						
+
 						<ui:include src="./aspects.xhtml">
 							<ui:param name="bean" value="#{showdocVarieComunicazione}"/>
 						</ui:include>
-						
+
 						<ui:include src="./showdoc@responsabilita@proposta.xhtml">
 							<ui:param name="bean" value="#{showdocVarieComunicazione}"/>
 						</ui:include>
-						
+
 						<ui:include src="./showdoc@workflow.xhtml">
 							<ui:param name="bean" value="#{showdocVarieComunicazione}"/>
 						</ui:include>
-						
+
 						<ui:include src="./showdoc@xwfiles.xhtml">
 							<ui:param name="bean" value="#{showdocVarieComunicazione}"/>
 						</ui:include>
-						
+
 						<ui:include src="./showdoc@postit.xhtml">
 							<ui:param name="bean" value="#{showdocVarieComunicazione}"/>
 						</ui:include>
-						
+
 						<ui:include src="./showdoc@datialtro.xhtml">
 							<ui:param name="bean" value="#{showdocVarieComunicazione}"/>
-						</ui:include>					
-						
+						</ui:include>
+
 						<ui:include src="./history.xhtml">
 							<ui:param name="bean" value="#{showdocVarieComunicazione.doc}"/>
 							<ui:param name="viewbean" value="#{showdocVarieComunicazione}"/>
 							<ui:param name="visible" value="#{showdocVarieComunicazione.formsAdapter.funzionalitaDisponibili['showHistory']}" />
 						</ui:include>
 					</div>
-					
+
 				</h:panelGroup>
 				<h:panelGroup rendered="#{!empty showdocVarieComunicazione.doc.non_disponibile.estremi}">
-				
+
 					<ui:include src="showdoc@docnondisponibile.xhtml">
 						<ui:param name="bean" value="#{showdocVarieComunicazione}"/>
 					</ui:include>
-					
+
 				</h:panelGroup>
-				
-				<h:inputTextarea value="#{showdocVarieComunicazione.xml}" rendered="#{showdocVarieComunicazione.debugMode}" styleClass="form-control" rows="10" />	
-				
+
+				<h:inputTextarea value="#{showdocVarieComunicazione.xml}" rendered="#{showdocVarieComunicazione.debugMode}" styleClass="form-control debug-textarea" rows="10" />
+
 				<!-- contenuto doc: fine -->
 			</div>
 		</div>
 		<!-- scheda show: fine -->
-		
+
 		<ui:include src="./postit.xhtml"><ui:param name="pageBean" value="#{docwayPostit}"/></ui:include>
 		<ui:include src="./verificaFirma.xhtml"><ui:param name="pageBean" value="#{docwayVerificaFirma}"/></ui:include>
 		<ui:include src="./annullamentoDoc.xhtml"><ui:param name="pageBean" value="#{docwayAnnullamentoDoc}"/></ui:include>
@@ -130,6 +130,9 @@
 		<ui:include src="./rifintLookup.xhtml"> <ui:param name="pageBean" value="#{rifInt}"/></ui:include>
 		<ui:include src="./show@task@vars.xhtml"><ui:param name="bean" value="#{docwayWfTaskVars}"/></ui:include>
 		<ui:include src="./showPersoneRuolo.xhtml"><ui:param name="bean" value="#{docwayShowPersoneRuolo}"/></ui:include>
+		<ui:include src="./modalePresaInCarico.xhtml"><ui:param name="bean" value="#{showdocVarieComunicazione}"/></ui:include>
+		<ui:include src="./modalePersoneIncaricate.xhtml"><ui:param name="bean" value="#{docWayShowPersonePresaInCarico}"/></ui:include>
+		<ui:include src="../customfields/customFields@editPopup.xhtml"><ui:param name="pageBean" value="#{docEditCustomFields}"/></ui:include>
 		
 	</div>
 </ui:define>

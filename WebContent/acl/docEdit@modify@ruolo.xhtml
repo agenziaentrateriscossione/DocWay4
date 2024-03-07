@@ -21,7 +21,7 @@
 
 			<h5 class="sub-header">
 				<span class="ruoli glyphicons-pro"></span>&#160;
-				<h:outputText value="#{i18n['acl.mod_roles']}" escape="false" />
+				<h:outputText value="#{i18n['acl.mod_roles']}" />
 			</h5>
 
 			<!-- messages: inizio -->
@@ -101,6 +101,14 @@
 								</div>
 							</div>
 
+							<ui:remove>
+								<!-- al momento richiesta solo l'email certificata, predisposto gia' per l'aggiunta di email classiche -->
+								<ui:include src="./emails.xhtml"> <ui:param name="pageBean" value="#{docEditModifyRuolo.ruolo}"/></ui:include>
+							</ui:remove>
+							<ui:include src="./editEmailCertificata.xhtml">
+								<ui:param name="labelEmailCert" value="#{i18n['acl.pec']}"></ui:param> 
+								<ui:param name="pageBean" value="#{docEditModifyRuolo.ruolo}"/>
+							</ui:include>
 						</div>
 					</div>
 				</div>

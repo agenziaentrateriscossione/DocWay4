@@ -35,9 +35,13 @@
 		
 		<h:commandLink id="checkItemBtn" action="#{queryCtrlGestione.checkItem}" style="display:none;"><f:ajax execute="@form" render="@form" /></h:commandLink>
 		<h:commandLink id="checkFormatBtn" action="#{queryCtrlGestione.checkFormat}" style="display:none;"><f:ajax execute="@form" render="@form" /></h:commandLink>
+		<h:commandLink id="checkOpzioniBtn" action="#{queryCtrlGestione.checkOpzioni}" style="display:none;"><f:ajax execute="@form" render="@form" /></h:commandLink>
 		<script type="text/javascript">
 		function checkFormatCtrlGestione() {
 			$("#templateForm\\:checkFormatBtn").trigger('click');
+		}
+		function checkOpzioniCtrlGestione() {
+			$("#templateForm\\:checkOpzioniBtn").trigger('click');
 		}
 		</script>
 		
@@ -171,11 +175,11 @@
 										<label for="templateForm:opt_chkbox_protocolli_noallegati" class="normal-weight-text" style="white-space:normal;">#{i18n['dw4.stampa_i_riferimenti_ai_documenti_privi_di_allegati']}</label>
 									</li>
 									<li class="optstampa-inline-item">
-										<h:selectBooleanCheckbox id="opt_chkbox_mittenti_uor" value="#{queryCtrlGestione.chkbox_mittenti_uor}" />
+										<h:selectBooleanCheckbox id="opt_chkbox_mittenti_uor" value="#{queryCtrlGestione.chkbox_mittenti_uor}" onchange="checkOpzioniCtrlGestione();" />
 										<label for="templateForm:opt_chkbox_mittenti_uor" class="normal-weight-text" style="white-space:normal;">#{i18n['dw4.stampa_mittenti_per_uor']}</label>
 									</li>
 									<li class="optstampa-inline-item">
-										<h:selectBooleanCheckbox id="opt_chkbox_mittenti_protocollista" value="#{queryCtrlGestione.chkbox_mittenti_protocollista}" />
+										<h:selectBooleanCheckbox id="opt_chkbox_mittenti_protocollista" value="#{queryCtrlGestione.chkbox_mittenti_protocollista}" onchange="checkOpzioniCtrlGestione();" />
 										<label for="templateForm:opt_chkbox_mittenti_protocollista" class="normal-weight-text" style="white-space:normal;">#{i18n['dw4.stampa_mittenti_per_protocollista']}</label>
 									</li>
 									<li class="optstampa-inline-item">
@@ -212,7 +216,7 @@
 		<ui:include src="./lookup.xhtml"> <ui:param name="pageBean" value="#{queryCtrlGestione}"/></ui:include>
 		<ui:include src="./loadingbar@ctrl_gestione.xhtml"><ui:param name="pageBean" value="#{queryCtrlGestione}"/></ui:include>
 		
-		<h:inputTextarea value="#{queryCtrlGestione.xml}" rendered="#{queryCtrlGestione.debugMode}" styleClass="form-control" rows="10" />
+		<h:inputTextarea value="#{queryCtrlGestione.xml}" rendered="#{queryCtrlGestione.debugMode}" styleClass="form-control debug-textarea" rows="10" />
 	</div>
 </ui:define>
     

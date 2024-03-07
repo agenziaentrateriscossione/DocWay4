@@ -21,16 +21,16 @@
 					<td class="mitt-descr essential">
 						<div class="descr-mittente">
 							<h:panelGroup rendered="#{empty bean.doc.rif_esterni[0].cod_SAP and !empty bean.doc.rif_esterni[0].cod}">
-								<a target="acl" href="#{facesContext.externalContext.requestContextPath}/acl/#{bean.doc.rif_esterni[0].cod}/rifesterno.pf?codammaoo=#{bean.doc.cod_amm_aoo}&amp;db=#{bean.formsAdapter.aclDb}" class="blacklink"><h:outputText value="#{bean.doc.rif_esterni[0].nome}" escape="false" /></a>
+								<a target="acl" href="#{facesContext.externalContext.requestContextPath}/acl/#{bean.doc.rif_esterni[0].cod}/rifesterno.pf?codammaoo=#{bean.doc.cod_amm_aoo}&amp;db=#{bean.formsAdapter.aclDb}" class="blacklink"><h:outputText value="#{bean.doc.rif_esterni[0].nome}" /></a>
 							</h:panelGroup>
 							<h:panelGroup rendered="#{empty bean.doc.rif_esterni[0].cod_SAP and empty bean.doc.rif_esterni[0].cod}">
-								<h:outputText value="#{bean.doc.rif_esterni[0].nome}" escape="false" />
+								<h:outputText value="#{bean.doc.rif_esterni[0].nome}" />
 							</h:panelGroup>
 							<h:panelGroup rendered="#{!empty bean.doc.rif_esterni[0].cod_SAP}">
-								<h:outputText value="#{bean.doc.rif_esterni[0].nome}" escape="false" />
+								<h:outputText value="#{bean.doc.rif_esterni[0].nome}" />
 							</h:panelGroup>
 							<h:panelGroup rendered="#{!empty bean.doc.rif_esterni[0].referente.nominativo}">
-								<em> (<h:outputText value="#{bean.doc.rif_esterni[0].referente.nominativo}" escape="false" /><h:outputText value=" - #{bean.doc.rif_esterni[0].referente.ruolo}" rendered="#{!empty bean.doc.rif_esterni[0].referente.ruolo}"/>)</em>
+								<em> (<h:outputText value="#{bean.doc.rif_esterni[0].referente.nominativo}" /><h:outputText value=" - #{bean.doc.rif_esterni[0].referente.ruolo}" rendered="#{!empty bean.doc.rif_esterni[0].referente.ruolo}"/>)</em>
 							</h:panelGroup>
 							
 							<h:outputText value=", #{bean.doc.rif_esterni[0].indirizzo}" rendered="#{!empty bean.doc.rif_esterni[0].indirizzo}" />

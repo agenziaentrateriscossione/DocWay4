@@ -13,7 +13,7 @@
 				<div class="modal-dialog">
 					<div class="modal-content jsf-modal">
 						<div class="modal-header">
-							<h:commandLink class="close" action="#{pageBean.closeChangePassword}"  value="&#215;">
+							<h:commandLink styleClass="close" action="#{pageBean.closeChangePassword}"  value="&#215;">
 		                    	<f:ajax render="@form"/>
 		                   	</h:commandLink>
 							
@@ -55,7 +55,7 @@
 								</div>
 							</fieldset>
 									
-							<h:inputTextarea value="#{pageBean.xml}" rendered="#{pageBean.debugMode}" styleClass="form-control" rows="10" />
+							<h:inputTextarea value="#{pageBean.xml}" rendered="#{pageBean.debugMode}" styleClass="form-control debug-textarea" rows="10" />
 						</div>
 						<div class="modal-footer">
 							<h:commandLink action="#{pageBean.confirmChangePwd}" styleClass="btn btn-primary openwaitmsg">

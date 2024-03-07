@@ -1,16 +1,17 @@
 package it.tredi.dw4.docway.beans;
 
-import it.tredi.dw4.utils.XMLDocumento;
+import org.dom4j.Document;
+
 import it.tredi.dw4.adapters.AdaptersConfigurationLocator;
 import it.tredi.dw4.adapters.ErrormsgFormsAdapter;
 import it.tredi.dw4.docway.doc.adapters.DocDocWayDocEditFormsAdapter;
 import it.tredi.dw4.docway.model.Arrivo;
 import it.tredi.dw4.i18n.I18N;
+import it.tredi.dw4.model.XmlEntity;
 import it.tredi.dw4.utils.AppStringPreferenceUtil;
 import it.tredi.dw4.utils.Const;
 import it.tredi.dw4.utils.DateUtil;
-
-import org.dom4j.Document;
+import it.tredi.dw4.utils.XMLDocumento;
 
 public class DocEditModifyArrivo extends DocEditDoc {
 	private Arrivo doc = new Arrivo();
@@ -63,7 +64,7 @@ public class DocEditModifyArrivo extends DocEditDoc {
 	 */
 	private void setInsArrivoTitleByCodRepertorio() {
 		if (doceditRep && descrizioneRepertorio != null && descrizioneRepertorio.length() > 0)
-			docEditTitle = descrizioneRepertorio + " - " + I18N.mrs("acl.modify");
+			docEditTitle = descrizioneRepertorio + " - " + (getFormsAdapter().checkBooleanFunzionalitaDisponibile("trasformaByDocEdit", false) ? I18N.mrs("dw4.trasformazioneRepertorio") : I18N.mrs("acl.modify"));
 		else
 			docEditTitle = I18N.mrs(DEFAULT_ARRIVO_TITLE);
 	}
@@ -400,6 +401,11 @@ public class DocEditModifyArrivo extends DocEditDoc {
 			
 			return null;
 		}
+	}
+	
+	@Override
+	public XmlEntity getModel() {
+		return this.doc;
 	}
 	
 }

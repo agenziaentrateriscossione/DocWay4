@@ -37,6 +37,8 @@ if (request.getParameter("db") != null)
 		<script src="<%= request.getContextPath() %>/bootstrap/js/bootstrap.js"></script>
 		<script src="<%= request.getContextPath() %>/common/js/login.js"></script>
 		
+		<link href="<%= request.getContextPath() %>/favicon.ico" type="image/png" rel="icon"/>
+		
 		<!-- styles -->
 		<link href="<%= request.getContextPath() %>/bootstrap/css/bootstrap.css" rel="stylesheet" />
 		<c:if test="${direction eq 'rtl'}">

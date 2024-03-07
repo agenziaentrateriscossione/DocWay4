@@ -1,0 +1,51 @@
+
+/*############################### STILI PER IDENTIFICAZIONE ARCHIVIO - INIZIO ###############################*/
+
+.fullscreen-logo.archive-xdocwaydoc {
+	background: url('images/logo/xdocwaydoc.png') no-repeat center;
+}
+
+.fullscreen-logo.archive-xdocwaydoc img {
+	visibility: hidden;
+	width: 240px;
+}
+
+.resizescreen-logo.archive-xdocwaydoc, .resizescreen-logo.archive-xdocwaydoc:hover {
+	background: url('images/logo/xdocwaydoc.png') no-repeat center;
+	background-size: 85%; 
+	background-color: #fff !important;
+}
+
+.resizescreen-logo.archive-xdocwaydoc img {
+	visibility: hidden;
+}
+
+/* commentati perche' i loghi BIG in login non devono essere personalizzati, viene mostrato il logo classico di DocWay */
+/*
+.login-archive-xdocwaydoc {
+	background: url('images/logo/xdocwaydoc.png') no-repeat center;
+}
+
+.login-archive-xdocwaydoc img {
+	visibility: hidden;
+}
+*/
+
+/*############################### STILI PER IDENTIFICAZIONE ARCHIVIO - FINE ###############################*/
+
+.dropdown-menu > li > a.trasf-link {
+        margin-top: 5px;
+}
+.dropdown-menu > li > a.trasf-link {
+        padding-bottom: 10px;
+        padding-top: 10px;
+}
+.dropdown-menu > li.trasf-li:nth-child(even) > a.trasf-link {
+        background-color: #f9f9f9;
+}
+.dropdown-menu > li.trasf-li:nth-child(odd) > a.trasf-link {
+        background-color: #ededed;
+}
+.dropdown-menu > li > a:hover.trasf-link, .dropdown-menu > li.trasf-li > a:hover.trasf-link {
+        background-color: #adadad;
+}

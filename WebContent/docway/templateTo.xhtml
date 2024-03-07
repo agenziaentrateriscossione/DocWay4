@@ -1,19 +1,19 @@
 <!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml" 
-	xmlns:h="http://java.sun.com/jsf/html" 
-	xmlns:ui="http://java.sun.com/jsf/facelets" 
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
 	xmlns:f="http://java.sun.com/jsf/core">
 
 <h:head>
 	<title>#{i18n['dw4.docway_delibere']}</title>
-	
+
 	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-	<h:panelGroup rendered="#{fn:containsIgnoreCase(header['User-Agent'], 'Trident/7.0;')}"> <!-- TODO identifica correttamente IE11?  -->
+	<h:panelGroup rendered="#{docwayHome.iwxLegacyMode and fn:containsIgnoreCase(header['User-Agent'], 'Trident/7.0;')}">
 		<!-- Pare ci sia un bug su IE11 per la quale non funziona la registrazione di funzioni su eventi (addEventListener/attachEvent) -->
 		<meta http-equiv="X-UA-Compatible" content="IE=9" />
 	</h:panelGroup>
-	<h:panelGroup rendered="#{!fn:containsIgnoreCase(header['User-Agent'], 'Trident/7.0;')}">
+	<h:panelGroup rendered="#{!docwayHome.iwxLegacyMode or !fn:containsIgnoreCase(header['User-Agent'], 'Trident/7.0;')}">
 		<meta http-equiv="X-UA-Compatible" content="IE=edge" />
 	</h:panelGroup>
 
@@ -23,8 +23,19 @@
 	<script type="text/javascript" src="#{facesContext.externalContext.requestContextPath}/bootstrap/js/bootstrap.js?ver=#{docwayHome.versioneDocway}"></script>
 	<script type="text/javascript" src="#{facesContext.externalContext.requestContextPath}/common/js/bootstrap-datepicker.js?ver=#{docwayHome.versioneDocway}"></script>
 	<script type="text/javascript" src="#{facesContext.externalContext.requestContextPath}/common/js/docs.js?ver=#{docwayHome.versioneDocway}"></script>
-	<script type="text/javascript" src="#{facesContext.externalContext.requestContextPath}/common/js/iwx.core.js?ver=#{docwayHome.versioneDocway}"></script>
-	<script type="text/javascript" src="#{facesContext.externalContext.requestContextPath}/docway/js/iwx.runtime.js?ver=#{docwayHome.versioneDocway}"></script>
+	<h:panelGroup rendered="#{docwayHome.iwxLegacyMode or fn:containsIgnoreCase(header['User-Agent'], 'Trident/5.0')}">
+		<script type="text/javascript" src="#{facesContext.externalContext.requestContextPath}/common/js/iwx2/iwx.core.js?ver=#{docwayHome.versioneDocway}"></script>
+		<script type="text/javascript" src="#{facesContext.externalContext.requestContextPath}/docway/js/iwx2/iwx.runtime.js?ver=#{docwayHome.versioneDocway}"></script>
+	</h:panelGroup>
+	<h:panelGroup rendered="#{!docwayHome.iwxLegacyMode and !fn:containsIgnoreCase(header['User-Agent'], 'Trident/5.0')}">
+		<link href="#{facesContext.externalContext.requestContextPath}/common/js/iwx3/viewer.css?ver=#{docwayHome.versioneDocway}" rel="stylesheet" type="text/css" />
+		<script type="text/javascript" src="#{facesContext.externalContext.requestContextPath}/common/js/iwx3/jquery.json.min.js?ver=#{docwayHome.versioneDocway}"></script>
+		<script type="text/javascript" src="#{facesContext.externalContext.requestContextPath}/common/js/iwx3/viewer.js?ver=#{docwayHome.versioneDocway}"></script>
+		<script type="text/javascript" src="#{facesContext.externalContext.requestContextPath}/common/js/iwx3/jquery.simple.websocket.js?ver=#{docwayHome.versioneDocway}"></script>
+		<script type="text/javascript" src="#{facesContext.externalContext.requestContextPath}/common/js/iwx3/iwx.net.js?ver=#{docwayHome.versioneDocway}"></script>
+		<script type="text/javascript" src="#{facesContext.externalContext.requestContextPath}/common/js/iwx3/iwx.ws.core.js?ver=#{docwayHome.versioneDocway}"></script>
+		<script type="text/javascript" src="#{facesContext.externalContext.requestContextPath}/docway/js/iwx3/iwx.runtime.js?ver=#{docwayHome.versioneDocway}"></script>
+	</h:panelGroup>
 	<script type="text/javascript" src="#{facesContext.externalContext.requestContextPath}/docway/js/swfupload/swfupload.js?ver=#{docwayHome.versioneDocway}"></script>
 	<script type="text/javascript" src="#{facesContext.externalContext.requestContextPath}/docway/js/swfupload/swfupload.queue.js?ver=#{docwayHome.versioneDocway}"></script>
 	<script type="text/javascript" src="#{facesContext.externalContext.requestContextPath}/docway/js/jquery.swfupload.js?ver=#{docwayHome.versioneDocway}"></script>
@@ -32,39 +43,47 @@
 	<script type="text/javascript"><!-- var clientconfig = #{docwayHome.clientconfig.json} //--></script>
 	<script type="text/javascript" src="#{facesContext.externalContext.requestContextPath}/common/js/common.js?ver=#{docwayHome.versioneDocway}"></script>
 	<script type="text/javascript" src="#{facesContext.externalContext.requestContextPath}/docway/js/docway.js?ver=#{docwayHome.versioneDocway}"></script>
-	
+
 	<script type="text/javascript" src="#{facesContext.externalContext.requestContextPath}/common/js/bootstrap-clockpicker.min.js?ver=#{docwayHome.versioneDocway}"></script>
-	
+
+	<script type="text/javascript" src="#{facesContext.externalContext.requestContextPath}/common/js/tiny_mce/tinymce.min.js?ver=#{docwayHome.versioneDocway}"></script>
+
+<script type="text/javascript" src="#{facesContext.externalContext.requestContextPath}/common/js/dragAndDropTreeList/jquery-sortable.js?ver=#{docwayHome.versioneDocway}"></script>
+
+	<link href="#{facesContext.externalContext.requestContextPath}/favicon.ico" type="image/png" rel="icon"/>
+
 	<!-- styles -->
 	<link href="#{facesContext.externalContext.requestContextPath}/bootstrap/css/bootstrap.css?ver=#{docwayHome.versioneDocway}" rel="stylesheet" type="text/css" />
 	<h:panelGroup rendered="#{docwayHome.languageOrientation eq 'rtl'}">
 		<link href="#{facesContext.externalContext.requestContextPath}/bootstrap/css/bootstrap-rtl.css?ver=#{docwayHome.versioneDocway}" rel="stylesheet" type="text/css" />
 	</h:panelGroup>
-	
+
 	<link href="#{facesContext.externalContext.requestContextPath}/glyphicons/css/glyphicons.css?ver=#{docwayHome.versioneDocway}" rel="stylesheet" type="text/css" />
 	<link href="#{facesContext.externalContext.requestContextPath}/glyphicons/css/filetypes.css?ver=#{docwayHome.versioneDocway}" rel="stylesheet" type="text/css" />
+	<link href="#{facesContext.externalContext.requestContextPath}/flagicons/css/flag-icon.min.css?ver=#{docwayHome.versioneDocway}" rel="stylesheet" type="text/css" />
 	<link href="#{facesContext.externalContext.requestContextPath}/common/css/dashboard.css?ver=#{docwayHome.versioneDocway}" rel="stylesheet" type="text/css" />
 	<link href="#{facesContext.externalContext.requestContextPath}/common/css/datepicker.css?ver=#{docwayHome.versioneDocway}" rel="stylesheet" type="text/css" />
-	
+
 	<link href="#{facesContext.externalContext.requestContextPath}/common/css/bootstrap-clockpicker.min.css?ver=#{docwayHome.versioneDocway}" rel="stylesheet" type="text/css" />
-	
+
 	<link href="#{facesContext.externalContext.requestContextPath}/common/css/common.css?ver=#{docwayHome.versioneDocway}" rel="stylesheet" type="text/css" />
 	<link href="#{facesContext.externalContext.requestContextPath}/docway/css/docway.css?ver=#{docwayHome.versioneDocway}" rel="stylesheet" type="text/css" />
+	<link href="#{facesContext.externalContext.requestContextPath}/docway/css/docway-print.css?ver=#{docwayHome.versioneDocway}" rel="stylesheet" type="text/css" />
 	<h:panelGroup rendered="#{docwayHome.languageOrientation eq 'rtl'}">
 		<link href="#{facesContext.externalContext.requestContextPath}/common/css/rtl.css?ver=#{docwayHome.versioneDocway}" rel="stylesheet" type="text/css" />
 	</h:panelGroup>
 	<link href="#{facesContext.externalContext.requestContextPath}/docway/taskFormCss/taskform.css?ver=#{docwayHome.versioneDocway}" rel="stylesheet" type="text/css" />
 	<link href="#{facesContext.externalContext.requestContextPath}/docway/taskFormCss/skin/jqueryuiskin.css?ver=#{docwayHome.versioneDocway}" rel="stylesheet" type="text/css" />
-	
+
 	<h:panelGroup rendered="#{!empty docwayHome.customDirCss}">
 		<link href="#{facesContext.externalContext.requestContextPath}/docway/css/#{docwayHome.customDirCss}/docway.css?ver=#{docwayHome.versioneDocway}" rel="stylesheet" type="text/css" />
 	</h:panelGroup>
-	
+
 	<h:panelGroup rendered="#{docwayHome.formsAdapter.funzionalitaDisponibili['abilitaSoginSAP']}">
 		<link href="#{facesContext.externalContext.requestContextPath}/soginSAP/css/soginSAP.css?ver=#{docwayHome.versioneDocway}" rel="stylesheet" type="text/css" />
 		<script type="text/javascript" src="#{facesContext.externalContext.requestContextPath}/soginSAP/js/soginSAP.js?ver=#{docwayHome.versioneDocway}"></script>
 	</h:panelGroup>
-	
+
 	<!--h:outputScript name="jsf.js" library="javax.faces"/-->
 </h:head>
 <h:body styleClass="#{docwayHome.languageOrientation}">
@@ -73,40 +92,47 @@
 
 	<div class="container-fluid">
 		<div class="row">
-	
+
 			<!-- sx col: inizio -->
 			<h:form id="leftsideContentForm" styleClass="form-horizontal">
 				<div class="#{docwayHome.hide_left_column ? '' : 'col-sm-3 col-md-2 sidebar'}" style="#{docwayHome.hide_left_column ? 'display:none;' : ''}">
 					<ui:include src="./vaschetteQueryTo.xhtml"/>
 				</div>
-				
+
 				<ui:include src="./uorSelector.xhtml"/>
 			</h:form>
 			<!-- sx col: fine -->
-			
+
 			<!-- dx col: inizio -->
 			<div class="#{docwayHome.hide_left_column ? 'col-sm-12 col-md-12' : 'col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2'} main">
-			
+
 				<h:form id="templateForm" class="form-horizontal">
 					<ui:insert name="content"/>
 					<ui:include src="./errormsg.xhtml"/>
 					<ui:include src="./msg.xhtml"/>
 					<ui:include src="./reloadmsg.xhtml"/>
+					<ui:include src="./autoclosemsg.xhtml"/>
+					
+					<ui:include src="../azionimassive/azioneMassivaInputParams.xhtml" />
+					<ui:include src="../azionimassive/luaStoredProcedureThrobber.xhtml" />
 				</h:form>
-				
+
 				<h:form id="workflowtask" method="post" class="form-horizontal" enctype="multipart/form-data">
 				    <ui:include src="./edit@task.xhtml"><ui:param name="bean" value="#{execTask}"/></ui:include>
 				</h:form>
-			
+
 			</div>
 			<!-- dx col: fine -->
-			
+
 			<ui:include src="./waitmsg.xhtml"/>
 			<a href="#" class="back-to-top"><span class="glyphicon glyphicon-chevron-up"></span></a>
-			
-			<input type="hidden" id="globalFocusFieldAfterAjax" value="" />	
+
+			<input type="hidden" id="globalFocusFieldAfterAjax" value="" />
+
+			<input type="hidden" id="scrollbarElementSelectorAfterAjax" value="" />
+			<input type="hidden" id="scrollbarTopAfterAjax" value="" />
 		</div>
 	</div>
-	
+
 </h:body>
 </html>

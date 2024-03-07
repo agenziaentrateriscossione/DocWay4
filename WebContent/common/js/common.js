@@ -1,12 +1,15 @@
 $(document).ready(function() {
 	var language = window.navigator.userLanguage || window.navigator.language;
 	language = language.substring(0,2);
-	
+
 	backToTop();
-    
+
+	// mbernardini 30/05/2016 : recupero dinamico del nome della webapp (in base a URL richiesto)
+	var appName = getApplicationName();
+
 	//carica il locale per il datepicker
 	if (!$.fn.datepicker.dates[language]) {
-		$.getScript( "/DocWay4/common/js/locales/bootstrap-datepicker." + language + ".js") 
+		$.getScript( "/" + appName + "/common/js/locales/bootstrap-datepicker." + language + ".js")
 		.done(function( script, textStatus ) {
 			activateDatePicker(language);
 		})
@@ -16,29 +19,35 @@ $(document).ready(function() {
 	}
 	else
 		activateDatePicker(language);
-    
-	//carica il locale per parsley.js
-	$.getScript( "/DocWay4/common/js/locales/parsleyjs/" + language + ".js")
-	.done(function( script, textStatus ) {
-		$.getScript( "/DocWay4/common/js/locales/parsleyjs/" + language + ".extra.js")
-	})
 	
-    activateSubmitEnterKeyCode();
-    activateSubmitOnSingleInputEnterKeyCode();
-    activatePopover();
-    addErrorStyleToFields();
-    limitShowdocHeight();
-    preventDoubleClick();
-    
-    addModalOpenedStyles();
-    
-    activateCurrencyFields();
-    
-    activateLookupControl();
+	activatePrependFields();
+
+	//carica il locale per parsley.js
+	$.getScript( "/" + appName + "/common/js/locales/parsleyjs/" + language + ".js")
+	.done(function( script, textStatus ) {
+		$.getScript( "/" + appName + "/common/js/locales/parsleyjs/" + language + ".extra.js")
+	})
+
+	activateSubmitEnterKeyCode();
+	activateSubmitOnSingleInputEnterKeyCode();
+	activatePopover();
+	addErrorStyleToFields();
+	limitShowdocHeight();
+	preventDoubleClick();
+
+	addModalOpenedStyles();
+
+	activateCurrencyFields();
+
+	activateLookupControl();
+
+	activateHtmlEditor();
+
+	activateDragAndDropSortable();
 });
 
 $(window).load(function() {
-	jsf.ajax.addOnEvent(function(data) { 
+	jsf.ajax.addOnEvent(function(data) {
 		if (data.status == 'begin') {
 			showLoadingIndicator();
 		}
@@ -49,7 +58,7 @@ $(window).load(function() {
 			if ($('.jsf-modal').length == 0) {
 				$('body').removeClass('modal-open');
 				$('.modal-backdrop').remove();
-				
+
 				// riattivato iwx (se presente nella pagina) in caso di chiusura di un popup
 				//$('#iwx_holder').css('visibility', 'visible');
 				$("#iwx_holder").css("width", "auto");
@@ -57,50 +66,251 @@ $(window).load(function() {
 			else if ($('.jsf-modal').length != 0) {
 				addModalOpenedStyles();
 			}
-			
+
 			// caricamento e posizionamento componenti affix dopo refresh ajax della pagina
 			$('[data-spy="affix"]').each(function () {
 				$(this).affix();
 			});
-			
+
 			backToTop();
-			
+
 			var language = window.navigator.userLanguage || window.navigator.language;
 			language = language.substring(0,2);
 			activateDatePicker(language);
 			
+			activatePrependFields();
+
 			activateSubmitEnterKeyCode();
 			activateSubmitOnSingleInputEnterKeyCode();
 			activatePopover();
 			addErrorStyleToFields();
 			limitShowdocHeight();
 			preventDoubleClick();
-			
+
 			activateCurrencyFields();
-			
+
 			activateLookupControl();
-			
+
 			moveOnFocusField(); // focus su un campo specifico dopo un'operazione ajax sul form (es. lookup)
+			moveByScrollbarPosition();
+
+			activateHtmlEditor();
+
+			activateDragAndDropSortable();
+
 		}
 	});
 });
 
+/**
+ * Attivazione del plug-in sortable per le ul di classe "drag-and-drop-sortable"
+ */
+function activateDragAndDropSortable() {
+	var $sel = $("ul.drag-and-drop-sortable");
+	if($sel.length > 0) {
+		var defaultHeight = 0;
+		var	docsDragged = [];
+		var docIndex = 0;
+		var destinationIndex = 0;
+		var afterLevel = 0;
+		var numDocsDragged = 0;
+		$sel.sortable({
+			placeholder: '<li class="placeholder-sortable doc-raccoglitore"/>',
+			tolerance: 0,
+			distance: 5,
+			onDragStart: function ($item, container, _super, event) {
+				docIndex = $item.index();
+				defaultHeight = $item.height();
+				var level = $item.attr("level");
+				var $next = $item.next();
+				while ($next != null && $next.attr("level") > level) {
+					docsDragged.unshift($next);
+					$next.hide();
+					$next = $next.next();
+					numDocsDragged++;
+				}
+				numDocsDragged++;
+				_super($item, container);
+			},
+			onDrag: function ($item, position, _super, event) {
+				_super($item, position);
+			},
+			afterMove: function ($placeholder, container, $closestItemOrContainer) {
+				$placeholder.height(defaultHeight * numDocsDragged);
+			},
+			onDrop: function ($item, container, _super, event) {
+				_super($item, container);
+				var $after = docsDragged.length > 0 ? docsDragged[0] : $item;
+				for(var i = 0; i < docsDragged.length; i++) {
+					var $next = docsDragged[i];
+					$next.insertAfter($item);
+					$next.show();
+				}
+				destinationIndex = $item.index();
+				if($after.next() != null)
+					afterLevel = $after.next().attr("level");
+				else
+					afterLevel = 0;
+				callExecuteFormDragAndDrop(docIndex, destinationIndex, afterLevel);
+				//reset
+				defaultHeight = 0;
+				docsDragged = [];
+				docIndex = 0;
+				destinationIndex = 0;
+				afterLevel = 0;
+				numDocsDragged = 0;
+				saveScrollbarPosition();
+			}
+		});
+	}
+}
+
+/**
+ * Funzione che finge la chiamata asincrona alla gestione dell'update della lista indice eseguita col drag&drop
+ */
+function callExecuteFormDragAndDrop(docIndex, destinationIndex, afterLevel) {
+	$("#templateForm\\:docIndex").val(docIndex);
+	$("#templateForm\\:destinationIndex").val(destinationIndex);
+	$("#templateForm\\:afterLevel").val(afterLevel);
+	$("#templateForm\\:commandLinkDragAndDrop").click();
+}
+
+/**
+ * Attivazione di eventuali editor HTML presenti all'interno della pagina (conversione di elementi textarea contenenti codice HTML in un iframe con
+ * visualizzato l'output (editabile o meno)
+ */
+function activateHtmlEditor() {
+	var appName = getApplicationName();
+
+	try {
+		if (typeof tinymce != undefined) {
+			tinymce.remove();
+
+			// campi editabili
+			tinymce.init({
+				selector:'.html-field',
+				language: 'it',
+				toolbar_items_size: 'small',
+				plugins: [
+					'code table',
+					'textcolor'
+				],
+				// tiommi 19/03/2018 (aggiunto underline ai pulsanti disponibili nella toolbar)
+				// tiommi 25/01/2019 (aggiunto reset format)
+				toolbar: [
+					"undo redo | fontselect fontsizeselect styleselect | forecolor backcolor | bold italic underline | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | selectall removeformat lol",
+				],
+				content_css: [
+					'/' + appName + '/bootstrap/css/bootstrap.css',
+					'/' + appName + '/common/css/dashboard.css',
+					'/' + appName + '/common/css/common.css',
+					'/' + appName + '/common/css/htmlpreview.css',
+					getTinyMCECustomStyle() ? '/' + appName + '/common/css/' + getTinyMCECustomStyle() : ''
+				],
+				font_formats : //"Andale Mono=andale mono,times;"+
+					"Arial=arial,helvetica,sans-serif;"+
+					"Arial Black=arial black,avant garde;"+
+					"Book Antiqua=book antiqua,palatino;"+
+					"Comic Sans MS=comic sans ms,sans-serif;"+
+					"Courier New=courier new,courier;"+
+					"Georgia=georgia,palatino;"+
+					"Helvetica=helvetica;"+
+					"Impact=impact,chicago;"+
+					//"Symbol=symbol;"+
+					"Tahoma=tahoma,arial,helvetica,sans-serif;"+
+					//"Terminal=terminal,monaco;"+
+					"Times New Roman=times new roman,times;"+
+					"Trebuchet MS=trebuchet ms,geneva;"+
+					"Verdana=verdana,geneva;",
+				//"Webdings=webdings;"+
+				//"Wingdings=wingdings,zapf dingbats",
+				fontsize_formats: '8pt 9pt 10pt 11pt 12pt 13pt 14pt 15pt 18pt 24pt 36pt',
+				// tiommi 14/07/2017 (per i submit ajax ho bisogno che le textarea siano sempre sincronizzate con l'iframe del plugin)
+				setup : function(editor) {
+					editor.on("change keyup", function(e){
+						editor.save(); // updates this instance's textarea
+					});
+					// editor.addButton('lol', {
+					// 	icon: 'glyphicon glyphicon-envelope',
+					// 	tooltip: "Insert LOL LOL",
+					// 	onclick: function(){
+					// 		alert('lmaoaoao');
+					// 	}
+					// });
+				}
+			});
+
+			var editors = tinymce.get(".html-field");
+			console.log(editors);
+
+			// campi readonly
+			tinymce.init({
+				selector:'.html-readonly-field',
+				language: 'it',
+				readonly: true,
+				toolbar: false,
+				menubar: false,
+				statusbar: false,
+				content_css: [
+					'/' + appName + '/bootstrap/css/bootstrap.css',
+					'/' + appName + '/common/css/dashboard.css',
+					'/' + appName + '/common/css/common.css',
+					'/' + appName + '/common/css/htmlpreview.css',
+					getTinyMCECustomStyle() ? '/' + appName + '/common/css/' + getTinyMCECustomStyle() : ''
+				]
+			});
+		}
+	}
+	catch (e) { }
+}
+
+/**
+ * Ritorna il nome dell'applicazione in base all'analisi dell'URL utilizzato per il caricamento
+ * @returns {String}
+ */
+function getApplicationName() {
+	var appName = "DocWay4";
+	var pathname = window.location.pathname;
+	//alert("pathname -> " + pathname);
+	if (pathname) {
+		if (pathname.indexOf("/") == 0)
+			pathname = pathname.substring(1);
+
+		var index = pathname.indexOf("/");
+		if (index != -1)
+			appName = pathname.substring(0, index);
+	}
+	//alert("appname -> " + appName);
+	return appName;
+}
+
+/**
+ * Torna il css con il quale overridare l'editor TinyMCE
+ */
+function getTinyMCECustomStyle() {
+	var inputHidden = $("#overrideTinyMceCss");
+	if (inputHidden) {
+		return inputHidden.val();
+	}
+	return '';
+}
+
 // evita l'invio di richieste multiple a causa di doppio click sui pulsanti da parte degli utenti
 function preventDoubleClick() {
 	hideWaitMsgDiv(); // al caricamento della pagina occorre disattivare il div di wait (se attivo)
-	
+
 //	$(document).on("click", "a.btn.btn-primary", function() {
 //		showLoadingIndicator();
 //		showWaitMsgDiv();
 //	});
-	
+
 	$(document).on("click", "a.openwaitmsg", function() {
 		showLoadingIndicator();
 		showWaitMsgDiv();
 	});
 }
 
-// attivazione del div di wait (inibisce il click su tutti i pulsanti presenti nella pagina) 
+// attivazione del div di wait (inibisce il click su tutti i pulsanti presenti nella pagina)
 function showWaitMsgDiv() {
 	$('#waitmsgdiv').css('display','block');
 	$('#waitmsgdiv').addClass('prevent-doubleclick');
@@ -135,14 +345,14 @@ function hideLoadingIndicator() {
 }
 
 /**
- * aggiunge al body gli stili necessari alla gestione dei popup bootstrap nel 
+ * aggiunge al body gli stili necessari alla gestione dei popup bootstrap nel
  * caso nella pagina risulti presente un popup aperto (da jsf senza javascript)
  */
 function addModalOpenedStyles() {
 	if ($('.jsf-modal').length != 0) {
-		if (!$('body').hasClass('modal-open')) 
+		if (!$('body').hasClass('modal-open'))
 			$('body').addClass('modal-open');
-		
+
 		if ($('.modal-backdrop').length == 0)
 			$('body').append('<div class="modal-backdrop fade in"></div>');
 
@@ -150,48 +360,106 @@ function addModalOpenedStyles() {
 		// piano nascondendo cosi' il popup
 		//$('#iwx_holder').css('visibility', 'hidden');
 		$("#iwx_holder").css("width", "0px");
-		
+
 	}
 }
 
 /**
- * focus su un campo specifico dopo un'operazione che comporta il refresh ajax di 
+ *	Resetta la posizione che aveva la scrollbar prima della chiamata ajax e del refresh del fragment
+ */
+function moveByScrollbarPosition() {
+	var scrollbarSelector = $("#scrollbarElementSelectorAfterAjax").val();
+	var scrollbarTop = $("#scrollbarTopAfterAjax").val();
+
+	if (scrollbarSelector && scrollbarTop) {
+		$(scrollbarSelector).scrollTop(scrollbarTop);
+
+		// reset dei campi di identificazione della posizione della scrollbar
+		$("#scrollbarElementSelectorAfterAjax").val("");
+		$("#scrollbarTopAfterAjax").val("");
+	}
+}
+
+/**
+ * Salva le variabili necessarie al ripristino della posizione della scrollbar dopo una chiamata ajax
+ * @param elementSelector (selettore del fragmet con scrollbar)
+ */
+function setScrollBarPosition(elementSelector) {
+	if(elementSelector) {
+		$("#scrollbarElementSelectorAfterAjax").val(elementSelector);
+		$("#scrollbarTopAfterAjax").val($(elementSelector).scrollTop());
+	}
+}
+
+/**
+ * Funzione mock per tutti i template che non hanno implementata la saveScrollbarPosition()
+ * @returns
+ */
+function saveScrollbarPosition() {
+	return null;
+}
+
+
+
+/**
+ * focus su un campo specifico dopo un'operazione che comporta il refresh ajax di
  * tutto il form
  */
 function moveOnFocusField() {
 	var focusFieldId = $("#globalFocusFieldAfterAjax").val();
 	// e' richiesto il focus su un campo e nessun popup e' attivo
-	if (focusFieldId != '' && !$('body').hasClass('modal-open')) { 
+	if (focusFieldId != '' && !$('body').hasClass('modal-open')) {
 		try {
-			//alert(focusFieldId);
+			log("info", "moveOnFocusField-> focusFieldId = " + focusFieldId);
+
 			var current = $("#" + focusFieldId.replace(/:/g, "\\:"));
-			var inputs = current.closest("form").find(".form-control");
+			var inputs = current.closest("form").find(".form-control").not(':input[readonly]');
+			console.info("info", "moveOnFocusField-> input.length = " + inputs.length);
 			var titlechecks = current.closest("form").find(".title-check");
-			
+			log("info", "moveOnFocusField-> titlechecks.length = " + titlechecks.length);
+
 			var currentInput = inputs.index(current);
-			//alert(currentInput);
+			log("info", "moveOnFocusField-> currentInput = " + currentInput);
+
 			var currentTitle = titlechecks.index(current);
-			//alert(currentTitle);
-			
+			log("info", "moveOnFocusField-> currentTitle = " + currentTitle);
+
+			var focusId = "";
 			if (currentInput != -1) {
 				// focus su campo input di docedit
-				
-				if ((currentInput+1) < inputs.length)
-					inputs.eq(currentInput+1).focus();
-				else
-					inputs.eq(currentInput).focus();
+				var inputPos = currentInput+1;
+				if (inputPos >= inputs.length)
+					inputPos = currentInput;
+				log("info", "moveOnFocusField-> inputPos = " + inputPos);
+
+				if (inputs.eq(inputPos) && inputs.eq(inputPos).attr("id"))
+					focusId = inputs.eq(inputPos).attr("id");
 			}
 			else if (currentTitle != -1) {
 				// focus su campo check di una lista titoli
-				
-				if ((currentTitle+1) < titlechecks.length)
-					titlechecks.eq(currentTitle+1).focus();
-				else
-					titlechecks.eq(currentTitle).focus();
+				var titlePos = currentTitle+1;
+				if (titlePos >= titlechecks.length)
+					titlePos = currentTitle;
+				log("info", "moveOnFocusField-> titlePos = " + titlePos);
+
+				if (titlechecks.eq(titlePos) && titlechecks.eq(titlePos).attr("id"))
+					focusId = titlechecks.eq(titlePos).attr("id");
+			}
+
+			if (focusId != undefined && focusId != null && focusId != "") {
+				log("info", "moveOnFocusField-> move to " + focusId);
+				//$("#" + focusId).focus();
+
+				// mbernardini 17/03/2016 : fix IE11 focus problem
+				window.setTimeout(function() {
+					var find = ':';
+					var re = new RegExp(find, 'g');
+					$("#" + focusId.replace(re, '\\:')).focus();
+				}, 50);
 			}
 		}
 		catch (e) { }
-		
+
 		$("#globalFocusFieldAfterAjax").val(""); // reset del campo di identificazione del focus
 	}
 }
@@ -206,9 +474,9 @@ function setGlobalFocusFieldId(fieldId) {
 		var re = new RegExp('_button$');
 		var fieldId = fieldId.replace(re, '_input');
 		//alert(fieldId);
-		
+
 		$('#globalFocusFieldAfterAjax').val(fieldId);
-		
+
 		// azzeramento dei campi hidden relativi al focus su lookup o thesauri
 		$('#templateForm\\:focusElementLookup').val('');
 		$('#templateForm\\:focusElementTh').val('');
@@ -233,11 +501,20 @@ function setFieldAsGlobalFocusFieldId(field) {
 function activateCurrencyFields() {
 	$('.currencyField').blur(function() {
 		var value = $(this).val();
-		if (value != '' && value.indexOf(".") == -1) {
-			value = value.replace(',', '.');
+		//alert('input value = ' + value);
+		if (value != '') {
+			var dotsMatch = value.match(new RegExp('\\.','g'))
+			if ((dotsMatch != null && dotsMatch.length > 1) || (value.indexOf(".") != -1 && value.indexOf(",") != -1)) // punto utilizzato come separatore delle migliaia
+				value = value.replace(/\./g, '');
+			//alert('cleaned value = ' + value);
+
+			if (value.indexOf(".") == -1)
+				value = value.replace(',', '.');
+			//alert('final value = ' + value);
+
 			$(this).val(value);
-			//alert($(this).val());
 		}
+		//alert($(this).val());
 		$(this).formatCurrency({ symbol: '', negativeFormat: '-%s%n', digitGroupSymbol: '', roundToDecimalPlace: 2 });
 	});
 }
@@ -248,18 +525,18 @@ function activateCurrencyFields() {
 function backToTop() {
 	var offset = 220;
 	var duration = 100; //500;
-    $(window).scroll(function() {
-    	if ($(this).scrollTop() > offset) {
-    		$('.back-to-top').fadeIn(duration);
-    	} else {
-    		$('.back-to-top').fadeOut(duration);
-    	}
-    });
-    
-    $('.back-to-top').click(function(event) {
-    	event.preventDefault();
-    	$('html, body').animate({scrollTop: 0}, duration);
-    	return false;
+	$(window).scroll(function() {
+		if ($(this).scrollTop() > offset) {
+			$('.back-to-top').fadeIn(duration);
+		} else {
+			$('.back-to-top').fadeOut(duration);
+		}
+	});
+
+	$('.back-to-top').click(function(event) {
+		event.preventDefault();
+		$('html, body').animate({scrollTop: 0}, duration);
+		return false;
 	});
 }
 
@@ -287,7 +564,7 @@ function activateSubmitEnterKeyCode() {
 }
 
 /**
- * ritorna true se la direzione del testo e' 'Right To Left', false se 'Left To Right'  
+ * ritorna true se la direzione del testo e' 'Right To Left', false se 'Left To Right'
  */
 function isRTL() {
 	if ($('body').hasClass('rtl'))
@@ -300,11 +577,80 @@ function isRTL() {
  * attivazione dei calendari su input di selezione delle date
  */
 function activateDatePicker(language) {
-	$('.input-group.date').datepicker({ 
-		//autoclose: true, // se viene attivato autoclose non funziona l'evento onblur sul campo 
+	$('.input-group.date.free').datepicker({
+		//autoclose: true, // se viene attivato autoclose non funziona l'evento onblur sul campo (es. verificaDuplicati su arrivo)
 		todayHighlight: true,
 		rtl: isRTL(),
-		language: language
+		language: language,
+		forceParse: false
+	});
+	$('.input-group.date.fromToday').datepicker({
+		//autoclose: true, // se viene attivato autoclose non funziona l'evento onblur sul campo (es. verificaDuplicati su arrivo)
+		todayHighlight: true,
+		startDate: getFormattedDate(new Date()),
+		rtl: isRTL(),
+		language: language,
+		forceParse: false
+	});
+	
+	$('.input-group.date.custom').each(function( index ) {
+		var startDate = $(this).attr('data-min-value');
+		var endDate = $(this).attr('data-max-value');
+		
+		$(this).datepicker({
+			//autoclose: true, // se viene attivato autoclose non funziona l'evento onblur sul campo (es. verificaDuplicati su arrivo)
+			todayHighlight: true,
+			startDate: startDate,
+			endDate: endDate,
+			rtl: isRTL(),
+			language: language,
+			forceParse: false
+		});
+	});
+}
+
+function getFormattedDate(data) {
+	// TODO andrebbero gestiti differenti formati (al momento forzato a DD/MM/YYYY), magari utilizzando moment.js
+	if (!data)
+		data = new Date();
+	var dd = data.getDate();
+	var mm = data.getMonth() + 1; //January is 0!
+	var yyyy = data.getFullYear();
+	if(dd < 10)
+		dd='0' + dd;
+	if(mm < 10)
+		mm='0' + mm;
+	return dd + '/' + mm + '/' + yyyy;
+}
+
+/**
+ * attivazione di campi di tipo prepend (custom fields)
+ */
+function activatePrependFields() {
+	$('div[class*=\'prepend-field\']').each(function( index ) {
+		var prependValue = $(this).attr('data-prepend-value');
+		var prependFill = $(this).attr('data-prepend-fill');
+		
+		$(this).children('input[type=\'text\']').blur(function() {
+			var value = $(this).val();
+			if (prependValue && value) {
+				var maxlength = Number($(this).attr('maxlength'));
+				if (prependFill && maxlength) { // prepend-fill abilitato solo se maxlength e' defenito
+					// aggiunta del prefisso fino al raggiungimento 
+					// della lunghezza massima del campo
+					while (value.length < maxlength)
+						value = prependValue + value;
+				}
+				else {
+					// aggiunta del prefisso solo una volta
+					if (!maxlength || value.length < maxlength) {
+						if (!value.startsWith(prependValue))
+							value = prependValue + value;
+					}
+				}
+				$(this).val(value);
+			}
+		});
 	});
 }
 
@@ -323,7 +669,7 @@ function activateSubmitOnSingleInputEnterKeyCode() {
 }
 
 /**
- * attivazione del popover su tutti gli elementi con 
+ * attivazione del popover su tutti gli elementi con
  * classe 'popoveritem'
  */
 function activatePopover() {
@@ -332,7 +678,7 @@ function activatePopover() {
 		if (!$(this).attr('data-content')) {
 			// contenuto popover specificato come elemento html
 			var popoverId = $(this).attr('id');
-			$('#' + popoverId).popover({ 
+			$('#' + popoverId).popover({
 				html : true,
 				trigger: 'hover',
 				content: function() {
@@ -358,14 +704,14 @@ function limitShowdocHeight() {
 }
 
 /**
- * visualizzazione dei dettagli di un errore 
+ * visualizzazione dei dettagli di un errore
  */
 function mostraErrorExtra() {
 	return openCloseSection('dialogErrorExtra');
 }
 
 /**
- * apre/chiude la sezione indicata 
+ * apre/chiude la sezione indicata
  */
 function openCloseSection(sectionid) {
 	if ($('#' + sectionid).is(':visible'))
@@ -387,7 +733,7 @@ function owmConfirm(message) {
 		return false;
 	}
 	displayOpenwaitmsg();
-	return true;		
+	return true;
 }
 
 /**
@@ -404,15 +750,15 @@ function addErrorStyleToFields() {
 
 /*
  * in caso di azione su un campo di lookup/thesauro da parte di un utente disattiva il pulsante di salvataggio in modo
- * da evitare salvataggio di documenti con lookup/thesauri parziali (forza la conclusione della selezione di un lookup/thesauro) 
+ * da evitare salvataggio di documenti con lookup/thesauri parziali (forza la conclusione della selezione di un lookup/thesauro)
  */
 function activateLookupControl() {
-	$('.lookup-field, .th-field').on('keypress blur', function(e) {
+	$('.lookup-field, .th-field, .tag-field').on('keypress blur', function(e) {
 		//alert("Event type " + e.type);
-		
+
 		// aggiunto il delay per un problema di ordine di eventi su IE. Nel caso venga intercettato il click occorre
 		// aumentare il tempo di delay del timeout
-		var restoreDelay = 500; 
+		var restoreDelay = 500;
 		if (e.type == 'keypress') {
 			$('.docedit #templateForm\\:saveBtn').attr('disabled', 'disabled');
 			$('.docedit #templateForm\\:saveBozzaBtn').attr('disabled', 'disabled');
@@ -521,7 +867,7 @@ function confirmLookup(message, idinput) {
 			hideOpenwaitmsg();
 			$('#templateForm\\:' + idinput).val('');
 			return false;
-		}	
+		}
 	}
 	displayOpenwaitmsg();
 	return true;
@@ -539,16 +885,16 @@ function openCenterPopup(url, title, width, height) {
 		width = 1024;
 	if (height == null || height == undefined || height == '')
 		height = 768;
-	
-	wLeft = window.screenLeft ? window.screenLeft : window.screenX;
-    wTop = window.screenTop ? window.screenTop : window.screenY;
 
-    var left = wLeft + (window.innerWidth / 2) - (width / 2);
-    var top = wTop + (window.innerHeight / 2) - (height / 2);
-	
+	wLeft = window.screenLeft ? window.screenLeft : window.screenX;
+	wTop = window.screenTop ? window.screenTop : window.screenY;
+
+	var left = wLeft + (window.innerWidth / 2) - (width / 2);
+	var top = wTop + (window.innerHeight / 2) - (height / 2);
+
 	var targetWin = window.open(url, title, 'scrollbars=yes, width='+width+', height='+height+', top='+top+', left='+left);
 	targetWin.focus();
-	
+
 	if (url != '' && url.startsWith('http://'))
 		return false;
 }
@@ -561,14 +907,14 @@ function openFullscreenPopup(url, title) {
 	var height = screen.height - 150;
 
 	wLeft = window.screenLeft ? window.screenLeft : window.screenX;
-    wTop = window.screenTop ? window.screenTop : window.screenY;
+	wTop = window.screenTop ? window.screenTop : window.screenY;
 
-    var left = wLeft + (window.innerWidth / 2) - (width / 2);
-    var top = wTop + (window.innerHeight / 2) - (height / 2);
-	
+	var left = wLeft + (window.innerWidth / 2) - (width / 2);
+	var top = wTop + (window.innerHeight / 2) - (height / 2);
+
 	var targetWin = window.open(url, title, 'scrollbars=yes, width='+width+', height='+height+', top='+top+', left='+left);
 	targetWin.focus();
-	
+
 	if (url != '' && url.startsWith('http://'))
 		return false;
 }
@@ -617,7 +963,7 @@ function changeSelectionTitles(index) {
 	var newvalue = 'false';
 	if ($('#checkTit' + index).is(':checked'))
 		newvalue = 'true';
-	
+
 	$('#templateForm\\:titoli\\:' + index + '\\:tit').val(newvalue);
 	$('#templateForm\\:titoli\\:' + index + '\\:updateTitoliSelezionatiBtn').trigger('click');
 }
@@ -656,59 +1002,109 @@ function exportCSV(tot){
 	}
 }
 
+function exportFolderAttachments(isEmpty){
+	if (isEmpty){
+		alert("Non è stato selezionato alcun fascicolo");
+		return false;
+	}
+	else {
+		if (!confirm("Confermare esportazione per fascicoli selezionati?"))
+			return false;
+		else {
+			displayOpenwaitmsg();
+			return true;
+		}
+	}
+}
+
+
+/**
+ * Avvio di una specifica azione massiva (stored procedure LUA) su una selezione da lista titoli
+ * @param tot
+ * @returns
+ */
+function startAzioneMassiva(tot) {
+	if (tot == 0){
+		alert("Non è stato selezionato alcun documento");
+		return false;
+	}
+	else {
+		var f = tot == 1 ? "o" : "i";
+		if (!confirm("Confermare l'avvio dell'operazione su " + tot + " document" + f + "?"))
+			return false;
+		else {
+			displayOpenwaitmsg();
+			return true;
+		}
+	}
+}
+
+/**
+ * Avvio di una specifica azione massiva (stored procedure LUA) su uno specifico documento
+ * @returns
+ */
+function startAzioneMassivaSingleDoc() {
+	if (!confirm("Confermare l'avvio dell'operazione sul documento?"))
+		return false;
+	else {
+		displayOpenwaitmsg();
+		return true;
+	}
+}
+
 // disabilita tutti i link esterni al form templateForm. Utilizzato in caso di modifica
-// di documenti per forzare l'utente a premere il pulsante abbandona (rilascio del lock sul 
+// di documenti per forzare l'utente a premere il pulsante abbandona (rilascio del lock sul
 // documento)
 function disableNoTemplateFormLinks(message) {
 	hideLoadingIndicator(); // in caso di chiamata ajax disattivo l'indicatore di loading
-	
+
 	$('#leftsideContentForm a').prop('onclick', null);
 	$('#leftsideContentForm a').prop('href', '#');
 	$('#leftsideContentForm a').unbind('click');
 	$('#leftsideContentForm a').removeClass('openwaitmsg');
-	
+
 	$('#leftsideContentForm a').click(function(e) {
-	    if (message != undefined && message != null && message != '')
-	    	alert(message);
+		if (message != undefined && message != null && message != '')
+			alert(message);
 	});
-	
+
 	$('#menuForm a').prop('onclick', null);
 	$('#menuForm a').prop('href', '#');
 	$('#menuForm a').unbind('click');
 	$('#menuForm a').removeClass('openwaitmsg');
-	
+
 	$('#menuForm a').click(function(e) {
-	    if (message != undefined && message != null && message != '')
-	    	alert(message);
+		if (message != undefined && message != null && message != '')
+			alert(message);
 	});
 }
 
 
 function displayOpenwaitmsg() {
-	showLoadingIndicator(); 
+	showLoadingIndicator();
 	showWaitMsgDiv();
 }
 
 function hideOpenwaitmsg() {
 	hideWaitMsgDiv();
-	hideLoadingIndicator(); 
+	hideLoadingIndicator();
 }
 
 //************************************************************************************
 //funzioni necessarie alla gestione dei campi custom (INIZIO)
 //************************************************************************************
 
-// in inserimento/modifica di campi custom di tipo checkbox gestisce la selezione dei valori in base a click su checkbox. 
+// in inserimento/modifica di campi custom di tipo checkbox gestisce la selezione dei valori in base a click su checkbox.
 // Non e' stato possibile utilizzare h:selectBooleanCheckbox per un bug se usati all'interno di ui:repeat.
 function changeSelectionCustomFieldCheckbox(idcheckbox, idhiddenfield) {
 	var escapedIdCheckbox = replaceAll(':', '\\:', idcheckbox);
 	var escapedIdHiddenField = replaceAll(':', '\\:', idhiddenfield);
-	
+
 	var newvalue = 'false';
 	if ($('#' + escapedIdCheckbox).is(':checked'))
 		newvalue = 'true';
 	$('#' + escapedIdHiddenField).val(newvalue);
-	
+
 	$('#' + escapedIdHiddenField + '_btn').trigger('click');
 }
 
@@ -736,51 +1132,37 @@ function printPageContent() {
 	return false;
 }
 
-function testsuggest() {
-	var substringMatcher = function(strs) {
-		return function findMatches(q, cb) {
-		var matches, substrRegex;
-		 
-		// an array that will be populated with substring matches
-		matches = [];
-		 
-		// regex used to determine if a string contains the substring `q`
-		substrRegex = new RegExp(q, 'i');
-		 
-		// iterate through the pool of strings and for any string that
-		// contains the substring `q`, add it to the `matches` array
-		$.each(strs, function(i, str) {
-		if (substrRegex.test(str)) {
-		// the typeahead jQuery plugin expects suggestions to a
-		// JavaScript object, refer to typeahead docs for more info
-		matches.push({ value: str });
+/**
+ * Scrittura di log su console javascript
+ * @param level info, warn, error
+ * @param message messaggio da stampare su console js
+ */
+function log(level, message) {
+	if (typeof console == "object") {
+		if (level == undefined || level == null)
+			level = "info";
+
+		if (level == "error") {
+			console.error(message);
 		}
-		});
-		 
-		cb(matches);
-		};
-		};
-		 
-		var states = ['Alabama', 'Alaska', 'Arizona', 'Arkansas', 'California',
-		'Colorado', 'Connecticut', 'Delaware', 'Florida', 'Georgia', 'Hawaii',
-		'Idaho', 'Illinois', 'Indiana', 'Iowa', 'Kansas', 'Kentucky', 'Louisiana',
-		'Maine', 'Maryland', 'Massachusetts', 'Michigan', 'Minnesota',
-		'Mississippi', 'Missouri', 'Montana', 'Nebraska', 'Nevada', 'New Hampshire',
-		'New Jersey', 'New Mexico', 'New York', 'North Carolina', 'North Dakota',
-		'Ohio', 'Oklahoma', 'Oregon', 'Pennsylvania', 'Rhode Island',
-		'South Carolina', 'South Dakota', 'Tennessee', 'Texas', 'Utah', 'Vermont',
-		'Virginia', 'Washington', 'West Virginia', 'Wisconsin', 'Wyoming'
-		];
-		 
-		$('#workflowtask_workflowTaskForm_Suggest_Box1').typeahead({
-		hint: true,
-		highlight: true,
-		minLength: 1
-		},
-		{
-		name: 'states',
-		displayKey: 'value',
-		source: substringMatcher(states)
-		}); 
-	
+		else if (level == "warn") {
+			console.warn(message);
+		}
+		else {
+			console.info(message);
+		}
+	}
+}
+
+/**
+ * Validazione di eventuali tags associati alla risorsa
+ * @returns
+ */
+function validateTags() {
+	var tags = $('#templateForm\\:tags');
+	if (tags != undefined && tags != null && tags.value != "") {
+		displayOpenwaitmsg();
+		$('#templateForm\\:validateTagsBtn').trigger('click');
+	}
+	return false;
 }

@@ -19,13 +19,14 @@ public class UltimaModifica extends XmlEntity {
 	private String azione;
 	private Date data;
 	private String ora;
-    
+	private String delegato;
+
 	public UltimaModifica() {}
-    
+
 	public UltimaModifica(String xmlCreazione) throws Exception {
         this.init(XMLUtil.getDOM(xmlCreazione));
     }
-    
+
     public UltimaModifica init(Document domCreazione) {
     	this.oper 			= XMLUtil.parseAttribute(domCreazione, "ultima_modifica/@oper");
     	this.cod_oper 		= XMLUtil.parseAttribute(domCreazione, "ultima_modifica/@cod_oper");
@@ -34,13 +35,14 @@ public class UltimaModifica extends XmlEntity {
     	this.azione 		= XMLUtil.parseAttribute(domCreazione, "ultima_modifica/@azione");
     	this.data 			= XMLUtil.parseAttributeDate(domCreazione, "ultima_modifica/@data");
     	this.ora 			= XMLUtil.parseAttribute(domCreazione, "ultima_modifica/@ora");
+    	this.delegato		= XMLUtil.parseAttribute(domCreazione, "ultima_modifica/@delegato");
         return this;
     }
-    
+
     public Map<String, String> asFormAdapterParams(String prefix){
     	return new HashMap<String, String>();
     }
-    
+
     public String getOper() {
 		return oper;
 	}
@@ -100,6 +102,14 @@ public class UltimaModifica extends XmlEntity {
 
 	public String getUff_oper() {
 		return uff_oper;
+	}
+
+	public String getDelegato() {
+		return delegato;
+	}
+
+	public void setDelegato(String delegato) {
+		this.delegato = delegato;
 	}
 }
 

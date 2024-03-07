@@ -11,6 +11,7 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.Statement;
+import java.util.Enumeration;
 
 import javax.crypto.Cipher;
 import javax.servlet.Filter;
@@ -102,7 +103,13 @@ public class SqlAuthenticationFilter implements Filter {
 		HttpServletRequest request = (HttpServletRequest) req;
 		HttpServletResponse response = (HttpServletResponse) res;
 		
+		// mbernardini 18/10/2016 : corretto bug su encoding di caratteri speciali (es. accenti) in caso di filtro di autenticazione SQL
+		request.setCharacterEncoding("UTF-8");
+		response.setCharacterEncoding("UTF-8");
+		
 		HttpSession session = request.getSession(true);
+		if (request.getParameter("forceLogin") != null && request.getParameter("forceLogin").equals("true"))
+			invalidateSession(session);
 		
 		if (session != null && session.getAttribute("userBean") != null) { // ricerca utente in sessione
 		
@@ -294,6 +301,24 @@ public class SqlAuthenticationFilter implements Filter {
 					objin.close();
 			}
 			catch (Exception e) { }
+		}
+	}
+	
+	/**
+	 * invalida la sessione corrente (cancellazione di tutti gli attributi in sessione)
+	 * @param session
+	 */
+	private void invalidateSession(HttpSession session) {
+		Logger.info("SqlAuthenticationServlet.invalidateSession(), remove all attributes in session...");
+		
+		if (session != null) {
+			Enumeration<?> attributes = session.getAttributeNames();
+			while (attributes.hasMoreElements()) {
+				String name = (String) attributes.nextElement();
+				if (name != null && name.length() > 0) {
+					session.removeAttribute(name);
+				}
+			}
 		}
 	}
 

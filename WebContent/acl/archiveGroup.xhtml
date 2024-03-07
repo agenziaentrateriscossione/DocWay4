@@ -154,7 +154,26 @@
 								<h:panelGroup rendered="#{!empty archive.ico or !readOnly}">	
 									<label class="col-sm-2 control-label">#{i18n['acl.ico']}</label>
 									<div class="col-sm-4">
-										<h:inputText rendered="#{!readOnly}" value="#{archive.ico}" styleClass="form-control" />
+										<h:selectOneMenu rendered="#{!readOnly}" value="#{archive.ico}" styleClass="form-control">
+											<f:selectItem itemValue="audio.gif" itemLabel="audio.gif" />
+											<f:selectItem itemValue="auther.gif" itemLabel="auther.gif" />
+											<f:selectItem itemValue="authority.gif" itemLabel="authority.gif" />
+											<f:selectItem itemValue="biblioteca.gif" itemLabel="biblioteca.gif" />
+											<f:selectItem itemValue="cms.gif" itemLabel="cms.gif" />
+											<f:selectItem itemValue="disegni.gif" itemLabel="disegni.gif" />
+											<f:selectItem itemValue="dizionario.gif" itemLabel="dizionario.gif" />
+											<f:selectItem itemValue="fotografico.gif" itemLabel="fotografico.gif" />
+											<f:selectItem itemValue="guestbook.gif" itemLabel="guestbook.gif" />
+											<f:selectItem itemValue="la_storico_generic.gif" itemLabel="la_storico_generic.gif" />
+											<f:selectItem itemValue="la_storico_ibc.gif" itemLabel="la_storico_ibc.gif" />
+											<f:selectItem itemValue="la_storico_mo.gif" itemLabel="la_storico_mo.gif" />
+											<f:selectItem itemValue="la_storico_on.gif" itemLabel="la_storico_on.gif" />
+											<f:selectItem itemValue="news.gif" itemLabel="news.gif" />
+											<f:selectItem itemValue="storico.gif" itemLabel="storico.gif" />
+											<f:selectItem itemValue="user.gif" itemLabel="user.gif" />
+											<f:selectItem itemValue="utenti.gif" itemLabel="utenti.gif" />
+											<f:selectItem itemValue="video.gif" itemLabel="video.gif" />
+										</h:selectOneMenu>
 										<h:panelGroup rendered="#{readOnly}">
 											<p class="form-control-static">
 												<h:outputText value="#{archive.ico}"/>

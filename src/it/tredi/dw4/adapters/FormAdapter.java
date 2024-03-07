@@ -58,24 +58,24 @@ public class FormAdapter {
 	private String protocol;
 	private String resource;
 	private String userAgent;
-	
+
 	private HttpClient client;
 	private HttpHost httpHost;
 	private HttpClientContext localcontext;
 	private CookieStore cookieStore;
-	
+
 	private Map<String, String> params;
-	
+
 	public static String ENCODING_ISO_8859_1 = "ISO-8859-1";
 	public static String ENCODING_UFT_8 = "UTF-8";
-	
+
 	public FormAdapter(String host, int port, String protocol, String resource, String userAgent) {
 		this.host = host;
 		this.port = port;
 		this.protocol = protocol;
 		this.resource = resource;
 		this.userAgent = userAgent;
-		
+
 		this.client = HttpClients.createDefault();
 		this.httpHost = new HttpHost(this.host, this.port, this.protocol);
 		this.cookieStore = new BasicCookieStore();
@@ -91,7 +91,7 @@ public class FormAdapter {
 	            new AuthScope(this.httpHost.getHostName(), this.httpHost.getPort()),
 	            new UsernamePasswordCredentials(userName, password));
 	    client = HttpClients.custom().setDefaultCredentialsProvider(credsProvider).build();
-		
+
 	    // Create AuthCache instance
 		AuthCache authCache = new BasicAuthCache();
 		// Generate BASIC scheme object and add it to the local auth cache
@@ -101,15 +101,15 @@ public class FormAdapter {
 		// Add AuthCache to the execution context
 		localcontext.setAuthCache(authCache);
 	}
-	
+
 	public void resetParams() {
 		this.params.clear();
 	}
-	
+
 	public Map<String, String> getParamsMap() {
 		return this.params;
 	}
-	
+
 	public String getParam(String name) {
 		String value = this.params.get(name);
 		return (value == null)? "" : value;
@@ -118,39 +118,39 @@ public class FormAdapter {
 	public int getParamAsInt(String name) {
 		String value = getParam(name);
 		return (value == null || value.equals("")) ? 0 : Integer.parseInt(value); // in caso di valore vuoto la conversione in int provocherebbe un errore
-	}	
-	
+	}
+
 	public void addParam(String name, String value) {
 		this.params.put(name, value);
 	}
-	
+
 	public void addParams(Map<String, String> paramMap) {
 		this.params.putAll(paramMap);
 	}
-	
+
 	public void addParam(String name, int value) {
 		this.params.put(name, Integer.toString(value));
 	}
-	
+
 	public void addParam(String name, boolean value) {
 		this.params.put(name, Boolean.toString(value));
 	}
-	
+
 	public String removeParam(String name) {
 		return this.params.remove(name);
 	}
-	
+
 	private HttpResponse doPostRequest(String userLogin, Map<String, String> sessionParams, Map<String, String> forcedSessionParams) throws Exception {
 		HttpPost post = new HttpPost(this.resource);
-		
+
 		//non essendo protetto il servizio passo lo username nell'header http Hw-Username
 		//FIXME - bisogna implementare un mecanismo di crittazione simmetrica tra i due servizi
 		//per offuscare il nome dell'utente.
 		post.setHeader("Hw-Username", userLogin);
-		
+
 		if (this.userAgent != null) {
 			post.setHeader("User-Agent", this.userAgent);
-		}		
+		}
 		List<NameValuePair> formParams = new ArrayList<NameValuePair>();
 		for (Map.Entry<String, String> param : this.params.entrySet()) {
 			if (forcedSessionParams.get(param.getKey()) != null && forcedSessionParams.get(param.getKey()).length() > 0) {
@@ -168,64 +168,64 @@ public class FormAdapter {
 				}
 			}
 		}
-		
+
 		// aggiunta dei parametri di sessione non "forzata" (solamente se non sono gia' gestiti dal form adapter)
 		for (Map.Entry<String, String> param : sessionParams.entrySet()) {
 			if (this.params.get(param.getKey()) == null)
 				formParams.add(new BasicNameValuePair(param.getKey(), param.getValue()));
 		}
-		
+
 		// aggiunta dei parametri di sessione "forzata" (solamente se non sono gia' gestiti dal form adapter)
 		for (Map.Entry<String, String> param : forcedSessionParams.entrySet()) {
 			if (this.params.get(param.getKey()) == null)
 				formParams.add(new BasicNameValuePair(param.getKey(), param.getValue()));
 		}
-		
+
 		// in caso sia presente il parametro jsessionid (riferimento a sessione sul Service), viene aggiunto
 		// il valore all'header della richiesta
-		if (this.params.containsKey("jsessionid") 
+		if (this.params.containsKey("jsessionid")
 				&& this.params.get("jsessionid") != null && !this.params.get("jsessionid").equals("")) {
 			post.setHeader("Cookie", "JSESSIONID="+ this.params.get("jsessionid"));
 		}
-		
+
 		// mbernardini 18/02/2015 : encoding a UTF-8 per problema con carattere euro
 		UrlEncodedFormEntity entity = new UrlEncodedFormEntity(formParams, ENCODING_UFT_8); //FIXME per adesso l'encoding è hardcodato
 		post.setEntity(entity);
-		
+
 		//ora fai effettivamante la richiesta
 		return this.client.execute(this.httpHost, post, this.localcontext);
 	}
-	
+
 	public XMLDocumento executePOST(UserBean userBean) throws Exception {
 		long startTime = System.currentTimeMillis();
-		
+
 		XMLDocumento resp = handleHttpResponse(doPostRequest(userBean.getLogin(), userBean.getServiceFormParams(), userBean.getForcedServiceFormParams()));
-		
+
 		long endTime = System.currentTimeMillis();
-		Logger.info("FormAdapter.executePOST(), time elapsed: " + (endTime - startTime) + " ms"); 
-		
+		Logger.info("FormAdapter.executePOST(), time elapsed: " + (endTime - startTime) + " ms");
+
 		return resp;
 	}
-	
+
 	public XMLDocumento executeGET() throws Exception {
 		URIBuilder builder = new URIBuilder(this.httpHost.toURI());
 		builder.setPath(this.resource);
-		
+
 		for (Map.Entry<String, String> param : this.params.entrySet()) {
 			builder.setParameter(param.getKey(), param.getValue());
 		}
-		
+
 		HttpGet get = new HttpGet(builder.build());
-		
+
 		if (this.userAgent != null) {
 			get.setHeader("User-Agent", this.userAgent);
 		}
-		
+
 		//ora fai effettivamante la richiesta
 		HttpResponse response = this.client.execute(this.httpHost, get, this.localcontext);
 		return handleHttpResponse(response);
 	}
-	
+
 	/**
 	 * Ritorna il file di versione dell'applicazione tramite il recupero dal service
 	 * @param appName
@@ -235,7 +235,7 @@ public class FormAdapter {
 	public XMLDocumento getVersioneApp(String appName) throws Exception {
 		if (appName == null)
 			appName = "xdocway";
-		
+
 		String pathVersioniXml = "";
 		if (appName.equals("xdocway"))
 			pathVersioniXml = "/application/xdocway/formatter/html/templates/xdocwaydoc/versioni.xml";
@@ -244,7 +244,7 @@ public class FormAdapter {
 		else
 			// TODO gestire gli altri casi
 			return null;
-		
+
 		// TODO gestire $versionsSuffix (@versioni@to)
 		URIBuilder builder = new URIBuilder(this.httpHost.toURI() + this.resource.substring(0, this.resource.indexOf("/", 1)) + pathVersioniXml);
 		HttpGet get = new HttpGet(builder.build());
@@ -252,16 +252,16 @@ public class FormAdapter {
 		if (this.userAgent != null) {
 			get.setHeader("User-Agent", this.userAgent);
 		}
-		
+
 		//ora fai effettivamante la richiesta
 		HttpResponse response = this.client.execute(this.httpHost, get, this.localcontext);
 		return handleHttpResponse(response);
 	}
-	
+
 	public AttachFile executeDownloadFile(UserBean userBean) throws Exception {
 		return responseToAttachFile(doPostRequest(userBean.getLogin(), userBean.getServiceFormParams(), userBean.getForcedServiceFormParams()));
 	}
-	
+
 	/**
 	 * Richiesta di upload di un file
 	 * @param userBean bean dell'utente
@@ -276,10 +276,10 @@ public class FormAdapter {
 
 		HashMap<String, File> files = new HashMap<String, File>();
 		files.put(fileParam, file);
-		
+
 		return handleHttpResponse(_executeUploadRequest(userBean.getLogin(), files, userBean.getServiceFormParams()));
 	}
-	
+
 	/**
 	 * Richiesta di upload di piu' files
 	 * @param userBean bean dell'utente
@@ -290,7 +290,7 @@ public class FormAdapter {
 	public XMLDocumento executeUploadRequestToXMLDocumento(UserBean userBean, HashMap<String, File> files) throws Exception {
 		return handleHttpResponse(_executeUploadRequest(userBean.getLogin(), files, userBean.getServiceFormParams()));
 	}
-	
+
 	/**
 	 * Richiesta di upload di un file (upload da servlet)
 	 * @param userLogin login dell'utente
@@ -306,30 +306,30 @@ public class FormAdapter {
 
 		HashMap<String, File> files = new HashMap<String, File>();
 		files.put(fileParam, file);
-		
+
 		return this.responseToString(_executeUploadRequest(userLogin, files, otherParams));
 	}
-	
+
 	/**
 	 * Richiesta di upload di un file
 	 */
 	@SuppressWarnings("rawtypes")
 	private HttpResponse _executeUploadRequest(String userLogin, HashMap<String, File> files, Map<String, String> sessionParams) throws Exception {
 		HttpPost post = new HttpPost(this.resource);
-		
+
 		//non essendo protetto il servizio passo lo username nell'header http Hw-Username
 		//FIXME - bisogna implementare un mecanismo di crittazione simmetrica tra i due servizi
 		//per offuscare il nome dell'utente.
 		post.setHeader("Hw-Username", userLogin);
-		
+
 		if (this.userAgent != null) {
 			post.setHeader("User-Agent", this.userAgent);
-		}		
-		
+		}
+
 		MultipartEntityBuilder entity = MultipartEntityBuilder.create();
 		entity.setMode(HttpMultipartMode.BROWSER_COMPATIBLE);
 		entity.setCharset(Charset.forName(ENCODING_UFT_8/*ENCODING_ISO_8859_1*/)); //FIXME per adesso l'encoding è hardcodato
-		
+
 		for (Map.Entry<String, String> param : this.params.entrySet()) {
 			if(sessionParams.get(param.getKey()) == null || (sessionParams.get(param.getKey()) != null && param.getValue().length() > 0)){
 				entity.addTextBody(param.getKey(), param.getValue());
@@ -338,13 +338,13 @@ public class FormAdapter {
 				entity.addTextBody(param.getKey(), sessionParams.get(param.getKey()));
 			}
 		}
-		
+
 		//aggiunta dei parametri di sessione (solamente se non sono già gestiti dal form adapter
 		for (Map.Entry<String, String> param : sessionParams.entrySet()) {
 			if (this.params.get(param.getKey()) == null)
 				entity.addTextBody(param.getKey(), param.getValue());
 		}
-		
+
 		// aggiunta dei file
 		Iterator it = files.entrySet().iterator();
 		while (it.hasNext()) {
@@ -355,16 +355,16 @@ public class FormAdapter {
 				entity.addPart(param, new FileBody(file));
 			}
 		}
-		
+
 		post.setEntity(entity.build());
-		
+
 		//ora fai effettivamante la richiesta
 		return this.client.execute(this.httpHost, post, this.localcontext);
 	}
-	
+
 	/**
 	 * conversione della response del service in stringa (XML di ritorno)
-	 * 
+	 *
 	 * @param response
 	 * @return
 	 * @throws Exception
@@ -372,11 +372,11 @@ public class FormAdapter {
 	private String responseToString(HttpResponse response) throws Exception {
 		return responseToString(response, false); // chiamata senza detect dell'encoding (default ISO-8859-1)
 	}
-	
+
 	/**
 	 * conversione della response del service in stringa con possibile riconoscimento dell'encoding. In caso di trasformazione
 	 * senza detect dell'encoding verra' utilizzato come default ISO-8859-1
-	 * 
+	 *
 	 * @param response
 	 * @param detectEncoding
 	 * @return
@@ -384,20 +384,20 @@ public class FormAdapter {
 	 */
 	private String responseToString(HttpResponse response, boolean detectEncoding) throws Exception {
 		String responseString = "";
-		
+
 		long begin = System.currentTimeMillis();
-		
+
 		HttpEntity entity = response.getEntity();
 		if (entity != null) {
 			InputStream instream = entity.getContent();
 			try {
 				String encoding = ENCODING_UFT_8/*ENCODING_ISO_8859_1*/; // ritorno classico di DocWay-service
-				
-				if (detectEncoding) { 
+
+				if (detectEncoding) {
 					// scaricamento di allegati HTML (o eventuali pagine di errore del service)
-					
+
 					byte[] bytes = IOUtils.toByteArray(instream);
-				
+
 					if (detectEncoding) {
 			        	try {
 			        		encoding = UploadFileUtil.detectCharset(bytes); // scaricamento di allegati HTML (o eventuali pagine di errore del service)
@@ -406,23 +406,23 @@ public class FormAdapter {
 			        		Logger.error(e.getMessage(), e);
 			        	}
 			        }
-					
+
 					responseString = new String(bytes, encoding);
 				}
 				else {
 					// caricamento di pagine classiche di DocWay (ritorno XML da DocWay-service con encoding ISO-8859-1)
-					
+
 					StringWriter writer = null;
 			        try {
 			        	writer = new StringWriter();
 						char[] buffer = new char[1024];
-				        
+
 				        Reader reader = new BufferedReader(new InputStreamReader(instream, encoding));
 		                int n;
 		                while ((n = reader.read(buffer)) != -1) {
 				        	writer.write(buffer, 0, n);
 		                }
-		                
+
 						responseString = writer.toString();
 			        }
 			        finally {
@@ -433,47 +433,47 @@ public class FormAdapter {
 			        	catch (Exception e) { }
 			        }
 				}
-			} 
+			}
 			finally {
 				if (instream != null)
 					instream.close();
-				
+
 				// Exception: Invalid use of BasicClientConnManager: connection still allocated. Make sure to release the connection before allocating another one.
 				EntityUtils.consume(entity); // chiusura della connessione // TODO come verificarlo?
 			}
 		}
-		
+
 		long end = System.currentTimeMillis();
 		Logger.info("FormAdapter.responseToString(), time elapsed: " + (end - begin) + " ms");
-		
+
 		return responseString;
 	}
-	
+
 	private AttachFile responseToAttachFile(HttpResponse response) throws Exception {
 		AttachFile attachFile = null;
-		
+
 		Header contentType = response.getFirstHeader("Content-Type");
 		if (contentType == null || contentType.getValue().equals("text/html") || contentType.getValue().startsWith("text/html;charset=") || contentType.getValue().equals("text/xml")) {
 			// Ritorno XML (probabile errore riscontrato lato service). es. File non trovato o un file html
 			String fileName = getFileNameFromResponse(response);
-			
+
 			String responseString = responseToString(response, true);
 			if (responseString.startsWith("<html>")
 					|| responseString.startsWith("<html ")
 					|| responseString.startsWith("<!DOCTYPE html")
 					|| responseString.startsWith("<!DOCTYPE HTML")) {
 				//responseString = responseString.replace("<html>", "<html>\n<head><script type=\"text/javascript\" src=\"js/myjs.js\"></script></head>\n");
-				
+
 				if (fileName == null || fileName.equals(""))
 					fileName = "info.html";
-				
+
 				attachFile = new AttachFile(fileName, responseString.getBytes());
 			}
 			else {
 				if (fileName == null || fileName.equals("")) {
 					int httpStatusCode = response.getStatusLine().getStatusCode();
 					String statusLineReason = response.getStatusLine().getReasonPhrase();
-					
+
 					attachFile = new AttachFile(handleHttpResponse(responseString, httpStatusCode, statusLineReason));
 				}
 				else
@@ -482,26 +482,26 @@ public class FormAdapter {
 		}
 		else {
 			// Download del file
-			
+
 			Header contentDisposition = response.getFirstHeader("Content-Disposition");
 			if (contentDisposition != null) {
 				String cdValue = contentDisposition.getValue();
 				if (cdValue != null && cdValue.length() > 0 && cdValue.indexOf("filename") != -1) {
 					// Caso di download del file eseguito con successo
 					byte[] buf = null;
-					
+
 					// Recupero dall'header Content-Disposition il nome del file restituito dal service
 					String filename = StringUtil.substringAfter(cdValue, "filename=");
 					if (filename.startsWith("\"") && filename.endsWith("\""))
 						filename = filename.substring(1, filename.length()-1);
-					
+
 					HttpEntity entity = response.getEntity();
 					if (entity != null) {
 						InputStream instream = entity.getContent();
 						try {
 							int len;
 							int size = 1024;
-							
+
 							ByteArrayOutputStream bos = new ByteArrayOutputStream();
 							buf = new byte[size];
 							while ((len = instream.read(buf, 0, size)) != -1)
@@ -509,23 +509,23 @@ public class FormAdapter {
 							buf = bos.toByteArray();
 						} finally {
 							instream.close();
-							
+
 							// Exception: Invalid use of BasicClientConnManager: connection still allocated. Make sure to release the connection before allocating another one.
 							EntityUtils.consume(entity); // chiusura della connessione
 						}
 					}
-					
+
 					attachFile = new AttachFile(filename, buf);
 				}
 			}
 		}
-		
+
 		return attachFile;
 	}
-	
+
 	/**
 	 * Data la response restituisce il nome del file da scaricare (se presente)
-	 * 
+	 *
 	 * @param response
 	 * @return
 	 */
@@ -543,10 +543,10 @@ public class FormAdapter {
 		}
 		return filename;
 	}
-	
+
 	/**
 	 * Conversione della response HTTP in documento XML
-	 * 
+	 *
 	 * @param response
 	 * @return
 	 * @throws Exception
@@ -555,13 +555,13 @@ public class FormAdapter {
 		String responseString = responseToString(response);
 		int httpStatusCode = response.getStatusLine().getStatusCode();
 		String statusLineReason = response.getStatusLine().getReasonPhrase();
-		
+
 		return handleHttpResponse(responseString, httpStatusCode, statusLineReason);
 	}
-	
+
 	/**
 	 * Conversione della response HTTP in documento XML
-	 * 
+	 *
 	 * @param responseString
 	 * @param httpStatusCode
 	 * @param statusLineReason
@@ -571,15 +571,15 @@ public class FormAdapter {
 	private XMLDocumento handleHttpResponse(String responseString, int httpStatusCode, String statusLineReason) throws Exception {
 		XMLDocumento responseDocumento = null;
 
-		//TEST - stato http		
+		//TEST - stato http
 		if (httpStatusCode == HttpStatus.SC_OK && responseString.length() >0) { //invocazione effettuata con successo
 			try { //parsing xml
-				
-				// mbernardini 18/02/2015 : utilizzato un diverso costruttore in modo da evitare che "&#" vernga convertito in "&amp;#" 
+
+				// mbernardini 18/02/2015 : utilizzato un diverso costruttore in modo da evitare che "&#" vernga convertito in "&amp;#"
 				// compromettendo cosi' la visualizzazione di caratteri speciali come l'euro (&#x80;)
 				responseDocumento = new XMLDocumento(responseString);
 				//responseDocumento = new XMLDocumento(responseString, 2, true);
-			} 
+			}
 			catch (Exception e) {
 				responseDocumento = ErrormsgFormsAdapter.buildErrorResponse(I18N.mrs("dw4.parsing_service_response_error") + ": " + resource, responseString, ErrormsgFormsAdapter.ERROR);
 			}
@@ -592,21 +592,21 @@ public class FormAdapter {
 				errorCode = errorCode.replaceAll("\n", "");
 				String errorDetails = getErrorDetails(responseString);
 				String errorLevel = getErrorLevel(errorCode);
-				
+
 				responseDocumento = ErrormsgFormsAdapter.buildErrorResponse(errorCode, errorDetails, errorLevel, httpStatusCode+"");
 			}
 			else {
 				responseDocumento = ErrormsgFormsAdapter.buildErrorResponse(I18N.mrs("dw4.invoking_service_error") + ": \nHTTP Status " + httpStatusCode + " - " + statusLineReason, responseString, ErrormsgFormsAdapter.FATAL, httpStatusCode+"");
 			}
 		}
-		
-		return responseDocumento; 
+
+		return responseDocumento;
 	}
-	
+
 	/**
-	 * Verifica se il contenuto della response e' relativo ad una pagina di errore 
+	 * Verifica se il contenuto della response e' relativo ad una pagina di errore
 	 * di DocWay3 (xdocwayerror.jsp)
-	 * 
+	 *
 	 * @param responseString reponse del service
 	 * @return
 	 */
@@ -616,11 +616,11 @@ public class FormAdapter {
 		else
 			return false;
 	}
-	
+
 	/**
 	 * Restituisce il codice di errore restituito dal service (letto dal contenuto della
 	 * pagina di errore)
-	 * 
+	 *
 	 * @param responseString reponse del service
 	 * @return
 	 */
@@ -634,11 +634,11 @@ public class FormAdapter {
 		}
 		return errorCode;
 	}
-	
+
 	/**
 	 * Restituisce il dettaglio dell'errore restituito dal service (letto dal contenuto della
 	 * pagina di errore)
-	 * 
+	 *
 	 * @param responseString reponse del service
 	 * @return
 	 */
@@ -654,7 +654,7 @@ public class FormAdapter {
 		}
 		return errorDetails;
 	}
-	
+
 	/**
 	 * definizione del livello di errore in base alla tipologia di errore restituito dal service
 	 * @param errorCode
@@ -662,7 +662,7 @@ public class FormAdapter {
 	 */
 	private String getErrorLevel(String errorCode) {
 		String errorLevel = ErrormsgFormsAdapter.FATAL;
-		
+
 		if (errorCode != null && errorCode.length() > 0) {
 			if (errorCode.indexOf(Const.RITORNO_ESITO_RICERCA_NULLO) != -1)
 				errorLevel = ErrormsgFormsAdapter.INFO;
@@ -671,8 +671,18 @@ public class FormAdapter {
 			else if (errorCode.indexOf(Const.RITORNO_IMPOSSIBILE_RINVIARE_LE_PROPOSTE_NON_DISCUSSE) != -1)
 				errorLevel = ErrormsgFormsAdapter.WARNING;
 		}
-		
+
 		return errorLevel;
 	}
-	
+
+	public void aggiungiInfoDelegato(UserBean delegatoBean) {
+		// TODO Auto-generated method stub
+
+	}
+
+	public void rimuoviInfoDelegato() {
+		// TODO Auto-generated method stub
+
+	}
+
 }

@@ -1,0 +1,8 @@
+/* stili da applicare alle pagine di preview di campi HTML (sia in edit che in view) */
+
+body {
+	background: none; 
+	background-color: #fff; 
+	padding: 5px; 
+	margin: 5px;
+}

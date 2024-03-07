@@ -144,7 +144,7 @@ public class QueryStrutturaEsterna extends AclQuery {
 	}
 	
 	public String openIndexNomeStruttura() throws Exception {
-		this.openIndex("struest_nome", this.struest_nome, "0", null);
+		this.openIndex("struest_nome", this.struest_nome, "0", " ");
 		return null;
 	}
 	public String openIndexTipologia() throws Exception {

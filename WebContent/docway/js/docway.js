@@ -1,4 +1,56 @@
-var resetJobsIwx = true; // identifica se occorre resettare IWX in caso di reload della pagina o ritorno da chiamata ajax
+var resetJobsIwx = 'true'; // identifica se occorre resettare IWX in caso di reload della pagina o ritorno da chiamata ajax
+/**********************************************************/
+/* IE11 polyfills 										  */
+/***********************************************************/
+if (!Array.prototype.findIndex) {
+  Object.defineProperty(Array.prototype, 'findIndex', {
+    value: function(predicate) {
+     // 1. Let O be ? ToObject(this value).
+      if (this == null) {
+        throw new TypeError('"this" is null or not defined');
+      }
+
+      var o = Object(this);
+
+      // 2. Let len be ? ToLength(? Get(O, "length")).
+      var len = o.length >>> 0;
+
+      // 3. If IsCallable(predicate) is false, throw a TypeError exception.
+      if (typeof predicate !== 'function') {
+        throw new TypeError('predicate must be a function');
+      }
+
+      // 4. If thisArg was supplied, let T be thisArg; else let T be undefined.
+      var thisArg = arguments[1];
+
+      // 5. Let k be 0.
+      var k = 0;
+
+      // 6. Repeat, while k < len
+      while (k < len) {
+        // a. Let Pk be ! ToString(k).
+        // b. Let kValue be ? Get(O, Pk).
+        // c. Let testResult be ToBoolean(? Call(predicate, T, « kValue, k, O »)).
+        // d. If testResult is true, return k.
+        var kValue = o[k];
+        if (predicate.call(thisArg, kValue, k, o)) {
+          return k;
+        }
+        // e. Increase k by 1.
+        k++;
+      }
+
+      // 7. Return -1.
+      return -1;
+    },
+    configurable: true,
+    writable: true
+  });
+}
+
+/**********************************************************/
+/* IE11 polyfills 										  */
+/***********************************************************/
 
 $(document).ready(function() {
 	// eventuale caricamento del plugin IWX
@@ -197,6 +249,22 @@ function confirmAssegnaCC(tot){
 	}
 }
 
+function confirmAssegnaOP(tot){
+	if (tot == 0){
+		alert("Non è stato selezionato alcun documento");
+		return false;
+	}
+	else {
+		var f = tot == 1 ? "o" : "i";
+		if (!confirm("Confermare assegnazione dell'OP a " + tot + " document" + f + "?"))
+			return false;
+		else {
+			displayOpenwaitmsg();
+			return true;
+		}
+	}
+}
+
 function confirmCambiaClassifFasc(tot){
 	if (tot == 0){
 		alert("Non è stato selezionato alcun documento");
@@ -326,20 +394,23 @@ function trasferisciMinuta() {
 var iwxUtils = null;
 
 // upload di files tramite swfUpload / jQuery
-function initSWFU(uploadUrl, swfuType, loginUtente, matricolaUtente, cd, dbName, fileSizeLimit, fileQueueLimit, fileTypesDescriptions, fileTypes) {
+function initSWFU(uploadUrl, swfuType, loginUtente, matricolaUtente, cd, dbName, fileSizeLimit, fileQueueLimit, fileTypesDescriptions, fileTypes, suffix) {
+	if (suffix == null) {
+		suffix = '';
+	}
 	var swfuIdSelector = '#swfupload-files-control';
 	var buttonPlaceholderId = 'swfuploadFilesHolder';
-	var fileIdsSelector = '#templateForm\\:nFileId';
-	var fileNamesSelector = '#templateForm\\:nFileName';
-	var fileTitlesSelector = '#templateForm\\:nFileTitle';
-	var addButtonSelector = '#templateForm\\:addFilesButton';
+	var fileIdsSelector = '#templateForm\\:nFileId' + suffix;
+	var fileNamesSelector = '#templateForm\\:nFileName' + suffix;
+	var fileTitlesSelector = '#templateForm\\:nFileTitle' + suffix;
+	var addButtonSelector = '#templateForm\\:addFilesButton' + suffix;
 	if (swfuType == 'image') { // caso di upload di immagini
 		swfuIdSelector = '#swfupload-images-control';
 		buttonPlaceholderId = 'swfuploadImagesHolder';
-		fileIdsSelector = '#templateForm\\:nImageId';
-		fileNamesSelector = '#templateForm\\:nImageName';
-		fileTitlesSelector = '#templateForm\\:nImageTitle';
-		addButtonSelector = '#templateForm\\:addImagesButton';
+		fileIdsSelector = '#templateForm\\:nImageId' + suffix;
+		fileNamesSelector = '#templateForm\\:nImageName' + suffix;
+		fileTitlesSelector = '#templateForm\\:nImageTitle' + suffix;
+		addButtonSelector = '#templateForm\\:addImagesButton' + suffix;
 	}
 	
 	$(swfuIdSelector).swfupload({
@@ -387,6 +458,15 @@ function initSWFU(uploadUrl, swfuType, loginUtente, matricolaUtente, cd, dbName,
     	// start the upload (if more queued) once an upload is complete
         $(this).swfupload('startUpload');
     })
+    .bind('fileQueueError', function(file, errorCode, message) {
+    	if (message == '-110') {
+    		// FILE_EXCEEDS_SIZE_LIMIT
+    		alert("Dimensione del file " + errorCode.name + " eccessiva, caricamento del file interrotto!")
+    	}
+    	else if (message) {
+    		alert(message);
+    	}
+    })
     .bind('queueComplete', function(swfuObject, totFiles) {
     	hideOpenwaitmsg();
     	$(addButtonSelector).trigger('click');
@@ -396,22 +476,28 @@ function initSWFU(uploadUrl, swfuType, loginUtente, matricolaUtente, cd, dbName,
     })*/
     .bind('uploadSuccess', function(swfuObject, serverData, responseReceived) {
     	var remoteFile = getUploadRemoteFile(responseReceived);
-    	if ($(fileIdsSelector).val().indexOf(remoteFile) == -1) {
-	    	$(fileIdsSelector).val($(fileIdsSelector).val() + '|' + remoteFile);
-	    	$(fileNamesSelector).val($(fileNamesSelector).val() + '|' + serverData.name);
-	    	$(fileTitlesSelector).val($(fileTitlesSelector).val() + '|' + serverData.name);
-    	}
-    	
-    	if (fileQueueLimit == '1') {
-    		// caso di checkin di un allegato (nessuna coda perche' un unico file)
-    		hideOpenwaitmsg();
-        	$(addButtonSelector).trigger('click');
-    	}
+    	if (remoteFile != undefined && remoteFile != null && remoteFile != '') {
+    		if ($(fileIdsSelector).val().indexOf(remoteFile) == -1) {
+    	    	$(fileIdsSelector).val($(fileIdsSelector).val() + '|' + remoteFile);
+    	    	$(fileNamesSelector).val($(fileNamesSelector).val() + '|' + serverData.name);
+    	    	$(fileTitlesSelector).val($(fileTitlesSelector).val() + '|' + serverData.name);
+        	}
+        	
+        	if (fileQueueLimit == '1') {
+        		// caso di checkin di un allegato (nessuna coda perche' un unico file)
+        		hideOpenwaitmsg();
+            	$(addButtonSelector).trigger('click');
+        	}
+      	}
+      	else {
+      		// TODO traduzioni
+      		alert("Riscontrato errore in fase di salvataggio del file " + serverData.name + ".\nContattare l'amministratore di sistema per maggiori informazioni.");
+      	}
     });
 }
 
 // inizializzazione di IWX post caricamento della pagina
-function initIwxAfterReload(url, jsessionid, login, matricola, customTupleName, db, resetJobs, actionToExec, width, height, fileTypes, imageTypes) {
+function initIwxAfterReload(url, jsessionid, login, matricola, customTupleName, db, resetJobs, actionToExec, width, height, fileTypes, imageTypes, maxFileSize, maxImageSize) {
 	//alert("initIwxAfterReload");
 	if (fileTypes == null || fileTypes == undefined || fileTypes == '')
 		fileTypes = "Tutti i file (*.*),*.*";
@@ -426,6 +512,12 @@ function initIwxAfterReload(url, jsessionid, login, matricola, customTupleName, 
 		var height =  h + "px";
 	}
 	
+	if (maxFileSize == null || maxFileSize == undefined)
+		maxFileSize = 0;
+	if (maxImageSize == null || maxImageSize == undefined)
+		maxImageSize = 0;
+	//alert("initIwxAfterReload: maxFileSize=" + maxFileSize + ", maxImageSize=" + maxImageSize);
+	
 	// eventuale azione da compiere immediatamente dopo l'inizializzazione di IWX
 	if (actionToExec == null || actionToExec == undefined)
 		actionToExec = "";
@@ -433,12 +525,16 @@ function initIwxAfterReload(url, jsessionid, login, matricola, customTupleName, 
 	IwxRuntime.Client.loadIWX(url, jsessionid, login, matricola, customTupleName, db, resetJobs, actionToExec, width, height);
 	IwxRuntime.Client.setFileTypesIWX(fileTypes);
 	IwxRuntime.Client.setImageTypesIWX(imageTypes);
+	IwxRuntime.Client.setMaxFileSize(maxFileSize);
+	IwxRuntime.Client.setMaxImageSize(maxImageSize);
 	
 	resetJobsIwx = 'false';
 }
 
+
+
 // inizializzazione di IWX post chiamata AJAX
-function initIwxAfterAjax(url, jsessionid, login, matricola, customTupleName, db, actionToExec, width, height, fileTypes, imageTypes) {
+function initIwxAfterAjax(url, jsessionid, login, matricola, customTupleName, db, actionToExec, width, height, fileTypes, imageTypes, maxFileSize, maxImageSize) {
 	//alert("initIwxAfterAjax");
 	if (fileTypes == null || fileTypes == undefined || fileTypes == '')
 		fileTypes = "Tutti i file (*.*),*.*";
@@ -453,6 +549,12 @@ function initIwxAfterAjax(url, jsessionid, login, matricola, customTupleName, db
 		var height =  h + "px";
 	}
 	
+	if (maxFileSize == null || maxFileSize == undefined)
+		maxFileSize = 0;
+	if (maxImageSize == null || maxImageSize == undefined)
+		maxImageSize = 0;
+	//alert("initIwxAfterAjax: maxFileSize=" + maxFileSize + ", maxImageSize=" + maxImageSize);
+	
 	// eventuale azione da compiere immediatamente dopo l'inizializzazione di IWX
 	if (actionToExec == null || actionToExec == undefined)
 		actionToExec = "";
@@ -460,6 +562,29 @@ function initIwxAfterAjax(url, jsessionid, login, matricola, customTupleName, db
 	IwxRuntime.Client.loadIWX(url, jsessionid, login, matricola, customTupleName, db, false, actionToExec, width, height);
 	IwxRuntime.Client.setFileTypesIWX(fileTypes);
 	IwxRuntime.Client.setImageTypesIWX(imageTypes);
+	IwxRuntime.Client.setMaxFileSize(maxFileSize);
+	IwxRuntime.Client.setMaxImageSize(maxImageSize);
+}
+
+
+//inizializzazione di IWX per stapa in bulk
+function initIwxForBulkAfterReload(url, jsessionid, login, matricola, customTupleName, db, resetJobs, actionToExec, width, height, files) {
+	if (width == null || width == undefined || width == '')
+		width = "100%";
+	if (height == null || height == undefined || height == '') {
+		var h = $(window).height();
+		h = h - 130; // 100px sono di header del template
+		var height =  h + "px";
+	}
+	
+	// eventuale azione da compiere immediatamente dopo l'inizializzazione di IWX
+	if (actionToExec == null || actionToExec == undefined)
+		actionToExec = "";
+	
+	IwxRuntime.Client.initBulk(files, 'finalizeBulkPrint');
+	IwxRuntime.Client.loadIWX(url, jsessionid, login, matricola, customTupleName, db, resetJobs, actionToExec, width, height);
+	
+	resetJobsIwx = 'false';
 }
 
 // recupero del nome del file uploadato dalla response di docway
@@ -486,7 +611,7 @@ function getUploadRemoteFile(uploadResponse) {
 	        fileName = uploadResponse.substring(index, uploadResponse.indexOf(";", index));
 	    }
 	    //alert(filehandle);
-	    if ( uploadResponse == "UPLOAD_ERROR" )
+	    if ( fileName == "UPLOAD_ERROR" )
 	        return '';
 	}
 	return fileName;
@@ -504,7 +629,7 @@ function getUploadTempFile(uploadResponse) {
 		fileName = uploadResponse.substring(index, uploadResponse.indexOf(";", index));
 	    
 		//alert(filehandle);
-	    if ( uploadResponse == "UPLOAD_ERROR" )
+	    if ( fileName == "UPLOAD_ERROR" )
 	        return '';
 	}
 	return fileName;
@@ -529,7 +654,7 @@ function refreshDocPageWithDelay(delayInMilliseconds) {
 }
 
 // copia di un link a documento negli appunti
-function fnJsCopiaLinkDocInClipboard(url) {
+function fnJsCopiaLinkDocInClipboard($caller, url) {
     var wHost = vGetHost();
     var wPort = window.location.port;
     if (wPort.length > 0)
@@ -540,6 +665,7 @@ function fnJsCopiaLinkDocInClipboard(url) {
     //DD 17/11/04 Lancia la copia in clipboard e cambia l'icona in una di conferma per tre secondi.
     if ( fnJsCopyToClipboard(url) ) {
         //TimedOutSimpleRollover('copy2clip', '/docway/images/icone/clipboard.gif', '/docway/images/icone/clipboard_ok.gif', 2000);
+    	showSuccessTooltipClipboard($caller);
     }
 }
 //DD 5/5/6 Nel caso non è gestita la clipboard, permessa la selezione manuale.
@@ -549,11 +675,49 @@ function fnJsCopyToClipboard(sText) {
     if (window.clipboardData) {
         window.clipboardData.setData("Text", sText);
     }else{
-        prompt("Impossibile accedere alla clipboard di sistema: Il browser o il sistema operativo non permettono la funzionalità.\nE' possibile copiare MANUALMENTE il testo dal campo sottostante:", sText); // TODO gestire il multilingua
-        Ret = false;
+    	if (!newCopyToClipboard(sText)) {
+    		prompt("Impossibile accedere alla clipboard di sistema: Il browser o il sistema operativo non permettono la funzionalità.\nE' possibile copiare MANUALMENTE il testo dal campo sottostante:", sText); // TODO gestire il multilingua
+    		Ret = false;
+    	}
     }
     return Ret;
 }
+// tiommi 05/03/2018 window.clipboardData funziona solo in IE ed ha security issues e probabilmente è deprecato
+// proviamo un nuovo metodo prima di rinunciare
+// crea una input temporanea, ne seleziona il testo e chiama il copy della parte selezionata
+// workaround necessario in quanto iniettare direttamente testo nella clipboard sembra non più possibile per motivi di sicurezza dei browser
+function newCopyToClipboard(sText) {
+	try {
+		// crea una input offscreen (visibility:hidden e display:none non permettono di copiare) 
+	    var $tmpElem = $('<input/>');
+	    $tmpElem.css({
+	      position: "absolute",
+	      left:     "-1000px",
+	      top:      "-1000px",
+	    });
+	    $tmpElem.val(sText);
+		$('body').append($tmpElem);
+		$tmpElem.select();
+		if(document.execCommand("Copy")) {
+			$tmpElem.remove();
+			return true;
+		}
+		else return false;
+	}
+	catch (err) {
+		return false;
+	}
+}
+
+// tiommi 05/03/2018 mostra messaggio di successo di avvenuto copia nella clipboard
+function showSuccessTooltipClipboard($caller) {
+	var oldValue = $caller.attr("data-tooltip");
+	$caller.attr('data-tooltip', "Copiato negli appunti!");
+	setTimeout(function() {
+		$caller.attr('data-tooltip', oldValue);
+	}, 2000);
+}
+
 function vGetHost() {
     /* DD 19/12/2005 - RW: 0031529
     var host = window.location.host;
@@ -566,7 +730,8 @@ function vGetHost() {
 
 // invio tramite email di un link a documento
 //DD 5/5/6 Non funzionava con Firefox, e con Eudora
-function mailUrlTo(oggetto, data, url) {
+//TODO gestire il multilingua
+function mailUrlTo(oggetto, param, url, type) {
     var wHost = vGetHost();
     var wPort = window.location.port;
     if (wPort.length > 0)
@@ -577,7 +742,17 @@ function mailUrlTo(oggetto, data, url) {
     var sToWrite = 'mailto:?subject=';
     sToWrite+= oggetto;
     sToWrite+= '&body=';
-    sToWrite+= escape('Per visualizzare il documento  del ' + data + ':'); // TODO gestire il multilingua
+    switch (type) {
+    case "documento":
+    	sToWrite+= escape('Per visualizzare il documento del ' + param + ':'); // param viene usato come data
+    	break;
+    case "fascicolo":
+    	sToWrite+= escape('Per visualizzare il fascicolo numero ' + param + ':'); // param viene usato come numero
+    	break;
+    case "raccoglitore":
+    	sToWrite+= escape('Per visualizzare il raccoglitore numero ' + param + ':'); // param viene usata come nrecord
+    	break;
+    }
     sToWrite+= escape('\r\n\r\n');
     sToWrite+= url;
     window.location = sToWrite;
@@ -855,6 +1030,74 @@ function deleteDocs(tot){
 	}
 }
 
+// contrassegna come letto massivo di documento da lista titoli
+function markAsReadDocs(tot){
+	if (tot == 0){
+		alert("Non è stato selezionato alcun documento"); // TODO traduzioni
+		return false;
+	}
+	else {
+		var f = tot == 1 ? "o" : "i";
+		if (!confirm("Confermare la contrassegnatura di lettura di " + tot + " document" + f + "?")) // TODO traduzioni
+			return false;
+		else {
+			displayOpenwaitmsg();
+			return true;
+		}
+	}
+}
+
+// scarto massivo di documenti da lista titoli
+function scartaDocs(tot){
+	if (tot == 0){
+		alert("Non è stato selezionato alcun documento"); // TODO traduzioni
+		return false;
+	}
+	else {
+		var f = tot == 1 ? "o" : "i";
+		if (!confirm("Confermare lo scarto di " + tot + " document" + f + "?")) // TODO traduzioni
+			return false;
+		else {
+			displayOpenwaitmsg();
+			return true;
+		}
+	}
+}
+
+// protocollazione massiva di documenti da lista titoli
+function protocollaDocs(tot){
+	if (tot == 0){
+		alert("Non è stato selezionato alcun documento"); // TODO traduzioni
+		return false;
+	}
+	else {
+		var f = tot == 1 ? "o" : "i";
+		if (!confirm("Confermare la protocollazione di " + tot + " document" + f + "?")) // TODO traduzioni
+			return false;
+		else {
+			displayOpenwaitmsg();
+			return true;
+		}
+	}
+}
+
+// stampa di tutti gli allegati (immagini) agganciati ai documenti selezionati da lista titoli
+function printDocsAttachments(tot){
+	if (tot == 0){
+		alert("Non è stato selezionato alcun documento"); // TODO traduzioni
+		return false;
+	}
+	else {
+		var f = tot == 1 ? "o" : "i";
+		if (!confirm("Confermare la stampa degli allegati di " + tot + " document" + f + "?")) // TODO traduzioni
+			return false;
+		else {
+			displayOpenwaitmsg();
+			return true;
+		}
+	}
+}
+
 /*DOCWAY DELIBERE*/
 //inizializzazione di SWFUpload per upload dei modelli durante la creazione di un organo (acl) e upload del testo della delibera in Docway Delibere
 function initDeliberaSWFU(swfuIdSelector, buttonPlaceholderId, swfuFileNameSelector, uploadUrl, loginUtente, matricolaUtente, cd, dbName) {
@@ -910,9 +1153,15 @@ function initDeliberaSWFU(swfuIdSelector, buttonPlaceholderId, swfuFileNameSelec
 	
  .bind('uploadSuccess', function(swfuObject, serverData, responseReceived) {
   	var remoteFile = getUploadRemoteFile(responseReceived);
-  	$('#' + swfuFileNameSelector + 'Name').html(serverData.name);
-  	$('#templateForm\\:' + swfuFileNameSelector + 'NameHidden').val(serverData.name);
-  	$('#templateForm\\:' + swfuFileNameSelector + 'IdHidden').val(remoteFile);
+  	if (remoteFile != undefined && remoteFile != null && remoteFile != '') {
+	  	$('#' + swfuFileNameSelector + 'Name').html(serverData.name);
+	  	$('#templateForm\\:' + swfuFileNameSelector + 'NameHidden').val(serverData.name);
+	  	$('#templateForm\\:' + swfuFileNameSelector + 'IdHidden').val(remoteFile);
+  	}
+  	else {
+  		// TODO traduzioni
+  		alert("Riscontrato errore in fase di salvataggio del file " + serverData.name + ".\nContattare l'amministratore di sistema per maggiori informazioni.");
+  	}
   	hideOpenwaitmsg();
   });
 }
@@ -931,4 +1180,53 @@ function buildSWFuploadURL(uploadUrl) {
 		}
 	}
 	return uploadUrl;
+}
+
+function setBonitaPopupSize() {
+	//height="450" width="698px" 
+	//alert('jquery ok: w: ' + $(window).width() + '; h: ' + $(window).height());
+	var btaskw = $(window).width() - 200;
+	var btaskh = $(window).height() - 200;
+	if(btaskw < 700) {
+		btaskw = 700;
+	}
+	if(btaskh < 450) {
+		btaskh = 450;
+	}
+	//alert('btaskh: ' + btaskh);
+	$('#bonitaheader').width(btaskw);
+	$('#bonitaiframe').width(btaskw-2);
+	$('#bonitaiframe').height(btaskh);
+	
+}
+
+/**
+ * Verifica se sono stati selezionati dei documenti dal modale di aggregazione documenti caricati in un
+ * raccoglitore di tipo indice
+ * @returns {Boolean}
+ */
+function confermaAggregaDocsRaccIndice() {
+	var checkedVals = $('.voceIndice-aggrega-check:checkbox:checked').map(function() {
+	    return this.value;
+	}).get();
+	var str = checkedVals.join(",");
+	//alert(str);
+	if (str) {
+		displayOpenwaitmsg();
+		return true;
+	}
+	else {
+		alert("Nessun documento selezionato, operazione annullata!");
+		return false;
+	}
+}
+
+/**
+ * Effettua lo scroll per visualizzare la voce correntemente in preview nei raccoglitori di tipo INDICE
+ */
+function scrollToSelected() {
+	var $item = $('.voce-selected').parent();
+	var $container = $item.parent().parent();
+	var scrollValue = $container.scrollTop() + $item.position().top - $container.height()/2 - $item.height();
+	$container.animate({ scrollTop: scrollValue }, 300);
 }

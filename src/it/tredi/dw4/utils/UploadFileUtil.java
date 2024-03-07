@@ -57,6 +57,11 @@ public class UploadFileUtil {
 			try {
 				String nomeFile = fileItem.getName();
 				
+				// mbernardini 07/05/2018 : modifica a procedura di upload per correzione valori ricevuti da test di carico di equitalia
+				//int indexName = nomeFile.lastIndexOf("\\");
+				//if (indexName != -1)
+				//	nomeFile = nomeFile.substring(indexName+1);
+				
 				// commentato perche' venivano gestiti in maniera incorretta i file con doppia estensione (es. .pdf.p7m, .tar.gz, ecc.)
 				/*String extFile = "";
 				int indexName = nomeFile.lastIndexOf("/");

@@ -82,14 +82,14 @@
 						<td class="webmail-colfrom optional">
 							<h:commandLink action="#{bean.loadMessage}">
 								<f:ajax execute="@form" render="@form" />
-								<h:outputText value="#{(empty message.from.name) ? message.from.address : message.from.name }" escape="false" />
+								<h:outputText value="#{(empty message.from.name) ? message.from.address : message.from.name }" />
 							</h:commandLink>
 						</td>
 						<td class="webmail-cologgetto essential">
 							<h:commandLink action="#{bean.loadMessage}">
 								<f:ajax execute="@form" render="@form" />
 								<h:outputText rendered="#{empty message.subject}" value="[#{i18n['dw4.nessun_oggetto']}]" />
-								<h:outputText rendered="#{!empty message.subject}" value="#{message.subject}" escape="false" />
+								<h:outputText rendered="#{!empty message.subject}" value="#{message.subject}" />
 							</h:commandLink>
 						</td>     
 						<td class="webmail-coltrasformato optional">

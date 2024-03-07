@@ -1,11 +1,12 @@
 package it.tredi.dw4.docway.doc.adapters;
 
-import it.tredi.dw4.utils.XMLDocumento;
-import it.tredi.dw4.adapters.AdaptersConfigurationLocator.AdapterConfig;
-import it.tredi.dw4.adapters.DocEditFormsAdapter;
-
 import org.dom4j.DocumentException;
 import org.dom4j.Element;
+
+import it.tredi.dw4.adapters.AdaptersConfigurationLocator.AdapterConfig;
+import it.tredi.dw4.adapters.DocEditFormsAdapter;
+import it.tredi.dw4.utils.Logger;
+import it.tredi.dw4.utils.XMLDocumento;
 
 public class DocDocWayDocEditFormsAdapter extends DocEditFormsAdapter {
 
@@ -159,6 +160,45 @@ public class DocDocWayDocEditFormsAdapter extends DocEditFormsAdapter {
 	}
 	
 	/**
+	 * Ritorna il valore impostato come sizeMaxFile (dimensione massima dei file da uploadare)
+	 * @return
+	 */
+	public int getSizeMaxFile() {
+		int size = 0;
+		String sizeMaxFile = defaultForm.getParam("sizeMaxFile");
+		try {
+			if (sizeMaxFile == null || sizeMaxFile.isEmpty())
+				sizeMaxFile = "0";
+			size = Integer.parseInt(sizeMaxFile);
+		}
+		catch (Exception e) {
+			Logger.warn("DocDocWayDocEditFormsAdapter.getSizeMaxFile(): unable to parse sizeMaxFile -> " + sizeMaxFile);
+			size = 0;
+		}
+		return size;
+	}
+	
+	/**
+	 * Ritorna il valore impostato come sizeMaxImg (dimensione massima delle immagini da uploadare)
+	 * @return
+	 */
+	public int getSizeMaxImg() {
+		int size = 0;
+		String sizeMaxImg = defaultForm.getParam("sizeMaxImg");
+		try {
+			if (sizeMaxImg == null || sizeMaxImg.isEmpty())
+				sizeMaxImg = "0";
+			size = Integer.parseInt(sizeMaxImg);
+		}
+		catch (Exception e) { 
+			Logger.warn("DocDocWayDocEditFormsAdapter.getSizeMaxImg(): unable to parse sizeMaxImg -> " + sizeMaxImg);
+			size = 0;
+		}
+		return size;
+	}
+	
+	
+	/**
 	 * Ritorna il parametro _cd del formsAdapter (necessario all'upload di files in presenza 
 	 * di multisocieta') 
 	 * @return
@@ -213,6 +253,44 @@ public class DocDocWayDocEditFormsAdapter extends DocEditFormsAdapter {
     	defaultForm.addParam("selid","");
 
     	defaultForm.addParam("toDo","");
+    }
+    
+    public void clearDocumentRaccIndice(String codRacc, String descrRacc) {
+    	if (codRacc != null && !codRacc.isEmpty())
+    		defaultForm.addParam("codice_racc", codRacc);
+    	if (descrRacc != null && !descrRacc.isEmpty())
+    		defaultForm.addParam("descrizione_racc", descrRacc);
+    	clearDocument();
+    }
+    
+    /**
+     * Aggiornamento di una proprieta' dell'applicazione (strumenti di amministrazione)
+     * 
+     * @param propName nome della proprieta' da aggiornare
+     * @param propVal valore da assegnare alla proprieta'
+     */
+    public void changePropertyValue(String propName, String propVal) {
+    	defaultForm.addParam("verbo", "query");
+    	defaultForm.addParam("xverb", "@setPropertyValue:" + propName + ":" + propVal);
+    	defaultForm.addParam("dbTable", "@adm_tools");
+	}
+    
+
+	/**
+	 * Annullamento di una trasformazione (tramite docEdit) di un documento in repertorio
+	 */
+	public void clearTrasformaRep() {
+		unlockDocument("@unlockTrasformaRep");
+		this.defaultForm.addParam("destPage", "showdoc");
+	}
+	
+	/**
+	 * Validazione dei tag (verifica univocita')
+	 * @param query
+	 */
+    public void tagsValidation(String query) {
+    	defaultForm.addParam("verbo", "tagsvalidation_response");
+    	defaultForm.addParam("query", query);
     }
     
 }

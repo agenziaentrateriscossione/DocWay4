@@ -62,6 +62,9 @@ public class ShowdocNotifDiff extends DocWayShowdoc {
 			this.docWithFiles 	= true;
 		else
 			this.docWithFiles	= false;
+		
+		// inizializzazione di componenti common
+		initCommons(dom);
 	}	
 	
 	public DocDocWayDocumentFormsAdapter getFormsAdapter() {

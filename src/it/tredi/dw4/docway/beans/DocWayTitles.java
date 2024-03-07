@@ -13,6 +13,7 @@ import it.tredi.dw4.utils.DigitVisibilitaUtil;
 import it.tredi.dw4.utils.DocWayProperties;
 import it.tredi.dw4.utils.Logger;
 import it.tredi.dw4.utils.QueryUtil;
+import it.tredi.dw4.utils.StringUtil;
 import it.tredi.dw4.utils.XMLUtil;
 
 import java.util.HashMap;
@@ -27,7 +28,7 @@ import org.dom4j.Document;
 import org.dom4j.Element;
 
 public class DocWayTitles extends Titles {
-	
+
 	protected DocDocWayTitlesFormsAdapter formsAdapter;
 	private boolean selectAll = false;
 	private String dbTable;
@@ -37,37 +38,40 @@ public class DocWayTitles extends Titles {
 	private String oggetto_fasc;
 	private String num_fasc;
 	private int countSelection;
-	
+
 	private String view = ""; // utilizzato per la gestione di verifica dei duplicati (view="verificaDuplicati")
-	
+	//e del popup ricerca doc di cui copiare gli allegati nel raccIndice
+
 	private String xml;
-	
+
 	private boolean addVaschettaCustomOpened = false;
 	private String nomeVaschettaCustom = "";
 	private String filtroTemporaleVaschettaCustom = "";
-	
+
 	// etichette custom per visibilita'
 	private Map<String, String> labelsVisibilita = new HashMap<String, String>();
-	
+
 	//dpranteda - 10/12/2014
 	private boolean isSeduta;
-	
+
 	// identifica se si tratta di una lista documenti in cestino (cancellazione logica)
 	private boolean cestino = false;
-	
+
 	// campi di raffinamento della ricerca
 	private boolean raffinaSoloEstremi = true;
 	private String raffinaSearchTerms = "";
 	private String raffinaAnno = "";
 	private String raffinaNumProt = "";
 	
+	protected boolean enableIW = true; // abilita/disabilita l'utilizzo di IW da parte del client 
+
 	public DocWayTitles() throws Exception {
 		this.formsAdapter = new DocDocWayTitlesFormsAdapter(AdaptersConfigurationLocator.getInstance().getAdapterConfiguration("docwayService"));
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public void init(Document domTitoli) {
+	public void init(Document domTitoli) throws Exception {
 		super.titoli = XMLUtil.parseSetOfElement(domTitoli, "//titolo", new Titolo());
 		initSelection();
 		Element root = domTitoli.getRootElement();
@@ -79,24 +83,24 @@ public class DocWayTitles extends Titles {
 		this.num_fasc = root.attributeValue("num_fasc", "");
 		this.view = root.attributeValue("view", "");
     	this.xml = domTitoli.asXML();
-    	
+
     	String qord = this.formsAdapter.getDefaultForm().getParam("qord");
     	if (qord != null && qord.length() > 0 && qord.charAt(0) == 'X')
    			ascSort = false;
     	else
     		ascSort = true;
     	this.xwOrd = qord; //XMLUtil.parseStrictAttribute(domTitoli, "response/ordinamento_select/option[@selected='selected']/@value", "");
-    	
+
     	// recupero delle tipolopgie di ordinamento
     	if (dbTable.equals("@fascicolo"))
     		this.ordinamentoSelect = XMLUtil.parseSetOfElement(domTitoli, "/response/ordinamentoFascicoli_select/option", new Option());
     	else
     		this.ordinamentoSelect = XMLUtil.parseSetOfElement(domTitoli, "/response/ordinamento_select/option", new Option());
-    	
+
     	// caricamento etichette custom per visibilita'
 		DigitVisibilitaUtil digitVisibilitaUtil = new DigitVisibilitaUtil(XMLUtil.parseStrictAttribute(domTitoli, "/response/@dicitVis"));
 		labelsVisibilita = digitVisibilitaUtil.getDigitSingolare();
-		
+
 		// verifico se la lista di documenti corrente e' relativa ai documenti in cestino
 		this.cestino = true;
 		int i = 0;
@@ -106,18 +110,32 @@ public class DocWayTitles extends Titles {
 					this.cestino = false;
 			i++;
 		}
-		
+
     	setCurrentPage(this.formsAdapter.getCurrent()+"");
+
     	
+    	if (titoli.size() > 0) {
+    		Titolo first = titoli.get(0);
+    		if (first != null) {
+    			// mbernardini 24/05/2017 : controllo se ai titoli e' associato il physdoc dei documenti... in questo caso la selezione dei documenti
+    			// verra' fatta tramite physdoc e non tramite posizione (integrazione elasticsearch)
+    			this.selectionByPos = (first.getPhysdoc() > 0) ? false : true;
+    			
     	//dpranteda 10/12/2014
-    	if (super.titoli.size() > 0) {
-    		this.setSeduta(super.titoli.get(0).isNotShowSeduta() || super.titoli.get(0).isShowSeduta());
+	    		this.setSeduta(first.isNotShowSeduta() || first.isShowSeduta());
+    		}
     	}
-    	
+
     	// mbernardini 27/03/2015 : init dei campi di raffinamento della ricerca
     	initCampiRaffinamento();
+    	
+    	// inizializzazione delle azioni massive su lista titoli
+    	initAzioniMassive(domTitoli);
+    	
+    	// gestione doc informatici
+    	enableIW = StringUtil.booleanValue(XMLUtil.parseStrictAttribute(domTitoli, "/response/@enableIW"));
 	}
-	
+
 	/**
 	 * inizializzazione dei campi di raffinamento della ricerca
 	 */
@@ -135,42 +153,42 @@ public class DocWayTitles extends Titles {
 
 	@Override
 	public String mostraDocumento()  throws Exception{
-		
+
 		Titolo titolo = (Titolo)FacesContext.getCurrentInstance().getExternalContext().getRequestMap().get("title");
 		return mostraDocumento(titolo);
 	}
-	
+
 	public String mostraFascicolo()  throws Exception{
-		
+
 		Titolo titolo = (Titolo)FacesContext.getCurrentInstance().getExternalContext().getRequestMap().get("titleFasc");
 		return mostraDocumento(titolo);
 	}
-	
+
 	/**
 	 * Caricamento della pagina di showdoc relativa ad un titolo
-	 * 
+	 *
 	 * @param titolo record selezionato dall'utente
 	 * @return
 	 * @throws Exception
 	 */
 	public String mostraDocumento(Titolo titolo) throws Exception{
-		try{	
+		try{
 			String index = titolo.getIndice();
 			String dbTable = titolo.getDbTable();
 			String tipo = titolo.getDb();
-			
-			XMLDocumento response = super._mostraDocumento(Integer.valueOf(index)-1, tipo, dbTable);
+
+			XMLDocumento response = super._mostraDocumento(Integer.valueOf(index)-1, tipo, dbTable, getView());
 			dbTable = response.getAttributeValue("/response/@dbTable", "");
 			if (dbTable.startsWith("@")) dbTable = dbTable.substring(1);
-			
+
 			if (dbTable.equals("differito"))
 				dbTable = "arrivo";
 			return this.buildSpecificShowdocPageAndReturnNavigationRule(dbTable, response);
-			
+
 		} catch (Throwable t) {
 			handleErrorResponse(ErrormsgFormsAdapter.buildErrorResponse(t));
 			formsAdapter.fillFormsFromResponse(formsAdapter.getLastResponse()); //restore delle form
-			return null;			
+			return null;
 		}
 	}
 
@@ -229,7 +247,7 @@ public class DocWayTitles extends Titles {
 	public String getNum_fasc() {
 		return num_fasc;
 	}
-	
+
 	public void setView(String view) {
 		this.view = view;
 	}
@@ -237,7 +255,7 @@ public class DocWayTitles extends Titles {
 	public String getView() {
 		return view;
 	}
-	
+
 	public boolean isAddVaschettaCustomOpened() {
 		return addVaschettaCustomOpened;
 	}
@@ -253,7 +271,7 @@ public class DocWayTitles extends Titles {
 	public void setNomeVaschettaCustom(String nomeVaschettaCustom) {
 		this.nomeVaschettaCustom = nomeVaschettaCustom;
 	}
-	
+
 	public String getFiltroTemporaleVaschettaCustom() {
 		return filtroTemporaleVaschettaCustom;
 	}
@@ -262,7 +280,7 @@ public class DocWayTitles extends Titles {
 			String filtroTemporaleVaschettaCustom) {
 		this.filtroTemporaleVaschettaCustom = filtroTemporaleVaschettaCustom;
 	}
-	
+
 	public Map<String, String> getLabelsVisibilita() {
 		return labelsVisibilita;
 	}
@@ -270,7 +288,7 @@ public class DocWayTitles extends Titles {
 	public void setLabelsVisibilita(Map<String, String> labelsVisibilita) {
 		this.labelsVisibilita = labelsVisibilita;
 	}
-	
+
 	public boolean isCestino() {
 		return cestino;
 	}
@@ -278,7 +296,7 @@ public class DocWayTitles extends Titles {
 	public void setCestino(boolean cestino) {
 		this.cestino = cestino;
 	}
-	
+
 	public boolean isRaffinaSoloEstremi() {
 		return raffinaSoloEstremi;
 	}
@@ -311,6 +329,14 @@ public class DocWayTitles extends Titles {
 		this.raffinaNumProt = raffinaNumProt;
 	}
 	
+	public boolean isEnableIW() {
+		return enableIW;
+	}
+
+	public void setEnableIW(boolean enableIW) {
+		this.enableIW = enableIW;
+	}
+
 	public String queryFasc() throws Exception{
 		try{
 			this.formsAdapter.queryFasc(num_fasc);
@@ -325,7 +351,7 @@ public class DocWayTitles extends Titles {
 		} catch (Throwable t) {
 			handleErrorResponse(ErrormsgFormsAdapter.buildErrorResponse(t));
 			formsAdapter.fillFormsFromResponse(formsAdapter.getLastResponse()); //restore delle form
-			return null;			
+			return null;
 		}
 	}
 
@@ -341,7 +367,7 @@ public class DocWayTitles extends Titles {
 		} catch (Throwable t) {
 			handleErrorResponse(ErrormsgFormsAdapter.buildErrorResponse(t));
 			formsAdapter.fillFormsFromResponse(formsAdapter.getLastResponse()); //restore delle form
-			return null;			
+			return null;
 		}
 	}
 
@@ -354,7 +380,7 @@ public class DocWayTitles extends Titles {
 			for (int i = 1; i <= countSelection; i++) {
 				theSele += "}{"+i+"}{";
 			}
-			
+
 		}
 		else {
 			theSele="";
@@ -372,21 +398,21 @@ public class DocWayTitles extends Titles {
 	/**
 	 * inizializzazione della selezione di documenti
 	 */
-	private void initSelection(){
+	private void initSelection() throws Exception {
 		for (Iterator<Titolo> iterator = super.titoli.iterator(); iterator.hasNext();) {
 			Titolo titolo = (Titolo) iterator.next();
-			if (theSele.contains("}{"+titolo.getIndice()+"}{"))
+			if (this.isTitleSelected(titolo))
 				titolo.setSelect(true);
 		}
 	}
-	
+
 	/**
 	 * reset della selezione di documenti
 	 */
 	private void resetSelection() {
 		theSele = "";
 		getFormsAdapter().getDefaultForm().addParam("klRac", "");
-		
+
 		for (Iterator<Titolo> iterator = super.titoli.iterator(); iterator.hasNext();) {
 			Titolo titolo = (Titolo) iterator.next();
 			titolo.setSelect(false);
@@ -401,53 +427,55 @@ public class DocWayTitles extends Titles {
 	public boolean isSelectAll() {
 		return selectAll;
 	}
-	
+
 	public String selectTitle(ValueChangeEvent e) throws Exception{
 		try{
 			boolean selected = new Boolean(e.getNewValue()+"").booleanValue();
 			Titolo titolo = (Titolo) FacesContext.getCurrentInstance().getExternalContext().getRequestMap().get("title");
+			String titleFinder = getTitoloTheSeleId(titolo);
 			if (titolo.isSelect() && !selected){
-				theSele = theSele.replaceFirst("\\}\\{"+titolo.getIndice()+"\\}\\{", "");
+				theSele = theSele.replaceFirst("\\}\\{"+titleFinder+"\\}\\{", "");
 				titolo.setSelect(false);
 				countSelection--;
 			}
 			else if (!titolo.isSelect() && selected){
 				titolo.setSelect(true);
-				theSele += "}{"+titolo.getIndice()+"}{";
+				theSele += "}{"+titleFinder+"}{";
 				countSelection++;
 			}
 			return null;
 		} catch (Throwable t) {
 			handleErrorResponse(ErrormsgFormsAdapter.buildErrorResponse(t));
 			formsAdapter.fillFormsFromResponse(formsAdapter.getLastResponse()); //restore delle form
-			return null;			
+			return null;
 		}
 	}
-	
+
 	public String selectTitleFasc(ValueChangeEvent e) throws Exception{
 		try{
 			boolean selected = new Boolean(e.getNewValue()+"").booleanValue();
 			Titolo titolo = (Titolo) FacesContext.getCurrentInstance().getExternalContext().getRequestMap().get("titleFasc");
+			String titleFinder = getTitoloTheSeleId(titolo);
 			if (titolo.isSelect() && !selected){
-				theSele = theSele.replaceFirst("\\}\\{"+titolo.getIndice()+"\\}\\{", "");
+				theSele = theSele.replaceFirst("\\}\\{"+titleFinder+"\\}\\{", "");
 				titolo.setSelect(false);
 				countSelection--;
 			}
 			else if (!titolo.isSelect() && selected){
 				titolo.setSelect(true);
-				theSele += "}{"+titolo.getIndice()+"}{";
+				theSele += "}{"+titleFinder+"}{";
 				countSelection++;
 			}
 			return null;
 		} catch (Throwable t) {
 			handleErrorResponse(ErrormsgFormsAdapter.buildErrorResponse(t));
 			formsAdapter.fillFormsFromResponse(formsAdapter.getLastResponse()); //restore delle form
-			return null;			
+			return null;
 		}
 	}
-	
+
 	/**
-	 * aggiornamento dei titoli selezionati dall'utente (chiamata da 
+	 * aggiornamento dei titoli selezionati dall'utente (chiamata da
 	 * pulsante nascosto presente nella lista titoli)
 	 * @return
 	 * @throws Exception
@@ -456,9 +484,9 @@ public class DocWayTitles extends Titles {
 		Titolo titolo = (Titolo) FacesContext.getCurrentInstance().getExternalContext().getRequestMap().get("title");
 		return updateSelectionTitles(titolo);
 	}
-	
+
 	/**
-	 * aggiornamento dei titoli relativi a fascicoli selezionati dall'utente (chiamata da 
+	 * aggiornamento dei titoli relativi a fascicoli selezionati dall'utente (chiamata da
 	 * pulsante nascosto presente nella lista titoli)
 	 * @return
 	 * @throws Exception
@@ -467,33 +495,34 @@ public class DocWayTitles extends Titles {
 		Titolo titolo = (Titolo) FacesContext.getCurrentInstance().getExternalContext().getRequestMap().get("titleFasc");
 		return updateSelectionTitles(titolo);
 	}
-	
+
 	/**
-	 * aggiornamento dei titoli selezionati dall'utente (chiamata da 
+	 * aggiornamento dei titoli selezionati dall'utente (chiamata da
 	 * pulsante nascosto presente nella lista titoli)
 	 * @return
 	 * @throws Exception
 	 */
 	private String updateSelectionTitles(Titolo titolo) throws Exception {
 		try{
+			String titleFinder = getTitoloTheSeleId(titolo);
 			if (!titolo.isSelect()) {
 				titolo.setSelected(false);
-				theSele = theSele.replaceFirst("\\}\\{"+titolo.getIndice()+"\\}\\{", "");
+				theSele = theSele.replaceFirst("\\}\\{"+titleFinder+"\\}\\{", "");
 				countSelection--;
 			}
 			else if (titolo.isSelect()) {
 				titolo.setSelected(true);
-				theSele += "}{"+titolo.getIndice()+"}{";
+				theSele += "}{"+titleFinder+"}{";
 				countSelection++;
 			}
 			return null;
 		} catch (Throwable t) {
 			handleErrorResponse(ErrormsgFormsAdapter.buildErrorResponse(t));
 			formsAdapter.fillFormsFromResponse(formsAdapter.getLastResponse()); //restore delle form
-			return null;			
+			return null;
 		}
 	}
-	
+
 	/**
 	 * Esportazione CSV della lista titoli
 	 * @return
@@ -508,22 +537,17 @@ public class DocWayTitles extends Titles {
 				return null;
 			}
 			String verbo = response.getAttributeValue("/response/@verbo");
-			if (verbo.equals("loadingbar")) {
-				DocWayLoadingbar docWayLoadingbar = new DocWayLoadingbar();
-				docWayLoadingbar.getFormsAdapter().fillFormsFromResponse(response);
-				docWayLoadingbar.init(response);
-				setLoadingbar(docWayLoadingbar);
-				docWayLoadingbar.setActive(true);
-				action = "exportCSV";
-			}
+			if (verbo.equals("loadingbar"))
+				openLoadingbarModal(response, false, "exportCSV");
+
 			return null;
 		} catch (Throwable t) {
 			handleErrorResponse(ErrormsgFormsAdapter.buildErrorResponse(t));
 			formsAdapter.fillFormsFromResponse(formsAdapter.getLastResponse()); //restore delle form
-			return null;			
+			return null;
 		}
 	}
-	
+
 	/**
 	 * Stampa la lista titoli
 	 * @return
@@ -541,10 +565,10 @@ public class DocWayTitles extends Titles {
 		} catch (Throwable t) {
 			handleErrorResponse(ErrormsgFormsAdapter.buildErrorResponse(t));
 			formsAdapter.fillFormsFromResponse(formsAdapter.getLastResponse()); //restore delle form
-			return null;			
+			return null;
 		}
 	}
-	
+
 	/**
 	 * Stampa la selezione tramite controllo di gestione
 	 * @return
@@ -554,12 +578,12 @@ public class DocWayTitles extends Titles {
 		try {
 			formsAdapter.gotoTableQ("ctrl_gestione");
 			XMLDocumento response = formsAdapter.getDefaultForm().executePOST(getUserBean());
-		
+
 			QueryCtrlGestione queryCtrlGestione = new QueryCtrlGestione();
 			queryCtrlGestione.getFormsAdapter().fillFormsFromResponse(response);
 			queryCtrlGestione.init(response.getDocument());
 			setSessionAttribute("queryCtrlGestione", queryCtrlGestione);
-			
+
 			return "query@ctrl_gestione";
 		}
 		catch (Throwable t) {
@@ -568,7 +592,7 @@ public class DocWayTitles extends Titles {
 			return null;
 		}
 	}
-	
+
 	/**
 	 * Stampa la selezione tramite registro
 	 * @return
@@ -578,12 +602,12 @@ public class DocWayTitles extends Titles {
 		try {
 			formsAdapter.gotoTableQ("stampe", theSele);
 			XMLDocumento response = formsAdapter.getDefaultForm().executePOST(getUserBean());
-		
+
 			QueryStampe queryStampe = new QueryStampe();
 			queryStampe.getFormsAdapter().fillFormsFromResponse(response);
 			queryStampe.init(response.getDocument());
 			setSessionAttribute("queryStampe", queryStampe);
-			
+
 			return "query@stampe";
 		}
 		catch (Throwable t) {
@@ -592,7 +616,7 @@ public class DocWayTitles extends Titles {
 			return null;
 		}
 	}
-	
+
 	/**
 	 * Stampa profili della selezione corrente
 	 * @return
@@ -607,12 +631,12 @@ public class DocWayTitles extends Titles {
 				return null;
 			}
 			formsAdapter.fillFormsFromResponse(formsAdapter.getLastResponse()); //restore delle form
-			
+
 			DocWayPrintProfiles docwayPrintProfiles = new DocWayPrintProfiles();
 			docwayPrintProfiles.getFormsAdapter().fillFormsFromResponse(response);
 			docwayPrintProfiles.init(response.getDocument());
 			setSessionAttribute("docwayPrintProfiles", docwayPrintProfiles);
-			
+
 			return "print_profiles";
 		}
 		catch (Throwable t) {
@@ -621,7 +645,7 @@ public class DocWayTitles extends Titles {
 			return null;
 		}
 	}
-	
+
 	public void setCountSelection(int countSelection) {
 		this.countSelection = countSelection;
 	}
@@ -640,22 +664,17 @@ public class DocWayTitles extends Titles {
 			}
 			formsAdapter.fillFormsFromResponse(formsAdapter.getLastResponse()); //restore delle form
 			String verbo = response.getAttributeValue("/response/@verbo");
-			if (verbo.equals("loadingbar")) {
-				DocWayLoadingbar docWayLoadingbar = new DocWayLoadingbar();
-				docWayLoadingbar.getFormsAdapter().fillFormsFromResponse(response);
-				docWayLoadingbar.init(response);
-				setLoadingbar(docWayLoadingbar);
-				docWayLoadingbar.setActive(true);
-				action = "store";
-			}
+			if (verbo.equals("loadingbar"))
+				openLoadingbarModal(response, false, "store");
+
 			return null;
 		} catch (Throwable t) {
 			handleErrorResponse(ErrormsgFormsAdapter.buildErrorResponse(t));
 			formsAdapter.fillFormsFromResponse(formsAdapter.getLastResponse()); //restore delle form
-			return null;			
+			return null;
 		}
 	}
-	
+
 	public String raccogli() throws Exception{
 		try{
 			this.formsAdapter.raccogli(formsAdapter.getSelid(), theSele, false);
@@ -673,7 +692,7 @@ public class DocWayTitles extends Titles {
 		} catch (Throwable t) {
 			handleErrorResponse(ErrormsgFormsAdapter.buildErrorResponse(t));
 			formsAdapter.fillFormsFromResponse(formsAdapter.getLastResponse()); //restore delle form
-			return null;			
+			return null;
 		}
 	}
 
@@ -688,23 +707,18 @@ public class DocWayTitles extends Titles {
 			}
 			formsAdapter.fillFormsFromResponse(formsAdapter.getLastResponse()); //restore delle form
 			String verbo = response.getAttributeValue("/response/@verbo");
-			if (verbo.equals("loadingbar")) {
-				DocWayLoadingbar docWayLoadingbar = new DocWayLoadingbar();
-				docWayLoadingbar.getFormsAdapter().fillFormsFromResponse(response);
-				docWayLoadingbar.init(response);
-				setLoadingbar(docWayLoadingbar);
-				docWayLoadingbar.setActive(true);
-				action = "removeSelFromFasc";
-			}
+			if (verbo.equals("loadingbar"))
+				openLoadingbarModal(response, false, "removeSelFromFasc");
+
 			return null;
 		} catch (Throwable t) {
 			handleErrorResponse(ErrormsgFormsAdapter.buildErrorResponse(t));
 			formsAdapter.fillFormsFromResponse(formsAdapter.getLastResponse()); //restore delle form
-			return null;			
+			return null;
 		}
 
 	}
-	
+
 	public String removeSelFromFascM() throws Exception{
 		try{
 			this.formsAdapter.raccogli(formsAdapter.getSelid(), theSele, false);
@@ -716,19 +730,14 @@ public class DocWayTitles extends Titles {
 			}
 			formsAdapter.fillFormsFromResponse(formsAdapter.getLastResponse()); //restore delle form
 			String verbo = response.getAttributeValue("/response/@verbo");
-			if (verbo.equals("loadingbar")) {
-				DocWayLoadingbar docWayLoadingbar = new DocWayLoadingbar();
-				docWayLoadingbar.getFormsAdapter().fillFormsFromResponse(response);
-				docWayLoadingbar.init(response);
-				setLoadingbar(docWayLoadingbar);
-				docWayLoadingbar.setActive(true);
-				action = "removeSelFromFasc";
-			}
+			if (verbo.equals("loadingbar"))
+				openLoadingbarModal(response, false, "removeSelFromFasc");
+
 			return null;
 		} catch (Throwable t) {
 			handleErrorResponse(ErrormsgFormsAdapter.buildErrorResponse(t));
 			formsAdapter.fillFormsFromResponse(formsAdapter.getLastResponse()); //restore delle form
-			return null;			
+			return null;
 		}
 	}
 
@@ -746,16 +755,16 @@ public class DocWayTitles extends Titles {
 				formsAdapter.fillFormsFromResponse(formsAdapter.getLastResponse()); //restore delle form
 				return null;
 			}
-			
+
 			String personalDirCliente = response.getAttributeValue("/response/@personalDirCliente");
 			if (personalDirCliente != null && personalDirCliente.length() > 0 && personalDirCliente.endsWith("/"))
 				personalDirCliente = personalDirCliente.substring(0, personalDirCliente.length()-1); // eliminazione della "/" finale
 			return buildSpecificQueryPageAndReturnNavigationRule("@fascicolo", "", personalDirCliente, "", response, isPopupPage());
-			
+
 		} catch (Throwable t) {
 			handleErrorResponse(ErrormsgFormsAdapter.buildErrorResponse(t));
 			formsAdapter.fillFormsFromResponse(formsAdapter.getLastResponse()); //restore delle form
-			return null;			
+			return null;
 		}
 	}
 
@@ -773,21 +782,21 @@ public class DocWayTitles extends Titles {
 				formsAdapter.fillFormsFromResponse(formsAdapter.getLastResponse()); //restore delle form
 				return null;
 			}
-			
+
 			String personalDirCliente = response.getAttributeValue("/response/@personalDirCliente");
 			if (personalDirCliente != null && personalDirCliente.length() > 0 && personalDirCliente.endsWith("/"))
 				personalDirCliente = personalDirCliente.substring(0, personalDirCliente.length()-1); // eliminazione della "/" finale
 			return buildSpecificQueryPageAndReturnNavigationRule("@fascicolo", "", personalDirCliente, "", response, isPopupPage());
-			
+
 		} catch (Throwable t) {
 			handleErrorResponse(ErrormsgFormsAdapter.buildErrorResponse(t));
 			formsAdapter.fillFormsFromResponse(formsAdapter.getLastResponse()); //restore delle form
-			return null;			
+			return null;
 		}
 	}
-	
+
 	/**
-	 * Implementazione del comando 'trasferisci' da lista 
+	 * Implementazione del comando 'trasferisci' da lista
 	 * titoli fascicoli
 	 */
 	public String addRPAFasc() throws Exception{
@@ -810,66 +819,80 @@ public class DocWayTitles extends Titles {
 		} catch (Throwable t) {
 			handleErrorResponse(ErrormsgFormsAdapter.buildErrorResponse(t));
 			formsAdapter.fillFormsFromResponse(formsAdapter.getLastResponse()); //restore delle form
-			return null;			
+			return null;
 		}
-		
+
 	}
-	
+
 	/**
 	 * Aggiunta di RPA ad una selezione di documenti da lista titoli
-	 * 
+	 *
 	 * @throws Exception
 	 */
 	public String addRPA() throws Exception{
-		try{
-			this.formsAdapter.raccogli(formsAdapter.getSelid(), theSele, false);
-			this.formsAdapter.openRifInt("RPA");
-			XMLDocumento response = this.formsAdapter.getDefaultForm().executePOST(getUserBean());
-			if (handleErrorResponse(response)) {
-				formsAdapter.fillFormsFromResponse(formsAdapter.getLastResponse()); //restore delle form
-			}
-			formsAdapter.fillFormsFromResponse(formsAdapter.getLastResponse());
-			this.formsAdapter.restoreOpernRifInt();
-			DocWayDocRifInt rifInt = new DocWayDocRifInt();
-			rifInt.getFormsAdapter().fillFormsFromResponse(response);
-			rifInt.init(response.getDocument());
-			rifInt.setViewAddRPA(true);
-			rifInt.setShowdoc(this);
-			rifInt.setFromShowTitles(true);
-			setSessionAttribute("rifInt", rifInt);
-			return null;
-		} catch (Throwable t) {
-			handleErrorResponse(ErrormsgFormsAdapter.buildErrorResponse(t));
-			formsAdapter.fillFormsFromResponse(formsAdapter.getLastResponse()); //restore delle form
-			return null;			
-		}
-		
+		return openRifInt("RPA");
 	}
 
+	/**
+	 * Aggiunta di CC ad una selezione di documenti da lista titoli
+	 *
+	 * @throws Exception
+	 */
 	public String addCC() throws Exception{
-		try{
+		return openRifInt("CC");
+	}
+
+	/**
+	 * Aggiunta di OP ad una selezione di documenti da lista titoli
+	 *
+	 * @throws Exception
+	 */
+	public String addOP() throws Exception{
+		return openRifInt("OP");
+	}
+
+	/**
+	 * Apertura del popup modale di assegnazione rif. interni (lookup)
+	 * @param tipo
+	 * @return
+	 * @throws Exception
+	 */
+	private String openRifInt(String tipoRif) throws Exception {
+		try {
+			if (tipoRif == null || tipoRif.isEmpty())
+				tipoRif = "CC";
+
 			this.formsAdapter.raccogli(formsAdapter.getSelid(), theSele, false);
-			this.formsAdapter.openRifInt("CC");
+			this.formsAdapter.openRifInt(tipoRif);
 			XMLDocumento response = this.formsAdapter.getDefaultForm().executePOST(getUserBean());
 			if (handleErrorResponse(response)) {
 				formsAdapter.fillFormsFromResponse(formsAdapter.getLastResponse()); //restore delle form
+				return null;
 			}
+
 			formsAdapter.fillFormsFromResponse(formsAdapter.getLastResponse());
 			DocWayDocRifInt rifInt = new DocWayDocRifInt();
 			rifInt.getFormsAdapter().fillFormsFromResponse(response);
 			rifInt.init(response.getDocument());
-			rifInt.setViewAddCC(true);
+
+			if (tipoRif.equalsIgnoreCase("rpa"))
+				rifInt.setViewAddRPA(true);
+			else if (tipoRif.equalsIgnoreCase("cc"))
+				rifInt.setViewAddCC(true);
+			else if (tipoRif.equalsIgnoreCase("op"))
+				rifInt.setViewAddOP(true);
+
 			rifInt.setShowdoc(this);
 			setSessionAttribute("rifInt", rifInt);
 			return null;
-		} catch (Throwable t) {
+		}
+		catch (Throwable t) {
 			handleErrorResponse(ErrormsgFormsAdapter.buildErrorResponse(t));
 			formsAdapter.fillFormsFromResponse(formsAdapter.getLastResponse()); //restore delle form
-			return null;			
+			return null;
 		}
-
 	}
-	
+
 	public String openClassifFasc() throws Exception{
 		try{
 			if (this.formsAdapter.getDefaultForm().getParam("physDoc").equals("")) {
@@ -894,13 +917,13 @@ public class DocWayTitles extends Titles {
 		} catch (Throwable t) {
 			handleErrorResponse(ErrormsgFormsAdapter.buildErrorResponse(t));
 			formsAdapter.fillFormsFromResponse(formsAdapter.getLastResponse()); //restore delle form
-			return null;			
+			return null;
 		}
 	}
-	
+
 	/**
 	 * Apre il popup dialog di cambio di classificazione (da lista titoli documenti)
-	 * 
+	 *
 	 * @throws Exception
 	 */
 	public String openClassifSpec() throws Exception{
@@ -927,13 +950,13 @@ public class DocWayTitles extends Titles {
 		} catch (Throwable t) {
 			handleErrorResponse(ErrormsgFormsAdapter.buildErrorResponse(t));
 			formsAdapter.fillFormsFromResponse(formsAdapter.getLastResponse()); //restore delle form
-			return null;			
+			return null;
 		}
 	}
 
 	/**
 	 * Apre il popup dialog di cambio di classificazione su minuta (da lista titoli documenti)
-	 * 
+	 *
 	 * @throws Exception
 	 */
 	public String openClassifSpecMinuta() throws Exception{
@@ -961,10 +984,10 @@ public class DocWayTitles extends Titles {
 		} catch (Throwable t) {
 			handleErrorResponse(ErrormsgFormsAdapter.buildErrorResponse(t));
 			formsAdapter.fillFormsFromResponse(formsAdapter.getLastResponse()); //restore delle form
-			return null;			
+			return null;
 		}
 	}
-	
+
 	public String ritiraBandoSelezione() throws Exception{
 		try{
 			this.formsAdapter.raccogli(formsAdapter.getSelid(), theSele, false);
@@ -974,24 +997,19 @@ public class DocWayTitles extends Titles {
 				formsAdapter.fillFormsFromResponse(formsAdapter.getLastResponse()); //restore delle form
 			}
 			String verbo = response.getAttributeValue("/response/@verbo");
-			if (verbo.equals("loadingbar")) {
-				DocWayLoadingbar docWayLoadingbar = new DocWayLoadingbar();
-				docWayLoadingbar.getFormsAdapter().fillFormsFromResponse(response);
-				docWayLoadingbar.init(response);
-				setLoadingbar(docWayLoadingbar);
-				docWayLoadingbar.setActive(true);
-				action = "ritiraBandoSelezione";
-			}
+			if (verbo.equals("loadingbar"))
+				openLoadingbarModal(response, false, "ritiraBandoSelezione");
+
 			return null;
 		} catch (Throwable t) {
 			handleErrorResponse(ErrormsgFormsAdapter.buildErrorResponse(t));
 			formsAdapter.fillFormsFromResponse(formsAdapter.getLastResponse()); //restore delle form
-			return null;			
-		} 
+			return null;
+		}
 	}
-	
+
 	/**
-	 * In caso di visualizzazione articolazione sottofascicoli, viene utilizzato per mostrare il contenuto (documenti contenuti) di 
+	 * In caso di visualizzazione articolazione sottofascicoli, viene utilizzato per mostrare il contenuto (documenti contenuti) di
 	 * un fascicolo direttamente dalla lista titoli
 	 * @return
 	 * @throws Exception
@@ -1026,8 +1044,8 @@ public class DocWayTitles extends Titles {
 		} catch (Throwable t) {
 			handleErrorResponse(ErrormsgFormsAdapter.buildErrorResponse(t));
 			formsAdapter.fillFormsFromResponse(formsAdapter.getLastResponse()); //restore delle form
-			return null;			
-		} 
+			return null;
+		}
 	}
 
 	public boolean getNextLevel2(){
@@ -1049,7 +1067,7 @@ public class DocWayTitles extends Titles {
 		}
 		return false;
 	}
-	
+
 	public boolean getNextLevel4(){
 		Titolo titolo = (Titolo)FacesContext.getCurrentInstance().getExternalContext().getRequestMap().get("titleFasc");
 		int position = this.titoli.indexOf(titolo);
@@ -1059,11 +1077,11 @@ public class DocWayTitles extends Titles {
 		}
 		return false;
 	}
-	
+
 	/**
 	 * aggiunta della query che ha portato alla selezione corrente come vaschetta custom
 	 * dell'utente
-	 * 
+	 *
 	 * @return
 	 * @throws Exception
 	 */
@@ -1071,29 +1089,29 @@ public class DocWayTitles extends Titles {
 		try{
 			if (nomeVaschettaCustom != null && !nomeVaschettaCustom.equals("")) {
 				this.addVaschettaCustomOpened = false;
-				
+
 				formsAdapter.addVaschetta(nomeVaschettaCustom, filtroTemporaleVaschettaCustom);
 				XMLDocumento response = this.formsAdapter.getDefaultForm().executePOST(getUserBean());
 				if (handleErrorResponse(response)) {
 					formsAdapter.fillFormsFromResponse(formsAdapter.getLastResponse()); //restore delle form
 					return null;
 				}
-				
+
 				formsAdapter.fillFormsFromResponse(formsAdapter.getLastResponse()); //restore delle form
 			}
 			else {
 				this.setErrorMessage("templateForm:nomeVaschetta", I18N.mrs("acl.requiredfield") + " '" + I18N.mrs("dw4.nome_vaschetta") + "'");
 			}
-			
+
 			return null;
-			
+
 		} catch (Throwable t) {
 			handleErrorResponse(ErrormsgFormsAdapter.buildErrorResponse(t));
 			formsAdapter.fillFormsFromResponse(formsAdapter.getLastResponse()); //restore delle form
-			return null;			
-		} 
+			return null;
+		}
 	}
-	
+
 	/**
 	 * apertura del popup di aggiunta di una nuova vaschetta custom
 	 * @return
@@ -1103,10 +1121,10 @@ public class DocWayTitles extends Titles {
 		this.nomeVaschettaCustom = "";
 		this.filtroTemporaleVaschettaCustom = "tutti";
 		this.addVaschettaCustomOpened = true;
-		
+
 		return null;
 	}
-	
+
 	/**
 	 * chiusura del popup di aggiunta di una nuova vaschetta custom
 	 * @return
@@ -1116,7 +1134,7 @@ public class DocWayTitles extends Titles {
 		this.addVaschettaCustomOpened = false;
 		this.nomeVaschettaCustom = "";
 		this.filtroTemporaleVaschettaCustom = "";
-		
+
 		return null;
 	}
 
@@ -1136,7 +1154,7 @@ public class DocWayTitles extends Titles {
 		}
 		return lunghezzaOggetto;
 	}
-	
+
 	/**
 	 * recupera la lunghezza massima (espressa in num di caratteri) da impostare
 	 * per la visualizzazione del soggetto sul titolo
@@ -1153,7 +1171,7 @@ public class DocWayTitles extends Titles {
 		}
 		return lunghezzaSoggetto;
 	}
-	
+
 	/**
 	 * cancellazione massiva di documenti da lista titoli
 	 * @return
@@ -1169,27 +1187,82 @@ public class DocWayTitles extends Titles {
 			}
 
 			String verbo = response.getAttributeValue("/response/@verbo");
-			if (verbo.equals("loadingbar")) {
-				DocWayLoadingbar docWayLoadingbar = new DocWayLoadingbar();
-				docWayLoadingbar.getFormsAdapter().fillFormsFromResponse(response);
-				docWayLoadingbar.init(response);
-				docWayLoadingbar.setHolderPageBean(this);
-				setLoadingbar(docWayLoadingbar);
-				docWayLoadingbar.setActive(true);
-				action = "removeDocs";
-			}
-			
+			if (verbo.equals("loadingbar"))
+				openLoadingbarModal(response, true, "removeDocs");
+
 			// azzeramento della selezione dei documenti
 			resetSelection();
-			
+
 			return null;
 		} catch (Throwable t) {
 			handleErrorResponse(ErrormsgFormsAdapter.buildErrorResponse(t));
 			formsAdapter.fillFormsFromResponse(formsAdapter.getLastResponse()); //restore delle form
-			return null;			
+			return null;
 		}
 	}
 	
+	/**
+	 * contrassegnatura come letto massiva di documenti da lista titoli
+	 * @return
+	 * @throws Exception
+	 */
+	public String markAsReadDocs() throws Exception{
+		try{
+			this.formsAdapter.markAsReadDocs(getSelid(), theSele);
+			XMLDocumento response = this.formsAdapter.getDefaultForm().executePOST(getUserBean());
+			if (handleErrorResponse(response)) {
+				formsAdapter.fillFormsFromResponse(formsAdapter.getLastResponse()); //restore delle form
+				return null;
+			}
+
+			String verbo = response.getAttributeValue("/response/@verbo");
+			if (verbo.equals("loadingbar"))
+				openLoadingbarModal(response, true, "markAsReadDocs");
+
+			// azzeramento della selezione dei documenti
+			resetSelection();
+
+			return null;
+		} catch (Throwable t) {
+			handleErrorResponse(ErrormsgFormsAdapter.buildErrorResponse(t));
+			formsAdapter.fillFormsFromResponse(formsAdapter.getLastResponse()); //restore delle form
+			return null;
+		}
+	}
+
+	/**
+	 * scarto massivo di documenti da lista titoli
+	 * @return
+	 * @throws Exception
+	 */
+	public String scartaDocs(String tipo) throws Exception{
+		try {
+			boolean scartoRuoli = false;
+			if (tipo != null && tipo.equals("ruolo"))
+				scartoRuoli = true;
+
+			this.formsAdapter.scartaDocs(getSelid(), theSele, scartoRuoli);
+			XMLDocumento response = this.formsAdapter.getDefaultForm().executePOST(getUserBean());
+			if (handleErrorResponse(response)) {
+				formsAdapter.fillFormsFromResponse(formsAdapter.getLastResponse()); //restore delle form
+				return null;
+			}
+
+			String verbo = response.getAttributeValue("/response/@verbo");
+			if (verbo.equals("loadingbar"))
+				openLoadingbarModal(response, true, "scartaDocs");
+
+			// azzeramento della selezione dei documenti
+			resetSelection();
+
+			return null;
+		} catch (Throwable t) {
+			handleErrorResponse(ErrormsgFormsAdapter.buildErrorResponse(t));
+			formsAdapter.fillFormsFromResponse(formsAdapter.getLastResponse()); //restore delle form
+			return null;
+		}
+	}
+
 	public boolean isSeduta() {
 		return isSeduta;
 	}
@@ -1197,7 +1270,7 @@ public class DocWayTitles extends Titles {
 	public void setSeduta(boolean isSeduta) {
 		this.isSeduta = isSeduta;
 	}
-	
+
 	/**
 	 * raffinamento della ricerca
 	 * @return
@@ -1206,22 +1279,22 @@ public class DocWayTitles extends Titles {
 	public String raffina() throws Exception {
 		try {
 			String query = QueryUtil.createGlobalQuery(raffinaSearchTerms, raffinaSoloEstremi, raffinaAnno, raffinaNumProt);
-			
+
 			this.formsAdapter.raffina(query);
 			XMLDocumento response = this.formsAdapter.getDefaultForm().executePOST(getUserBean());
 			if (handleErrorResponse(response)) {
 				formsAdapter.fillFormsFromResponse(formsAdapter.getLastResponse()); //restore delle form
 				return null;
 			}
-			
+
 			Element root = response.getRootElement();
 			List<?> tit = root.selectNodes("//titolo");
 			if (tit != null && !tit.isEmpty()) {
 				DocWayTitles titles = new DocWayTitles();
 				titles.getFormsAdapter().fillFormsFromResponse(response);
-				
+
 				titles.init(response.getDocument());
-				
+
 				setSessionAttribute("docwayTitles", titles);
 				return "showtitles@docway";
 			}
@@ -1231,12 +1304,127 @@ public class DocWayTitles extends Titles {
 				else
 					return null;
 			}
-			
-		} 
+
+		}
 		catch (Throwable t) {
 			handleErrorResponse(ErrormsgFormsAdapter.buildErrorResponse(t));
 			formsAdapter.fillFormsFromResponse(formsAdapter.getLastResponse()); //restore delle form
-			return null;			
+			return null;
+		}
+	}
+
+	/**
+	 * protocollazione massiva di documenti da lista titoli
+	 * @return
+	 * @throws Exception
+	 */
+	public String protocollaDocs() throws Exception{
+		try {
+			this.formsAdapter.protocollaDocs(getSelid(), theSele);
+			XMLDocumento response = this.formsAdapter.getDefaultForm().executePOST(getUserBean());
+			if (handleErrorResponse(response)) {
+				formsAdapter.fillFormsFromResponse(formsAdapter.getLastResponse()); //restore delle form
+				return null;
+			}
+
+			String verbo = response.getAttributeValue("/response/@verbo");
+			if (verbo.equals("loadingbar"))
+				openLoadingbarModal(response, true, "protocollaDocs");
+
+			// azzeramento della selezione dei documenti
+			resetSelection();
+
+			return null;
+		}
+		catch (Throwable t) {
+			handleErrorResponse(ErrormsgFormsAdapter.buildErrorResponse(t));
+			formsAdapter.fillFormsFromResponse(formsAdapter.getLastResponse()); //restore delle form
+			return null;
+		}
+	}
+
+	/**
+	 * Apertura del popup modale di caricamento loadinbar per azione massiva su lista titoli
+	 * @param response
+	 * @param setHoderPage
+	 * @param currentAction
+	 * @throws Exception
+	 */
+	private void openLoadingbarModal(XMLDocumento response, boolean setHoderPage, String currentAction) throws Exception {
+		DocWayLoadingbar docWayLoadingbar = new DocWayLoadingbar();
+		docWayLoadingbar.getFormsAdapter().fillFormsFromResponse(response);
+		docWayLoadingbar.init(response);
+		if (setHoderPage)
+			docWayLoadingbar.setHolderPageBean(this);
+		setLoadingbar(docWayLoadingbar);
+		docWayLoadingbar.setActive(true);
+		if (currentAction != null && !currentAction.isEmpty())
+			this.action = currentAction;
+	}
+
+
+	/**
+	 * Restituisce true se il titolo passato risulta selezionato dall'operatore (tramite relativo checkbox), false altrimenti
+	 * @param titolo Titolo da verificare (tramite posizione o numero fisico del documento)
+	 * @return
+	 * @throws Exception
+	 */
+	public boolean isTitleSelected(Titolo titolo) throws Exception {
+		if (theSele != null && theSele.contains("}{"+getTitoloTheSeleId(titolo)+"}{"))
+			return true;
+		else
+			return false;
+	}
+	
+	/**
+	 * Ritorna l'identificativo del titolo da registrare nella lista di selezione in caso di check su un titolo da lista titoli da parte di un 
+	 * operatore. Puo' essere utilizzato il physdoc (nel caso i titoli abbiano il physdoc dei documenti associati, integrazione elasticsearch) o la 
+	 * posizione del titolo nella selezione (
+	 * @param titolo
+	 * @return
+	 * @throws Exception
+	 */
+	public String getTitoloTheSeleId(Titolo titolo) throws Exception {
+		String id = "";
+		if (titolo != null) {
+			id = titolo.getIndice();
+			if (!selectionByPos && !selectAll) {
+				if (titolo.getPhysdoc() == 0)  // rilascio eccezione se il physdoc non e' caricato (non si dovrebbe mai verificare)
+					throw new Exception("Nessun PhysDoc associato al titolo '" + titolo.getTesto() + "'");
+				
+				id = String.valueOf("PHYS_" + titolo.getPhysdoc());
+			}
+		}
+		return id;
+	}
+	
+	/**
+	 * Stampa tutti gli allegati dei documenti della selezione
+	 * @return
+	 * @throws Exception
+	 */
+	public String printDocsAttachments() throws Exception {
+		try {
+			formsAdapter.printDocsAttachments(theSele);
+			XMLDocumento response = formsAdapter.getDefaultForm().executePOST(getUserBean());
+			if (handleErrorResponse(response)) {
+				formsAdapter.fillFormsFromResponse(formsAdapter.getLastResponse()); //restore delle form
+				return null;
+			}
+			formsAdapter.fillFormsFromResponse(formsAdapter.getLastResponse()); //restore delle form in ogni caso
+			
+			DocWayPrintAttachments printAttachments = new DocWayPrintAttachments();
+			printAttachments.getFormsAdapter().fillFormsFromResponse(response);
+			printAttachments.init(response.getDocument());
+			printAttachments.setVisible(true);
+			setSessionAttribute("printAttachments", printAttachments);
+			
+			return null;
+		}
+		catch (Throwable t) {
+			handleErrorResponse(ErrormsgFormsAdapter.buildErrorResponse(t));
+			formsAdapter.fillFormsFromResponse(formsAdapter.getLastResponse()); //restore delle form
+			return null;
 		}
 	}
 

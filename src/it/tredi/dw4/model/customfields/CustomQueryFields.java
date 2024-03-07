@@ -1,6 +1,7 @@
 package it.tredi.dw4.model.customfields;
 
 import it.tredi.dw4.model.XmlEntity;
+import it.tredi.dw4.model.customfields.specialized_fields.NumeroAnnoQueryField;
 import it.tredi.dw4.utils.Const;
 import it.tredi.dw4.utils.DateUtil;
 import it.tredi.dw4.utils.XMLUtil;
@@ -35,7 +36,21 @@ public class CustomQueryFields extends XmlEntity {
 						
 						Document doc = DocumentHelper.createDocument();
 			            doc.setRootElement(page.createCopy());
-						List<QueryField> queryFields = XMLUtil.parseSetOfElement(doc, "page/field", new QueryField());
+
+			            // workaround volante per gestione custom campi specializzati
+						QueryField queryField = new QueryField();
+						List<Element> fields = doc.selectNodes("page/field");
+						if (fields != null && !fields.isEmpty()) {
+							for (Element field : fields) {
+								String type = field.attributeValue("type");
+								switch (type) {
+									case "numero_anno":
+										queryField = new NumeroAnnoQueryField();
+										break;
+								}
+							}
+						}
+						List<QueryField> queryFields = XMLUtil.parseSetOfElement(doc, "page/field", queryField);
 						if (queryFields != null && queryFields.size() > 0)
 							querysections.put(sectionName, queryFields);
 					}

@@ -6,9 +6,9 @@ import java.util.Set;
 import org.dom4j.DocumentException;
 import org.dom4j.Element;
 
-import it.tredi.dw4.utils.XMLDocumento;
 import it.tredi.dw4.adapters.AdaptersConfigurationLocator.AdapterConfig;
 import it.tredi.dw4.adapters.DocEditFormsAdapter;
+import it.tredi.dw4.utils.XMLDocumento;
 
 public class DocWayRifIntFormsAdapter extends DocEditFormsAdapter {
 
@@ -30,29 +30,51 @@ public class DocWayRifIntFormsAdapter extends DocEditFormsAdapter {
 	 * Aggiunta di rif interni ad un documento/fascicolo
 	 * 
 	 * @param sendMailRifInterni
+	 * @param sendMailSelectedRifInterni
+	 * @param selectedRifInterni
 	 * @param checkNomi
 	 * @param map
 	 */
-	public void confirmRifInt(boolean sendMailRifInterni, boolean checkNomi, Map<String, String> map) {
-		confirmRifInt(sendMailRifInterni, checkNomi, map, false);
+	public void confirmRifInt(boolean sendMailRifInterni, boolean sendMailSelectedRifInterni, String selectedRifInterni, boolean checkNomi, Map<String, String> map) {
+		confirmRifInt(sendMailRifInterni, sendMailSelectedRifInterni, selectedRifInterni, checkNomi, map, false);
+	}
+
+	/**
+	 * Aggiunta di rif interni ad un documento e forzatura del livello di visibilità
+	 * 
+	 * @param sendMailRifInterni
+	 * @param sendMailSelectedRifInterni
+	 * @param selectedRifInterni
+	 * @param checkNomi
+	 * @param map
+	 * @param codVisibilita valore del livello di visibilita da assegnare al documento
+	 */
+	public void confirmRifInt(boolean sendMailRifInterni, boolean sendMailSelectedRifInterni, String selectedRifInterni, boolean checkNomi, Map<String, String> map, String codVisibilita) {
+		this.defaultForm.addParam("overrideVisibilita", "true");
+		this.defaultForm.addParam("codVisibilita", codVisibilita);
+		confirmRifInt(sendMailRifInterni, sendMailSelectedRifInterni, selectedRifInterni, checkNomi, map);
 	}
 
 	/**
 	 * Aggiunta di rif interni ad un documento/fascicolo
 	 * 
 	 * @param sendMailRifInterni
+	 * @param sendMailSelectedRifInterni
+	 * @param selectedRifInterni
 	 * @param checkNomi
 	 * @param map
 	 * @param isCCPage vale true se si stanno aggiungendo dei CC al doc, false altrimenti
 	 */
-	public void confirmRifInt(boolean sendMailRifInterni, boolean checkNomi, Map<String, String> map, boolean isCCPage) {
-		confirmRifInt(sendMailRifInterni, checkNomi, map, isCCPage, false);
+	public void confirmRifInt(boolean sendMailRifInterni, boolean sendMailSelectedRifInterni, String selectedRifInterni, boolean checkNomi, Map<String, String> map, boolean isCCPage) {
+		confirmRifInt(sendMailRifInterni, sendMailSelectedRifInterni, selectedRifInterni, checkNomi, map, isCCPage, false);
 	}
-
+	
 	/**
 	 * Aggiunta di rif interni ad un documento/fascicolo
 	 * 
 	 * @param sendMailRifInterni
+	 * @param sendMailSelectedRifInterni
+	 * @param selectedRifInterni
 	 * @param checkNomi
 	 * @param map
 	 * @param isCCPage 
@@ -63,36 +85,79 @@ public class DocWayRifIntFormsAdapter extends DocEditFormsAdapter {
 	 *            Vale true se in caso di doc tra uffici occorre modificare
 	 *            l'RPAM, false atrimenti
 	 */
-	public void confirmRifInt(boolean sendMailRifInterni, boolean checkNomi, Map<String, String> map, boolean isCCPage, boolean trasferisciMinuta) {
+	public void confirmRifInt(boolean sendMailRifInterni, boolean sendMailSelectedRifInterni, String selectedRifInterni, boolean checkNomi, Map<String, String> map, boolean isCCPage, boolean trasferisciMinuta) {
+		
+		// mbernardini 15/02/2017 : assegnazione massiva a OP su lista titoli
+		String tipoRif = "";
+		if (trasferisciMinuta)
+			tipoRif = "RPAM";
+		else if (isCCPage)
+			tipoRif = "CC";
+		
+		confirmRifInt(tipoRif, sendMailRifInterni, sendMailSelectedRifInterni, selectedRifInterni, checkNomi, map);
+	}
+	
+	/**
+	 * Aggiunta di rif interni ad un documento/fascicolo (o lista di documenti)
+	 * @param tipoRif tipo di rif. interno da aggiungere (RPA, RPAM, CC, OP, ecc.)
+	 * @param sendMailRifInterni
+	 * @param sendMailSelectedRifInterni
+	 * @param selectedRifInterni
+	 * @param checkNomi
+	 * @param map
+	 */
+	public void confirmRifInt(String tipoRif, boolean sendMailRifInterni, boolean sendMailSelectedRifInterni, String selectedRifInterni, boolean checkNomi, Map<String, String> map) {
 		String rifIntString = checkAndExtractRifIntValues(map);
 		
 		if (rifIntString != null && rifIntString.length() > 0) {
-			String xv = "";
-			if (trasferisciMinuta)
-				xv = "RPAM";
-
+			if (tipoRif == null)
+				tipoRif = "";
+			
 			if (rifIntString.endsWith("|")) 
 				rifIntString = rifIntString.substring(0, rifIntString.length() - 1);
 			this.defaultForm.addParam("rifInt", rifIntString);
 
 			this.defaultForm.addParam("verbo", "rifint_response");
 
+			// ERM012596 - rtirabassi - notifica capillare
+			if ( sendMailSelectedRifInterni ) {
+				this.defaultForm.addParam("sendMailSelectedRifInterni", true);
+				this.defaultForm.addParam("invioCapillareNotifiche", selectedRifInterni);
+				sendMailRifInterni = false;
+			}
+			else {
+				this.defaultForm.addParam("sendMailSelected", false);
+			}
+			
 			if (sendMailRifInterni)
 				this.defaultForm.addParam("sendMail", true);
 			else
 				this.defaultForm.addParam("sendMail", false);
+			
+			// mbernardini 16/03/2016 : corretta chiamata al metodo di trasferimento RPA di un fascicolo per aggiornamento nomi ufficio/persona
+			if (checkNomi)
+				this.defaultForm.addParam("_cd", setParameterFromCustomTupleValue("checkNomi", "si", this.defaultForm.getParam("_cd")));
+			else
+				this.defaultForm.addParam("_cd", setParameterFromCustomTupleValue("checkNomi", "null", this.defaultForm.getParam("_cd")));
 
 			if (this.defaultForm.getParam("toDo").equals("from_titles")) {
-				if (!isCCPage) {
-					this.defaultForm.addParam("verbo", "rifint_response");
-					this.defaultForm.addParam("xverb", "@trasferisciSel" + xv);
-					return;
-				} else {
+				if (tipoRif.equalsIgnoreCase("cc")) {
 					this.defaultForm.addParam("verbo", "rifint_response");
 					this.defaultForm.addParam("xverb", "@assegnaCCSel");
 					return;
 				}
-			} else if (this.defaultForm.getParam("toDo").equals("from_fasc_titles")) {
+				else if (tipoRif.equalsIgnoreCase("op")) {
+					this.defaultForm.addParam("verbo", "rifint_response");
+					this.defaultForm.addParam("xverb", "@assegnaOPSel");
+					return;
+				}
+				else {
+					this.defaultForm.addParam("verbo", "rifint_response");
+					this.defaultForm.addParam("xverb", "@trasferisciSel" + tipoRif.toUpperCase());
+					return;
+				}
+			} 
+			else if (this.defaultForm.getParam("toDo").equals("from_fasc_titles")) {
 				this.defaultForm.addParam("verbo", "rifint_response");
 				this.defaultForm.addParam("xverb", "@TRASF_SEL");
 				this.defaultForm.addParam("dbTable", "@fascicolo");
@@ -102,12 +167,7 @@ public class DocWayRifIntFormsAdapter extends DocEditFormsAdapter {
 			if (!this.defaultForm.getParam("xverb").equals("@TRASF")) {
 				this.defaultForm.addParam("xverb", "@assignRif_" + this.defaultForm.getParam("xverb"));
 			}
-
-			// TODO da verificare
-			if (checkNomi)
-				this.defaultForm.addParam("checkNomi", "si");
-			else
-				this.defaultForm.addParam("checkNomi", "null");
+			
 		} else {
 			// tutti campi vuoti (RPA non sensato oppure tutti CC fasulli)
 			// rifintMSG(noValField);
@@ -118,9 +178,11 @@ public class DocWayRifIntFormsAdapter extends DocEditFormsAdapter {
 	 * aggiunta di rif interni ad un fascicolo
 	 * 
 	 * @param sendMailRifInterni
+	 * @param sendMailSelectedRifInterni
+	 * @param selectedRifInterni
 	 * @param map
 	 */
-	public void confirmCConFascicolo(boolean sendMailRifInterni, Map<String, String> map) {
+	public void confirmCConFascicolo(boolean sendMailRifInterni, boolean sendMailSelectedRifInterni, String selectedRifInterni, Map<String, String> map) {
 		String rifIntString = checkAndExtractRifIntValues(map);
 		
 		if (rifIntString != null && rifIntString.length() > 0) {
@@ -130,6 +192,52 @@ public class DocWayRifIntFormsAdapter extends DocEditFormsAdapter {
 
 			this.defaultForm.addParam("verbo", "rifint_response");
 			this.defaultForm.addParam("xverb", "@assegnaCCFascicolo");
+			
+			// ERM012596 - rtirabassi - notirica capillare
+			if ( sendMailSelectedRifInterni ) {
+				this.defaultForm.addParam("sendMailSelectedRifInterni", true);
+				this.defaultForm.addParam("invioCapillareNotifiche", selectedRifInterni);
+				sendMailRifInterni = false;
+			}
+			else {
+				this.defaultForm.addParam("sendMailSelected", false);
+			}
+			
+			if (sendMailRifInterni)
+				this.defaultForm.addParam("sendMail", true);
+			else
+				this.defaultForm.addParam("sendMail", false);
+		}
+	}
+	
+	/**
+	 * aggiunta di rif interni ad un raccoglitore
+	 * 
+	 * @param sendMailRifInterni
+	 * @param sendMailSelectedRifInterni
+	 * @param selectedRifInterni
+	 * @param map
+	 */
+	public void confirmCConRaccoglitore(boolean sendMailRifInterni, boolean sendMailSelectedRifInterni, String selectedRifInterni, Map<String, String> map) {
+		String rifIntString = checkAndExtractRifIntValues(map);
+		
+		if (rifIntString != null && rifIntString.length() > 0) {
+			if (rifIntString.endsWith("|")) 
+				rifIntString = rifIntString.substring(0, rifIntString.length() - 1);
+			this.defaultForm.addParam("rifInt", rifIntString);
+
+			this.defaultForm.addParam("verbo", "rifint_response");
+			this.defaultForm.addParam("xverb", "@assegnaCCRaccoglitore");
+			
+			// ERM012596 - rtirabassi - notifica capillare
+			if ( sendMailSelectedRifInterni ) {
+				this.defaultForm.addParam("sendMailSelectedRifInterni", true);
+				this.defaultForm.addParam("invioCapillareNotifiche", selectedRifInterni);
+				sendMailRifInterni = false;
+			}
+			else {
+				this.defaultForm.addParam("sendMailSelected", false);
+			}
 			
 			if (sendMailRifInterni)
 				this.defaultForm.addParam("sendMail", true);

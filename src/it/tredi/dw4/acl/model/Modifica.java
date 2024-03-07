@@ -19,13 +19,14 @@ public class Modifica extends XmlEntity {
 	private Date data;
 	private String ora;
 	private String uff_oper;
-    
+	private String delegato;
+
 	public Modifica() {}
-    
+
 	public Modifica(String xmlCreazione) throws Exception {
         this.init(XMLUtil.getDOM(xmlCreazione));
     }
-    
+
     public Modifica init(Document domCreazione) {
     	this.oper 			= XMLUtil.parseAttribute(domCreazione, "modifica/@oper");
     	this.cod_oper 		= XMLUtil.parseAttribute(domCreazione, "modifica/@cod_oper");
@@ -34,13 +35,14 @@ public class Modifica extends XmlEntity {
     	this.azione 		= XMLUtil.parseAttribute(domCreazione, "modifica/@azione");
     	this.data 			= XMLUtil.parseAttributeDate(domCreazione, "modifica/@data");
     	this.ora 			= XMLUtil.parseAttribute(domCreazione, "modifica/@ora");
+    	this.delegato 		= XMLUtil.parseAttribute(domCreazione, "modifica/@delegato");
         return this;
     }
-    
+
     public Map<String, String> asFormAdapterParams(String prefix){
     	return new HashMap<String, String>();
     }
-    
+
     public String getOper() {
 		return oper;
 	}
@@ -100,6 +102,14 @@ public class Modifica extends XmlEntity {
 
 	public String getUff_oper() {
 		return uff_oper;
+	}
+
+	public String getDelegato() {
+		return delegato;
+	}
+
+	public void setDelegato(String delegato) {
+		this.delegato = delegato;
 	}
 }
 

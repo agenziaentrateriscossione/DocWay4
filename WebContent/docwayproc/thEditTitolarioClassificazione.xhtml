@@ -70,7 +70,7 @@
 									</h:commandLink>
 								</th>
 								<th>
-									<strong><h:outputText value="#{thEditTitolarioClassificazione.name}" escape="false" /></strong>
+									<strong><h:outputText value="#{thEditTitolarioClassificazione.name}" /></strong>
 								</th>
 							</tr>
 						</thead>
@@ -130,7 +130,7 @@
 		</div>
 		<!-- scheda edit: fine -->
 
-		<h:inputTextarea value="#{thEditTitolarioClassificazione.xml}" rendered="#{thEditTitolarioClassificazione.debugMode}" styleClass="form-control" rows="10" />		
+		<h:inputTextarea value="#{thEditTitolarioClassificazione.xml}" rendered="#{thEditTitolarioClassificazione.debugMode}" styleClass="form-control debug-textarea" rows="10" />
 	</div>
 </ui:define>
 

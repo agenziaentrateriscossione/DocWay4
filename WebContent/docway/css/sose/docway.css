@@ -1,0 +1,35 @@
+
+/*############################### STILI PER IDENTIFICAZIONE ARCHIVIO - INIZIO ###############################*/
+
+.fullscreen-logo.archive-xdocwaydoc-orso {
+	background: url('images/logo/xdocwaydoc-orso.png') no-repeat center;
+	width: 150px;
+}
+
+.fullscreen-logo.archive-xdocwaydoc-orso img {
+	visibility: hidden;
+	width: 190px;
+}
+
+.resizescreen-logo.archive-xdocwaydoc-orso, .resizescreen-logo.archive-xdocwaydoc-orso:hover {
+	background: url('images/logo/xdocwaydoc-orso.png') no-repeat center;
+	background-size: 85%; 
+	background-color: #fff !important;
+}
+
+.resizescreen-logo.archive-xdocwaydoc-orso img {
+	visibility: hidden;
+}
+
+/* commentati perche' i loghi BIG in login non devono essere personalizzati, viene mostrato il logo classico di DocWay */
+/*
+.login-archive-xdocwaydoc-centro {
+	background: url('images/logo/xdocwaydoc-centro.png') no-repeat center;
+}
+
+.login-archive-xdocwaydoc-centro img {
+	visibility: hidden;
+}
+*/
+
+/*############################### STILI PER IDENTIFICAZIONE ARCHIVIO - FINE ###############################*/

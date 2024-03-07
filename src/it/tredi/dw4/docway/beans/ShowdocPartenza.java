@@ -1,6 +1,8 @@
 package it.tredi.dw4.docway.beans;
 
 
+import javax.faces.context.FacesContext;
+
 import org.dom4j.Document;
 
 import it.tredi.dw4.adapters.AdaptersConfigurationLocator;
@@ -24,7 +26,7 @@ public class ShowdocPartenza extends ShowdocDoc {
 	
 	@Override
 	public void reload() throws Exception {
-		super._reload("showdoc@partenza");
+		super._reload(FacesContext.getCurrentInstance().getExternalContext().getRequestContextPath() + "/docway/showdoc@partenza");
 	}
 	
 }

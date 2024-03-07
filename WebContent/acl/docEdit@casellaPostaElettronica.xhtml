@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+    template="template.xhtml"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:f="http://java.sun.com/jsf/core">
+
+	<ui:define name="content">
+		<div class="casellaPostaElettronica docedit">
+			<!-- toolbar: inizio -->
+			<div class="btn-toolbar margin-bottom" role="toolbar">
+				<div class="btn-group">
+					<h:commandLink id="saveBtn" action="#{docEditCasellaPostaElettronica.saveDocument}" styleClass="btn btn-primary openwaitmsg">#{i18n['acl.save']}</h:commandLink>
+					<h:commandLink action="#{docEditCasellaPostaElettronica.clearDocument}" styleClass="btn btn-default">#{i18n['acl.clear']}</h:commandLink>
+				</div>
+			</div>
+			<!-- toolbar: fine -->
+
+			<h5 class="sub-header">
+				<span class="casellaPostaElettronica glyphicons-pro"></span>&#160;
+				<h:outputText value="#{i18n['acl.ins_mailbox']}" />
+			</h5>
+
+			<!-- messages: inizio -->
+			<h:panelGroup rendered="#{not empty facesContext.messageList}" layout="block" styleClass="docedit-messages alert alert-danger">
+				<h:messages styleClass="" id="validationMesseges" />
+			</h:panelGroup>
+			<!-- messages: fine -->
+
+			<!-- scheda edit: inizio -->
+			<div class="row-fluid" style="margin-top:10px;">
+				<div id="fixedshowdoc" class="box span12 fixed-showdoc">
+					<div class="box-content">
+
+						<div class="fieldset">
+							<div class="legend">
+								#{i18n['acl.informazioni_di_base']}
+								<div class="pull-right">
+									<span class="glyphicons-pro envelope" title="#{i18n['acl.informazioni_di_base']}"></span>
+								</div>
+							</div>
+
+							<div class="form-group">
+                                <label for="templateForm:casellaPostaElettronica_interop" class="col-sm-2 control-label"><span>#{i18n['acl.interoperabilita']}</span></label>
+                                <div class="col-sm-2">
+                                	<h:selectOneMenu id="casellaPostaElettronica_interop" value="#{docEditCasellaPostaElettronica.casellaPostaElettronica.interop}" valueChangeListener="#{docEditCasellaPostaElettronica.interopChangeListener}" styleClass="form-control">
+										<f:selectItem itemValue="si" itemLabel="#{i18n['dw4.yes']}" />
+										<f:selectItem itemValue="no" itemLabel="#{i18n['dw4.no']}" />
+
+										<f:ajax execute="@form" render="@form" />
+									</h:selectOneMenu>
+                                </div>
+                            </div>
+
+							<div class="form-group">
+                                <label for="templateForm:casellaPostaElettronica_nome" class="col-sm-2 control-label requiredField"><span>* #{i18n['acl.name']}</span></label>
+                                <div class="col-sm-9">
+                                    <h:inputText id="casellaPostaElettronica_nome" value="#{docEditCasellaPostaElettronica.casellaPostaElettronica.nome}" styleClass="#{ component.valid ? '' : 'invalidinput' } form-control"/>
+                                    <h:inputHidden id="casellaPostaElettronica_codamm" value="#{docEditCasellaPostaElettronica.casellaPostaElettronica.cod_amm}" />
+                                    <h:inputHidden id="casellaPostaElettronica_codaoo" value="#{docEditCasellaPostaElettronica.casellaPostaElettronica.cod_aoo}" />
+                                </div>
+                            </div>
+
+							<h:panelGroup rendered="#{docEditCasellaPostaElettronica.casellaPostaElettronica.interoperabilita}" layout="block" styleClass="form-group">
+							    <label for="templateForm:casellaPostaElettronica_codamm_segnatura" class="col-sm-2 control-label requiredField">* #{i18n['acl.cod_amm_segnatura']}</label>
+                                <div class="col-sm-2">
+                                    <h:inputText id="casellaPostaElettronica_codamm_segnatura" value="#{docEditCasellaPostaElettronica.casellaPostaElettronica.cod_amm_segnatura}" styleClass="#{ component.valid ? '' : 'invalidinput' } form-control" />
+                                </div>
+                                <label for="templateForm:casellaPostaElettronica_codaoo_segnatura" class="col-sm-offset-3 col-sm-2 control-label requiredField">* #{i18n['acl.cod_aoo_segnatura']}</label>
+                                <div class="col-sm-2">
+                                    <h:inputText id="casellaPostaElettronica_codaoo_segnatura" value="#{docEditCasellaPostaElettronica.casellaPostaElettronica.cod_aoo_segnatura}" styleClass="#{ component.valid ? '' : 'invalidinput' } form-control" />
+                                </div>
+                            </h:panelGroup>
+
+					     <div class="row">
+					       <div class="col-xs-6">
+                            <div class="form-group">
+							    <label for="templateForm:casellaPostaElettronica_documentModel_input" class="col-sm-4 control-label"><h:panelGroup rendered="#{docEditCasellaPostaElettronica.casellaPostaElettronica.interoperabilita}">* </h:panelGroup>#{i18n['acl.documentModel']}</label>
+							    <div class="col-sm-8">
+			                        <ui:include src="./lookupField.xhtml">
+			                            <ui:param name="id" value="casellaPostaElettronica_documentModel" />
+			                            <ui:param name="field" value="#{docEditCasellaPostaElettronica.casellaPostaElettronica.documentModel}" />
+			                            <ui:param name="bean" value="#{docEditCasellaPostaElettronica}" />
+			                            <ui:param name="action" value="lookupMailboxDocumentModel"/>
+			                            <ui:param name="clearaction" value="clearMailboxDocumentModel"/>
+			                            <ui:param name="title" value="#{i18n['acl.documentModel']}"/>
+			                            <ui:param name="styleclass" value="form-control"/>
+			                            <ui:param name="refresh" value="@form"/>
+			                        </ui:include>
+			                     </div>
+							   </div>
+							  </div>
+							   
+							   
+						   <div class="col-xs-6">
+							 <div class="form-group">
+		                       <h:panelGroup rendered="#{docEditCasellaPostaElettronica.casellaPostaElettronica.interoperabilita}">
+			                    <label for="templateForm:casellaPostaElettronica_db" class="col-sm-offset-2 col-sm-4 control-label">* #{i18n['acl.db']}</label>
+                                <div class="col-sm-4">
+                                    <h:inputText id="casellaPostaElettronica_db" value="#{docEditCasellaPostaElettronica.casellaPostaElettronica.db}" styleClass="#{ component.valid ? '' : 'invalidinput' } form-control"/>
+                                </div>
+                                </h:panelGroup>
+                             </div>
+						  </div>
+						</div>
+						
+                            <div class="form-group">
+	                            <label for="templateForm:oper" class="col-sm-2 control-label"><span>#{i18n['acl.operator']}</span></label>
+	                            <div class="col-sm-4">
+                                    <h:inputText id="oper" value="#{docEditCasellaPostaElettronica.casellaPostaElettronica.oper}" styleClass="form-control"/>
+                                </div>
+                                <label for="templateForm:uff_oper" class="col-sm-2 control-label"><span>#{i18n['acl.uff_operator']}</span></label>
+                                <div class="col-sm-3">
+                                    <h:inputText id="uff_oper" value="#{docEditCasellaPostaElettronica.casellaPostaElettronica.uff_oper}" styleClass="form-control"/>
+                                </div>
+	                        </div>
+
+							<h:panelGroup rendered="#{(docEditCasellaPostaElettronica.abilitaFatturePA and docEditCasellaPostaElettronica.casellaPostaElettronica.interoperabilita) or docEditCasellaPostaElettronica.abilitaSplitAttachmentsSuMailStorage or docEditCasellaPostaElettronica.smistamentoFatturaPaSuMailboxCorretta or docEditCasellaPostaElettronica.abilitaCasellaImportSuMailStorage or docEditCasellaPostaElettronica.smistamentoByMittente}" layout="block" styleClass="form-group">
+                            	<label class="col-sm-2 control-label">
+                            		#{i18n['dw4.addon_di_archiviazione']}
+                            	</label>
+                            	<div class="col-sm-9">
+                            		<h:panelGroup rendered="#{docEditCasellaPostaElettronica.abilitaFatturePA and docEditCasellaPostaElettronica.casellaPostaElettronica.interoperabilita}">
+	                            		<span class="margin-right-20" style="white-space:nowrap;">
+	                            			<h:selectBooleanCheckbox id="protocollaFattura" value="#{docEditCasellaPostaElettronica.casellaPostaElettronica.protocollaFattura}" />
+	                            			<label class="form-control-static normal-weight-text" for="templateForm:protocollaFattura">
+	                            				<span class="popoveritem" data-content="#{i18n['acl.forza_la_protocollazione_del_documento_se_la_pec_contiene_una_fatturaPA_passiva']}" data-trigger="hover" data-placement="top" data-toggle="popover">
+					                        		#{i18n['acl.protocolla_se_fattura']} <span class="glyphicon glyphicon-info-sign popoveritem"></span>
+					                        	</span>
+				                        	</label>
+			                        	</span>
+			                        	<h:panelGroup rendered="#{ docEditCasellaPostaElettronica.smistamentoFatturaPaSuMailboxCorretta }">
+			                        		<span class="margin-right-20" style="white-space:nowrap;">
+		                            			<h:selectBooleanCheckbox id="smistamentoFatturePA" value="#{docEditCasellaPostaElettronica.casellaPostaElettronica.smistamentoFatturePA}" />
+		                            			<label class="form-control-static normal-weight-text" for="templateForm:smistamentoFatturePA">
+		                            				<span class="popoveritem" data-content="#{i18n['acl.smistamento_della_fatturapa_alla_corretta_mailbox']}" data-trigger="hover" data-placement="top" data-toggle="popover">
+						                        		#{i18n['acl.smistamento_fatturepa']} <span class="glyphicon glyphicon-info-sign popoveritem"></span>
+						                        	</span>
+					                        	</label>
+				                        	</span>
+			                        	</h:panelGroup>
+                            		</h:panelGroup>
+                            		<h:panelGroup rendered="#{docEditCasellaPostaElettronica.abilitaSplitAttachmentsSuMailStorage}">
+	                            		<span class="margin-right-20" style="white-space:nowrap;">
+		                            		<h:selectBooleanCheckbox id="splitByAttachments" value="#{docEditCasellaPostaElettronica.casellaPostaElettronica.splitByAttachments}" />
+	                            			<label class="form-control-static normal-weight-text" for="templateForm:splitByAttachments">
+	                            				<span class="popoveritem" data-content="#{i18n['acl.creazione_di_un_documento_per_ogni_allegato_contenuto_nella_mail_scaricata_dall_archiviatore']}" data-trigger="hover" data-placement="top" data-toggle="popover">
+					                        		#{i18n['acl.salvataggio_allegati_su_documenti_differenti']} <span class="glyphicon glyphicon-info-sign popoveritem"></span>
+					                        	</span>
+				                        	</label>
+			                        	</span>
+                            		</h:panelGroup>
+                            		<h:panelGroup rendered="#{docEditCasellaPostaElettronica.abilitaCasellaImportSuMailStorage}">
+	                            		<span class="margin-right-20" style="white-space:nowrap;">
+		                            		<h:selectBooleanCheckbox id="casellaImport" value="#{docEditCasellaPostaElettronica.casellaPostaElettronica.casellaImport}" />
+	                            			<label class="form-control-static normal-weight-text" for="templateForm:casellaImport">
+	                            				<span class="popoveritem" data-content="#{i18n['acl.casella_contenente_messaggi_con_allegati_i_reali_messaggi_da_importare']}" data-trigger="hover" data-placement="top" data-toggle="popover">
+					                        		#{i18n['acl.casella_di_import']} <span class="glyphicon glyphicon-info-sign popoveritem"></span>
+					                        	</span>
+				                        	</label>
+			                        	</span>
+                            		</h:panelGroup>
+                            		<h:panelGroup rendered="#{docEditCasellaPostaElettronica.abilitaArchiviazioneTramiteTags}">
+	                            		<span class="margin-right-20" style="white-space:nowrap;">
+		                            		<h:selectBooleanCheckbox id="archiviazioneTags" value="#{docEditCasellaPostaElettronica.casellaPostaElettronica.archiviazioneTags}" />
+	                            			<label class="form-control-static normal-weight-text" for="templateForm:archiviazioneTags">
+	                            				<span class="popoveritem" data-content="#{i18n['acl.elaborazione_messaggi_della_casella_tramite_i_tag_individuati_sull_oggetto']}" data-trigger="hover" data-placement="top" data-toggle="popover">
+					                        		#{i18n['acl.archiviazione_attraverso_tags']} <span class="glyphicon glyphicon-info-sign popoveritem"></span>
+					                        	</span>
+				                        	</label>
+			                        	</span>
+                            		</h:panelGroup>
+                            		<h:panelGroup rendered="#{docEditCasellaPostaElettronica.abilitaSmistamentoByMittente}">
+	                            		<span class="margin-right-20" style="white-space:nowrap;">
+		                            		<h:selectBooleanCheckbox id="smistamentoByMittente" value="#{docEditCasellaPostaElettronica.casellaPostaElettronica.smistamentoByMittente}" />
+	                            			<label class="form-control-static normal-weight-text" for="templateForm:smistamentoByMittente">
+	                            				<span class="popoveritem" data-content="#{i18n['acl.riassegnazione_rpa_in_base_all_indirizzo_email_del_mittente']}" data-trigger="hover" data-placement="top" data-toggle="popover">
+					                        		#{i18n['acl.smistamento_tramite_mittente']} <span class="glyphicon glyphicon-info-sign popoveritem"></span>
+					                        	</span>
+				                        	</label>
+			                        	</span>
+                            		</h:panelGroup>
+                            	</div>
+							</h:panelGroup>
+
+							<h:panelGroup rendered="#{fn:length(docEditCasellaPostaElettronica.tagSelect) > 0 and !empty docEditCasellaPostaElettronica.tagSelect[0].value}" layout="block" styleClass="form-group">
+								<label for="templateForm:casellaPostaElettronica_tag" class="col-sm-2 control-label">#{i18n['acl.tag']}</label>
+								<div class="col-sm-4">
+									<h:selectOneMenu id="casellaPostaElettronica_tag" value="#{docEditCasellaPostaElettronica.casellaPostaElettronica.tag}" styleClass="form-control">
+										<f:selectItems value="#{docEditCasellaPostaElettronica.tagSelect}" var="tag" itemValue="#{tag.value}" itemLabel="#{tag.label}" />
+									</h:selectOneMenu>
+								</div>
+							</h:panelGroup>
+
+						</div> <!-- fieldset -->
+
+						<div class="fieldset">
+							<div class="legend">
+								#{i18n['acl.director']}
+								<div class="pull-right">
+									<span class="glyphicons-pro user" title="#{i18n['acl.director']}"></span>
+								</div>
+							</div>
+
+							<ui:remove>
+								<div class="form-group">
+									<label for="templateForm:resp_nome_pers" class="col-sm-2 control-label">#{i18n['acl.oper']}</label>
+									<div class="col-sm-4">
+										<h:inputText id="resp_nome_pers" value="#{docEditCasellaPostaElettronica.casellaPostaElettronica.responsabile.nome_pers}" styleClass="form-control" />
+									</div>
+									<label for="templateForm:resp_matricola" class="col-sm-2 control-label">#{i18n['acl.code']}</label>
+									<div class="col-sm-3">
+										<h:inputText id="resp_matricola" value="#{docEditCasellaPostaElettronica.casellaPostaElettronica.responsabile.matricola}" styleClass="form-control" />
+									</div>
+								</div>
+
+								<div class="form-group">
+									<label for="templateForm:resp_nome_uff" class="col-sm-2 control-label">#{i18n['acl.uff']}</label>
+									<div class="col-sm-4">
+										<h:inputText id="resp_nome_uff" value="#{docEditCasellaPostaElettronica.casellaPostaElettronica.responsabile.nome_uff}" styleClass="form-control" />
+									</div>
+									<label for="templateForm:resp_cod_uff" class="col-sm-2 control-label">#{i18n['acl.cod_uff']}</label>
+									<div class="col-sm-3">
+										<h:inputText id="resp_cod_uff" value="#{docEditCasellaPostaElettronica.casellaPostaElettronica.responsabile.cod_uff}" styleClass="form-control" />
+									</div>
+								</div>
+
+								<h:panelGroup rendered="#{docEditCasellaPostaElettronica.formsAdapter.funzionalitaDisponibili['rolesManagement']}" layout="block">
+									<div class="form-group">
+										<label for="templateForm:resp_nome_ruolo" class="col-sm-2 control-label">#{i18n['acl.role']}</label>
+										<div class="col-sm-4">
+											<h:inputText id="resp_nome_ruolo" value="#{docEditCasellaPostaElettronica.casellaPostaElettronica.responsabile.nome_ruolo}" styleClass="form-control" />
+										</div>
+										<label for="templateForm:resp_cod_ruolo" class="col-sm-2 control-label">#{i18n['acl.cod_ruolo']}</label>
+										<div class="col-sm-3">
+											<h:inputText id="resp_cod_ruolo" value="#{docEditCasellaPostaElettronica.casellaPostaElettronica.responsabile.cod_ruolo}" styleClass="form-control" />
+										</div>
+									</div>
+								</h:panelGroup>
+							</ui:remove>
+
+							<h:panelGroup layout="block" id="responsabileCasella">
+								<ui:include src="./editResponsabileCasella.xhtml">
+									<ui:param name="pageBean" value="#{docEditCasellaPostaElettronica}" />
+								</ui:include>
+							</h:panelGroup>
+
+							<h:panelGroup rendered="#{!docEditCasellaPostaElettronica.casellaPostaElettronica.interoperabilita}" layout="block" styleClass="form-group">
+								<label for="templateForm:resp_da_cc" class="col-sm-2 control-label">#{i18n['acl.da_copiaconoscenza']}</label>
+								<div class="col-sm-1">
+									<h:selectOneMenu id="resp_da_cc" value="#{docEditCasellaPostaElettronica.casellaPostaElettronica.responsabile.daCopiaConoscenza}" styleClass="form-control">
+										<f:selectItem itemValue="si" itemLabel="#{i18n['dw4.yes']}" />
+										<f:selectItem itemValue="no" itemLabel="#{i18n['dw4.no']}" />
+									</h:selectOneMenu>
+								</div>
+								<label for="templateForm:resp_da_mittente" class="col-sm-2 control-label">#{i18n['acl.da_mittente']}</label>
+								<div class="col-sm-1">
+									<h:selectOneMenu id="resp_da_mittente" value="#{docEditCasellaPostaElettronica.casellaPostaElettronica.responsabile.daMittente}" styleClass="form-control">
+										<f:selectItem itemValue="si" itemLabel="#{i18n['dw4.yes']}" />
+										<f:selectItem itemValue="no" itemLabel="#{i18n['dw4.no']}" />
+									</h:selectOneMenu>
+								</div>
+								<label for="templateForm:resp_da_destinatario" class="col-sm-2 control-label">#{i18n['acl.da_destinatario']}</label>
+								<div class="col-sm-1">
+									<h:selectOneMenu id="resp_da_destinatario" value="#{docEditCasellaPostaElettronica.casellaPostaElettronica.responsabile.daDestinatario}" styleClass="form-control">
+										<f:selectItem itemValue="si" itemLabel="#{i18n['dw4.yes']}" />
+										<f:selectItem itemValue="no" itemLabel="#{i18n['dw4.no']}" />
+									</h:selectOneMenu>
+								</div>
+							</h:panelGroup>
+
+						</div> <!-- fieldset -->
+
+						<div class="fieldset">
+							<div class="legend">
+								#{i18n['dw4.assegnatari']}
+								<div class="pull-right">
+									<span class="glyphicons-pro parents" title="#{i18n['dw4.assegnatari']}"></span>
+								</div>
+							</div>
+
+							<h:panelGroup layout="block" id="assegnatari">
+								<ui:include src="./editAssegnatari.xhtml">
+									<ui:param name="pageBean" value="#{docEditCasellaPostaElettronica}" />
+									<ui:param name="casellaPostaElettronica" value="#{docEditCasellaPostaElettronica.casellaPostaElettronica}" />
+								</ui:include>
+							</h:panelGroup>
+
+						</div> <!-- fieldset -->
+
+						<div class="fieldset">
+							<div class="legend">
+								#{i18n['acl.gestori_casella']}
+								<div class="pull-right">
+									<span class="glyphicons-pro keys" title="#{i18n['acl.gestori_casella']}"></span>
+								</div>
+							</div>
+
+							<h:panelGroup layout="block" id="gestori">
+								<ui:include src="./editGestoreCasella.xhtml">
+									<ui:param name="page" value="#{docEditCasellaPostaElettronica}" />
+									<ui:param name="casellaPostaElettronica" value="#{docEditCasellaPostaElettronica.casellaPostaElettronica}" />
+								</ui:include>
+							</h:panelGroup>
+
+						</div> <!-- fieldset -->
+
+						<div class="fieldset">
+							<div class="legend">
+								#{i18n['acl.mailbox_in']}
+								<div class="pull-right">
+									<span class="glyphicons-pro message_in" title="#{i18n['acl.mailbox_in']}"></span>
+								</div>
+							</div>
+
+							<div class="form-group">
+								<label for="templateForm:mailboxin_email" class="col-sm-2 control-label required">* #{i18n['acl.email']}</label>
+								<div class="col-sm-5">
+									<h:inputText id="mailboxin_email" value="#{docEditCasellaPostaElettronica.casellaPostaElettronica.mailbox_in.email}" styleClass="#{ component.valid ? '' : 'invalidinput' } form-control" />
+								</div>
+							</div>
+
+							<div class="form-group">
+								<label for="templateForm:mailboxin_login" class="col-sm-2 control-label">#{i18n['acl.login']}</label>
+								<div class="col-sm-5">
+									<h:inputText id="mailboxin_login" value="#{docEditCasellaPostaElettronica.casellaPostaElettronica.mailbox_in.login}" styleClass="form-control" />
+								</div>
+								<label for="templateForm:mailboxin_password" class="col-sm-1 control-label">#{i18n['acl.password']}</label>
+								<div class="col-sm-3">
+									<h:inputSecret id="mailboxin_password" value="#{docEditCasellaPostaElettronica.casellaPostaElettronica.mailbox_in.password}" redisplay="true" styleClass="form-control" />
+								</div>
+							</div>
+
+							<div class="form-group">
+								<label for="templateForm:mailboxin_protocol" class="col-sm-2 control-label">#{i18n['acl.protocol']}</label>
+								<div class="col-sm-2">
+									<h:selectOneMenu id="mailboxin_protocol" value="#{docEditCasellaPostaElettronica.casellaPostaElettronica.mailbox_in.protocol}" styleClass="form-control" onchange="changeHostPort('templateForm\\:mailboxin_protocol', 'templateForm\\:mailboxin_port');">
+										<f:selectItem itemValue="" itemLabel="" />
+										<f:selectItem itemValue="pop3" itemLabel="#{i18n['acl.pop3']}" />
+										<f:selectItem itemValue="pop3s" itemLabel="#{i18n['acl.pop3_ssl']}" />
+										<f:selectItem itemValue="imap" itemLabel="#{i18n['acl.imap']}" />
+										<f:selectItem itemValue="imaps" itemLabel="#{i18n['acl.imap_ssl']}" />
+									</h:selectOneMenu>
+								</div>
+								<label for="templateForm:mailboxin_host" class="col-sm-1 control-label">#{i18n['acl.host']}</label>
+								<div class="col-sm-2">
+									<h:inputText id="mailboxin_host" value="#{docEditCasellaPostaElettronica.casellaPostaElettronica.mailbox_in.host}" styleClass="form-control" />
+								</div>
+								<label for="templateForm:mailboxin_port" class="col-sm-1 control-label">#{i18n['acl.port']}</label>
+								<div class="col-sm-1">
+									<h:inputText id="mailboxin_port" value="#{docEditCasellaPostaElettronica.casellaPostaElettronica.mailbox_in.port}" styleClass="form-control" />
+								</div>
+							</div>
+
+						</div> <!-- fieldset -->
+
+						<div class="fieldset">
+							<div class="legend">
+								#{i18n['acl.mailbox_out']}
+								<div class="pull-right">
+									<span class="glyphicons-pro message_out" title="#{i18n['acl.mailbox_out']}"></span>
+								</div>
+							</div>
+
+							<div class="form-group">
+								<label for="templateForm:mailboxout_email" class="col-sm-2 control-label">#{i18n['acl.email']}</label>
+								<div class="col-sm-5">
+									<h:inputText id="mailboxout_email" value="#{docEditCasellaPostaElettronica.casellaPostaElettronica.mailbox_out.email}" styleClass="form-control" />
+								</div>
+							</div>
+
+							<div class="form-group">
+								<label for="templateForm:mailboxout_login" class="col-sm-2 control-label">#{i18n['acl.login']}</label>
+								<div class="col-sm-5">
+									<h:inputText id="mailboxout_login" value="#{docEditCasellaPostaElettronica.casellaPostaElettronica.mailbox_out.login}" styleClass="form-control" />
+								</div>
+								<label for="templateForm:mailboxout_password" class="col-sm-1 control-label">#{i18n['acl.password']}</label>
+								<div class="col-sm-3">
+									<h:inputSecret id="mailboxout_password" value="#{docEditCasellaPostaElettronica.casellaPostaElettronica.mailbox_out.password}" redisplay="true" styleClass="form-control" />
+								</div>
+							</div>
+
+							<div class="form-group">
+								<label for="templateForm:mailboxout_protocol" class="col-sm-2 control-label">#{i18n['acl.protocol']}</label>
+								<div class="col-sm-2">
+									<h:selectOneMenu id="mailboxout_protocol" value="#{docEditCasellaPostaElettronica.casellaPostaElettronica.mailbox_out.protocol}" styleClass="form-control" onchange="changeHostPort('templateForm\\:mailboxout_protocol', 'templateForm\\:mailboxout_port');">
+										<f:selectItem itemValue="" itemLabel="" />
+										<f:selectItem itemValue="smtp" itemLabel="#{i18n['acl.smtp']}" />
+										<f:selectItem itemValue="smtps" itemLabel="#{i18n['acl.smtp_ssl']}" />
+										<f:selectItem itemValue="smtp-tls" itemLabel="#{i18n['acl.smtp_tls']}" />
+									</h:selectOneMenu>
+								</div>
+								<label for="templateForm:mailboxout_host" class="col-sm-1 control-label">#{i18n['acl.host']}</label>
+								<div class="col-sm-2">
+									<h:inputText id="mailboxout_host" value="#{docEditCasellaPostaElettronica.casellaPostaElettronica.mailbox_out.host}" styleClass="form-control" />
+								</div>
+								<label for="templateForm:mailboxout_port" class="col-sm-1 control-label">#{i18n['acl.port']}</label>
+								<div class="col-sm-1">
+									<h:inputText id="mailboxout_port" value="#{docEditCasellaPostaElettronica.casellaPostaElettronica.mailbox_out.port}" styleClass="form-control" />
+								</div>
+							</div>
+						</div> <!-- fieldset -->
+
+						<h:panelGroup rendered="#{docEditCasellaPostaElettronica.casellaPostaElettronica.interoperabilita}" layout="block" styleClass="fieldset">
+							<div class="legend">
+								#{i18n['acl.notify']}
+								<div class="pull-right">
+									<span class="glyphicons-pro bullhorn" title="#{i18n['acl.notify']}"></span>
+								</div>
+							</div>
+
+							<div class="form-group">
+								<label for="templateForm:notify_host" class="col-sm-2 control-label">#{i18n['acl.httpHost']}</label>
+								<div class="col-sm-2">
+									<h:inputText id="notify_host" value="#{docEditCasellaPostaElettronica.casellaPostaElettronica.notify.httpHost}" styleClass="form-control"/>
+								</div>
+								<label for="templateForm:notify_uri" class="col-sm-1 control-label">
+									<span class="popoveritem" data-content="#{i18n['acl.l_uri_deve_iniziare_con_il_carattere_slash']}" data-trigger="hover" data-placement="top" data-toggle="popover">
+										#{i18n['acl.uri']} <span class="glyphicon glyphicon-info-sign popoveritem"></span>
+									</span>
+								</label>
+								<div class="col-sm-6">
+									<h:inputText id="notify_uri" value="#{docEditCasellaPostaElettronica.casellaPostaElettronica.notify.uri}" styleClass="form-control"/>
+								</div>
+							</div>
+
+							<div class="form-group">
+								<label for="templateForm:notify_rpa" class="col-sm-2 control-label"><span>#{i18n['acl.rpa']}</span></label>
+								<div class="col-sm-1">
+									<h:selectBooleanCheckbox id="notify_rpa" value="#{docEditCasellaPostaElettronica.casellaPostaElettronica.notify.rpa}" />
+								</div>
+								<label for="templateForm:notify_cc" class="col-sm-2 control-label"><span>#{i18n['dw4.cc']}</span></label>
+								<div class="col-sm-1">
+									<h:selectBooleanCheckbox id="notify_cc" value="#{docEditCasellaPostaElettronica.casellaPostaElettronica.notify.cc}" />
+								</div>
+							</div>
+
+						</h:panelGroup>  <!-- fieldset -->
+
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<ui:include src="./lookup.xhtml"><ui:param name="pageBean" value="#{docEditCasellaPostaElettronica}"/></ui:include>
+		<ui:include src="./rifintLookup.xhtml"> <ui:param name="pageBean" value="#{docEditCasellaPostaElettronica}"/></ui:include>
+
+		<h:inputTextarea value="#{docEditCasellaPostaElettronica.xml}" rendered="#{docEditCasellaPostaElettronica.debugMode}" styleClass="form-control debug-textarea" rows="10" />
+	</ui:define>
+</ui:composition>

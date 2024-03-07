@@ -17,6 +17,7 @@ public class QueryPersonaEsterna extends AclQuery {
 	private String persest_nomcogn;
 	private String persest_soprannome;
 	private String persest_codfisc;
+	private String persest_piva;
 	private String persest_appartenenzaqualifica;
 	private String persest_competenze;
 	private String persest_operatore;
@@ -56,6 +57,7 @@ public class QueryPersonaEsterna extends AclQuery {
 		query +=  addQueryField("persest_matricola", persest_matricola);
 		query +=  addQueryField("persest_cognome", persest_nomcogn);
 		query +=  addQueryField("persest_codfisc", persest_codfisc);
+		query +=  addQueryField("xml,/persona_esterna/@partita_iva", persest_piva);
 		query +=  addQueryField("persest_soprannome", persest_soprannome);
 		query +=  addQueryField("persest_appartenenzaqualifica", persest_appartenenzaqualifica);
 		query +=  addQueryField("persest_competenze", persest_competenze);
@@ -187,6 +189,14 @@ public class QueryPersonaEsterna extends AclQuery {
 		this.persest_appartenenzacoduff = persest_appartenenza_codunita;
 	}
 	
+	public String getPersest_piva() {
+		return persest_piva;
+	}
+
+	public void setPersest_piva(String persest_piva) {
+		this.persest_piva = persest_piva;
+	}
+	
 	public String resetQuery() {
 		super.resetAddonsQuery();
 		
@@ -195,6 +205,7 @@ public class QueryPersonaEsterna extends AclQuery {
 		this.persest_matricola = null;
 		this.persest_nomcogn = null;
 		this.persest_codfisc = null;
+		this.persest_piva = null;
 		this.persest_appartenenzaqualifica = null;
 		this.persest_competenze = null;
 		this.persest_operatore = null;
@@ -253,6 +264,12 @@ public class QueryPersonaEsterna extends AclQuery {
 		this.openIndex("persest_codfisc", this.persest_codfisc, "0", null);
 		return null;
 	}
+	
+	public String openIndexPiva() throws Exception {
+		this.openIndex("persest_piva", "xml,/persona_esterna/@partita_iva", this.persest_piva, "0", "");
+		return null;
+	}
+	
 	public String openIndexRuolo() throws Exception {
 		this.focusElement = "persest_appartenenzaqualifica";
 		this.openIndex("persest_appartenenzaqualifica", this.persest_appartenenzaqualifica, "0", " ");

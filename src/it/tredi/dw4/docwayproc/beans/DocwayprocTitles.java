@@ -35,6 +35,9 @@ public class DocwayprocTitles extends Titles {
 		xml 			= dom.asXML();
     	
     	setCurrentPage(this.formsAdapter.getCurrent()+"");
+    	
+    	// inizializzazione delle azioni massive su lista titoli
+    	initAzioniMassive(dom);
 	}
 
 	@Override

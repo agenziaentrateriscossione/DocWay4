@@ -1,15 +1,16 @@
 package it.tredi.dw4.docway.beans;
 
-import it.tredi.dw4.utils.XMLDocumento;
+import org.dom4j.Document;
+
 import it.tredi.dw4.adapters.AdaptersConfigurationLocator;
 import it.tredi.dw4.adapters.ErrormsgFormsAdapter;
 import it.tredi.dw4.docway.doc.adapters.DocDocWayDocEditFormsAdapter;
 import it.tredi.dw4.docway.model.Doc;
 import it.tredi.dw4.i18n.I18N;
+import it.tredi.dw4.model.XmlEntity;
 import it.tredi.dw4.utils.StringUtil;
+import it.tredi.dw4.utils.XMLDocumento;
 import it.tredi.dw4.utils.XMLUtil;
-
-import org.dom4j.Document;
 
 public class DocEditAcquisizione extends DocEditDoc {
 	private Doc doc = new Doc();
@@ -244,6 +245,11 @@ public class DocEditAcquisizione extends DocEditDoc {
 		}
 		
 		return result;
+	}
+	
+	@Override
+	public XmlEntity getModel() {
+		return this.doc;
 	}
 	
 }

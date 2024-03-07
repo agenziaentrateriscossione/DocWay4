@@ -238,7 +238,7 @@
 						<ui:param name="bean" value="#{showdocFascicolo}"/>
 					</ui:include>
 					
-					<h:panelGroup rendered="#{!empty showdocFascicolo.fascicolo.note.text}">
+					<h:panelGroup rendered="#{!empty showdocFascicolo.fascicolo.note.text or !empty showdocFascicolo.fascicolo.tagsAsString}">
 						<!-- dati altro: inizio -->
 						<div class="showdoc-section">
 							<div class="title">
@@ -250,6 +250,10 @@
 							</div>
 							
 							<dl class="dl-horizontal">
+								<h:panelGroup rendered="#{!empty showdocFascicolo.fascicolo.tagsAsString}">
+									<dt>#{i18n['dw4.tags']}</dt>
+									<dd><strong>#{showdocFascicolo.fascicolo.tagsAsString}</strong></dd>
+								</h:panelGroup>
 								<h:panelGroup rendered="#{!empty showdocFascicolo.fascicolo.note.text}">
 									<dt>#{i18n['acl.notes']}</dt>
 									<dd><pre>#{showdocFascicolo.fascicolo.note.text}</pre></dd>
@@ -284,7 +288,7 @@
 		<ui:include src="./showthes.xhtml"> <ui:param name="pageBean" value="#{changeclassif}"/></ui:include>
 		<ui:include src="./showPersoneRuolo.xhtml"><ui:param name="bean" value="#{docwayShowPersoneRuolo}"/></ui:include>
 		
-		<h:inputTextarea value="#{showdocFascicolo.xml}" rendered="#{showdocFascicolo.debugMode}" styleClass="form-control" rows="10" />
+		<h:inputTextarea value="#{showdocFascicolo.xml}" rendered="#{showdocFascicolo.debugMode}" styleClass="form-control debug-textarea" rows="10" />
 	</div>
 
 	<ui:fragment rendered="#{showdocFascicolo.close and empty showdocFascicolo.numFasc}">

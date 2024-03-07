@@ -26,12 +26,12 @@ public class QueryFascicoloPersonale extends QueryFascicolo {
 	private String range_fascdataassunzione_to = "";
 	private String range_fascdatacessazione_from = "";
 	private String range_fascdatacessazione_to = "";
-	
+
 	private List<Option> categorie = new ArrayList<Option>();
-	
+
 	public QueryFascicoloPersonale() throws Exception {
 		super();
-		
+
 		// caricamento delle opzioni da visualizzare nel select delle categorie
 		Option empty = new Option(); // opzione vuota
 		empty.setLabel("");
@@ -49,21 +49,21 @@ public class QueryFascicoloPersonale extends QueryFascicolo {
 			}
 		}
 	}
-	
+
 	@Override
 	public void init(Document dom) {
-		super.init(dom);
-		
+		super.init(dom, "personale");
+
 		if (getFascicoloSpecialeInfo() != null && getFascicoloSpecialeInfo().getId() != null && getFascicoloSpecialeInfo().getId().length() > 0) {
 			if (getFascicoloSpecialeInfo().getClassif().getCod() != null) {
 				setFasc_classif(getFascicoloSpecialeInfo().getClassif().getText());
-				
+
 				//if (getCustom_classiffasccod() != null && getCustom_classiffasccod().length() > 0) // caso di ricerca fascicoli in fascicolazione di un documento
 					setCustom_classiffasccod(getFascicoloSpecialeInfo().getClassif().getCod());
 			}
 		}
 	}
-	
+
 	/**
 	 * Inserimento di un nuovo fascicolo del personale
 	 * @return
@@ -72,14 +72,14 @@ public class QueryFascicoloPersonale extends QueryFascicolo {
 	@Override
 	public String insTableDocFascicolo() throws Exception {
 		try {
-			getFormsAdapter().insTableDoc(Const.DOCWAY_TIPOLOGIA_FASCICOLO + "@" + getFascicoloSpecialeInfo().getId()); 
-	
+			getFormsAdapter().insTableDoc(Const.DOCWAY_TIPOLOGIA_FASCICOLO + "@" + getFascicoloSpecialeInfo().getId());
+
 			XMLDocumento response = getFormsAdapter().getDefaultForm().executePOST(getUserBean());
 			if (handleErrorResponse(response)) {
 				getFormsAdapter().fillFormsFromResponse(getFormsAdapter().getLastResponse()); //restore delle form
 				return null;
 			}
-			
+
 			return buildSpecificDocEditPageAndReturnNavigationRule(Const.DOCWAY_TIPOLOGIA_FASCICOLO, "", "", "@" + getFascicoloSpecialeInfo().getId(), response, this.isPopupPage());
 		}
 		catch (Throwable t) {
@@ -88,7 +88,7 @@ public class QueryFascicoloPersonale extends QueryFascicolo {
 			return null;
 		}
 	}
-	
+
 	public String getFasc_nome() {
 		return fasc_nome;
 	}
@@ -104,7 +104,7 @@ public class QueryFascicoloPersonale extends QueryFascicolo {
 	public void setFasc_cognome(String fasc_cognome) {
 		this.fasc_cognome = fasc_cognome;
 	}
-	
+
 	public String getFasc_fsmatricola() {
 		return fasc_fsmatricola;
 	}
@@ -112,7 +112,7 @@ public class QueryFascicoloPersonale extends QueryFascicolo {
 	public void setFasc_fsmatricola(String fasc_fsmatricola) {
 		this.fasc_fsmatricola = fasc_fsmatricola;
 	}
-	
+
 	public String getFasc_categoria() {
 		return fasc_categoria;
 	}
@@ -120,7 +120,7 @@ public class QueryFascicoloPersonale extends QueryFascicolo {
 	public void setFasc_categoria(String fasc_categoria) {
 		this.fasc_categoria = fasc_categoria;
 	}
-	
+
 	public String getFasc_codfiscale() {
 		return fasc_codfiscale;
 	}
@@ -186,7 +186,7 @@ public class QueryFascicoloPersonale extends QueryFascicolo {
 	public void setRange_fascdatacessazione_to(String range_fascdatacessazione_to) {
 		this.range_fascdatacessazione_to = range_fascdatacessazione_to;
 	}
-	
+
 	public List<Option> getCategorie() {
 		return categorie;
 	}
@@ -212,7 +212,7 @@ public class QueryFascicoloPersonale extends QueryFascicolo {
 			return null;
 		}
 	}
-	
+
 	/**
 	 * apertura vocabolario sul campo nome del fasciolo del personale
 	 * @return
@@ -230,7 +230,7 @@ public class QueryFascicoloPersonale extends QueryFascicolo {
 			return null;
 		}
 	}
-	
+
 	/**
 	 * apertura vocabolario sul campo matricola del fasciolo del personale
 	 * @return
@@ -248,7 +248,7 @@ public class QueryFascicoloPersonale extends QueryFascicolo {
 			return null;
 		}
 	}
-	
+
 	/**
 	 * apertura vocabolario sul campo cod. fiscale del fasciolo del personale
 	 * @return
@@ -266,7 +266,7 @@ public class QueryFascicoloPersonale extends QueryFascicolo {
 			return null;
 		}
 	}
-	
+
 	/**
 	 * apertura vocabolario sul campo luogo di nascita del fasciolo del personale
 	 * @return
@@ -284,7 +284,7 @@ public class QueryFascicoloPersonale extends QueryFascicolo {
 			return null;
 		}
 	}
-	
+
 	@Override
 	public String queryPlain() throws Exception {
 		try {
@@ -293,7 +293,7 @@ public class QueryFascicoloPersonale extends QueryFascicolo {
 				getFormsAdapter().findplain();
 				return queryPlain(query);
 			}
-			
+
 			return null;
 		}
 		catch (Throwable t) {
@@ -302,31 +302,31 @@ public class QueryFascicoloPersonale extends QueryFascicolo {
 			return null;
 		}
 	}
-	
+
 	/**
 	 * creazione della query di ricerca fascicoli del personale
 	 * @return
 	 */
 	private String createQueryPersonale() throws Exception {
 		String query = createQuery(true);
-		
+
 		if (query != null) {
 			String formatoData = Const.DEFAULT_DATE_FORMAT; // TODO Andrebbe caricato da file di properties dell'applicazione
-			
+
 			if (query.length() > 0) // nel caso sia presente una query di base dei fascicoli viene riaggiunto l'operatore finale
 				query += " AND ";
-			
+
 			query +=  addQueryField("xml,/fascicolo/nominativo/@nome", this.escapeQueryValue(fasc_nome));
 			query +=  addQueryField("xml,/fascicolo/nominativo/@cognome", this.escapeQueryValue(fasc_cognome));
-			
+
 			query +=  addQueryField("fasc_fsmatricola", this.escapeQueryValue(fasc_fsmatricola));
-			
+
 			if (fasc_categoria != null && fasc_categoria.trim().length() > 0)
 				query += "([fasc_categoria]=\"" + fasc_categoria + "\") AND ";
-			
+
 			query +=  addQueryField("fasc_codfiscale", this.escapeQueryValue(fasc_codfiscale));
 			query +=  addQueryField("xml,/fascicolo/fascicolo_speciale/@luogo_nascita", this.escapeQueryValue(fasc_luogonascita));
-			
+
 			if (range_fascdatanascita_from != null && range_fascdatanascita_from.length() > 0) {
 				if (!DateUtil.isValidDate(range_fascdatanascita_from, formatoData)) {
 					this.setErrorMessage("templateForm:range_fascdatanascita_from", I18N.mrs("acl.inserire_una_data_valida_nel_campo") + " '" + I18N.mrs("acl.birthdate") +" "+I18N.mrs("dw4.da") + "': " + formatoData.toLowerCase());
@@ -341,7 +341,7 @@ public class QueryFascicoloPersonale extends QueryFascicolo {
 			}
 			if ((range_fascdatanascita_from != null && range_fascdatanascita_from.length() > 0) || (range_fascdatanascita_to != null && range_fascdatanascita_to.length() > 0))
 				query +=  addDateRangeQuery("fascdatanascita", range_fascdatanascita_from, range_fascdatanascita_to) + " AND ";
-			
+
 			if (range_fascdataassunzione_from != null && range_fascdataassunzione_from.length() > 0) {
 				if (!DateUtil.isValidDate(range_fascdataassunzione_from, formatoData)) {
 					this.setErrorMessage("templateForm:range_fascdataassunzione_from", I18N.mrs("acl.inserire_una_data_valida_nel_campo") + " '" + I18N.mrs("dw4.data_assunzione") +" "+I18N.mrs("dw4.da") + "': " + formatoData.toLowerCase());
@@ -356,7 +356,7 @@ public class QueryFascicoloPersonale extends QueryFascicolo {
 			}
 			if ((range_fascdataassunzione_from != null && range_fascdataassunzione_from.length() > 0) || (range_fascdataassunzione_to != null && range_fascdataassunzione_to.length() > 0))
 				query +=  addDateRangeQuery("fascdataassunzione", range_fascdataassunzione_from, range_fascdataassunzione_to) + " AND ";
-			
+
 			if (range_fascdatacessazione_from != null && range_fascdatacessazione_from.length() > 0) {
 				if (!DateUtil.isValidDate(range_fascdatacessazione_from, formatoData)) {
 					this.setErrorMessage("templateForm:range_fascdatacessazione_from", I18N.mrs("acl.inserire_una_data_valida_nel_campo") + " '" + I18N.mrs("dw4.data_cessazione") +" "+I18N.mrs("dw4.da") + "': " + formatoData.toLowerCase());
@@ -371,11 +371,11 @@ public class QueryFascicoloPersonale extends QueryFascicolo {
 			}
 			if ((range_fascdatacessazione_from != null && range_fascdatacessazione_from.length() > 0) || (range_fascdatacessazione_to != null && range_fascdatacessazione_to.length() > 0))
 				query +=  addDateRangeQuery("fascdatacessazione", range_fascdatacessazione_from, range_fascdatacessazione_to) + " AND ";
-			
+
 			if (query.endsWith(" AND ")) // query conclusa. nel caso termini con l'operatore AND si procede alla rimorzione
 				query = query.substring(0, query.length()-4);
 		}
-		
+
 		return query;
 	}
 
@@ -388,7 +388,7 @@ public class QueryFascicoloPersonale extends QueryFascicolo {
 		setCustom_da_numfasc("");
 		setCustom_a_numfasc("");
 		setFasc_note("");
-		
+
 		fasc_nome = "";
 		fasc_cognome = "";
 		fasc_fsmatricola = "";
@@ -401,8 +401,8 @@ public class QueryFascicoloPersonale extends QueryFascicolo {
 		range_fascdataassunzione_to = "";
 		range_fascdatacessazione_from = "";
 		range_fascdatacessazione_to = "";
-		
+
 		return null;
 	}
-	
+
 }

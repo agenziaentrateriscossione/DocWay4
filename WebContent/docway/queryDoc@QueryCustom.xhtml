@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" 
+	  xmlns:h="http://java.sun.com/jsf/html" 
+	  xmlns:ui="http://java.sun.com/jsf/facelets" 
+	  xmlns:f="http://java.sun.com/jsf/core"
+	  xmlns:p="http://xmlns.jcp.org/jsf/passthrough">
+<ui:composition>
+
+	<h:panelGroup rendered="#{bean.formsAdapter.funzionalitaDisponibili['enableExtraQueryOnRicercaGlobale']}" id="queryCustomPanel" layout="block">
+		<div class="fieldset">
+			<div class="legend">
+				<h:commandLink action="#{bean.openCloseWidgetQueryCustom}" styleClass="legend-link">
+					<f:ajax render="templateForm:queryCustomPanel"/>
+					#{i18n['dw4.ricerca_avanzata']}
+					<span class="pull-right">
+						<span class="glyphicon #{bean.query_custom ? 'glyphicon-collapse-up' : 'glyphicon-collapse-down'}"></span>
+					</span>
+				</h:commandLink>
+			</div>
+			
+			<h:panelGroup rendered="#{bean.query_custom}" id="queryCustomCPanel" layout="block">
+				<div class="form-group">
+					<label for="templateForm:querycustomText" class="col-sm-2 control-label">
+						<span class="popoveritem" data-toggle="popover" data-placement="top" data-trigger="hover" data-content="#{i18n['dw4.indicare_una_query_in_formato_extraway_in_base_alla_quale_filtrare_i_documenti']}">
+							#{i18n['dw4.query_custom']}
+							<span class="glyphicon glyphicon-info-sign popoveritem"></span>
+						</span>
+					</label>
+					<div class="col-sm-9">
+						<h:inputTextarea id="querycustomText" value="#{bean.extraQuery}" rows="6" cols="120" styleClass="form-control" />
+					</div>
+				</div>
+			</h:panelGroup>
+		</div> <!-- /fieldset -->
+	</h:panelGroup>
+
+</ui:composition>
+</html>

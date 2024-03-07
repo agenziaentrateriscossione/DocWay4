@@ -41,6 +41,7 @@ public class QueryArrivoDCPA  extends QueryGlobale {
 	private void forzaRepertorio() {
 		setRepertori_multipli(true);
 		forceRepertorioSelected("DCPA", "A");
+		setCurrentCustomFieldSection("arrivo_DCPA");
 		setArrivo(true);
 	}
 	

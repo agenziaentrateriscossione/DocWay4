@@ -67,6 +67,7 @@ public class QueryArrivoFTRPAP extends QueryGlobale {
 	private void forzaRepertorio() {
 		setRepertori_multipli(true);
 		forceRepertorioSelected("FTRPAP", "A");
+		setCurrentCustomFieldSection("arrivo_FTRPAP");
 		setArrivo(true);
 	}
 	

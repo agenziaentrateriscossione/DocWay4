@@ -12,7 +12,7 @@
 				<div class="modal-dialog">
 					<div class="modal-content jsf-modal">
 						<div class="modal-header">
-							<h:commandLink class="close" action="#{pageBean.clearDocument}" value="&#215;">
+							<h:commandLink styleClass="close" action="#{pageBean.clearDocument}" value="&#215;">
 		                    	<f:ajax render="delegaWF_block"/>
 		                   	</h:commandLink>
 							
@@ -48,7 +48,7 @@
 											</td>
 											<td class="essential">
 												<h:commandLink action="#{pageBean.delegaTaskWorkflow}" styleClass="openwaitmsg">
-													<h:outputText value="#{persona.nome}" escape="false" />
+													<h:outputText value="#{persona.nome}" />
 												</h:commandLink>
 											</td>
 										</tr>

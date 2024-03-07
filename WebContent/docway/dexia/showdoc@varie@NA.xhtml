@@ -20,8 +20,8 @@
 	            <ui:param name="labelAddOperatoreIncaricato" value="#{i18n['dw4.nuovo_gruppo_di_condivisione']}" />
 	            <ui:param name="labelAddCC" value="#{i18n['dexia.nuova_condivisione']}" />
 	        </ui:include>
-	        
-	        <h:panelGroup rendered="#{!showdocVarieNA.doc.cestino}" styleClass="btn-toolbar hidden-print">
+
+	        <h:panelGroup rendered="#{!showdocVarieNA.doc.cestino}" layout="block" styleClass="btn-toolbar hidden-print">
 		        <div class="btn-group">
 					<h:commandLink rendered="#{!showdocVarieNA.formsAdapter.funzionalitaDisponibili['nascondiprotocollo'] and showdocVarieNA.formsAdapter.funzionalitaDisponibili['annulladoc'] and showdocVarieNA.doc.extra.na_statoNorma ne 'abrogata'}" action="#{showdocVarieNA.abrogaDoc}" styleClass="btn btn-primary openwaitmsg">
 						<f:ajax execute="@form" render="@form" />
@@ -30,51 +30,51 @@
 				</div>
 		    </h:panelGroup>
 	        <!-- toolbar: fine -->
-	        
+
 	        <!-- scheda show: inizio -->
 	        <div class="contenuto-doc row clearfix">
 	            <h:panelGroup rendered="#{!showdocVarieNA.popupPage}">
 	                <div class="col-xs-12 col-sm-2 col-md-2 col-lg-2 col-sm-push-10 col-md-push-10 col-lg-push-10 text-right">
 	                    <!-- azioni rapide: inizio -->
-	                    
+
 	                    <ui:include src="../smartActions.xhtml">
 	                        <ui:param name="bean" value="#{showdocVarieNA}"/>
 	                        <ui:param name="labelAddCC" value="#{i18n['dexia.nuova_condivisione']}" />
 	                    </ui:include>
-	                    
+
 	                    <!-- azioni rapide: fine -->
 	                </div>
 	            </h:panelGroup>
 	            <div class="col-xs-12 #{(showdocVarieNA.popupPage) ? 'col-sm-12 col-md-12 col-lg-12' : 'col-sm-10 col-md-10 col-lg-10 col-sm-pull-2 col-md-pull-2 col-lg-pull-2'}">
 	                <!-- contenuto doc: inizio -->
-	                
+
 	                <h:panelGroup rendered="#{empty showdocVarieNA.doc.non_disponibile.estremi}">
 	                    <ui:include src="./showdoc@title@NA.xhtml">
 	                        <ui:param name="doc" value="#{showdocVarieNA.doc}"/>
 	                        <ui:param name="icon" value="glyphicons-pro bank na" />
 	                    </ui:include>
-                        
+
                         <ui:include src="../showdoc@annullato.xhtml"><ui:param name="bean" value="#{showdocVarieNA}"/></ui:include>
                         <ui:include src="../showdoc@conservazione.xhtml"><ui:param name="bean" value="#{showdocVarieNA}"/></ui:include>
                         <ui:include src="./showdoc@abrogato@NA.xhtml"><ui:param name="bean" value="#{showdocVarieNA}"/></ui:include>
-                    
+
                         <div id="fixedshowdoc" class="fixed-showdoc">
 	                        <h:panelGroup rendered="#{!empty showdocVarieNA.doc.abrogato or showdocVarieNA.showSectionStatiDocumento}">
 		                        <div class="showdoc-section">
 							        <div class="title">
 						                #{i18n['dw4.stati_del_documento']}
-						                
+
 						                <div class="pull-right">
 						                    <span class="glyphicons-pro ok" title="#{i18n['dw4.stati_del_documento']}"></span>
 						                </div>
 						            </div>
-						            
+
 						            <div class="stati-doc-holder">
 		                                <dl class="dl-horizontal">
 			                                <ui:include src="../showdoc@statidoc@content.xhtml">
 			                                    <ui:param name="bean" value="#{showdocVarieNA}"/>
 			                                </ui:include>
-			                                
+
 			                                <h:panelGroup rendered="#{showdocVarieNA.doc.abrogato =='si'}">
 										        <dt>
 										            <span class="glyphicons-pro circle_remove doc-abrogato"
@@ -113,40 +113,40 @@
 					                    <dt>#{i18n['dexia.codice_norma']}</dt>
 					                    <dd>#{showdocVarieNA.doc.extra.na_codiceNorma}</dd>
 							        </h:panelGroup>
-							        
+
 							        <ui:remove> <!-- 20150112 fcappelli - rimosso per richiesta cliente -->
 							        <h:panelGroup rendered="#{!empty showdocVarieNA.doc.extra.na_dataEmanazioneNorma}">
                                         <dt>#{i18n['dexia.data_emanazione']}</dt>
 								        <dd><h:outputText value="#{showdocVarieNA.doc.extra.na_dataEmanazioneNorma}"><f:converter converterId="DateConverter"/></h:outputText></dd>
 							        </h:panelGroup>
                                     </ui:remove>
-                                    
+
                                     <h:panelGroup rendered="#{!empty showdocVarieNA.doc.extra.na_releaseNorma}">
                                         <dt>#{i18n['dw4.release']}</dt>
                                         <dd>#{showdocVarieNA.doc.extra.na_releaseNorma}</dd>
                                     </h:panelGroup>
-                                    
+
 							        <h:panelGroup rendered="#{!empty showdocVarieNA.doc.extra.na_statoNorma}">
 					                    <dt>#{i18n['dexia.stato_della_norma']}</dt>
 					                    <dd style="#{(fn:toLowerCase(showdocVarieNA.doc.extra.na_statoNorma) ne 'abrogata') ? 'color:green;' : 'color:red;'}">
 					                        #{showdocVarieNA.doc.extra.na_statoNorma}
 					                    </dd>
 							        </h:panelGroup>
-							        
+
 							        <h:panelGroup rendered="#{!empty showdocVarieNA.doc.extra.na_competenza}">
                                         <dt>#{i18n['dexia.competenza']}</dt>
                                         <dd>
                                             #{showdocVarieNA.doc.extra.na_competenza}
                                         </dd>
                                     </h:panelGroup>
-                                    
+
                                     <h:panelGroup rendered="#{fn:length(showdocVarieNA.doc.extra.disposizioni) > 0 and !empty showdocVarieNA.doc.extra.disposizioni[0].text}">
 							        	<dt>#{i18n['dexia.disposizioni_interne']}</dt>
 							            <dd>
 							            	<ui:repeat id="docDisposizioni" var="disposizione" value="#{showdocVarieNA.doc.extra.disposizioni}" offset="0" varStatus="indice">
 							            	    <h:panelGroup rendered="#{!empty fn:trim(disposizione.text)}">
 							            	    <div>
-							            	    <span style="font-weight: bold; text-align: right;">#{disposizione.text}</span>    
+							            	    <span style="font-weight: bold; text-align: right;">#{disposizione.text}</span>
 							            	    <h:outputText rendered="#{disposizione.dataEmanazione ne ''}" value=" - #{i18n['dexia.data_emanazione']} "></h:outputText>
 							            	    <h:outputText style="text-align: right;" rendered="#{disposizione.dataEmanazione ne ''}" value="#{disposizione.dataEmanazione}"><f:converter converterId="DateConverter"/></h:outputText>
 							            	    </div>
@@ -154,18 +154,18 @@
 							            	</ui:repeat>
 							            </dd>
 							        </h:panelGroup>
-							        
+
 							        <h:panelGroup rendered="#{fn:length(showdocVarieNA.doc.extra.unitaRichiamate) > 0  and !empty showdocVarieNA.doc.extra.unitaRichiamate[0].nome_uff}">
 							        	<dt>#{i18n['dexia.unitarichimate']}</dt>
 							        	<dd>
 							            	<ui:repeat id="docUnita" var="unita" value="#{showdocVarieNA.doc.extra.unitaRichiamate}" offset="0" varStatus="indice">
 								                <h:panelGroup rendered="#{!empty fn:trim(unita.nome_uff)}">
-							                    	#{unita.nome_uff}; 
+							                    	#{unita.nome_uff};
 							                	</h:panelGroup>
 							            	</ui:repeat>
 							            </dd>
 							        </h:panelGroup>
-							        
+
 									<ui:include src="../showdoc@datidoc@content.xhtml">
 										<ui:param name="bean" value="#{showdocVarieNA}" />
 										<ui:param name="labelOggetto" value="#{i18n['dexia.denominazione']}" />
@@ -173,58 +173,62 @@
 									</ui:include>
 								</dl>
 							</div>
-							
+
 							<ui:include src="../showdoc@datiarchivio.xhtml">
 	                            <ui:param name="bean" value="#{showdocVarieNA}"/>
 	                            <ui:param name="hideClassificazione" value="true" />
 	                        </ui:include>
-	                        
+
 	                        <ui:include src="../aspects.xhtml">
 	                            <ui:param name="bean" value="#{showdocVarieNA}"/>
 	                        </ui:include>
-	                        
+
+	                        <ui:include src="../../customfields/showdoc@customfields.xhtml">
+								<ui:param name="bean" value="#{showdocVarieNA}"/>
+				        	</ui:include>
+
 	                        <ui:include src="./showdoc@responsabilita@NA.xhtml">
 	                            <ui:param name="bean" value="#{showdocVarieNA}"/>
 	                        </ui:include>
-	                        
+
 	                        <ui:include src="../showdoc@xwfiles.xhtml">
 	                            <ui:param name="bean" value="#{showdocVarieNA}"/>
 	                        </ui:include>
-	                        
+
 	                        <ui:include src="../showdoc@workflow.xhtml">
 	                            <ui:param name="bean" value="#{showdocVarieNA}"/>
 	                        </ui:include>
-	                        
+
 	                        <ui:include src="../showdoc@postit.xhtml">
 	                            <ui:param name="bean" value="#{showdocVarieNA}"/>
 	                        </ui:include>
-	                        
+
 	                        <ui:include src="../showdoc@datialtro.xhtml">
 	                            <ui:param name="bean" value="#{showdocVarieNA}"/>
-	                        </ui:include>                   
-	                        
+	                        </ui:include>
+
 	                        <ui:include src="../history.xhtml">
 	                            <ui:param name="bean" value="#{showdocVarieNA.doc}"/>
 	                            <ui:param name="viewbean" value="#{showdocVarieNA}"/>
 	                            <ui:param name="visible" value="#{showdocVarieNA.formsAdapter.funzionalitaDisponibili['showHistory']}" />
 	                        </ui:include>
                         </div>
-                    
+
                     </h:panelGroup>
-                    
+
                     <h:panelGroup rendered="#{!empty showdocVarieNA.doc.non_disponibile.estremi}">
 	                    <ui:include src="../showdoc@docnondisponibile.xhtml">
 	                        <ui:param name="bean" value="#{showdocVarieNA}"/>
 	                    </ui:include>
                     </h:panelGroup>
-                
-                    <h:inputTextarea value="#{showdocVarieNA.xml}" rendered="#{showdocVarieNA.debugMode}" styleClass="form-control" rows="10" />
-                
+
+                    <h:inputTextarea value="#{showdocVarieNA.xml}" rendered="#{showdocVarieNA.debugMode}" styleClass="form-control debug-textarea" rows="10" />
+
                     <!-- contenuto doc: fine -->
                 </div>
             </div>
 	        <!-- scheda show: fine -->
-	        
+
 	        <ui:include src="../postit.xhtml"><ui:param name="pageBean" value="#{docwayPostit}"/></ui:include>
             <ui:include src="../verificaFirma.xhtml"><ui:param name="pageBean" value="#{docwayVerificaFirma}"/></ui:include>
             <ui:include src="../annullamentoDoc.xhtml"><ui:param name="pageBean" value="#{docwayAnnullamentoDoc}"/></ui:include>
@@ -248,7 +252,10 @@
             <ui:include src="../rifintLookup.xhtml"> <ui:param name="pageBean" value="#{rifInt}"/></ui:include>
             <ui:include src="../show@task@vars.xhtml"><ui:param name="bean" value="#{docwayWfTaskVars}"/></ui:include>
             <ui:include src="../showPersoneRuolo.xhtml"><ui:param name="bean" value="#{docwayShowPersoneRuolo}"/></ui:include>
-                        
+            <ui:include src="../modalePresaInCarico.xhtml"><ui:param name="bean" value="#{showdocVarieNA}"/></ui:include>
+            <ui:include src="../modalePersoneIncaricate.xhtml"><ui:param name="bean" value="#{docWayShowPersonePresaInCarico}"/></ui:include>
+            <ui:include src="../../customfields/customFields@editPopup.xhtml"><ui:param name="pageBean" value="#{docEditCustomFields}"/></ui:include>
+
         </div>
 	</ui:define>
 </ui:composition>

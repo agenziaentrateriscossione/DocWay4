@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	  xmlns:h="http://java.sun.com/jsf/html"
+	  xmlns:ui="http://java.sun.com/jsf/facelets"
+	  xmlns:f="http://java.sun.com/jsf/core"
+	  xmlns:p="http://xmlns.jcp.org/jsf/passthrough"
+	  xmlns:c="http://java.sun.com/jsp/jstl/core">
+<ui:composition>
+
+	<h:panelGroup>
+		<ui:repeat id="assegnatari_cc_list" var="assegnatario" value="#{casellaPostaElettronica.assegnazioneCC}" varStatus="indice">
+			<div class="form-group">
+				<h:panelGroup rendered="#{assegnatario.tipo_uff ne 'ruolo'}">
+					<label for="templateForm:assegnatario_nome_pers_input" class="control-label col-sm-2">#{i18n['acl.oper']}</label>
+					<div class="col-sm-4">
+						<div class="input-group">
+							<span class="input-group-addon addon-with-icon popoveritem" data-toggle="popover" data-placement="bottom" data-trigger="hover" data-content="#{i18n['dw4.assegna_intervento']}">
+								<label for="templateForm:assegnazione_list:#{indice.index}:assegnatario_intCheck"><span class="glyphicons-pro pencil normal-size-icon"></span></label>&#160;
+					        	<h:selectBooleanCheckbox id="assegnatario#{indice.index}_intCheck" value="#{assegnatario.intervento}" styleClass="#{ component.valid ? '' : 'invalidinput' }" />
+					      	</span>
+
+							<h:inputText id="assegnatario#{indice.index}_nome_uff_input" value="#{assegnatario.nome_uff}" p:placeholder="#{i18n['acl.uff']}" title="#{i18n['acl.uff']}" onblur="executeAction(this);" onfocus="setDefaultValue(this);" styleClass="#{ component.valid ? '' : 'invalidinput' } lookup-field form-control cc_nome_uff">
+								<f:ajax execute="@form" render="@form"/>
+							</h:inputText>
+
+							<span class="input-group-btn">
+						   		<h:commandLink style="display:none;" title="#{i18n['dw4.lookup_ufficio']}" action="#{pageBean.clearUfficioAssegnatario}" id="assegnatario#{indice.index}_nome_uff_clear">
+						  			<f:ajax execute="@form" render="@form"/>
+								</h:commandLink>
+
+								<h:commandLink title="#{i18n['dw4.lookup_ufficio']}" action="#{pageBean.lookupUfficioAssegnatario}" id="assegnatario#{indice.index}_nome_uff_button" onclick="setFocusLookup(this);" styleClass="btn btn-default">
+						   			<f:ajax execute="@form" render="@form"/>
+						   			<span class="glyphicon glyphicon-search"></span>
+						   		</h:commandLink>
+					  		</span>
+						</div>
+						<h:inputHidden value="#{assegnatario.cod_uff}" id="assegnatario#{indice.index}_cod_uff" />
+					</div>
+					<div class="col-sm-4">
+						<div class="input-group">
+							<h:panelGroup>
+								<ui:remove>
+							      	<span class="input-group-addon addon-with-icon popoveritem" data-toggle="popover" data-placement="bottom" data-trigger="hover" data-content="#{i18n['dw4.assegna_all_ufficio']}">
+							      		<label for="templateForm:assegnazione_list:#{indice.index}:assegnatario_tuttiCheck"><span class="glyphicons-pro group normal-size-icon"></span></label>&#160;
+								      	<h:selectBooleanCheckbox id="assegnatario#{indice.index}_tuttiCheck" value="#{assegnatario.ufficio_completo}" onclick="$('.assegnatario#{indice.index}_ufficioCompletoBtn').click();" />
+										<h:commandLink styleClass="assegnatario#{indice.index}_ufficioCompletoBtn" action="#{assegnatario.setUfficioCompleto}" style="display:none;">
+											<f:ajax execute="@form" render="templateForm:assegnatari" />
+										</h:commandLink>
+									</span>
+								</ui:remove>
+							</h:panelGroup>
+
+							<h:inputText id="assegnatario#{indice.index}_nome_persona_input" value="#{assegnatario.nome_pers}" p:placeholder="#{i18n['acl.oper']}" title="#{i18n['acl.oper']}" onblur="executeAction(this);" onfocus="setDefaultValue(this);" styleClass="#{ component.valid ? '' : 'invalidinput' } lookup-field form-control">
+								<f:ajax execute="@form" render="@form"/>
+							</h:inputText>
+
+							<span class="input-group-btn">
+						   		<h:commandLink style="display:none;" title="#{i18n['dw4.lookup_persona']}" action="#{pageBean.clearPersonaAssegnatario}" id="assegnatario#{indice.index}_nome_persona_clear">
+						  			<f:ajax execute="@form" render="@form"/>
+								</h:commandLink>
+
+								<h:commandLink title="#{i18n['dw4.lookup_persona']}" action="#{pageBean.lookupPersonaAssegnatario}" id="assegnatario#{indice.index}_nome_persona_button" onclick="setFocusLookup(this);" styleClass="btn btn-default">
+						   			<f:ajax execute="@form" render="@form"/>
+						   			<span class="glyphicon glyphicon-search"></span>
+						   		</h:commandLink>
+
+						   		<h:panelGroup rendered="#{pageBean.formsAdapter.funzionalitaDisponibili['rolesManagement']}">
+					        		<h:commandLink action="#{assegnatario.changeToRuolo}" title="#{i18n['dw4.passa_a_ruolo']}" styleClass="btn btn-default">
+					        			<f:ajax execute="@form" render="templateForm:assegnatari" />
+					        			<span class="glyphicon glyphicon-briefcase"></span>
+					        		</h:commandLink>
+					        	</h:panelGroup>
+					  		</span>
+						</div>
+						<h:inputHidden value="#{assegnatario.matricola}" id="assegnatario#{indice.index}_matricola" />
+					</div>
+				</h:panelGroup>
+				<h:panelGroup rendered="#{assegnatario.tipo_uff eq 'ruolo'}">
+					<label for="templateForm:assegnatario_nome_pers_input" class="control-label col-sm-2">#{i18n['acl.role']}</label>
+					<div class="col-sm-8">
+						<div class="input-group">
+							<h:inputText id="assegnatario#{indice.index}_nome_ruolo_input" value="#{assegnatario.nome_ruolo}" p:placeholder="#{i18n['acl.role']}" title="#{i18n['acl.role']}" onblur="executeAction(this);" onfocus="setDefaultValue(this);" styleClass="#{ component.valid ? '' : 'invalidinput' }  lookup-field form-control assegnatario_nome_ruolo">
+								<f:ajax execute="@form" render="@form"/>
+							</h:inputText>
+
+							<span class="input-group-btn">
+						   		<h:commandLink style="display:none;" title="#{i18n['dw4.lookup_ruolo']}" action="#{pageBean.clearRuoloAssegnatario}" id="assegnatario#{indice.index}_nome_ruolo_clear">
+						  			<f:ajax execute="@form" render="@form"/>
+								</h:commandLink>
+
+								<h:commandLink title="#{i18n['dw4.lookup_ruolo']}" action="#{pageBean.lookupRuoloAssegnatario}" id="assegnatario#{indice.index}_nome_ruolo_button" onclick="setFocusLookup(this);" styleClass="btn btn-default">
+						   			<f:ajax execute="@form" render="@form"/>
+						   			<span class="glyphicon glyphicon-search"></span>
+						   		</h:commandLink>
+
+						   		<h:panelGroup rendered="#{pageBean.formsAdapter.funzionalitaDisponibili['rolesManagement']}">
+					        		<h:commandLink action="#{assegnatario.changeToUfficio}" title="#{i18n['dw4.passa_a_ufficio_persona']}" styleClass="btn btn-default">
+						        		<f:ajax execute="@form" render="templateForm:assegnatari" />
+						        		<span class="glyphicon glyphicon-user"></span>
+						        	</h:commandLink>
+					        	</h:panelGroup>
+					  		</span>
+						</div>
+						<h:inputHidden value="#{assegnatario.cod_uff}" id="assegnatario#{indice.index}_cod_ruolo" />
+					</div>
+				</h:panelGroup>
+				<div class="col-sm-1 input-group ">
+					<div class="btn-group">
+						<h:commandLink action="#{casellaPostaElettronica.deleteAssegnatario}" title="#{i18n['dw4.elimina_istanza']}" styleClass="btn btn-default">
+				 			<f:ajax execute="@form" render="templateForm:assegnatari"/>
+				 			<span class="glyphicon glyphicon-minus"></span>
+						</h:commandLink>
+
+						<h:commandLink action="#{casellaPostaElettronica.addAssegnatario}" title="#{i18n['dw4.aggiungi_istanza']}" styleClass="btn btn-default">
+				 			<f:ajax execute="@form" render="templateForm:assegnatari"/>
+				 			<span class="glyphicon glyphicon-plus"></span>
+						</h:commandLink>
+					</div>
+				</div>
+			</div>
+		</ui:repeat>
+	</h:panelGroup>
+
+</ui:composition>
+</html>

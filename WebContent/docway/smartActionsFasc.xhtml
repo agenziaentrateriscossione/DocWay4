@@ -23,7 +23,7 @@
 					</li>
 				</h:panelGroup>
 				
-				<h:panelGroup rendered="#{bean.formsAdapter.funzionalitaDisponibili['modifica']}">
+				<h:panelGroup rendered="#{hideAssegnazioni ne 'true' and bean.formsAdapter.funzionalitaDisponibili['modifica']}">
 					<li>
 						<h:commandLink styleClass="smartactions-link" action="#{bean.addRPA}" title="#{i18n['dw4.trasferisci']}">
 							<f:ajax execute="@form" render="@form" />
@@ -33,7 +33,7 @@
 					</li>
 				</h:panelGroup>
 				
-				<h:panelGroup rendered="#{bean.formsAdapter.funzionalitaDisponibili['abilitaCCFascicoli']}">
+				<h:panelGroup rendered="#{hideAssegnazioni ne 'true' and bean.formsAdapter.funzionalitaDisponibili['abilitaCCFascicoli']}">
 					<li>
 						<h:commandLink styleClass="smartactions-link" action="#{bean.addCC}" title="#{i18n['dw4.nuovocc']}">
 							<f:ajax execute="@form" render="@form" />
@@ -49,6 +49,15 @@
 						<p>#{i18n['dw4.print']}</p>
 					</h:commandLink>
 				</li>
+				
+				<h:panelGroup rendered="#{showFolderTreeButton}">
+					<li>
+						<h:commandLink action="#{bean.showFolderTree(bean.physDoc_infasc)}" styleClass="openwaitmsg">
+						<span class="glyphicons-pro share_alt smartaction-image" title="#{i18n['dw4.visualizzaAlberoFsc']}"></span>
+						<p>#{i18n['dw4.visualizzaAlberoFsc']}</p>
+						</h:commandLink>
+					</li>
+				</h:panelGroup>
 				
 				<ui:remove>
 					<h:panelGroup rendered="#{smartActionsAvailable eq 'false'}">

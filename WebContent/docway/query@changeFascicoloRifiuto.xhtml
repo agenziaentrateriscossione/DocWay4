@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" 
+	  xmlns:h="http://java.sun.com/jsf/html" 
+	  xmlns:ui="http://java.sun.com/jsf/facelets" 
+	  xmlns:f="http://java.sun.com/jsf/core">
+<ui:composition>
+
+	<h:panelGroup layout="block" id="checkFascicoloRifiuto">
+		<h:panelGroup rendered="#{pageBean.visible}">
+			<!-- Modal -->
+			<div id="checkFascicoloRifiutoModal" class="modal fade in" aria-hidden="false" aria-labelledby="checkFascicoloRifiutoModalLabel" role="dialog" tabindex="-1" style="display: block;">
+			<!--div class="modal fade" id="checkFascicoloRifiutoModal" tabindex="-1" role="dialog" aria-labelledby="checkFascicoloRifiutoModalLabel" aria-hidden="true"-->
+				<div class="modal-dialog modal-lg">
+					<div class="modal-content jsf-modal">
+						<div class="modal-header">
+							<h:commandLink styleClass="close" action="#{pageBean.close}" value="&#215;">
+		                    	<f:ajax render="@form"/>
+		                   	</h:commandLink>
+							
+							<h4 class="modal-title" id="checkFascicoloRifiutoModalLabel">#{i18n['dw4.fascicolo_di_rifiuto']}</h4>
+						</div>
+						<div class="modal-body">
+						
+							<h:panelGroup rendered="#{not empty facesContext.messageList}" layout="block" styleClass="alert alert-danger">
+								<h:messages styleClass="" id="validationMessegesFascicoloRifiuto" />
+							</h:panelGroup>
+						
+							<fieldset>
+								<div class="form-group">
+									<label for="templateForm:oggettoFascRifiuto" class="col-sm-2 control-label">#{i18n['dw4.fasc']}</label>
+									<div class="col-sm-8">
+										<ui:include src="./lookupField.xhtml">
+							        		<ui:param name="id" value="oggettoFascRifiuto" />
+							        		<ui:param name="field" value="#{pageBean.fascicolo.oggetto}" />
+							        		<ui:param name="bean" value="#{pageBean}" />
+							        		<ui:param name="action" value="lookupFascicolo"/>
+							        		<ui:param name="clearaction" value="clearLookupFascicolo"/>
+							        		<ui:param name="title" value="#{i18n['dw4.lookup_fascicolo']}"/>
+							        		<ui:param name="styleclass" value="form-control"/>
+							        		<ui:param name="refresh" value="@form" />
+							        	</ui:include>
+									</div>
+								
+									<div class="col-sm-6">
+										<h:inputHidden id="nrecordFascRifiuto" value="#{pageBean.fascicolo.nrecord}" />
+									</div>
+								</div>
+							</fieldset>							
+							
+						</div>
+						<div class="modal-footer">
+							<h:commandLink action="#{pageBean.saveDocument}" styleClass="btn btn-primary openwaitmsg" value="#{i18n['acl.save']}">
+								<f:ajax execute="@form" render="@form"/>
+							</h:commandLink>
+							
+							<h:commandLink styleClass="btn btn-default" action="#{pageBean.close}"  value="#{i18n['acl.close']}">
+		                    	<f:ajax render="@form"/>
+		                   	</h:commandLink>
+						</div>
+					</div>
+				</div>
+			</div>
+			<!--h:outputScript>
+				$('#checkFascicoloRifiutoModal').modal('show');
+			</h:outputScript-->
+		</h:panelGroup>
+	</h:panelGroup>
+
+</ui:composition> 
+</html>

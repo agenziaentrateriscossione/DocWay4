@@ -43,6 +43,7 @@ public class QueryArrivoFTRP extends QueryGlobale {
 	private void forzaRepertorio() {
 		setRepertori_multipli(true);
 		forceRepertorioSelected("FTRP", "A");
+		setCurrentCustomFieldSection("arrivo_FTRP");
 		setArrivo(true);
 	}
 	

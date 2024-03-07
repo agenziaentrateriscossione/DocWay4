@@ -78,8 +78,8 @@
 				</dd>
 				<dt>#{i18n['dw4.sotto_flusso']}</dt>
                 <dd>
-                    <h:outputText rendered="#{showdocWorkflow.workflow.subprocess}" value="#{i18n['dw4.yes']}"  />
-                    <h:outputText rendered="#{!showdocWorkflow.workflow.subprocess}" value="#{i18n['dw4.no']}"  />
+                    <h:outputText rendered="#{showdocWorkflow.workflow.subprocess}" value="#{i18n['dw4.yes']}" />
+                    <h:outputText rendered="#{!showdocWorkflow.workflow.subprocess}" value="#{i18n['dw4.no']}" />
                 </dd>
 				<h:panelGroup rendered="#{!empty showdocWorkflow.workflow.label}">
 					<dt>#{i18n['dw4.workflowdefinition_name']}</dt>
@@ -88,6 +88,10 @@
 				<h:panelGroup rendered="#{!empty showdocWorkflow.workflow.description}">
 					<dt>#{i18n['acl.description']}</dt>
 					<dd><h:outputText value="#{showdocWorkflow.workflow.description}" /></dd>
+				</h:panelGroup>
+				<h:panelGroup rendered="#{!empty showdocWorkflow.workflow.bonitaVersion}">
+					<dt>#{i18n['dw4.bonita_version']}</dt>
+					<dd><h:outputText value="#{showdocWorkflow.workflow.bonitaVersion}.x" /></dd>
 				</h:panelGroup>
 			</dl>
 		</div>
@@ -119,7 +123,7 @@
 
 	<ui:include src="./deleteworkflow@confirm.xhtml"/>
 	
-	<h:inputTextarea value="#{showdocWorkflow.xml}" rendered="#{showdocWorkflow.debugMode}" styleClass="form-control" rows="10" />
+	<h:inputTextarea value="#{showdocWorkflow.xml}" rendered="#{showdocWorkflow.debugMode}" styleClass="form-control debug-textarea" rows="10" />
 </ui:define>
 
 </ui:composition>

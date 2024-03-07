@@ -7,14 +7,14 @@
 
 <ui:define name="content">
 	<div class="arrivo">
-	
+
 		<!-- toolbar: inizio -->
 		<ui:include src="../buttonBar.xhtml">
 			<ui:param name="bean" value="#{showdocArrivoFTRP}"/>
 			<ui:param name="qPersonalView" value="#{showdocArrivoFTRP.personalView}" /> <!-- attiva il pulsante di ricerca specifico per il repertorio -->
 			<ui:param name="hideTrasfInV" value="true" />
 		</ui:include>
-		
+
 		<h:panelGroup rendered="#{!showdocArrivoFTRP.doc.cestino and showdocArrivoFTRP.formsAdapter.funzionalitaDisponibili['disableSegnatura'] and showdocArrivoFTRP.formsAdapter.funzionalitaDisponibili['sendToDynamicsNav']}">
 			<div class="btn-toolbar hidden-print" role="toolbar">
 				<div class="btn-group">
@@ -25,40 +25,44 @@
 			</div>
 		</h:panelGroup>
 		<!-- toolbar: fine -->
-		
+
 		<!-- scheda show: inizio -->
 		<div class="contenuto-doc row clearfix">
 			<h:panelGroup rendered="#{!showdocArrivoFTRP.popupPage}">
 				<div class="col-xs-12 col-sm-2 col-md-2 col-lg-2 col-sm-push-10 col-md-push-10 col-lg-push-10 text-right">
 					<!-- azioni rapide: inizio -->
-					
+
 					<ui:include src="../smartActions.xhtml">
 						<ui:param name="bean" value="#{showdocArrivoFTRP}"/>
 					</ui:include>
-					
+
 					<!-- azioni rapide: fine -->
 				</div>
 			</h:panelGroup>
 			<div class="col-xs-12 #{(showdocArrivoFTRP.popupPage) ? 'col-sm-12 col-md-12 col-lg-12' : 'col-sm-10 col-md-10 col-lg-10 col-sm-pull-2 col-md-pull-2 col-lg-pull-2'}">
 				<!-- contenuto doc: inizio -->
-				
+
 				<h:panelGroup rendered="#{empty showdocArrivoFTRP.doc.non_disponibile.estremi}">
 					<ui:include src="../showdoc@title.xhtml">
 						<ui:param name="doc" value="#{showdocArrivoFTRP.doc}"/>
 					</ui:include>
-					
+
 					<ui:include src="../showdoc@annullato.xhtml"><ui:param name="bean" value="#{showdocArrivoFTRP}"/></ui:include>
 					<ui:include src="../showdoc@conservazione.xhtml"><ui:param name="bean" value="#{showdocArrivoFTRP}"/></ui:include>
-					
+
 					<div id="fixedshowdoc" class="fixed-showdoc">
 						<ui:include src="../showdoc@statidoc.xhtml">
 							<ui:param name="bean" value="#{showdocArrivoFTRP}"/>
 						</ui:include>
 						
+						<ui:include src="../showdoc@analisivirus.xhtml">
+							<ui:param name="bean" value="#{showdocArrivoFTRP}"/>
+						</ui:include>
+
 						<div class="showdoc-section">
 							<div class="title">
 								#{i18n['dw4.datidoc']}
-								
+
 								<div class="pull-right">
 									<span class="glyphicon glyphicon-envelope" title="#{i18n['dw4.datidoc']}"></span>
 								</div>
@@ -87,7 +91,7 @@
 										</dd>
 									</h:panelGroup>
 								</h:panelGroup>
-								
+
 								<h:panelGroup rendered="#{!empty showdocArrivoFTRP.doc.rif_esterni[0].n_prot}">
 									<dt>#{i18n['dw4.numero_fattura']}</dt>
 									<dd>#{showdocArrivoFTRP.doc.rif_esterni[0].n_prot}</dd>
@@ -96,7 +100,7 @@
 									<dt>#{i18n['dw4.data_fattura']}</dt>
 									<dd>#{showdocArrivoFTRP.doc.rif_esterni[0].data_prot}</dd>
 								</h:panelGroup>
-								
+
 								<h:panelGroup rendered="#{!empty showdocArrivoFTRP.extraFTRP.data_ricezione}">
 									<dt>#{i18n['dw4.data_ricezione']}</dt>
 									<dd>#{showdocArrivoFTRP.extraFTRP.data_ricezione}</dd>
@@ -113,12 +117,12 @@
 									<dt>#{i18n['dw4.tipodocumento']}</dt>
 									<dd>#{showdocArrivoFTRP.extraFTRP.tipo_documento}</dd>
 								</h:panelGroup>
-								
+
 								<ui:include src="../showdoc@rifesterni@arrivo.xhtml">
 									<ui:param name="bean" value="#{showdocArrivoFTRP}"/>
 									<ui:param name="labelMittente" value="#{i18n['dw4.fornitore']}" />
 								</ui:include>
-								
+
 								<h:panelGroup rendered="#{!empty showdocArrivoFTRP.extraFTRP.stato_richiesta}">
 									<dt>#{i18n['dw4.stato_della_richiesta']}</dt>
 									<dd>#{showdocArrivoFTRP.extraFTRP.stato_richiesta}</dd>
@@ -131,7 +135,7 @@
 									<dt>#{i18n['dw4.numero_nav']}</dt>
 									<dd>#{showdocArrivoFTRP.extraFTRP.numero_nav}</dd>
 								</h:panelGroup>
-								
+
 								<h:panelGroup rendered="#{!empty showdocArrivoFTRP.doc.prot_differito.data_arrivo}">
 									<dt>#{i18n['dw4.dataarrivo']}</dt>
 									<dd>
@@ -141,78 +145,82 @@
 										</span>
 									</dd>
 								</h:panelGroup>
-								
+
 								<h:panelGroup rendered="#{!empty showdocArrivoFTRP.doc.oggetto}">
 									<dt class="oggetto-documento-label">#{(!empty labelOggetto) ? labelOggetto : i18n['dw4.object']}</dt>
 									<dd class="oggetto-documento-value">#{showdocArrivoFTRP.doc.oggetto}</dd>
 								</h:panelGroup>
-								
+
 								<h:panelGroup rendered="#{!empty showdocArrivoFTRP.doc.mezzo_trasmissione.cod}">
 									<dt>#{i18n['dw4.mezzotrasmissione']}</dt>
 									<dd>#{showdocArrivoFTRP.doc.mezzo_trasmissione.cod}</dd>
 								</h:panelGroup>
-								
+
 								<ui:include src="../showdoc@allegati.xhtml">
 									<ui:param name="bean" value="#{showdocArrivoFTRP}"/>
 								</ui:include>
-								
+
 								<ui:include src="../showdoc@corpoEmail.xhtml">
 									<ui:param name="bean" value="#{showdocArrivoFTRP}"/>
 								</ui:include>
 							</dl>
 						</div>
-						
+
 						<ui:include src="../showdoc@datiarchivio.xhtml">
 							<ui:param name="bean" value="#{showdocArrivoFTRP}"/>
 						</ui:include>
-						
+
 						<ui:include src="../aspects.xhtml">
 							<ui:param name="bean" value="#{showdocArrivoFTRP}"/>
 						</ui:include>
-						
+
+						<ui:include src="../../customfields/showdoc@customfields.xhtml">
+							<ui:param name="bean" value="#{showdocArrivoFTRP}"/>
+			        	</ui:include>
+
 						<ui:include src="../showdoc@responsabilita.xhtml">
 							<ui:param name="bean" value="#{showdocArrivoFTRP}"/>
 						</ui:include>
-						
+
 						<ui:include src="../showdoc@xwfiles.xhtml">
 							<ui:param name="bean" value="#{showdocArrivoFTRP}"/>
 						</ui:include>
-						
+
 						<ui:include src="../showdoc@workflow.xhtml">
 							<ui:param name="bean" value="#{showdocArrivoFTRP}"/>
 						</ui:include>
-						
+
 						<ui:include src="../showdoc@postit.xhtml">
 							<ui:param name="bean" value="#{showdocArrivoFTRP}"/>
 						</ui:include>
-						
+
 						<ui:include src="../showdoc@datialtro.xhtml">
 							<ui:param name="bean" value="#{showdocArrivoFTRP}"/>
-						</ui:include>					
-						
+						</ui:include>
+
 						<ui:include src="../history.xhtml">
 							<ui:param name="bean" value="#{showdocArrivoFTRP.doc}"/>
 							<ui:param name="viewbean" value="#{showdocArrivoFTRP}"/>
 							<ui:param name="visible" value="#{showdocArrivoFTRP.formsAdapter.funzionalitaDisponibili['showHistory']}" />
 						</ui:include>
 					</div>
-					
+
 				</h:panelGroup>
 				<h:panelGroup rendered="#{!empty showdocArrivoFTRP.doc.non_disponibile.estremi}">
-				
+
 					<ui:include src="../showdoc@docnondisponibile.xhtml">
 						<ui:param name="bean" value="#{showdocArrivoFTRP}"/>
 					</ui:include>
-					
+
 				</h:panelGroup>
-				
-				<h:inputTextarea value="#{showdocArrivoFTRP.xml}" rendered="#{showdocArrivoFTRP.debugMode}" styleClass="form-control" rows="10" />	
-				
+
+				<h:inputTextarea value="#{showdocArrivoFTRP.xml}" rendered="#{showdocArrivoFTRP.debugMode}" styleClass="form-control debug-textarea" rows="10" />
+
 				<!-- contenuto doc: fine -->
 			</div>
 		</div>
 		<!-- scheda show: fine -->
-			
+
 		<ui:include src="../postit.xhtml"><ui:param name="pageBean" value="#{docwayPostit}"/></ui:include>
 		<ui:include src="../verificaFirma.xhtml"><ui:param name="pageBean" value="#{docwayVerificaFirma}"/></ui:include>
 		<ui:include src="../annullamentoDoc.xhtml"><ui:param name="pageBean" value="#{docwayAnnullamentoDoc}"/></ui:include>
@@ -226,7 +234,14 @@
 		<ui:include src="../rifintLookup.xhtml"> <ui:param name="pageBean" value="#{rifInt}"/></ui:include>
 		<ui:include src="../show@task@vars.xhtml"><ui:param name="bean" value="#{docwayWfTaskVars}"/></ui:include>
 		<ui:include src="../showPersoneRuolo.xhtml"><ui:param name="bean" value="#{docwayShowPersoneRuolo}"/></ui:include>
-		
+		<ui:include src="../intraAoo.xhtml"><ui:param name="bean" value="#{docWayIntraAOO}"/></ui:include>
+		<ui:include src="../rifintIntraAooLookup.xhtml"><ui:param name="pageBean" value="#{rifintIntraAooLookup}"/></ui:include>
+		<ui:include src="../loadingbar@import_xls_fasc.xhtml"><ui:param name="pageBean" value="#{showdocArrivoFTRP}"/></ui:include>
+		<ui:include src="../modalePresaInCarico.xhtml"><ui:param name="bean" value="#{showdocArrivoFTRP}"/></ui:include>
+		<ui:include src="../modalePersoneIncaricate.xhtml"><ui:param name="bean" value="#{docWayShowPersonePresaInCarico}"/></ui:include>
+		<ui:include src="../../customfields/customFields@editPopup.xhtml"><ui:param name="pageBean" value="#{docEditCustomFields}"/></ui:include>
+		<ui:include src="../modaleMotivazioniRifiutoArrivo.xhtml"><ui:param name="bean" value="#{docwayMotivazioneRifiuto}"/></ui:include>
+
 	</div>
 </ui:define>
 

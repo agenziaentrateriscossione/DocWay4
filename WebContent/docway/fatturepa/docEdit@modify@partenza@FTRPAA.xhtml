@@ -18,23 +18,26 @@
 							styleClass="btn btn-primary openwaitmsg">
 					#{i18n['acl.save']}
 				</h:commandLink>
-				
-				<h:commandLink rendered="#{docEditModifyPartenzaFTRPAA.doc.bozza}" id="protocoolaBtn" 
-							action="#{docEditModifyPartenzaFTRPAA.protocollaDoc}" styleClass="btn #{(!docEditModifyPartenzaFTRPAA.formsAdapter.funzionalitaDisponibili['disabilitaBozzeInModifica']) ? 'btn-default' : 'btn-primary'} openwaitmsg">
+				<h:commandLink rendered="#{docEditModifyPartenzaFTRPAA.doc.bozza and docEditModifyPartenzaFTRPAA.formsAdapter.funzionalitaDisponibili['protocollaRight'] and docEditModifyPartenzaFTRPAA.doc.protocollabile}" id="protocollaBtn" action="#{docEditModifyPartenzaFTRPAA.protocollaDoc}"
+							styleClass="btn #{(!docEditModifyPartenzaFTRPAA.formsAdapter.funzionalitaDisponibili['disabilitaBozzeInModifica']) ? 'btn-default' : 'btn-primary'} openwaitmsg #{(!docEditModifyPartenzaFTRPAA.formsAdapter.funzionalitaDisponibili['docClassifEreditabile'] and (docEditModifyPartenzaFTRPAA.doc.classif eq null or docEditModifyPartenzaFTRPAA.doc.classif.cod eq null or empty docEditModifyPartenzaFTRPAA.doc.classif.cod)) ? 'disabled' : ''}"
+							disabled="#{!docEditModifyPartenzaFTRPAA.formsAdapter.funzionalitaDisponibili['docClassifEreditabile'] and (docEditModifyPartenzaFTRPAA.doc.classif eq null or docEditModifyPartenzaFTRPAA.doc.classif.cod eq null or empty docEditModifyPartenzaFTRPAA.doc.classif.cod)}">
 					#{i18n['dw4.protocolla']}
 				</h:commandLink>
-				
-				<h:commandLink action="#{docEditModifyPartenzaFTRPAA.clearDocument}" 
-							onclick="IwxRuntime.Client.resetJobIWX();" styleClass="btn btn-default">
+				<h:commandLink rendered="#{!docEditModifyPartenzaFTRPAA.formsAdapter.funzionalitaDisponibili['trasformaByDocEdit']}" action="#{docEditModifyPartenzaFTRPAA.clearDocument}"
+						onclick="IwxRuntime.Client.resetJobIWX();" styleClass="btn btn-default">
 					#{i18n['acl.back']}
-				</h:commandLink>	
+				</h:commandLink>
+				<h:commandLink rendered="#{docEditModifyPartenzaFTRPAA.formsAdapter.funzionalitaDisponibili['trasformaByDocEdit']}" action="#{docEditModifyPartenzaFTRPAA.clearTrasformaRep}"
+							onclick="IwxRuntime.Client.resetJobIWX();" styleClass="btn btn-default">
+					#{i18n['acl.cancel']}
+				</h:commandLink>
 			</div>
 		</div>
 		<!-- toolbar: fine -->
 		
 		<h5 class="sub-header">
 			<span class="glyphicons-pro coins fatturapa-attiva"></span>&#160;
-			<h:outputText value="#{docEditModifyPartenzaFTRPAA.docEditTitle}" escape="false" />
+			<h:outputText value="#{docEditModifyPartenzaFTRPAA.docEditTitle}" />
 		</h5>
 	
 		<!-- messages: inizio -->
@@ -351,7 +354,7 @@
 					        		<ui:param name="id" value="voceindice" />
 					        		<ui:param name="field" value="#{docEditModifyPartenzaFTRPAA.doc.voce_indice.text}" />
 					        		<ui:param name="bean" value="#{docEditModifyPartenzaFTRPAA}" />
-					        		<ui:param name="confirmOnAction" value="#{(docEditModifyPartenzaFTRPAA.formsAdapter.funzionalitaDisponibili['rifInterniModificabiliDaVoceIndice']) ? i18n['dw4.se_si_seleziona_una_voce_di_indice_potrebbero_essere_sovrascritti_gli_assegnatari_del_documento_Continuare'] : ''}" />
+					        		<ui:param name="confirmOnAction" value="#{(docEditModifyPartenzaFTRPAA.formsAdapter.funzionalitaDisponibili['rifInterniModificabiliDaVoceIndice']) ? i18n['dw4.se_si_seleziona_una_voce_di_indice_potrebbero_essere_aggiornati_gli_assegnatari_del_documento_Continuare'] : ''}" />
 					        		<ui:param name="action" value="lookupVoceIndice"/>
 					        		<ui:param name="clearaction" value="clearLookupVoceIndice"/>
 					        		<ui:param name="title" value="#{i18n['dw4.lookup_voce_indice']}"/>
@@ -369,7 +372,7 @@
 				        		<ui:param name="beanDoc" value="#{docEditModifyPartenzaFTRPAA.doc}" />
 				        		<ui:param name="actionTitolario" value="thVincolatoTitolarioClassificazione"/>
 				        		<ui:param name="actionGerarchia" value="gerarchiaTitolarioClassificazione"/>
-				        		<ui:param name="refresh" value="templateForm:classif_holder templateForm:showthes templateForm:errormsg"/>
+				        		<ui:param name="refresh" value="templateForm:classif_holder templateForm:showthes templateForm:errormsg templateForm:protocollaBtn"/>
 				        		<ui:param name="readOnlyConservazione" value="false" />
 				        		<ui:param name="optionalField" value="#{docEditModifyPartenzaFTRPAA.formsAdapter.funzionalitaDisponibili['docClassifEreditabile']}" />
 				        	</ui:include>
@@ -420,6 +423,10 @@
 							<ui:param name="fatturapassiva" value="false" />
 			        	</ui:include>
 		        	</h:panelGroup>
+		        	
+		        	<ui:include src="../../customfields/docedit@customfields.xhtml">
+						<ui:param name="bean" value="#{docEditModifyPartenzaFTRPAA}" />
+		        	</ui:include>
 		        	
 		        	<h:panelGroup rendered="#{docEditModifyPartenzaFTRPAA.docIsNotInFascicolo and docEditModifyPartenzaFTRPAA.doc.bozza}">
 			        	<ui:include src="../docEdit@rifinterni@doc.xhtml">
@@ -493,11 +500,19 @@
 		</div>
 		<!-- scheda edit: fine -->
 		
-		<h:inputTextarea value="#{docEditModifyPartenzaFTRPAA.xml}" rendered="#{docEditModifyPartenzaFTRPAA.debugMode}" styleClass="form-control" rows="10" />
+		<h:inputTextarea value="#{docEditModifyPartenzaFTRPAA.xml}" rendered="#{docEditModifyPartenzaFTRPAA.debugMode}" styleClass="form-control debug-textarea" rows="10" />
 			
 		<ui:include src="../lookup.xhtml"> <ui:param name="pageBean" value="#{docEditModifyPartenzaFTRPAA}"/></ui:include>
 		<ui:include src="../rifintLookup.xhtml"> <ui:param name="pageBean" value="#{docEditModifyPartenzaFTRPAA}"/></ui:include>
 		<ui:include src="../showthes.xhtml"> <ui:param name="pageBean" value="#{docEditModifyPartenzaFTRPAA}"/></ui:include>
+		<!-- template per upload e la decompressione di archivi ZIP -->
+		<ui:param name="currentBean" value="#{docEditModifyPartenzaFTRPAA}" />
+		<ui:include src="../docUploadArchive.xhtml">
+			<ui:param name="bean" value="#{docWayUploadArchive}"/>
+			<ui:param name="beanDoc" value="#{currentBean}" />
+			<ui:param name="doc" value="#{currentBean.doc}" />
+			<ui:param name="enableFiles" value="#{currentBean.docInformaticiEnabled and currentBean.formsAdapter.funzionalitaDisponibili['addFile']}" />
+		</ui:include>
 	</div>
 </ui:define>
 

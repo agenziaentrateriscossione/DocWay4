@@ -1,7 +1,7 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml" 
-	  xmlns:h="http://java.sun.com/jsf/html" 
-	  xmlns:ui="http://java.sun.com/jsf/facelets" 
+<html xmlns="http://www.w3.org/1999/xhtml"
+	  xmlns:h="http://java.sun.com/jsf/html"
+	  xmlns:ui="http://java.sun.com/jsf/facelets"
 	  xmlns:f="http://java.sun.com/jsf/core"
 	  xmlns:p="http://xmlns.jcp.org/jsf/passthrough">
 <ui:composition>
@@ -17,9 +17,10 @@
 					</span>
 				</h:commandLink>
 			</div>
-			
+
 			<h:panelGroup rendered="#{bean.responsabilita}" id="responsabilitaCPanel" layout="block">
-				<h:panelGroup id="rpa" layout="block" styleClass="form-group">
+
+				<h:panelGroup id="rpa" rendered="#{!bean.rpatiporuolo}" layout="block" styleClass="form-group">
 					<label for="templateForm:rpanomeuff" class="col-sm-2 control-label">#{i18n['dw4.proprietario']}</label>
 					<div class="col-sm-4">
 						<div class="input-group">
@@ -50,38 +51,95 @@
 									<f:ajax execute="@form" render="@form"/>
 									<span class="glyphicon glyphicon-search"></span>
 								</h:commandLink>
+								<h:panelGroup rendered="#{bean.formsAdapter.funzionalitaDisponibili['rolesManagement']}">
+					        		<h:commandLink action="#{bean.switchRpaRuoloUfficio}" title="#{i18n['dw4.passa_a_ruolo']}" styleClass="btn btn-default">
+					        			<f:ajax execute="@form" render="templateForm:responsabilitaPanel" />
+					        			<span class="glyphicon glyphicon-briefcase"></span>
+					        		</h:commandLink>
+					        	</h:panelGroup>
 							</div>
-						</div>									
+						</div>
 					</div>
 				</h:panelGroup>
-				<h:panelGroup id="rpam">
-					<h:panelGroup rendered="#{bean.interno and !bean.arrivo and !bean.partenza and !bean.varie}" layout="block" styleClass="form-group">
-						<label for="templateForm:rpamnomeuff" class="col-sm-2 control-label">#{i18n['dw4.proprietariom']}</label>
-						<div class="col-sm-4">
-							<div class="input-group">
-								<h:inputText styleClass="form-control" value="#{bean.rpamnomeuff}" id="rpamnomeuff" p:placeholder="#{i18n['acl.uff']}" title="#{i18n['acl.uff']}" />
-								<div class="input-group-btn">
-									<h:commandLink title="#{i18n['acl.vocabulary']}" action="#{bean.openIndexUORMDoc}" styleClass="btn btn-default">
-										<f:ajax execute="@form" render="@form"/>
-										<span class="glyphicon glyphicon-search"></span>
-									</h:commandLink>
-								</div>
+				<h:panelGroup id="rpa_ruolo" rendered="#{bean.rpatiporuolo}" layout="block" styleClass="form-group">
+					<label for="templateForm:rpanomeruolo" class="col-sm-2 control-label">#{i18n['dw4.proprietario']}</label>
+					<div class="col-sm-9">
+						<div class="input-group">
+							<h:panelGroup rendered="#{bean.interno and !bean.arrivo and !bean.partenza and !bean.varie}">
+								<span class="input-group-addon">
+									<h:selectBooleanCheckbox value="#{bean.escludi_our}" id="escludi_our_ruolo" p:data-toggle="popover" p:data-placement="top" p:data-trigger="hover" p:data-content="#{i18n['dw4.escludi']}" styleClass="#{ component.valid ? '' : 'invalidinput' } popoveritem" />
+						      	</span>
+					      	</h:panelGroup>
+							<h:inputText styleClass="form-control" value="#{bean.rpanomeuff}" id="rpanomeruolo" p:placeholder="#{i18n['acl.role']}" title="#{i18n['acl.role']}" />
+							<div class="input-group-btn">
+								<h:commandLink title="#{i18n['acl.vocabulary']}" action="#{bean.openIndexUORDoc}" styleClass="btn btn-default">
+									<f:ajax execute="@form" render="@form"/>
+									<span class="glyphicon glyphicon-search"></span>
+								</h:commandLink>
+								<h:commandLink action="#{bean.switchRpaRuoloUfficio}" title="#{i18n['dw4.passa_a_ufficio_persona']}" styleClass="btn btn-default">
+					        		<f:ajax execute="@form" render="templateForm:responsabilitaPanel" />
+					        		<span class="glyphicon glyphicon-user"></span>
+					        	</h:commandLink>
 							</div>
 						</div>
-						<div class="col-sm-5">
-							<div class="input-group">
-								<h:inputText styleClass="form-control" value="#{bean.rpamnomepersona}" id="rpamnomepersona" p:placeholder="#{i18n['acl.oper']}" title="#{i18n['acl.oper']}" />
-								<div class="input-group-btn">
-									<h:commandLink title="#{i18n['acl.vocabulary']}" action="#{bean.openIndexRPAMDoc}" styleClass="btn btn-default">
-										<f:ajax execute="@form" render="@form"/>
-										<span class="glyphicon glyphicon-search"></span>
-									</h:commandLink>
+					</div>
+				</h:panelGroup>
+
+				<h:panelGroup id="rpam">
+					<h:panelGroup rendered="#{bean.interno and !bean.arrivo and !bean.partenza and !bean.varie}">
+						<h:panelGroup rendered="#{!bean.rpamtiporuolo}" layout="block" styleClass="form-group">
+							<label for="templateForm:rpamnomeuff" class="col-sm-2 control-label">#{i18n['dw4.proprietariom']}</label>
+							<div class="col-sm-4">
+								<div class="input-group">
+									<h:inputText styleClass="form-control" value="#{bean.rpamnomeuff}" id="rpamnomeuff" p:placeholder="#{i18n['acl.uff']}" title="#{i18n['acl.uff']}" />
+									<div class="input-group-btn">
+										<h:commandLink title="#{i18n['acl.vocabulary']}" action="#{bean.openIndexUORMDoc}" styleClass="btn btn-default">
+											<f:ajax execute="@form" render="@form"/>
+											<span class="glyphicon glyphicon-search"></span>
+										</h:commandLink>
+									</div>
 								</div>
-							</div>									
-						</div>
+							</div>
+							<div class="col-sm-5">
+								<div class="input-group">
+									<h:inputText styleClass="form-control" value="#{bean.rpamnomepersona}" id="rpamnomepersona" p:placeholder="#{i18n['acl.oper']}" title="#{i18n['acl.oper']}" />
+									<div class="input-group-btn">
+										<h:commandLink title="#{i18n['acl.vocabulary']}" action="#{bean.openIndexRPAMDoc}" styleClass="btn btn-default">
+											<f:ajax execute="@form" render="@form"/>
+											<span class="glyphicon glyphicon-search"></span>
+										</h:commandLink>
+										<h:panelGroup rendered="#{bean.formsAdapter.funzionalitaDisponibili['rolesManagement']}">
+							        		<h:commandLink action="#{bean.switchRpamRuoloUfficio}" title="#{i18n['dw4.passa_a_ruolo']}" styleClass="btn btn-default">
+							        			<f:ajax execute="@form" render="templateForm:responsabilitaPanel" />
+							        			<span class="glyphicon glyphicon-briefcase"></span>
+							        		</h:commandLink>
+							        	</h:panelGroup>
+									</div>
+								</div>
+							</div>
+						</h:panelGroup>
+						<h:panelGroup rendered="#{bean.rpamtiporuolo}" layout="block" styleClass="form-group">
+							<label for="templateForm:rpamnomeruolo" class="col-sm-2 control-label">#{i18n['dw4.proprietariom']}</label>
+							<div class="col-sm-9">
+								<div class="input-group">
+									<h:inputText styleClass="form-control" value="#{bean.rpamnomeuff}" id="rpamnomeruolo" p:placeholder="#{i18n['acl.role']}" title="#{i18n['acl.role']}" />
+									<div class="input-group-btn">
+										<h:commandLink title="#{i18n['acl.vocabulary']}" action="#{bean.openIndexUORMDoc}" styleClass="btn btn-default">
+											<f:ajax execute="@form" render="@form"/>
+											<span class="glyphicon glyphicon-search"></span>
+										</h:commandLink>
+										<h:commandLink action="#{bean.switchRpamRuoloUfficio}" title="#{i18n['dw4.passa_a_ufficio_persona']}" styleClass="btn btn-default">
+							        		<f:ajax execute="@form" render="templateForm:responsabilitaPanel" />
+							        		<span class="glyphicon glyphicon-user"></span>
+							        	</h:commandLink>
+									</div>
+								</div>
+							</div>
+						</h:panelGroup>
 					</h:panelGroup>
 				</h:panelGroup>
-				<div class="form-group">
+
+				<h:panelGroup rendered="#{!bean.cdstiporuolo}" layout="block" styleClass="form-group">
 					<label for="templateForm:cdsnomeuff" class="col-sm-2 control-label">#{i18n['dw4.conferenza_di_servizi']}</label>
 					<div class="col-sm-4">
 						<div class="input-group">
@@ -102,11 +160,36 @@
 									<f:ajax execute="@form" render="@form"/>
 									<span class="glyphicon glyphicon-search"></span>
 								</h:commandLink>
+								<h:panelGroup rendered="#{bean.formsAdapter.funzionalitaDisponibili['rolesManagement']}">
+					        		<h:commandLink action="#{bean.switchCdsRuoloUfficio}" title="#{i18n['dw4.passa_a_ruolo']}" styleClass="btn btn-default">
+					        			<f:ajax execute="@form" render="templateForm:responsabilitaPanel" />
+					        			<span class="glyphicon glyphicon-briefcase"></span>
+					        		</h:commandLink>
+					        	</h:panelGroup>
 							</div>
-						</div>									
+						</div>
 					</div>
-				</div>
-				<div class="form-group">
+				</h:panelGroup>
+				<h:panelGroup rendered="#{bean.cdstiporuolo}" layout="block" styleClass="form-group">
+					<label for="templateForm:cdsnomeruolo" class="col-sm-2 control-label">#{i18n['dw4.conferenza_di_servizi']}</label>
+					<div class="col-sm-9">
+						<div class="input-group">
+							<h:inputText styleClass="form-control" value="#{bean.cdsnomeuff}" id="cdsnomeruolo" p:placeholder="#{i18n['acl.role']}" title="#{i18n['acl.role']}" />
+							<div class="input-group-btn">
+								<h:commandLink title="#{i18n['acl.vocabulary']}" action="#{bean.openIndexCDSUffDoc}" styleClass="btn btn-default">
+									<f:ajax execute="@form" render="@form"/>
+									<span class="glyphicon glyphicon-search"></span>
+								</h:commandLink>
+								<h:commandLink action="#{bean.switchCdsRuoloUfficio}" title="#{i18n['dw4.passa_a_ufficio_persona']}" styleClass="btn btn-default">
+					        		<f:ajax execute="@form" render="templateForm:responsabilitaPanel" />
+					        		<span class="glyphicon glyphicon-user"></span>
+					        	</h:commandLink>
+							</div>
+						</div>
+					</div>
+				</h:panelGroup>
+
+				<h:panelGroup rendered="#{!bean.optiporuolo}" layout="block" styleClass="form-group">
 					<label for="templateForm:opnomeuff" class="col-sm-2 control-label">#{i18n['dw4.operatore_incaricato']}</label>
 					<div class="col-sm-4">
 						<div class="input-group">
@@ -127,11 +210,36 @@
 									<f:ajax execute="@form" render="@form"/>
 									<span class="glyphicon glyphicon-search"></span>
 								</h:commandLink>
+								<h:panelGroup rendered="#{bean.formsAdapter.funzionalitaDisponibili['rolesManagement']}">
+					        		<h:commandLink action="#{bean.switchOpRuoloUfficio}" title="#{i18n['dw4.passa_a_ruolo']}" styleClass="btn btn-default">
+					        			<f:ajax execute="@form" render="templateForm:responsabilitaPanel" />
+					        			<span class="glyphicon glyphicon-briefcase"></span>
+					        		</h:commandLink>
+					        	</h:panelGroup>
 							</div>
-						</div>									
+						</div>
 					</div>
-				</div>
-				<div class="form-group">
+				</h:panelGroup>
+				<h:panelGroup rendered="#{bean.optiporuolo}" layout="block" styleClass="form-group">
+					<label for="templateForm:opnomeruolo" class="col-sm-2 control-label">#{i18n['dw4.operatore_incaricato']}</label>
+					<div class="col-sm-9">
+						<div class="input-group">
+							<h:inputText styleClass="form-control" value="#{bean.opnomeuff}" id="opnomeruolo" p:placeholder="#{i18n['acl.role']}" title="#{i18n['acl.role']}" />
+							<div class="input-group-btn">
+								<h:commandLink title="#{i18n['acl.vocabulary']}" action="#{bean.openIndexOPUffDoc}" styleClass="btn btn-default">
+									<f:ajax execute="@form" render="@form"/>
+									<span class="glyphicon glyphicon-search"></span>
+								</h:commandLink>
+								<h:commandLink action="#{bean.switchOpRuoloUfficio}" title="#{i18n['dw4.passa_a_ufficio_persona']}" styleClass="btn btn-default">
+				        			<f:ajax execute="@form" render="templateForm:responsabilitaPanel" />
+				        			<span class="glyphicon glyphicon-user"></span>
+				        		</h:commandLink>
+							</div>
+						</div>
+					</div>
+				</h:panelGroup>
+
+				<h:panelGroup rendered="#{!bean.cctiporuolo}" layout="block" styleClass="form-group">
 					<label for="templateForm:ccnomeuff" class="col-sm-2 control-label">#{i18n['dw4.cc']}</label>
 					<div class="col-sm-4">
 						<div class="input-group">
@@ -152,10 +260,101 @@
 									<f:ajax execute="@form" render="@form"/>
 									<span class="glyphicon glyphicon-search"></span>
 								</h:commandLink>
+								<h:panelGroup rendered="#{bean.formsAdapter.funzionalitaDisponibili['rolesManagement']}">
+					        		<h:commandLink action="#{bean.switchCcRuoloUfficio}" title="#{i18n['dw4.passa_a_ruolo']}" styleClass="btn btn-default">
+					        			<f:ajax execute="@form" render="templateForm:responsabilitaPanel" />
+					        			<span class="glyphicon glyphicon-briefcase"></span>
+					        		</h:commandLink>
+					        	</h:panelGroup>
 							</div>
-						</div>									
+						</div>
 					</div>
-				</div>
+				</h:panelGroup>
+				<h:panelGroup rendered="#{bean.cctiporuolo}" layout="block" styleClass="form-group">
+					<label for="templateForm:ccnomeruolo" class="col-sm-2 control-label">#{i18n['dw4.cc']}</label>
+					<div class="col-sm-9">
+						<div class="input-group">
+							<h:inputText styleClass="form-control" value="#{bean.ccnomeuff}" id="ccnomeruolo" p:placeholder="#{i18n['acl.role']}" title="#{i18n['acl.role']}" />
+							<div class="input-group-btn">
+								<h:commandLink title="#{i18n['acl.vocabulary']}" action="#{bean.openIndexCCUffDoc}" styleClass="btn btn-default">
+									<f:ajax execute="@form" render="@form"/>
+									<span class="glyphicon glyphicon-search"></span>
+								</h:commandLink>
+								<h:commandLink action="#{bean.switchCcRuoloUfficio}" title="#{i18n['dw4.passa_a_ufficio_persona']}" styleClass="btn btn-default">
+				        			<f:ajax execute="@form" render="templateForm:responsabilitaPanel" />
+				        			<span class="glyphicon glyphicon-user"></span>
+				        		</h:commandLink>
+							</div>
+						</div>
+					</div>
+				</h:panelGroup>
+
+				<h:panelGroup rendered="#{bean.formsAdapter.funzionalitaDisponibili['queryPresaInCarico']}" id="queryPresaInCarico" layout="block" styleClass="form-group">
+					<label class="col-sm-2 control-label">#{i18n['dw4.presi_in_carico']}</label>
+					<div class="col-sm-1">
+						<h:selectBooleanCheckbox value="#{bean.presiInCarico}" id="presi_in_carico">
+							<f:ajax execute="@form" render="templateForm:responsabilitaPanel" listener="#{bean.showHideIncaricato}"/>
+						</h:selectBooleanCheckbox>
+					</div>
+					<label class="col-sm-2 control-label" style="white-space: pre;">#{i18n['dw4.da_prendere_in_carico']}</label>
+					<div class="col-sm-7">
+						<h:selectBooleanCheckbox value="#{bean.daPrendereInCarico}" id="da_prendere_in_carico"/>
+					</div>
+
+					<h:panelGroup rendered="#{bean.presiInCarico}">
+						<div id="presoInCaricoDaInputGroup">
+							<label for="templateForm:presoInCaricoDa" class="col-sm-2 control-label">#{i18n['dw4.presi_in_carico_da']}</label>
+							<h:panelGroup rendered="#{not bean.presaincaricoruolo}" layout="block">
+								<div class="col-sm-4">
+									<div class="input-group">
+										<h:inputText styleClass="form-control" value="#{bean.presaincariconomeuff}" id="presaincariconomeuff" p:placeholder="#{i18n['acl.uff']}" title="#{i18n['acl.uff']}" />
+										<div class="input-group-btn">
+											<h:commandLink title="#{i18n['acl.vocabulary']}" action="#{bean.openIndexPresaInCaricoUffDoc}" styleClass="btn btn-default">
+												<f:ajax execute="@form" render="@form"/>
+												<span class="glyphicon glyphicon-search"></span>
+											</h:commandLink>
+										</div>
+									</div>
+								</div>
+								<div class="col-sm-5">
+									<div class="input-group">
+										<h:inputText styleClass="form-control" value="#{bean.presaincariconomepersona}" id="presoincariconomepersona" p:placeholder="#{i18n['acl.oper']}" title="#{i18n['acl.oper']}" />
+										<div class="input-group-btn">
+											<h:commandLink title="#{i18n['acl.vocabulary']}" action="#{bean.openIndexPresaInCaricoPersonaDoc}" styleClass="btn btn-default">
+												<f:ajax execute="@form" render="@form"/>
+												<span class="glyphicon glyphicon-search"></span>
+											</h:commandLink>
+											<h:panelGroup rendered="#{bean.formsAdapter.funzionalitaDisponibili['rolesManagement']}">
+								        		<h:commandLink action="#{bean.switchPresaInCaricoRuoloUfficio}" title="#{i18n['dw4.passa_a_ruolo']}" styleClass="btn btn-default">
+								        			<f:ajax execute="@form" render="templateForm:responsabilitaPanel" />
+								        			<span class="glyphicon glyphicon-briefcase"></span>
+								        		</h:commandLink>
+								        	</h:panelGroup>
+										</div>
+									</div>
+								</div>
+							</h:panelGroup>
+							<h:panelGroup rendered="#{bean.presaincaricoruolo}" layout="block">
+								<div class="col-sm-9">
+									<div class="input-group">
+										<h:inputText styleClass="form-control" value="#{bean.presaincariconomeuff}" id="presaincariconomeruolo" p:placeholder="#{i18n['acl.role']}" title="#{i18n['acl.role']}" />
+										<div class="input-group-btn">
+											<h:commandLink title="#{i18n['acl.vocabulary']}" action="#{bean.openIndexPresaInCaricoUffDoc}" styleClass="btn btn-default">
+												<f:ajax execute="@form" render="@form"/>
+												<span class="glyphicon glyphicon-search"></span>
+											</h:commandLink>
+											<h:commandLink action="#{bean.switchPresaInCaricoRuoloUfficio}" title="#{i18n['dw4.passa_a_ufficio_presa_in_carico']}" styleClass="btn btn-default">
+							        			<f:ajax execute="@form" render="templateForm:responsabilitaPanel" />
+							        			<span class="glyphicon glyphicon-user"></span>
+							        		</h:commandLink>
+										</div>
+									</div>
+								</div>
+							</h:panelGroup>
+						</div>
+					</h:panelGroup>
+				</h:panelGroup>
+
 			</h:panelGroup>
 		</div> <!-- /fieldset -->
 	</h:panelGroup>

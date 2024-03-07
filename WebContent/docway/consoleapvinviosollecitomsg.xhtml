@@ -14,7 +14,7 @@
 				<div class="modal-dialog">
 					<div class="modal-content jsf-modal">
 						<div class="modal-header">
-							<h:commandButton class="close" action="#{pageBean.hideInviaSollecito}" value="&#215;">
+							<h:commandButton styleClass="close" action="#{pageBean.hideInviaSollecito}" value="&#215;">
 		                    	<f:ajax render="sollecitomsg"/>
 							</h:commandButton>
 							
@@ -34,10 +34,10 @@
 								</h:panelGroup>
 							</h:panelGroup>
 							
-							<h:inputTextarea value="#{pageBean.xml}" rendered="#{pageBean.debugMode}" styleClass="form-control" rows="10"/>
+							<h:inputTextarea value="#{pageBean.xml}" rendered="#{pageBean.debugMode}" styleClass="form-control debug-textarea" rows="10"/>
 						</div>
 						<div class="modal-footer">
-							<h:commandButton class="btn btn-default" action="#{pageBean.hideInviaSollecito}" value="#{i18n['acl.close']}">
+							<h:commandButton styleClass="btn btn-default" action="#{pageBean.hideInviaSollecito}" value="#{i18n['acl.close']}">
 		                    	<f:ajax render="sollecitomsg"/>
 							</h:commandButton>
 						</div>

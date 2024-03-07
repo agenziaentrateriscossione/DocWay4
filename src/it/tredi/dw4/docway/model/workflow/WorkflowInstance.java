@@ -1,9 +1,11 @@
 package it.tredi.dw4.docway.model.workflow;
 
 import it.tredi.dw4.model.XmlEntity;
+import it.tredi.dw4.utils.DateConverter;
 import it.tredi.dw4.utils.XMLUtil;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -18,6 +20,10 @@ public class WorkflowInstance extends XmlEntity {
 	private String label = "";
 	private String description = "";
 	private String status = "";
+	private String startedDate = "";
+	private String endedDate = "";
+	
+	private String bonitaVersion = "";
 	
 	private List<Task> tasks;
 	private List<Ex_Action> ex_actions = new ArrayList<Ex_Action>();
@@ -105,6 +111,10 @@ public class WorkflowInstance extends XmlEntity {
 		this.description 	= XMLUtil.parseStrictElement(dom, "Instance/Description");
 		this.status 		= XMLUtil.parseStrictAttribute(dom, "Instance/@status");
 		
+		this.bonitaVersion  = XMLUtil.parseStrictAttribute(dom, "Instance/@bonitaVersion");
+		this.startedDate 		= XMLUtil.parseStrictAttribute(dom, "Instance/@startedDate");
+		this.endedDate 		= XMLUtil.parseStrictAttribute(dom, "Instance/@endedDate");
+		
 		this.tasks 			= XMLUtil.parseSetOfElement(dom, "Instance/Tasks/Task", new Task());
 		this.ex_actions 	= XMLUtil.parseSetOfElement(dom, "Instance/ex_action", new Ex_Action());
 
@@ -116,4 +126,27 @@ public class WorkflowInstance extends XmlEntity {
 		return null;
 	}
 
+	public String getBonitaVersion() {
+		return bonitaVersion;
+	}
+
+	public void setBonitaVersion(String bonitaVersion) {
+		this.bonitaVersion = bonitaVersion;
+	}
+
+	public String getStartedDate() {
+		return startedDate;
+	}
+
+	public void setStartedDate(String startedDate) {
+		this.startedDate = startedDate;
+	}
+
+	public String getEndedDate() {
+		return endedDate;
+	}
+
+	public void setEndedDate(String endedDate) {
+		this.endedDate = endedDate;
+	}
 }

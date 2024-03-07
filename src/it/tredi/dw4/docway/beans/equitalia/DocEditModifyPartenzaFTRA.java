@@ -1,15 +1,15 @@
 package it.tredi.dw4.docway.beans.equitalia;
 
-import it.tredi.dw4.utils.XMLDocumento;
+import org.dom4j.Document;
+
 import it.tredi.dw4.adapters.ErrormsgFormsAdapter;
 import it.tredi.dw4.docway.beans.DocEditModifyPartenza;
 import it.tredi.dw4.docway.model.equitalia.ExtraFTRA;
 import it.tredi.dw4.i18n.I18N;
 import it.tredi.dw4.utils.Const;
 import it.tredi.dw4.utils.DateUtil;
+import it.tredi.dw4.utils.XMLDocumento;
 import it.tredi.dw4.utils.XMLUtil;
-
-import org.dom4j.Document;
 
 public class DocEditModifyPartenzaFTRA  extends DocEditModifyPartenza {
 
@@ -101,18 +101,15 @@ public class DocEditModifyPartenzaFTRA  extends DocEditModifyPartenza {
 	 */
 	public boolean checkRequiredField() {
 		String formatoData = Const.DEFAULT_DATE_FORMAT; // TODO Dovrebbe essere caricato dal file di properties dell'applicazione
-		boolean result = super.checkRequiredField();
-		
-		// controllo sul campo cliente
-		if (getDoc().getRif_esterni().get(0).getNome() == null || getDoc().getRif_esterni().get(0).getNome().length() == 0) {
-			this.setErrorMessage("templateForm:docEditDestinatari:0:nomeDestinatario_input", I18N.mrs("acl.requiredfield") + " '" + I18N.mrs("dw4.cliente") + "'");
-			result = true;
-		}
+		boolean result = super.checkRequiredField(true);
 		
 		// controllo sul fornitore della fattura
 		if (getDoc().getRif_esterni().get(0).getPartita_iva() == null || getDoc().getRif_esterni().get(0).getPartita_iva().length() == 0
 				|| getDoc().getRif_esterni().get(0).getCodice_fiscale() == null || getDoc().getRif_esterni().get(0).getCodice_fiscale().length() == 0) {
-			this.setErrorMessage("templateForm:docEditDestinatari:0:nomeDestinatario_input", I18N.mrs("dw4.il_campo_cliente_e_privo_di_piva_cf"));
+			String fieldId = "templateForm:docEditDestinatari:0:nomeDestinatario_input";
+			if (!getDoc().getRif_esterni().get(0).isVincolato())
+				fieldId = "templateForm:docEditDestinatari:0:nomeDestinatarioLibero";
+			this.setErrorMessage(fieldId, I18N.mrs("dw4.il_campo_cliente_e_privo_di_piva_cf"));
 			result = true;
 		}
 		

@@ -101,7 +101,7 @@
 		<ui:include src="./loadingbar@exportCSV.xhtml"><ui:param name="pageBean" value="#{showtitlesSeduta}"/></ui:include>
 		<ui:include src="./exportCSVAdvanced.xhtml"> <ui:param name="pageBean" value="#{showtitlesSeduta}"/></ui:include>
 		
-		<h:inputTextarea value="#{showtitlesSeduta.xml}" rendered="#{showtitlesSeduta.debugMode}" styleClass="form-control" rows="10" />
+		<h:inputTextarea value="#{showtitlesSeduta.xml}" rendered="#{showtitlesSeduta.debugMode}" styleClass="form-control debug-textarea" rows="10" />
 	</div>
 </ui:define>
 

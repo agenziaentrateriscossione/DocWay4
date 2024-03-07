@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" 
+	  xmlns:h="http://java.sun.com/jsf/html" 
+	  xmlns:ui="http://java.sun.com/jsf/facelets" 
+	  xmlns:f="http://java.sun.com/jsf/core"
+	  xmlns:c="http://java.sun.com/jsp/jstl/core"
+	  xmlns:p="http://xmlns.jcp.org/jsf/passthrough">
+<ui:composition>
+
+	<h:panelGroup layout="block" id="raccIndiceAggregaDocsPopup">
+		<h:panelGroup rendered="#{showdocRaccoglitoreINDICE.showAggregaDocsDialog or showdocRaccoglitoreINDICE.showStampaUfficioRuolo}">
+			<!-- Modal -->
+			<div id="raccIndiceAggregaDocsModal" class="modal fade in" aria-hidden="false" aria-labelledby="raccIndiceAggregaDocsModalLabel" role="dialog" tabindex="-1" style="display: block;">
+			<!--div class="modal fade" id="raccIndiceAggregaDocsModal" tabindex="-1" role="dialog" aria-labelledby="raccIndiceAggregaDocsModalLabel" aria-hidden="true"-->
+				<div class="modal-dialog modal-lg docedit">
+					<div class="modal-content jsf-modal">
+						<div class="modal-header">
+							<h:commandLink styleClass="close" action="#{showdocRaccoglitoreINDICE.closeAggregaDocs}" value="&#215;">
+								<f:ajax execute="@form" render="@form" />
+							</h:commandLink>
+		                   	
+							<h4 class="modal-title" id="raccIndiceAggregaDocsModalLabel">#{showdocRaccoglitoreINDICE.showAggregaDocsDialog ? i18n['dw4.raccind_aggrega_docs'] : i18n['dw4.genera_stampa_ufficio_ruolo']}</h4>
+						</div>
+						<div class="modal-body">
+						
+							<div class="form-group">
+								<label for="raccIndiceSelectAll" class="col-sm-3 control-label"></label>
+								<div class="col-sm-8">
+									<div class="btn-group">
+  										<button class="btn btn-default btn-sm" onclick="return raccIndiceSelezionaTutti();" onkeypress="return raccIndiceSelezionaTutti();">#{i18n['dw4.seleziona_tutti']}</button>
+										<button class="btn btn-default btn-sm" onclick="return raccIndiceDeselezionaTutti();" onkeypress="return raccIndiceDeselezionaTutti();">#{i18n['dw4.deseleziona_tutti']}</button>
+									</div>
+								</div>
+							</div>
+							
+							<div class="form-group">
+								<!--<label class="col-sm-3 control-label">#{i18n['dw4.voci_dell_indice']}</label>-->
+								<div class="col-xs-1"></div>
+								<div class="col-xs-9">
+									<ui:repeat id="docaggrega" var="docAggrega" value="#{showdocRaccoglitoreINDICE.raccoglitore.rif_contenuto}" varStatus="status">
+										<div class="voce-container">
+											<span class="#{(empty docAggrega.level or docAggrega.level == 0) ? '' : ('level-').concat(docAggrega.level)}"></span>
+											<h:panelGroup rendered="#{showdocRaccoglitoreINDICE.showAggregaDocsDialog}">
+												<h:selectBooleanCheckbox id="voceIndiceAggrega" class="voceIndice-aggrega-check #{(docAggrega.state ne 'ready' or (showdocRaccoglitoreINDICE.formsAdapter.funzionalitaDisponibili['copertinaByVoce'] and status.index == 0)) ? 'fixed-value' : 'editable'}" value="#{docAggrega.check}" disabled="#{(docAggrega.state eq 'ready') ? false : true}" readonly="#{(docAggrega.state ne 'ready' or (showdocRaccoglitoreINDICE.formsAdapter.funzionalitaDisponibili['copertinaByVoce'] and status.index == 0)) ? true : false}" />
+											</h:panelGroup>
+											<h:panelGroup rendered="#{showdocRaccoglitoreINDICE.showStampaUfficioRuolo}">
+												<h:selectBooleanCheckbox id="voceIndiceUfficioRuolo" class="voceIndice-aggrega-check #{(docAggrega.state ne 'ready' or (showdocRaccoglitoreINDICE.formsAdapter.funzionalitaDisponibili['copertinaByVoce'] and status.index == 0)) ? 'fixed-value' : 'editable'}" value="#{docAggrega.checkUfficioRuolo}" disabled="#{(docAggrega.state eq 'ready') ? false : true}" readonly="#{(docAggrega.state ne 'ready' or (showdocRaccoglitoreINDICE.formsAdapter.funzionalitaDisponibili['copertinaByVoce'] and status.index == 0)) ? true : false}" />
+											</h:panelGroup>
+											<label for="templateForm:docaggrega:#{status.index}:voceIndice" class="normal-weight-text voceIndice-aggrega-check-label"><h:outputText value="#{docAggrega.text}" /></label>
+										</div>
+									</ui:repeat>
+								</div>
+							</div>
+							 
+							 
+							<script type="text/javascript">
+							function raccIndiceSelezionaTutti() {
+								$('.voceIndice-aggrega-check:checkbox').filter(".editable").each(function() {
+							        this.checked = true;
+							    });
+								return false;
+							}
+							
+							function raccIndiceDeselezionaTutti() {
+								$('.voceIndice-aggrega-check:checkbox').filter(".editable").each(function() {
+							        this.checked = false;
+							    });
+								return false;
+							}
+							
+							//$("#raccIndiceSelectAll").change(function() {  
+							//    var status = this.checked; 
+							//    if (status) {
+							//	    $('.voceIndice-aggrega-check:checkbox').filter(".editable").each(function() {
+							//	        this.checked = status;
+							//	    });
+							//    }
+							//});
+
+							//$('.voceIndice-aggrega-check:checkbox').filter(".editable").change(function() {
+							//	if(this.checked == false) {
+							//        $("#raccIndiceSelectAll")[0].checked = false;
+							//    }
+							//});
+							
+							$('.voceIndice-aggrega-check:checkbox').filter(".fixed-value").change(function() {
+								this.checked = !this.checked; // viene riassegnato il precedente stato di check
+							});
+							</script>
+						</div>
+						<div class="modal-footer">
+							<h:commandLink action="#{showdocRaccoglitoreINDICE.startAggregaDocs}" styleClass="btn btn-primary" value="#{i18n['acl.confirm']}" onclick="return confermaAggregaDocsRaccIndice();" onkeypress="return confermaAggregaDocsRaccIndice();">
+								<f:ajax execute="@form" render="@form" />
+							</h:commandLink>
+							
+							<h:commandLink styleClass="btn btn-default" action="#{showdocRaccoglitoreINDICE.closeAggregaDocs}" value="#{i18n['acl.close']}">
+								<f:ajax execute="@form" render="@form" />
+							</h:commandLink>
+						</div>
+					</div>
+				</div>
+			</div>
+			<!--h:outputScript>
+				$('#raccIndiceAggregaDocsModal').modal('show');
+			</h:outputScript-->
+		</h:panelGroup>
+	</h:panelGroup>
+
+</ui:composition>
+</html>

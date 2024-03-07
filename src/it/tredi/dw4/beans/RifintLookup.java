@@ -124,9 +124,52 @@ public abstract class RifintLookup extends Page {
 		return null;
 	}
 	
-	public String confirm() throws Exception{
+	public String getFirstPosition(){
+		return String.valueOf(getFormsAdapter().getFirstPosition());
+	}
+	
+	public String getLastPosition(){
+		return String.valueOf(getFormsAdapter().getLastPosition());
+	}
+	
+	public int getCount(){
+		return getFormsAdapter().getDefaultForm().getParamAsInt("count");
+	}
+	
+	/**
+	 * Caricamento di una specifica pagina della lista titoli
+	 * @param pageNumber
+	 * @return
+	 * @throws Exception
+	 */
+	public String paginaSpecifica(int pageNumber) throws Exception {
+		try {
+			if (pageNumber <= 0)
+				pageNumber = 1;
+			else if (pageNumber > getFormsAdapter().getTotal())
+				pageNumber = getFormsAdapter().getTotal();
+			
+			getFormsAdapter().paginaSpecifica(pageNumber);
+			XMLDocumento response = getFormsAdapter().getDefaultForm().executePOST(getUserBean());
+			getFormsAdapter().fillFormsFromResponse(response);
+			init(response.getDocument());
+			
+			return null;
+		} 
+		catch (Throwable t){
+			handleErrorResponse(ErrormsgFormsAdapter.buildErrorResponse(t));
+			getFormsAdapter().fillFormsFromResponse(getFormsAdapter().getLastResponse()); //restore delle form
+			return null;
+		}
+	}
+	
+	public String confirm(Object todoOnCompleteLookupObject, String todoOnCompleteLookupMethod) throws Exception{
 		Titolo titolo = (Titolo) FacesContext.getCurrentInstance().getExternalContext().getRequestMap().get("title");
-		return confirm(titolo);
+		return confirm(titolo, todoOnCompleteLookupObject, todoOnCompleteLookupMethod);
+	}
+	
+	public String confirm() throws Exception{
+		return confirm(null, "");
 	}
 	
 	public void cleanFields(String campi) throws Exception {
@@ -141,18 +184,22 @@ public abstract class RifintLookup extends Page {
 			campiL.add(campo);
 		}
 		titolo.setCampi(campiL);
-		fillFields(titolo, false);
+		fillFields(titolo, false, null, "");
 	}
 
-	public String confirm(Titolo titolo) throws Exception{
+	public String confirm(Titolo titolo, Object todoOnCompleteLookupObject, String todoOnCompleteLookupMethod) throws Exception{
 		if (isFieldValInfoForSecondLookup(titolo)) {
 			// Eseguo un secondo lookup per recuperare tutti i dati relativi al rif int
 			titolo = doSecondLookup(titolo);
 		}
 		
 		if (titolo != null)
-			fillFields(titolo, true);
+			fillFields(titolo, true, todoOnCompleteLookupObject, todoOnCompleteLookupMethod);
 		return close();
+	}
+	
+	public String confirm(Titolo titolo) throws Exception{
+		return confirm(titolo, null, "");
 	}
 	
 	/**
@@ -229,15 +276,15 @@ public abstract class RifintLookup extends Page {
 	}
 	
 	@SuppressWarnings("rawtypes")
-	private void fillFields(Titolo titolo, boolean addRow) throws Exception {
+	private void fillFields(Titolo titolo, boolean addRow, Object todoOnCompleteLookupObject, String todoOnCompleteLookupMethod) throws Exception {
 		String instanceName = "";
-		
 		List<Campo> campiL = titolo.getCampi();
 		for (int campiLIndex = 0; campiLIndex < campiL.size(); campiLIndex++) {
 			String value = campiL.get(campiLIndex).getText();		
 			String xpath = StringUtil.replace(campiL.get(campiLIndex).getNome(), "*rif_interni", "");
 			String []splitL = xpath.split("\\.");
 			Object obj = model;
+			
 			for (int splitLindex = 0; splitLindex < splitL.length - 1; splitLindex++) {
 				String propertyName = splitL[splitLindex];
 				String index = "";
@@ -269,6 +316,18 @@ public abstract class RifintLookup extends Page {
 		
 		if (addRow)
 			LookupUtil.addRowOnLookup(model, instanceName);
+		
+		//tiommi: salvataggio dell'oggetto che ha chiamato il lookup su cui compiere l'azione in todo
+		if (todoOnCompleteLookupObject != null && todoOnCompleteLookupMethod != null && !todoOnCompleteLookupMethod.isEmpty()) {
+			try {
+				// invocazione del metodo di callback
+				Method method = todoOnCompleteLookupObject.getClass().getMethod(todoOnCompleteLookupMethod);
+				method.invoke(todoOnCompleteLookupObject);
+			} 
+			catch (Exception ex) {
+				//TODO messaggio di errore
+			}
+		}
 	}
 
 }

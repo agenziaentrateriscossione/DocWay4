@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" 
+	  xmlns:h="http://java.sun.com/jsf/html" 
+	  xmlns:ui="http://java.sun.com/jsf/facelets" 
+	  xmlns:f="http://java.sun.com/jsf/core"
+	  xmlns:p="http://xmlns.jcp.org/jsf/passthrough">
+<ui:composition>
+
+	<h:panelGroup id="rifinterniRPA" layout="block">
+		<h:panelGroup rendered="#{bean.viewAddRPA}">
+			<!-- Modal -->
+			<div id="rifinterniRpaModal" class="modal fade in" aria-hidden="false" aria-labelledby="rifinterniRpaModalLabel" role="dialog" tabindex="-1" style="display: block;">
+			<!--div class="modal fade" id="rifinterniRpaModal" role="dialog" aria-labelledby="rifinterniRpaModalLabel" aria-hidden="true"-->
+				<div class="modal-dialog modal-lg">
+					<div class="modal-content jsf-modal">
+						<div class="modal-header">
+							<h:commandButton styleClass="close" title="#{i18n['acl.close']}" action="#{bean.closeAddRPA}" p:data-dismiss="modal"  value="&#215;" >
+			        			<f:ajax render="rifinterniRPA"/>
+			        		</h:commandButton>
+			        		
+			        		<h4 class="modal-title" id="rifinterniRpaModalLabel">#{i18n['dw4.responsabilita_documento']}</h4>
+						</div>
+						<div class="modal-body">
+							
+							<div id="rpa_Fields">
+								<h:panelGroup rendered="#{!bean.raccoglitore.sendMailSelectedRifInterni}">
+									<div class="form-group">
+										<label for="templateForm:rpa_sendMailRifInterniCheck" class="col-sm-2 control-label">#{i18n['dw4.invia_email_di_notifica']}</label>
+										<div class="col-sm-1">
+											<h:selectBooleanCheckbox value="#{bean.raccoglitore.sendMailRifInterni}" id="rpa_sendMailRifInterniCheck" styleClass="#{ component.valid ? '' : 'invalidinput' }" />
+										</div>
+									</div>
+								</h:panelGroup>
+								
+								<div class="form-group">
+									<label for="templateForm:rpa_controllaNomiCheck" class="col-sm-2 control-label">#{i18n['dw4.controlla_variazione_nome_ufficio_persona']}</label>
+									<div class="col-sm-1">
+										<h:selectBooleanCheckbox value="#{bean.raccoglitore.checkNomi}" id="rpa_controllaNomiCheck" />
+									</div>
+								</div>
+								
+								<ui:include src="./rifinterni.xhtml">
+						        	<ui:param name="rifintType" value="rpa" />
+						        	<ui:param name="customLabel" value="#{customLabel}" />
+					        		<ui:param name="editable" value="true" /> <!-- TODO Da verificare in base alle diverse casistiche (hideIfInsInFascOrSottofasc, showIfInsInFascAndNotSottofasc, ecc. ) -->
+					        		<ui:param name="pageBean" value="#{bean}" />
+					        		<ui:param name="rifintBean" value="#{bean.raccoglitore.assegnazioneRPA}" />
+					        		<ui:param name="refresh" value="@form"/>
+					        		<ui:param name="sendMailSelectedRifInterni" value="#{bean.raccoglitore.sendMailSelectedRifInterni}"/>
+					        	</ui:include>
+					        	
+					        	<h:panelGroup rendered="#{bean.fromShowTitles}">
+					        		<h:inputHidden id="trasferMinuta" value="#{bean.trasferisciMinuta}" />
+								</h:panelGroup>
+							</div>
+							
+						</div>
+						<div class="modal-footer">
+							<h:commandLink rendered="#{!bean.fromShowTitles}" action="#{bean.confirmAddRPA}" styleClass="btn btn-primary openwaitmsg" value="#{i18n['acl.save']}" />
+							<h:commandLink rendered="#{bean.fromShowTitles}" action="#{bean.confirmAddRPA}" onclick="return trasferisciMinuta();" styleClass="btn btn-primary openwaitmsg" value="#{i18n['acl.save']}" />
+							
+							<h:commandButton styleClass="btn btn-default" title="#{i18n['acl.close']}" action="#{bean.closeAddRPA}" p:data-dismiss="modal"  value="#{i18n['acl.close']}" >
+			        			<f:ajax render="rifinterniRPA"/>
+			        		</h:commandButton>
+						</div>
+					</div>
+				</div>
+			</div>
+			<!--script type="text/javascript">
+			$('#rifinterniRpaModal').modal('show');
+			</script-->
+		</h:panelGroup>
+	</h:panelGroup>
+
+</ui:composition>   
+</html>

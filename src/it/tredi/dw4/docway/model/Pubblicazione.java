@@ -13,13 +13,15 @@ public class Pubblicazione extends XmlEntity {
 	private String dal = "";
 	private String al = "";
 	private String tipo = "";
+	private String dataRitiro = "";
 	
 	@Override
 	public XmlEntity init(Document dom) {
 		this.dal 	= XMLUtil.parseAttribute(dom, "pubblicazione/@dal");
     	this.al 	= XMLUtil.parseAttribute(dom, "pubblicazione/@al");
     	this.tipo 	= XMLUtil.parseAttribute(dom, "pubblicazione/@tipo");
-    	
+    	this.dataRitiro = XMLUtil.parseAttribute(dom, "pubblicazione/@data_ritiro");
+    			
         return this;
 	}
 
@@ -34,6 +36,8 @@ public class Pubblicazione extends XmlEntity {
     		params.put(prefix+".@al", this.al);
     	if (!this.tipo.equals(""))
     		params.put(prefix+".@tipo", this.tipo);
+    	if (!this.dataRitiro.equals(""))
+    		params.put(prefix+".@data_ritiro", this.dataRitiro);
     	
     	return params;
 	}
@@ -60,6 +64,14 @@ public class Pubblicazione extends XmlEntity {
 
 	public void setTipo(String tipo) {
 		this.tipo = tipo;
+	}
+	
+	public String getDataRitiro() {
+		return dataRitiro;
+	}
+
+	public void setDataRitiro(String dataRitiro) {
+		this.dataRitiro = dataRitiro;
 	}
 
 }

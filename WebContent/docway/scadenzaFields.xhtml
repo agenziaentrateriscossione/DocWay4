@@ -37,7 +37,7 @@
 				<label for="templateForm:dataScadenzaDoc" class="col-sm-3 control-label"><span>#{i18n['dw4.data_scadenza']}</span></label>
 				<div class="col-sm-2">
 					<h:panelGroup rendered="#{(beanDoc.scadenza.tipo eq 'fissa')}">
-						<div class="input-group date" data-date-format="dd/mm/yyyy">
+						<div class="input-group date free" data-date-format="dd/mm/yyyy">
 							<h:inputText id="dataScadenzaDoc" value="#{beanDoc.scadenza.data_scadenza}" readonly="false" styleClass="#{ component.valid ? '' : 'invalidinput' } form-control datepicker" />
 							<span class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></span>
 						</div>

@@ -1,5 +1,6 @@
 package it.tredi.dw4.docway.adapters;
 
+import it.tredi.dw4.utils.Logger;
 import it.tredi.dw4.utils.XMLDocumento;
 import it.tredi.dw4.adapters.AdaptersConfigurationLocator.AdapterConfig;
 import it.tredi.dw4.adapters.DocEditFormsAdapter;
@@ -54,6 +55,44 @@ public class DocWayCheckinFormsAdapter extends DocEditFormsAdapter {
 			_cd = "";
 		
 		return _cd;
+	}
+	
+	/**
+	 * Ritorna il valore impostato come sizeMaxFile (dimensione massima dei file da uploadare)
+	 * @return
+	 */
+	public int getSizeMaxFile() {
+		int size = 0;
+		String sizeMaxFile = defaultForm.getParam("sizeMaxFile");
+		try {
+			if (sizeMaxFile == null || sizeMaxFile.isEmpty())
+				sizeMaxFile = "0";
+			size = Integer.parseInt(sizeMaxFile);
+		}
+		catch (Exception e) {
+			Logger.warn("DocDocWayDocEditFormsAdapter.getSizeMaxFile(): unable to parse sizeMaxFile -> " + sizeMaxFile);
+			size = 0;
+		}
+		return size;
+	}
+	
+	/**
+	 * Ritorna il valore impostato come sizeMaxImg (dimensione massima delle immagini da uploadare)
+	 * @return
+	 */
+	public int getSizeMaxImg() {
+		int size = 0;
+		String sizeMaxImg = defaultForm.getParam("sizeMaxImg");
+		try {
+			if (sizeMaxImg == null || sizeMaxImg.isEmpty())
+				sizeMaxImg = "0";
+			size = Integer.parseInt(sizeMaxImg);
+		}
+		catch (Exception e) { 
+			Logger.warn("DocDocWayDocEditFormsAdapter.getSizeMaxImg(): unable to parse sizeMaxImg -> " + sizeMaxImg);
+			size = 0;
+		}
+		return size;
 	}
 	
 	/**

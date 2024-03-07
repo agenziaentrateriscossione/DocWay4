@@ -20,35 +20,35 @@
 			<h:panelGroup rendered="#{!showdocVarieDSGA.popupPage}">
 				<div class="col-xs-12 col-sm-2 col-md-2 col-lg-2 col-sm-push-10 col-md-push-10 col-lg-push-10 text-right">
 					<!-- azioni rapide: inizio -->
-					
+
 					<ui:include src="../smartActions.xhtml">
 						<ui:param name="bean" value="#{showdocVarieDSGA}"/>
 					</ui:include>
-					
+
 					<!-- azioni rapide: fine -->
 				</div>
 			</h:panelGroup>
 			<div class="col-xs-12 #{(showdocVarieDSGA.popupPage) ? 'col-sm-12 col-md-12 col-lg-12' : 'col-sm-10 col-md-10 col-lg-10 col-sm-pull-2 col-md-pull-2 col-lg-pull-2'}">
 				<!-- contenuto doc: inizio -->
-				
+
 				<h:panelGroup rendered="#{empty showdocVarieDSGA.doc.non_disponibile.estremi}">
 					<ui:include src="../showdoc@title.xhtml">
 						<ui:param name="doc" value="#{showdocVarieDSGA.doc}"/>
 						<ui:param name="icon" value="glyphicons-pro file dsga" />
 					</ui:include>
-					
+
 					<ui:include src="../showdoc@annullato.xhtml"><ui:param name="bean" value="#{showdocVarieDSGA}"/></ui:include>
 					<ui:include src="../showdoc@conservazione.xhtml"><ui:param name="bean" value="#{showdocVarieDSGA}"/></ui:include>
-					
+
 					<div id="fixedshowdoc" class="fixed-showdoc">
 						<ui:include src="../showdoc@statidoc.xhtml">
 							<ui:param name="bean" value="#{showdocVarieDSGA}"/>
 						</ui:include>
-						
+
 						<div class="showdoc-section">
 							<div class="title">
 								#{i18n['dw4.datidoc']}
-								
+
 								<div class="pull-right">
 									<span class="glyphicon glyphicon-envelope" title="#{i18n['dw4.datidoc']}"></span>
 								</div>
@@ -58,7 +58,7 @@
 									<ui:param name="bean" value="#{showdocVarieDSGA}"/>
 								</ui:include>
 							</dl>
-						
+
 							<h:panelGroup rendered="#{!empty showdocVarieDSGA.doc.extra.et_classificaelaborato or !empty showdocVarieDSGA.doc.extra.et_titoloelaborato or !empty showdocVarieDSGA.doc.extra.customSelectSedeArchivio or !empty showdocVarieDSGA.doc.extra.et_zonaarchivio or !empty showdocVarieDSGA.doc.extra.et_notearchivio}">
 								<!-- dati specifici del repertorio : inizio -->
 								<dl class="dl-horizontal" style="margin-top:10px;">
@@ -84,37 +84,41 @@
 									</h:panelGroup>
 								</dl>
 								<!-- dati specifici del repertorio : fine -->
-							</h:panelGroup>	
+							</h:panelGroup>
 						</div>
-						
+
 						<ui:include src="../showdoc@datiarchivio.xhtml">
 							<ui:param name="bean" value="#{showdocVarieDSGA}"/>
 						</ui:include>
-						
+
 						<ui:include src="../aspects.xhtml">
 							<ui:param name="bean" value="#{showdocVarieDSGA}"/>
 						</ui:include>
-						
+
+						<ui:include src="../../customfields/showdoc@customfields.xhtml">
+							<ui:param name="bean" value="#{showdocVarieDSGA}"/>
+			        	</ui:include>
+
 						<ui:include src="../showdoc@responsabilita.xhtml">
 							<ui:param name="bean" value="#{showdocVarieDSGA}"/>
 						</ui:include>
-						
+
 						<ui:include src="../showdoc@xwfiles.xhtml">
 							<ui:param name="bean" value="#{showdocVarieDSGA}"/>
 						</ui:include>
-						
+
 						<ui:include src="../showdoc@workflow.xhtml">
 							<ui:param name="bean" value="#{showdocVarieDSGA}"/>
 						</ui:include>
-						
+
 						<ui:include src="../showdoc@postit.xhtml">
 							<ui:param name="bean" value="#{showdocVarieDSGA}"/>
 						</ui:include>
-						
+
 						<ui:include src="../showdoc@datialtro.xhtml">
 							<ui:param name="bean" value="#{showdocVarieDSGA}"/>
-						</ui:include>					
-						
+						</ui:include>
+
 						<ui:include src="../history.xhtml">
 							<ui:param name="bean" value="#{showdocVarieDSGA.doc}"/>
 							<ui:param name="viewbean" value="#{showdocVarieDSGA}"/>
@@ -123,20 +127,20 @@
 					</div>
 				</h:panelGroup>
 				<h:panelGroup rendered="#{!empty showdocVarieDSGA.doc.non_disponibile.estremi}">
-				
+
 					<ui:include src="../showdoc@docnondisponibile.xhtml">
 						<ui:param name="bean" value="#{showdocVarieDSGA}"/>
 					</ui:include>
-					
+
 				</h:panelGroup>
-				
-				<h:inputTextarea value="#{showdocVarieDSGA.xml}" rendered="#{showdocVarieDSGA.debugMode}" styleClass="form-control" rows="10" />
-				
+
+				<h:inputTextarea value="#{showdocVarieDSGA.xml}" rendered="#{showdocVarieDSGA.debugMode}" styleClass="form-control debug-textarea" rows="10" />
+
 				<!-- contenuto doc: fine -->
 			</div>
 		</div>
 		<!-- scheda show: fine -->
-		
+
 		<ui:include src="../postit.xhtml"><ui:param name="pageBean" value="#{docwayPostit}"/></ui:include>
 		<ui:include src="../verificaFirma.xhtml"><ui:param name="pageBean" value="#{docwayVerificaFirma}"/></ui:include>
 		<ui:include src="../annullamentoDoc.xhtml"><ui:param name="pageBean" value="#{docwayAnnullamentoDoc}"/></ui:include>
@@ -150,6 +154,10 @@
 		<ui:include src="../rifintLookup.xhtml"> <ui:param name="pageBean" value="#{rifInt}"/></ui:include>
 		<ui:include src="../show@task@vars.xhtml"><ui:param name="bean" value="#{docwayWfTaskVars}"/></ui:include>
 		<ui:include src="../showPersoneRuolo.xhtml"><ui:param name="bean" value="#{docwayShowPersoneRuolo}"/></ui:include>
+		<ui:include src="../modalePresaInCarico.xhtml"><ui:param name="bean" value="#{showdocVarieDSGA}"/></ui:include>
+		<ui:include src="../modalePersoneIncaricate.xhtml"><ui:param name="bean" value="#{docWayShowPersonePresaInCarico}"/></ui:include>
+		<ui:include src="../../customfields/customFields@editPopup.xhtml"><ui:param name="pageBean" value="#{docEditCustomFields}"/></ui:include>
+
 	</div>
 </ui:define>
 

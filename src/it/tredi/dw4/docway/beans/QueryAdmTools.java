@@ -19,7 +19,7 @@ import org.dom4j.Document;
 
 public class QueryAdmTools extends DocWayQuery {
 	private String xml;
-	
+
 	private boolean administrationMode = false;
 	private String tipodoc = "";
 	private String print = "";
@@ -27,36 +27,41 @@ public class QueryAdmTools extends DocWayQuery {
 	private String tipoarc_custom = "";
 	private String cod_sede_import = "";
 	private boolean chkImpAttach = false;
-	
+
 	private String fileNameSegnatura = "";
 	private String fileNameRepertorio = "";
 	private String fileNameRegistroEmergenza = "";
 	private String fileNameImportDocumenti = "";
 	
+	// Tipologia di azione richiesta (ed eseguita con apertura della loadingbar)
+	private String loadingbarAction = "";
+
 	private DocDocWayQueryFormsAdapter formsAdapter;
-	
+
 	public QueryAdmTools() throws Exception {
 		this.formsAdapter = new DocDocWayQueryFormsAdapter(AdaptersConfigurationLocator.getInstance().getAdapterConfiguration("docwayService"));
 	}
-	
+
 	public void init(Document dom) {
 		this.xml = dom.asXML();
-		
+
 		if (XMLUtil.parseStrictAttribute(dom, "/response/@administrationMode").equals("true"))
 			this.administrationMode = true;
 		else
 			this.administrationMode = false;
-		
+
 		this.print = "txt";
 		this.tipoarc = "centrale";
-		
+
 		this.cod_sede_import = XMLUtil.parseStrictAttribute(dom, "/response/@cod_sede");
-    }	
-	
+		
+		this.loadingbarAction = "";
+    }
+
 	public DocDocWayQueryFormsAdapter getFormsAdapter() {
 		return formsAdapter;
 	}
-	
+
 	public String getXml() {
 		return xml;
 	}
@@ -64,7 +69,7 @@ public class QueryAdmTools extends DocWayQuery {
 	public void setXml(String xml) {
 		this.xml = xml;
 	}
-	
+
 	public boolean isAdministrationMode() {
 		return administrationMode;
 	}
@@ -72,7 +77,7 @@ public class QueryAdmTools extends DocWayQuery {
 	public void setAdministrationMode(boolean administrationMode) {
 		this.administrationMode = administrationMode;
 	}
-	
+
 	public String getTipodoc() {
 		return tipodoc;
 	}
@@ -80,7 +85,7 @@ public class QueryAdmTools extends DocWayQuery {
 	public void setTipodoc(String tipologiaDocumento) {
 		this.tipodoc = tipologiaDocumento;
 	}
-	
+
 	public String getPrint() {
 		return print;
 	}
@@ -88,7 +93,7 @@ public class QueryAdmTools extends DocWayQuery {
 	public void setPrint(String tipoStampa) {
 		this.print = tipoStampa;
 	}
-	
+
 	public String getTipoarc() {
 		return tipoarc;
 	}
@@ -104,7 +109,7 @@ public class QueryAdmTools extends DocWayQuery {
 	public void setTipoarc_custom(String tipoarc_custom) {
 		this.tipoarc_custom = tipoarc_custom;
 	}
-	
+
 	public String getCod_sede_import() {
 		return cod_sede_import;
 	}
@@ -112,7 +117,7 @@ public class QueryAdmTools extends DocWayQuery {
 	public void setCod_sede_import(String cod_sede_import) {
 		this.cod_sede_import = cod_sede_import;
 	}
-	
+
 	public boolean isChkImpAttach() {
 		return chkImpAttach;
 	}
@@ -120,7 +125,7 @@ public class QueryAdmTools extends DocWayQuery {
 	public void setChkImpAttach(boolean chkImpAttach) {
 		this.chkImpAttach = chkImpAttach;
 	}
-	
+
 	public String getFileNameSegnatura() {
 		return fileNameSegnatura;
 	}
@@ -153,15 +158,23 @@ public class QueryAdmTools extends DocWayQuery {
 		this.fileNameImportDocumenti = fileNameImportDocumenti;
 	}
 	
+	public String getLoadingbarAction() {
+		return loadingbarAction;
+	}
+
+	public void setLoadingbarAction(String loadingbarAction) {
+		this.loadingbarAction = loadingbarAction;
+	}
+
 	@Override
 	public String queryPlain() throws Exception {
 		return null;
 	}
-	
+
 	/**
 	 * Cambio della modalita' di accesso agli strumenti di amministrazione (solo
 	 * amministratori, tutti gli utenti)
-	 * 
+	 *
 	 * @return
 	 * @throws Exception
 	 */
@@ -169,18 +182,18 @@ public class QueryAdmTools extends DocWayQuery {
 		try {
 			//setGlobalFormRestore('xverb');
 			String oldXverb = formsAdapter.getDefaultForm().getParam("xverb");
-			formsAdapter.changeAdmMode(); 
-			
+			formsAdapter.changeAdmMode();
+
 			XMLDocumento response = formsAdapter.getDefaultForm().executePOST(getUserBean());
 			if (handleErrorResponse(response)) {
 				formsAdapter.fillFormsFromResponse(formsAdapter.getLastResponse()); //restore delle form
 				return null;
 			}
-			
+
 			formsAdapter.fillFormsFromResponse(response);
 			formsAdapter.getDefaultForm().addParam("xverb", oldXverb);
 			this.init(response.getDocument());
-			
+
 			return null;
 		}
 		catch (Throwable t) {
@@ -189,10 +202,10 @@ public class QueryAdmTools extends DocWayQuery {
 			return null;
 		}
  	}
-	
+
 	/**
 	 * Attivazione/Disattivazione dell'invio delle mail di notifica
-	 * 
+	 *
 	 * @return
 	 * @throws Exception
 	 */
@@ -202,26 +215,26 @@ public class QueryAdmTools extends DocWayQuery {
 			String oldVerbo = formsAdapter.getDefaultForm().getParam("verbo");
 			String oldXverb = formsAdapter.getDefaultForm().getParam("xverb");
 			String oldDbTable = formsAdapter.getDefaultForm().getParam("dbTable");
-			
+
 			// Federico 20/10/07: fix: per abilitare/disabilitare le email occorre invocare 'changePropertyValue' [RW 0047701]
 			String propName = "invioEmailNotifica";
 			String propVal = "Si"; // valori possibili: Si/No
 			if (formsAdapter.checkBooleanFunzionalitaDisponibile("invioEmailNotifica", false))
 				propVal = "No";
 			formsAdapter.changePropertyValue(propName, propVal);
-			
+
 			XMLDocumento response = formsAdapter.getDefaultForm().executePOST(getUserBean());
 			if (handleErrorResponse(response)) {
 				formsAdapter.fillFormsFromResponse(formsAdapter.getLastResponse()); //restore delle form
 				return null;
 			}
-			
+
 			formsAdapter.fillFormsFromResponse(response);
 			formsAdapter.getDefaultForm().addParam("verbo", oldVerbo);
 			formsAdapter.getDefaultForm().addParam("xverb", oldXverb);
 			formsAdapter.getDefaultForm().addParam("dbTable", oldDbTable);
 			this.init(response.getDocument());
-			
+
 			return null;
 		}
 		catch (Throwable t) {
@@ -230,7 +243,7 @@ public class QueryAdmTools extends DocWayQuery {
 			return null;
 		}
 	}
-	
+
 	/**
 	 * Apertura in editing del titolario di classificazione
 	 * @return
@@ -239,21 +252,21 @@ public class QueryAdmTools extends DocWayQuery {
 	public String openTitolario() throws Exception {
 		try {
 			formsAdapter.getIndexForm().addParam("verbo", "thEdit");
-			
+
 			XMLDocumento response = this.formsAdapter.getIndexForm().executePOST(getUserBean());
 			if (handleErrorResponse(response)) {
 				formsAdapter.fillFormsFromResponse(formsAdapter.getLastResponse()); //restore delle form
 				return null;
 			}
 			formsAdapter.fillFormsFromResponse(formsAdapter.getLastResponse());
-			
+
 			DocWayThEdit docwayThEdit = new DocWayThEdit();
 			docwayThEdit.getFormsAdapter().fillFormsFromResponse(response);
 			docwayThEdit.init(response.getDocument());
 			//docwayThEdit.setPopupPage(true);
 			docwayThEdit.setActive(true);
 			setSessionAttribute("docwayThEdit", docwayThEdit);
-			
+
 			//return "thEdit";
 			return null;
 		}
@@ -263,10 +276,10 @@ public class QueryAdmTools extends DocWayQuery {
 			return null;
 		}
 	}
-	
+
 	/**
 	 * Trasferimento (fascicoli, documenti)
-	 * 
+	 *
 	 * @return
 	 * @throws Exception
 	 */
@@ -278,12 +291,12 @@ public class QueryAdmTools extends DocWayQuery {
 				formsAdapter.fillFormsFromResponse(formsAdapter.getLastResponse()); //restore delle form
 				return null;
 			}
-			
+
 			QueryTrasferimento queryTrasferimento = new QueryTrasferimento();
 			queryTrasferimento.getFormsAdapter().fillFormsFromResponse(response);
 			queryTrasferimento.init(response.getDocument());
 			setSessionAttribute("queryTrasferimento", queryTrasferimento);
-			
+
 			return "query@trasferimento";
 		}
 		catch (Throwable t) {
@@ -292,10 +305,10 @@ public class QueryAdmTools extends DocWayQuery {
 			return null;
 		}
 	}
-	
+
 	/**
 	 * Caricamento della pagina di strumenti di amministrazione
-	 * 
+	 *
 	 * @return
 	 * @throws Exception
 	 */
@@ -303,12 +316,12 @@ public class QueryAdmTools extends DocWayQuery {
 		try {
 			formsAdapter.gotoTableQ("adm_tools", false);
 			XMLDocumento responseDoc = formsAdapter.getDefaultForm().executePOST(getUserBean());
-		
+
 			QueryAdmTools queryAdmTools = new QueryAdmTools();
 			queryAdmTools.getFormsAdapter().fillFormsFromResponse(responseDoc);
 			queryAdmTools.init(responseDoc.getDocument());
 			setSessionAttribute("queryAdmTools", queryAdmTools);
-			
+
 			return "query@adm_tools";
 		}
 		catch (Throwable t) {
@@ -317,10 +330,10 @@ public class QueryAdmTools extends DocWayQuery {
 			return null;
 		}
 	}
-	
+
 	/**
 	 * Rigenera relazioni tra i fascicoli
-	 * 
+	 *
 	 * @return
 	 * @throws Exception
 	 */
@@ -333,17 +346,18 @@ public class QueryAdmTools extends DocWayQuery {
 				return null;
 			}
 			formsAdapter.fillFormsFromResponse(formsAdapter.getLastResponse()); //restore delle form
-			
+
 			String verbo = response.getAttributeValue("/response/@verbo");
 			if (verbo.equals("loadingbar")) { // caricamento della loadingbar
-				
+
 				DocWayLoadingbar docWayLoadingbar = new DocWayLoadingbar();
 				docWayLoadingbar.getFormsAdapter().fillFormsFromResponse(response);
 				docWayLoadingbar.init(response);
 				setLoadingbar(docWayLoadingbar);
+				this.loadingbarAction = "relazioneFascicoli";
 				docWayLoadingbar.setActive(true);
 			}
-			
+
 			return null;
 		}
 		catch (Throwable t) {
@@ -352,19 +366,19 @@ public class QueryAdmTools extends DocWayQuery {
 			return null;
 		}
 	}
-	
+
 	/**
-	 * Controllo sul tipo di archivio selezionato per l'upload/download 
+	 * Controllo sul tipo di archivio selezionato per l'upload/download
 	 * file per la segnatura
 	 * @param vce
 	 */
-	public void tipoarcValueChange(ValueChangeEvent vce) throws Exception {  
+	public void tipoarcValueChange(ValueChangeEvent vce) throws Exception {
         this.tipoarc = (String) vce.getNewValue();
     }
-	
+
 	/**
 	 * Download del file di segnatura
-	 * 
+	 *
 	 * @return
 	 * @throws Exception
 	 */
@@ -374,10 +388,10 @@ public class QueryAdmTools extends DocWayQuery {
 				this.setErroreResponse(I18N.mrs("dw4.occorre_selezionare_una_tipologia_di_documento"), Const.MSG_LEVEL_WARNING);
 				return null;
 			}
-			
+
 			formsAdapter.downloadFileSegnatura(tipodoc, print, tipoarc, tipoarc_custom);
 			AttachFile attachFile = getFormsAdapter().getDefaultForm().executeDownloadFile(getUserBean());
-			
+
 			return getResponseAttach(attachFile);
 		}
 		catch (Throwable t) {
@@ -386,10 +400,10 @@ public class QueryAdmTools extends DocWayQuery {
 			return null;
 		}
 	}
-	
+
 	/**
 	 * Upload del file di segnatura
-	 * 
+	 *
 	 * @return
 	 * @throws Exception
 	 */
@@ -403,26 +417,31 @@ public class QueryAdmTools extends DocWayQuery {
 				this.setErroreResponse(I18N.mrs("dw4.occorre_selezionare_il_file_da_importare"), Const.MSG_LEVEL_WARNING);
 				return null;
 			}
-			
+
 			UserBean userBean = getUserBean();
 			try {
 				File fileSegnatura = UploadFileUtil.getUserTempFile(fileNameSegnatura, userBean.getLogin(), userBean.getMatricola());
-							
+
 				formsAdapter.uploadFileSegnatura(tipodoc, print, tipoarc, tipoarc_custom);
-				
+
 				XMLDocumento response = getFormsAdapter().getDefaultForm().executeUploadRequestToXMLDocumento(userBean, "uploadFile", fileSegnatura);
+				
 				if (handleErrorResponse(response)) {
 					formsAdapter.fillFormsFromResponse(formsAdapter.getLastResponse()); //restore delle form
 					return null;
+				}
+			   //kveizi 06/02/2018 :  Messaggio di conferma al termine dell'attività di upload del file segnatura.xml
+				else {
+					this.showMessageWarning(I18N.mrs("dw4.upload_completato_successo"), Const.MSG_LEVEL_SUCCESS);
 				}
 			}
 			finally {
 				UploadFileUtil.deleteTempUserFolder(userBean.getLogin(), userBean.getMatricola());
 			}
-			
+
 			this.fileNameSegnatura = "";
 			formsAdapter.fillFormsFromResponse(formsAdapter.getLastResponse()); //restore delle form
-			
+
 			return null;
 		}
 		catch (Throwable t) {
@@ -431,10 +450,10 @@ public class QueryAdmTools extends DocWayQuery {
 			return null;
 		}
 	}
-	
+
 	/**
 	 * Download del file di descrizione dei repertori
-	 * 
+	 *
 	 * @return
 	 * @throws Exception
 	 */
@@ -442,7 +461,7 @@ public class QueryAdmTools extends DocWayQuery {
 		try {
 			formsAdapter.downloadSpecificFile("repLocation");
 			AttachFile attachFile = getFormsAdapter().getDefaultForm().executeDownloadFile(getUserBean());
-			
+
 			return getResponseAttach(attachFile);
 		}
 		catch (Throwable t) {
@@ -451,10 +470,10 @@ public class QueryAdmTools extends DocWayQuery {
 			return null;
 		}
 	}
-	
+
 	/**
 	 * Upload del file di descrizione dei repertori
-	 * 
+	 *
 	 * @return
 	 * @throws Exception
 	 */
@@ -464,26 +483,31 @@ public class QueryAdmTools extends DocWayQuery {
 				this.setErroreResponse(I18N.mrs("dw4.occorre_selezionare_il_file_da_importare"), Const.MSG_LEVEL_WARNING);
 				return null;
 			}
-			
+
 			UserBean userBean = getUserBean();
 			try {
 				File fileRepertorio = UploadFileUtil.getUserTempFile(fileNameRepertorio, userBean.getLogin(), userBean.getMatricola());
-			
+
 				formsAdapter.uploadSpecificFile("repLocation");
-				
+
 				XMLDocumento response = getFormsAdapter().getDefaultForm().executeUploadRequestToXMLDocumento(userBean, "uploadFile", fileRepertorio);
+				
 				if (handleErrorResponse(response)) {
 					formsAdapter.fillFormsFromResponse(formsAdapter.getLastResponse()); //restore delle form
 					return null;
+				}
+				//kveizi 06/02/2018 :  Messaggio di conferma al termine dell'attività di upload del file repertori.xml
+				else {
+					this.showMessageWarning(I18N.mrs("dw4.upload_completato_successo"), Const.MSG_LEVEL_SUCCESS);
 				}
 			}
 			finally {
 				UploadFileUtil.deleteTempUserFolder(userBean.getLogin(), userBean.getMatricola());
 			}
-			
+
 			this.fileNameRepertorio = "";
 			formsAdapter.fillFormsFromResponse(formsAdapter.getLastResponse()); //restore delle form
-			
+
 			return null;
 		}
 		catch (Throwable t) {
@@ -492,10 +516,10 @@ public class QueryAdmTools extends DocWayQuery {
 			return null;
 		}
 	}
-	
+
 	/**
 	 * Importazione del registro di emergenza
-	 * 
+	 *
 	 * @return
 	 * @throws Exception
 	 */
@@ -513,32 +537,32 @@ public class QueryAdmTools extends DocWayQuery {
 				this.setErroreResponse(I18N.mrs("dw4.il_codice_amministrazione_e_codice_area_organizzativa_omogenea_deve_essere_di_almeno_7_caratteri"), Const.MSG_LEVEL_WARNING);
 				return null;
 			}
-			
+
 			UserBean userBean = getUserBean();
 			try {
 				File fileRegistroEmergenza = UploadFileUtil.getUserTempFile(fileNameRegistroEmergenza, userBean.getLogin(), userBean.getMatricola());
-			
+
 				formsAdapter.importRegistroEmergenza(cod_sede_import);
-				
+
 				XMLDocumento response = getFormsAdapter().getDefaultForm().executeUploadRequestToXMLDocumento(userBean, "importRE", fileRegistroEmergenza);
 				if (handleErrorResponse(response)) {
 					formsAdapter.fillFormsFromResponse(formsAdapter.getLastResponse()); //restore delle form
 					return null;
 				}
-				
+
 				this.fileNameRegistroEmergenza = "";
 				formsAdapter.fillFormsFromResponse(formsAdapter.getLastResponse()); //restore delle form
-				
+
 				String verbo = response.getAttributeValue("/response/@verbo");
 				if (verbo.equals("loadingbar")) { // caricamento della loadingbar
-					
+
 					DocWayLoadingbar docWayLoadingbar = new DocWayLoadingbar();
 					docWayLoadingbar.getFormsAdapter().fillFormsFromResponse(response);
 					docWayLoadingbar.init(response);
 					setLoadingbar(docWayLoadingbar);
 					docWayLoadingbar.setActive(true);
 				}
-				
+
 			}
 			finally {
 				UploadFileUtil.deleteTempUserFolder(userBean.getLogin(), userBean.getMatricola());
@@ -552,24 +576,24 @@ public class QueryAdmTools extends DocWayQuery {
 			return null;
 		}
 	}
-	
+
 	/**
 	 * Caricamento dei documenti da smistare (dopo upload da registro
 	 * di emergenza)
-	 * 
+	 *
 	 * @return
 	 * @throws Exception
 	 */
 	public String regDocsDaSmistare() throws Exception {
 		try {
 			formsAdapter.regDocsDaSmistare();
-			
+
 			XMLDocumento response = formsAdapter.getDefaultForm().executePOST(getUserBean());
 			if (handleErrorResponse(response)) {
 				formsAdapter.fillFormsFromResponse(formsAdapter.getLastResponse()); //restore delle form
 				return null;
 			}
-			
+
 			return navigateResponse(response);
 		}
 		catch (Throwable t) {
@@ -578,12 +602,12 @@ public class QueryAdmTools extends DocWayQuery {
 			return null;
 		}
 	}
-	
+
 	/**
 	 * Importazione di documenti da strumenti di amministrazione
-	 * 
 	 * @return
 	 * @throws Exception
+	 * @deprecated Rimosso per un qualche motivo dalla pagina di amministrazione di DocWay
 	 */
 	public String importDocs() throws Exception {
 		try {
@@ -591,32 +615,32 @@ public class QueryAdmTools extends DocWayQuery {
 				this.setErroreResponse(I18N.mrs("dw4.occorre_selezionare_il_file_da_importare"), Const.MSG_LEVEL_WARNING);
 				return null;
 			}
-			
+
 			UserBean userBean = getUserBean();
 			try {
-				File fileImportDocumenti = UploadFileUtil.getUserTempFile(fileNameImportDocumenti, userBean.getLogin(), userBean.getMatricola()); 
-			
+				File fileImportDocumenti = UploadFileUtil.getUserTempFile(fileNameImportDocumenti, userBean.getLogin(), userBean.getMatricola());
+
 				formsAdapter.importDocs(chkImpAttach);
-				
+
 				XMLDocumento response = getFormsAdapter().getDefaultForm().executeUploadRequestToXMLDocumento(userBean, "importFile", fileImportDocumenti);
 				if (handleErrorResponse(response)) {
 					formsAdapter.fillFormsFromResponse(formsAdapter.getLastResponse()); //restore delle form
 					return null;
 				}
-				
+
 				this.fileNameImportDocumenti = "";
 				formsAdapter.fillFormsFromResponse(formsAdapter.getLastResponse()); //restore delle form
-				
+
 				String verbo = response.getAttributeValue("/response/@verbo");
 				if (verbo.equals("loadingbar")) { // caricamento della loadingbar
-					
+
 					DocWayLoadingbar docWayLoadingbar = new DocWayLoadingbar();
 					docWayLoadingbar.getFormsAdapter().fillFormsFromResponse(response);
 					docWayLoadingbar.init(response);
 					setLoadingbar(docWayLoadingbar);
 					docWayLoadingbar.setActive(true);
 				}
-				
+
 			}
 			finally {
 				UploadFileUtil.deleteTempUserFolder(userBean.getLogin(), userBean.getMatricola());
@@ -630,5 +654,71 @@ public class QueryAdmTools extends DocWayQuery {
 			return null;
 		}
 	}
+
+	/**
+	 * Selezione del fascicolo di rifiuto (in caso di attivazione del rifiuto di bozze in arrivo)
+	 * @return
+	 * @throws Exception
+	 */
+	public String selezionaFascicoloRifiuto() throws Exception {
+		try {
+			formsAdapter.gotoTableQ("selFascicoloRifiuto", false);
+
+			XMLDocumento response = this.formsAdapter.getDefaultForm().executePOST(getUserBean());
+			if (handleErrorResponse(response)) {
+				formsAdapter.fillFormsFromResponse(formsAdapter.getLastResponse()); //restore delle form
+				return null;
+			}
+			formsAdapter.fillFormsFromResponse(formsAdapter.getLastResponse());
+
+			DocWayChangeFascicoloRifiuto docwayChangeFascicoloRifiuto = new DocWayChangeFascicoloRifiuto();
+			docwayChangeFascicoloRifiuto.getFormsAdapter().fillFormsFromResponse(response);
+			docwayChangeFascicoloRifiuto.init(response.getDocument());
+			docwayChangeFascicoloRifiuto.setVisible(true);
+			setSessionAttribute("docwayChangeFascicoloRifiuto", docwayChangeFascicoloRifiuto);
+
+			return null;
+		}
+		catch (Throwable t) {
+			handleErrorResponse(ErrormsgFormsAdapter.buildErrorResponse(t));
+			formsAdapter.fillFormsFromResponse(formsAdapter.getLastResponse()); //restore delle form
+			return null;
+		}
+	}
 	
+	/**
+	 * Individuazione degli errori presenti all'interno degli assegnatari definiti sulle voci d'indice dell'archivio
+	 * procedimenti
+	 * @return
+	 * @throws Exception
+	 */
+	public String evaluateAssegnatariVociIndice() throws Exception {
+		try {
+			formsAdapter.evaluateAssegnatariVociIndice();
+			XMLDocumento response = getFormsAdapter().getDefaultForm().executePOST(getUserBean());
+			if (handleErrorResponse(response)) {
+				formsAdapter.fillFormsFromResponse(formsAdapter.getLastResponse()); //restore delle form
+				return null;
+			}
+			formsAdapter.fillFormsFromResponse(formsAdapter.getLastResponse()); //restore delle form
+
+			String verbo = response.getAttributeValue("/response/@verbo");
+			if (verbo.equals("loadingbar")) { // caricamento della loadingbar
+
+				DocWayLoadingbar docWayLoadingbar = new DocWayLoadingbar();
+				docWayLoadingbar.getFormsAdapter().fillFormsFromResponse(response);
+				docWayLoadingbar.init(response);
+				setLoadingbar(docWayLoadingbar);
+				this.loadingbarAction = "assegnatariVociIndice";
+				docWayLoadingbar.setActive(true);
+			}
+			return null;
+		}
+		catch (Throwable t) {
+			handleErrorResponse(ErrormsgFormsAdapter.buildErrorResponse(t));
+			formsAdapter.fillFormsFromResponse(formsAdapter.getLastResponse()); //restore delle form
+			return null;
+		}
+	}
+
 }

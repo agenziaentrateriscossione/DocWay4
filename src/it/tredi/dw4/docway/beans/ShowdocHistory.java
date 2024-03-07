@@ -35,6 +35,9 @@ public class ShowdocHistory extends DocWayShowdoc {
 		
 		tipoDoc = XMLUtil.parseStrictAttribute(dom, "/response/doc/@tipo");
 		xwfiles = XMLUtil.parseSetOfElement(dom, "/response/doc/files/node()[name()='xw:file']", new XwFile());
+		
+		// inizializzazione di componenti common
+		initCommons(dom);
 	}
 	
 	@Override

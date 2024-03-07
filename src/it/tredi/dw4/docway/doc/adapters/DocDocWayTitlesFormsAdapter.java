@@ -1,7 +1,9 @@
 package it.tredi.dw4.docway.doc.adapters;
 
+import java.net.URLEncoder;
 import java.util.Iterator;
 
+import it.tredi.dw4.utils.Logger;
 import it.tredi.dw4.utils.XMLDocumento;
 import it.tredi.dw4.adapters.AdaptersConfigurationLocator.AdapterConfig;
 import it.tredi.dw4.adapters.TitlesFormsAdapter;
@@ -127,6 +129,47 @@ public class DocDocWayTitlesFormsAdapter extends TitlesFormsAdapter {
 		defaultForm.addParam("xverb", "@removeDocs");
 		defaultForm.addParam("selRac", selRac);
 		defaultForm.addParam("klRac", klRac);
+	}
+	
+	/**
+	 * marcatura massiva di documenti come letti da lista titoli
+	 * 
+	 * @param selRac selId relativa alla lista titoli
+	 * @param klRac documenti selezionati (tramite check) per la contrassegnatura come letto
+	 */
+	public void markAsReadDocs(String selRac, String klRac) {
+		defaultForm.addParam("verbo", "docsselection_response");
+		defaultForm.addParam("xverb", "@markAsReadDocs");
+		defaultForm.addParam("selRac", selRac);
+		defaultForm.addParam("klRac", klRac);
+	}
+	
+	/**
+	 * protocollazione massiva di documenti da lista titoli
+	 * 
+	 * @param selRac selId relativa alla lista titoli
+	 * @param klRac documenti selezionati (tramite check) per la protocollazione
+	 */
+	public void protocollaDocs(String selRac, String klRac) {
+		defaultForm.addParam("verbo", "docsselection_response");
+		defaultForm.addParam("xverb", "@protocollaDocs");
+		defaultForm.addParam("selRac", selRac);
+		defaultForm.addParam("klRac", klRac);
+	}
+	
+	/**
+	 * scarto massivo di documenti da lista titoli
+	 * 
+	 * @param selRac selId relativa alla lista titoli
+	 * @param klRac documenti selezionati (tramite check) per lo scarto
+	 * @param scartoRuoli true se occorre effettuare lo scarto per ruoli, false in caso di scarto di assegnazioni personali
+	 */
+	public void scartaDocs(String selRac, String klRac, boolean scartoRuoli) {
+		defaultForm.addParam("verbo", "docsselection_response");
+		defaultForm.addParam("xverb", "@scartaDocs");
+		defaultForm.addParam("selRac", selRac);
+		defaultForm.addParam("klRac", klRac);
+		defaultForm.addParam("scartoMassivoRuoli", scartoRuoli);
 	}
 	
 	public void stampaElenco(){
@@ -268,4 +311,74 @@ public class DocDocWayTitlesFormsAdapter extends TitlesFormsAdapter {
 		defaultForm.addParam("xverb", "");
 	}
 	
+	/**
+	 * Ritorna la stringa relativa all'attributo della response 'db'.
+	 * @return Valore impostato sull'attributo db
+	 */
+	public String getDb() {
+		return defaultForm.getParam("db");
+	}
+	
+	/**
+	 * Ritorna il parametro _cd del formsAdapter (necessario all'upload di files in presenza
+	 * di multisocieta')
+	 * @return
+	 */
+	public String getCustomTupleName() {
+		String _cd = defaultForm.getParam("_cd");
+		if (_cd == null)
+			_cd = "";
+
+		return _cd;
+	}
+	
+	/**
+	 * Ritorna il parametro _cd del formsAdapter (necessario all'upload di files in presenza
+	 * di multisocieta')
+	 * @return
+	 */
+	public String getUrlEncodedCustomTupleName() {
+		String physDoc = getCustomTupleName();
+		try {
+			physDoc = URLEncoder.encode(physDoc, "UTF-8");
+		}
+		catch (Exception ex) {
+			Logger.error(ex.getMessage(), ex);
+		}
+
+		return physDoc;
+	}
+	
+	/**
+	 * Stampa tutti gli allegati dei documenti della selezione
+	 * @param keylist Selezione di documenti da stampare
+	 */
+	public void printDocsAttachments(String keylist) {
+		printDocsAttachments(keylist, null, null);
+	}
+	
+	/**
+	 * Stampa tutti gli allegati dei documenti della selezione
+	 * @param keylist Selezione di documenti da stampare
+	 * @param verbo
+	 * @param query
+	 */
+	public void printDocsAttachments(String keylist, String verbo, String query) {
+		if (verbo == null || verbo.isEmpty())
+			verbo = "get_docs_attach";
+		defaultForm.addParam("verbo", verbo);
+		
+		if (query != null && !query.isEmpty()) {
+			defaultForm.addParam("query", query);
+			defaultForm.addParam("selid", "");
+		}
+		
+		if (keylist != null && !keylist.equals(""))
+			defaultForm.addParam("keylist", keylist);
+		
+		// TODO parametro 'customClassForAdditionalInfo'
+		
+		defaultForm.addParam("transformJava", "ajax");
+		defaultForm.addParam("enableIW", "true");
+	}
 }

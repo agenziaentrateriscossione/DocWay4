@@ -68,6 +68,10 @@ public class AclAuthenticationFilter implements Filter {
 	public void doFilter(ServletRequest req, ServletResponse res, FilterChain chain) throws IOException, ServletException {
 		HttpServletRequest request = (HttpServletRequest) req;
 		HttpServletResponse response = (HttpServletResponse) res;
+	
+		// mbernardini 18/10/2016 : corretto bug su encoding di caratteri speciali (es. accenti) in caso di filtro di autenticazione ACL
+		request.setCharacterEncoding("UTF-8");
+		response.setCharacterEncoding("UTF-8");
 		
 		HttpSession session = request.getSession(true);
 		

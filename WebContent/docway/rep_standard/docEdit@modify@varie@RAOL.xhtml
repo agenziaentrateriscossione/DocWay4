@@ -10,91 +10,106 @@
 
 <ui:define name="content">
 	<div class="varie docedit">
-	
+
 		<!-- toolbar: inizio -->
 		<div class="btn-toolbar" role="toolbar">
 			<div class="btn-group">
-				<h:commandLink id="saveBtn" action="#{docEditModifyVarieRAOL.saveDocument}" 
+				<h:commandLink id="saveBtn" action="#{docEditModifyVarieRAOL.saveDocument}"
 							styleClass="btn btn-primary openwaitmsg">
 					#{i18n['acl.save']}
 				</h:commandLink>
-				
-				<h:commandLink action="#{docEditModifyVarieRAOL.clearDocument}" 
-							onclick="IwxRuntime.Client.resetJobIWX();" styleClass="btn btn-default">
+
+				<h:commandLink rendered="#{!docEditModifyVarieRAOL.formsAdapter.funzionalitaDisponibili['trasformaByDocEdit']}" action="#{docEditModifyVarieRAOL.clearDocument}"
+						onclick="IwxRuntime.Client.resetJobIWX();" styleClass="btn btn-default">
 					#{i18n['acl.back']}
-				</h:commandLink>	
+				</h:commandLink>
+				<h:commandLink rendered="#{docEditModifyVarieRAOL.formsAdapter.funzionalitaDisponibili['trasformaByDocEdit']}" action="#{docEditModifyVarieRAOL.clearTrasformaRep}"
+							onclick="IwxRuntime.Client.resetJobIWX();" styleClass="btn btn-default">
+					#{i18n['acl.cancel']}
+				</h:commandLink>
 			</div>
 		</div>
 		<!-- toolbar: fine -->
-		
+
 		<!-- messages: inizio -->
 		<h:panelGroup rendered="#{not empty facesContext.messageList}" layout="block" styleClass="docedit-messages alert alert-danger">
 			<h:messages styleClass="" id="validationMesseges" />
 		</h:panelGroup>
 		<h:inputHidden id="errorFieldIds" value="#{docEditModifyVarieRAOL.errorFieldIds}" />
 		<!-- messages: fine -->
-		
+
 		<h5 class="sub-header">
 			<span class="doc-tipo-varie glyphicon glyphicon-file"></span>&#160;
-			<h:outputText value="#{docEditModifyVarieRAOL.docEditTitle}" escape="false" />
+			<h:outputText value="#{docEditModifyVarieRAOL.docEditTitle}" />
 		</h5>
-	
+
 		<script type="text/javascript">
 		$(document).ready(function() {
 			setInvalidInputFields();
-			
+
 			// disabilita link esterni al form per rilascio del lock sul documento
 			disableNoTemplateFormLinks("#{i18n['dw4.abbandona_alert_msg']}");
 		});
 		</script>
-		
+
 		<!-- scheda edit: inizio -->
 		<div class="row-fluid" style="margin-top:10px;">
 			<div id="fixedshowdoc" class="box span12 fixed-showdoc">
 				<div class="box-content">
-				
+
 					<div class="fieldset">
 						<div class="legend">
 							#{i18n['dw4.datidoc']}
-						
+
 							<div class="pull-right">
 								<span class="glyphicon glyphicon-envelope" title="#{i18n['dw4.datidoc']}"></span>
 							</div>
 						</div>
-						
+
+						<h:panelGroup rendered="#{docEditModifyVarieRAOL.doc.bozza and docEditModifyVarieRAOL.doc.creazione.dateLong != null and docEditModifyVarieRAOL.doc.creazione.dateLong ne ''}" layout="block" styleClass="form-group">
+							<label class="col-sm-2 control-label">#{i18n['dw4.bozza']} #{i18n['dw4.del']}</label>
+							<div class="col-sm-2">
+								<p class="form-control-static">
+									<h:outputText value="#{docEditModifyVarieRAOL.doc.creazione.dateLong}" />
+								</p>
+							</div>
+						</h:panelGroup>
+
 						<h:inputHidden value="#{docEditModifyVarieRAOL.doc.data_prot}"><f:converter converterId="DateConverter"/></h:inputHidden>
-						
+
 						<h:panelGroup rendered="#{!empty docEditModifyVarieRAOL.doc.repertorio.numero and docEditModifyVarieRAOL.doc.repertorio.numero ne '.'}" layout="block" styleClass="form-group">
 							<label class="col-sm-2 control-label">#{i18n['dw4.repertorio_n']}</label>
 							<div class="col-sm-9">
 								<p class="form-control-static"><h:outputText value="#{docEditModifyVarieRAOL.doc.repertorio.numero}"><f:converter converterId="NumRepConverter"/></h:outputText></p>
 							</div>
 						</h:panelGroup>
-						
+
 						<h:panelGroup rendered="#{fn:length(docEditModifyVarieRAOL.doc.repTipologiaSelect) > 0}" layout="block" styleClass="form-group">
-							<label for="templateForm:repTipoDocumento" class="col-sm-2 control-label">#{i18n['dw4.tipodocumento']}</label>
+							<label for="templateForm:repTipoDocumento" class="col-sm-2 control-label requiredField">* #{i18n['dw4.tipodocumento']}</label>
 							<div class="col-sm-3">
-								<h:selectOneMenu id="repTipoDocumento" value="#{docEditModifyVarieRAOL.doc.extra.tipo_repertorio}" styleClass="form-control">
+								<h:selectOneMenu id="repTipoDocumento" value="#{docEditModifyVarieRAOL.doc.extra.tipo_repertorio}" styleClass="form-control #{ component.valid ? '' : 'invalidinput' }">
 									<f:selectItems value="#{docEditModifyVarieRAOL.doc.repTipologiaSelect}" var="tipologia" itemValue="#{tipologia.text}" itemLabel="#{tipologia.text}"></f:selectItems>
 								</h:selectOneMenu>
 							</div>
 						</h:panelGroup>
-						
+
 						<div class="form-group">
 							<ui:include src="../dateField.xhtml">
 								<ui:param name="label" value="* #{i18n['dw4.pubblicazione_dal']}" />
 								<ui:param name="id" value="dataPubblicazioneDal" />
 								<ui:param name="value" value="#{docEditModifyVarieRAOL.doc.pubblicazione.dal}" />
+								<ui:param name="fromToday" value="true" />
 							</ui:include>
-							
+
 							<ui:include src="../dateField.xhtml">
 								<ui:param name="label" value="* #{i18n['dw4.pubblicazione_al']}" />
 								<ui:param name="id" value="dataPubblicazioneAl" />
 								<ui:param name="value" value="#{docEditModifyVarieRAOL.doc.pubblicazione.al}" />
 								<ui:param name="offset" value="3" />
+								<ui:param name="fromToday" value="true" />
 							</ui:include>
 						</div>
-						
+
 						<h:panelGroup rendered="#{docEditModifyVarieRAOL.formsAdapter.funzionalitaDisponibili['abilitaRichiedenteInterno'] or docEditModifyVarieRAOL.formsAdapter.funzionalitaDisponibili['abilitaRichiedenteInternoEsterno']}" id="richiedenteInterno_holder" layout="block" styleClass="form-group">
 							<label for="templateForm:richiedenteInterno_input" class="col-sm-2 control-label"><span>#{(docEditModifyVarieRAOL.formsAdapter.funzionalitaDisponibili['abilitaRichiedenteInternoEsterno']) ? i18n['dw4.richiedente_interno'] : i18n['dw4.richiedente']}</span></label>
 							<div class="col-sm-4">
@@ -110,7 +125,7 @@
 					        	</ui:include>
 				        	</div>
 						</h:panelGroup>
-						
+
 						<h:panelGroup rendered="#{docEditModifyVarieRAOL.formsAdapter.funzionalitaDisponibili['abilitaRichiedenteEsterno'] or docEditModifyVarieRAOL.formsAdapter.funzionalitaDisponibili['abilitaRichiedenteInternoEsterno']}" id="richiedenteEsterno_holder" layout="block">
 							<div class="form-group">
 								<label for="templateForm:richiedenteEsterno_input" class="col-sm-2 control-label"><span>#{(docEditModifyVarieRAOL.formsAdapter.funzionalitaDisponibili['abilitaRichiedenteInternoEsterno']) ? i18n['dw4.richiedente_esterno'] : i18n['dw4.richiedente']}</span></label>
@@ -134,7 +149,7 @@
 									</div>
 								</h:panelGroup>
 							</div>
-							
+
 							<div class="form-group">
 								<label for="templateForm:firmatario_input" class="col-sm-2 control-label"><span>#{i18n['dw4.firmatario']}</span></label>
 								<div class="col-sm-4">
@@ -155,7 +170,7 @@
 									<h:inputText id="firmatarioRole" value="#{docEditModifyVarieRAOL.doc.rif_esterni[0].referente.ruolo}" styleClass="form-control" />
 								</div>
 							</div>
-							
+
 							<h:panelGroup rendered="#{empty docEditModifyVarieRAOL.hideDivs or not fn:contains(docEditModifyVarieRAOL.hideDivs, 'indirizzo_fax')}">
 								<h:panelGroup rendered="#{docEditModifyVarieRAOL.formsAdapter.funzionalitaDisponibili['abilitaLookupFaxArrivo']}">
 									<div class="form-group">
@@ -213,25 +228,25 @@
 								</h:panelGroup>
 							</h:panelGroup>
 						</h:panelGroup>
-						
+
 						<div class="form-group">
 							<label for="templateForm:doc_oggetto" class="col-sm-2 control-label requiredField"><span>* #{i18n['dw4.object']}</span></label>
 							<div class="col-sm-9">
 								<h:inputTextarea id="doc_oggetto" value="#{docEditModifyVarieRAOL.doc.oggetto}" rows="4" cols="120" styleClass="#{ component.valid ? '' : 'invalidinput' } form-control" />
 							</div>
 						</div>
-						
+
 						<h:panelGroup rendered="#{ docEditModifyVarieRAOL.formsAdapter.funzionalitaDisponibili['enAllegato'] }">
 							<ui:include src="../allegatiFields.xhtml">
 								<ui:param name="bean" value="#{docEditModifyVarieRAOL}" />
 				        		<ui:param name="beanDoc" value="#{docEditModifyVarieRAOL.doc}" />
 				        	</ui:include>
 			        	</h:panelGroup>
-			        	
+
 			        	<h:panelGroup id="classif_holder" layout="block">
 							<ui:include src="../classifFields.xhtml">
 				        		<ui:param name="id" value="classif" />
-				        		<ui:param name="editable" value="false" />
+				        		<ui:param name="editable" value="#{docEditModifyVarieRAOL.copyIfNotRipetiInFascicolo }"/>
 				        		<ui:param name="bean" value="#{docEditModifyVarieRAOL}" />
 				        		<ui:param name="beanDoc" value="#{docEditModifyVarieRAOL.doc}" />
 				        		<ui:param name="actionTitolario" value="thVincolatoTitolarioClassificazione"/>
@@ -240,28 +255,32 @@
 				        		<ui:param name="readOnlyConservazione" value="true" />
 				        	</ui:include>
 				        </h:panelGroup>
-						
+
 			        	<ui:include src="../visibilitaFields.xhtml">
 							<ui:param name="bean" value="#{docEditModifyVarieRAOL}" />
 			        		<ui:param name="beanDoc" value="#{docEditModifyVarieRAOL.doc}" />
 			        	</ui:include>
 					</div> <!-- /fieldset -->
-					
+
+					<ui:include src="../../customfields/docedit@customfields.xhtml">
+						<ui:param name="bean" value="#{docEditModifyVarieRAOL}" />
+		        	</ui:include>
+
 					<h:panelGroup rendered="#{docEditModifyVarieRAOL.docIsNotInFascicolo}">
 						<ui:include src="../docEdit@rifinterni@doc.xhtml">
 							<ui:param name="bean" value="#{docEditModifyVarieRAOL}" />
 			        	</ui:include>
 		        	</h:panelGroup>
-		        	
+
 	        		<div class="fieldset">
 	        			<div class="legend">
 	        				#{i18n['dw4.other']}
-	        				
+
 	        				<div class="pull-right">
 								<span class="glyphicon glyphicon-list-alt" title="#{i18n['dw4.other']}"></span>
 							</div>
 	        			</div>
-	        			
+
 	        			<div class="form-group">
 	        				<label for="templateForm:pubblicazioneTipo" class="col-sm-2 control-label">#{i18n['dw4.forma']}</label>
 	        				<div class="col-sm-3">
@@ -271,20 +290,20 @@
 	        					</h:selectOneMenu>
 	        				</div>
 	        			</div>
-	        			
+
 						<div class="form-group">
 			               	<label for="templateForm:note" class="col-sm-2 control-label">#{i18n['acl.notes']}</label>
 			               	<div class="col-sm-9">
 			               		<h:inputTextarea id="note" value="#{docEditModifyVarieRAOL.doc.note.text}" rows="4" cols="120" styleClass="form-control" />
-			               	</div>		
+			               	</div>
 						</div>
 	        		</div> <!-- /fieldset -->
-	        		
+
 	        		<ui:include src="../xlinkFields.xhtml">
 						<ui:param name="bean" value="#{docEditModifyVarieRAOL}" />
 		        		<ui:param name="beanDoc" value="#{docEditModifyVarieRAOL.doc}" />
 		        	</ui:include>
-		        	
+
 		        	<ui:include src="../docInformaticiFields.xhtml">
 						<ui:param name="bean" value="#{docEditModifyVarieRAOL}" />
 		        		<ui:param name="beanDoc" value="#{docEditModifyVarieRAOL.doc}" />
@@ -297,12 +316,20 @@
 			</div>
 		</div>
 		<!-- scheda edit: fine -->
-			
-		<h:inputTextarea value="#{docEditModifyVarieRAOL.xml}" rendered="#{docEditModifyVarieRAOL.debugMode}" styleClass="form-control" rows="10" />
-			
+
+		<h:inputTextarea value="#{docEditModifyVarieRAOL.xml}" rendered="#{docEditModifyVarieRAOL.debugMode}" styleClass="form-control debug-textarea" rows="10" />
+
 		<ui:include src="../lookup.xhtml"> <ui:param name="pageBean" value="#{docEditModifyVarieRAOL}"/></ui:include>
 		<ui:include src="../rifintLookup.xhtml"> <ui:param name="pageBean" value="#{docEditModifyVarieRAOL}"/></ui:include>
 		<ui:include src="../showthes.xhtml"> <ui:param name="pageBean" value="#{docEditModifyVarieRAOL}"/></ui:include>
+		<!-- template per upload e la decompressione di archivi ZIP -->
+		<ui:param name="currentBean" value="#{docEditModifyVarieRAOL}" />
+		<ui:include src="../docUploadArchive.xhtml">
+			<ui:param name="bean" value="#{docWayUploadArchive}"/>
+			<ui:param name="beanDoc" value="#{currentBean}" />
+			<ui:param name="doc" value="#{currentBean.doc}" />
+			<ui:param name="enableFiles" value="#{currentBean.docInformaticiEnabled and currentBean.formsAdapter.funzionalitaDisponibili['addFile']}" />
+		</ui:include>
 	</div>
 </ui:define>
 

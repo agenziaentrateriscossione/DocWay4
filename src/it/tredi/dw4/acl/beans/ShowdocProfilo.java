@@ -5,6 +5,7 @@ import it.tredi.dw4.acl.adapters.AclDocumentFormsAdapter;
 import it.tredi.dw4.adapters.AdaptersConfigurationLocator;
 import it.tredi.dw4.adapters.ErrormsgFormsAdapter;
 
+import javax.faces.context.FacesContext;
 import javax.faces.event.ComponentSystemEvent;
 
 import org.dom4j.Document;
@@ -31,6 +32,9 @@ public class ShowdocProfilo extends AclShowdoc {
     	xml = domDocumento.asXML();
     	profilo = new it.tredi.dw4.acl.model.Profilo();
     	profilo.init(domDocumento);
+    	
+    	// inizializzazione di componenti common
+    	initCommons(domDocumento);
     }	
 	
 	public AclDocumentFormsAdapter getFormsAdapter() {
@@ -42,7 +46,7 @@ public class ShowdocProfilo extends AclShowdoc {
 	}
 	
 	public void reload() throws Exception {
-		super._reload("showdoc@profilo");
+		super._reload(FacesContext.getCurrentInstance().getExternalContext().getRequestContextPath() + "/acl/showdoc@profilo");
 	}
 
 	public void setProfilo(it.tredi.dw4.acl.model.Profilo profilo) {

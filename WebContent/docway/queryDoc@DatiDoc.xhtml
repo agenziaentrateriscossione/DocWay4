@@ -26,14 +26,15 @@
 				<div class="form-group">
 					<label for="templateForm:doc_oggetto" class="col-sm-2 control-label">#{i18n['dw4.object']}</label>
 					<div class="col-sm-9">
-						<div class="input-group">
+						<div class="#{!bean.formsAdapter.elasticsearchEnabled ? 'input-group' : ''}">
 							<h:inputText styleClass="form-control" value="#{bean.doc_oggetto}" id="doc_oggetto" />
-							<div class="input-group-btn">
+							
+							<h:panelGroup rendered="#{!bean.formsAdapter.elasticsearchEnabled}" layout="block" styleClass="input-group-btn">
 								<h:commandLink title="#{i18n['acl.vocabulary']}" action="#{bean.openIndexOggettoDoc}" styleClass="btn btn-default">
 									<f:ajax execute="@form" render="@form"/>
 									<span class="glyphicon glyphicon-search"></span>
 								</h:commandLink>
-							</div>
+							</h:panelGroup>
 						</div>
 					</div>
 				</div>
@@ -71,52 +72,56 @@
 				<div class="form-group">
 					<label for="templateForm:doc_allegato" class="col-sm-2 control-label">#{i18n['dw4.attachments']}</label>
 					<div class="col-sm-3">
-						<div class="input-group">
+						<div class="#{!bean.formsAdapter.elasticsearchEnabled ? 'input-group' : ''}">
 							<h:inputText styleClass="form-control" value="#{bean.doc_allegato}" id="doc_allegato"/>
-							<div class="input-group-btn">
+							
+							<h:panelGroup rendered="#{!bean.formsAdapter.elasticsearchEnabled}" layout="block" styleClass="input-group-btn">
 								<h:commandLink title="#{i18n['acl.vocabulary']}" action="#{bean.openIndexAllegatoDoc}" styleClass="btn btn-default">
 									<f:ajax execute="@form" render="@form"/>
 									<span class="glyphicon glyphicon-search"></span>
 								</h:commandLink>
-							</div>
+							</h:panelGroup>
 						</div>
 					</div>
 					<label for="templateForm:doc_postit" class="col-sm-offset-1 col-sm-2 control-label">#{i18n['dw4.annotazioni']}</label>
 					<div class="col-sm-3">
-						<div class="input-group">
+						<div class="#{!bean.formsAdapter.elasticsearchEnabled ? 'input-group' : ''}">
 							<h:inputText styleClass="form-control" value="#{bean.doc_postit}" id="doc_postit"/>
-							<div class="input-group-btn">
+							
+							<h:panelGroup rendered="#{!bean.formsAdapter.elasticsearchEnabled}" layout="block" styleClass="input-group-btn">
 								<h:commandLink title="#{i18n['acl.vocabulary']}" action="#{bean.openIndexPostitDoc}" styleClass="btn btn-default">
 									<f:ajax execute="@form" render="@form"/>
 									<span class="glyphicon glyphicon-search"></span>
 								</h:commandLink>
-							</div>
+							</h:panelGroup>
 						</div>
 					</div>
 				</div>
 				<div class="form-group">
 					<label for="templateForm:doc_note" class="col-sm-2 control-label">#{i18n['dw4.notes']}</label>
 					<div class="col-sm-3">
-						<div class="input-group">
+						<div class="#{!bean.formsAdapter.elasticsearchEnabled ? 'input-group' : ''}">
 							<h:inputText styleClass="form-control" value="#{bean.doc_note}" id="doc_note"/>
-							<div class="input-group-btn">
+							
+							<h:panelGroup rendered="#{!bean.formsAdapter.elasticsearchEnabled}" layout="block" styleClass="input-group-btn">
 								<h:commandLink title="#{i18n['acl.vocabulary']}" action="#{bean.openIndexNoteDoc}" styleClass="btn btn-default">
 									<f:ajax execute="@form" render="@form"/>
 									<span class="glyphicon glyphicon-search"></span>
 								</h:commandLink>
-							</div>
+							</h:panelGroup>
 						</div>
 					</div>
 					<label for="templateForm:doc_keywords" class="col-sm-offset-1 col-sm-2 control-label">#{i18n['dw4.keywords']}</label>
 					<div class="col-sm-3">
-						<div class="input-group">
+						<div class="#{!bean.formsAdapter.elasticsearchEnabled ? 'input-group' : ''}">
 							<h:inputText styleClass="form-control" value="#{bean.doc_keywords}" id="doc_keywords"/>
-							<div class="input-group-btn">
+							
+							<h:panelGroup rendered="#{!bean.formsAdapter.elasticsearchEnabled}" layout="block" styleClass="input-group-btn">
 								<h:commandLink title="#{i18n['acl.vocabulary']}" action="#{bean.openIndexKeywordsDoc}" styleClass="btn btn-default">
 									<f:ajax execute="@form" render="@form"/>
 									<span class="glyphicon glyphicon-search"></span>
 								</h:commandLink>
-							</div>
+							</h:panelGroup>
 						</div>
 					</div>
 				</div>
@@ -140,6 +145,42 @@
 				<ui:include src="./queryVisibilitaFields.xhtml">
 					<ui:param name="bean" value="#{bean}" />
 	        	</ui:include>
+	        	
+	        	<h:panelGroup rendered="#{bean.formsAdapter.funzionalitaDisponibili['enableFiltriDocNonLettiNonScartati']}" layout="block" styleClass="form-group">
+	        		<label class="col-sm-2 control-label">
+						<span class="popoveritem" data-toggle="popover" data-placement="top" data-trigger="hover" data-content="#{i18n['dw4.se_selezionato_saranno_filtrati_i_soli_documenti_letti_non_letti_dall_operatore_corrente']}">
+							#{i18n['dw4.letti']}
+							<span class="glyphicon glyphicon-info-sign popoveritem"></span>
+						</span>
+					</label>
+					<div class="col-sm-2">
+						<span class="margin-right-10" style="white-space:nowrap;">
+							<h:selectBooleanCheckbox value="#{bean.letto}" id="letto_si"/>
+							<label for="templateForm:letto_si" class="normal-weight-text">#{i18n['dw4.yes']}</label>
+						</span>
+						<span style="white-space:nowrap;">
+							<h:selectBooleanCheckbox value="#{bean.nonletto}" id="letto_no"/>
+							<label for="templateForm:letto_no" class="normal-weight-text">#{i18n['dw4.no']}</label>
+						</span>
+					</div>
+					<label class="col-sm-offset-2 col-sm-2 control-label">
+						<span class="popoveritem" data-toggle="popover" data-placement="top" data-trigger="hover" data-content="#{i18n['dw4.se_selezionato_saranno_filtrati_i_soli_documenti_scartati_non_scartati_dall_operatore_corrente']}">
+							#{i18n['dw4.scartati']}
+							<span class="glyphicon glyphicon-info-sign popoveritem"></span>
+						</span>
+					</label>
+					<div class="col-sm-2">
+						<span class="margin-right-10" style="white-space:nowrap;">
+							<h:selectBooleanCheckbox value="#{bean.scartato}" id="scartato_si"/>
+							<label for="templateForm:scartato_si" class="normal-weight-text">#{i18n['dw4.yes']}</label>
+						</span>
+						<span style="white-space:nowrap;">
+							<h:selectBooleanCheckbox value="#{bean.nonscartato}" id="scartato_no"/> 
+							<label for="templateForm:scartato_no" class="normal-weight-text">#{i18n['dw4.no']}</label>
+						</span>
+					</div>
+				</h:panelGroup> <!-- form-group -->
+				
 			</h:panelGroup>
 		</div> <!-- /fieldset -->
 	</h:panelGroup>

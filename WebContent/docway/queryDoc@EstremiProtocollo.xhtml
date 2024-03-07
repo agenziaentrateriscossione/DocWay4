@@ -111,6 +111,27 @@
 						</div>
 					</h:panelGroup>
 				</div>
+				<h:panelGroup rendered="#{bean.formsAdapter.funzionalitaDisponibili['rifiutoBozzeArrivo'] or bean.formsAdapter.funzionalitaDisponibili['abilitaFiltroDocNonFascicolati']}" layout="block" styleClass="form-group">
+					<h:panelGroup rendered="#{bean.formsAdapter.funzionalitaDisponibili['rifiutoBozzeArrivo']}">
+						<label class="col-sm-2 control-label">#{i18n['dw4.rifiuto_bozze']}</label>
+						<div class="col-sm-4">
+							<span class="margin-right-10" style="white-space:nowrap;">
+								<h:selectBooleanCheckbox value="#{bean.bozze_rifiutate}" id="bozze_rifiutate" />
+								<label for="templateForm:bozze_rifiutate" class="normal-weight-text">#{i18n['dw4.bozze_rifiutate']}</label>
+							</span>
+							<span class="margin-right-10" style="white-space:nowrap;">
+								<h:selectBooleanCheckbox value="#{bean.bozze_da_rifiutare}" id="bozze_da_rifiutare" />
+								<label for="templateForm:bozze_da_rifiutare" class="normal-weight-text">#{i18n['dw4.bozze_da_rifiutare']}</label>
+							</span>
+						</div>
+					</h:panelGroup>
+					<h:panelGroup rendered="#{bean.formsAdapter.funzionalitaDisponibili['abilitaFiltroDocNonFascicolati']}">
+						<label for="templateForm:non_fascicolati" class="col-sm-2 control-label">#{i18n['dw4.doc_non_fascicolati']}</label>
+						<div class="col-sm-1">
+							<h:selectBooleanCheckbox value="#{bean.nonFasc}" id="non_fascicolati" />
+						</div>
+					</h:panelGroup>
+				</h:panelGroup>
 	        </h:panelGroup>
 		</div> <!-- /fieldset -->
 	</h:panelGroup>

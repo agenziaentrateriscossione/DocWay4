@@ -67,7 +67,7 @@ public class ShowdocPartenzaFTRA extends ShowdocPartenza {
 				return null;
 			}
 			
-			// TODO da verificare se e' corretta la gestione del ritorno (non possibile senza accesso ai ws di nav)
+			formsAdapter.fillFormsFromResponse(formsAdapter.getLastResponse()); //restore delle form
 			reload();
 			return null;
 		}

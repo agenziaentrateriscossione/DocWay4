@@ -1,6 +1,5 @@
 package it.tredi.dw4.docway.beans;
 
-import it.tredi.dw4.utils.XMLDocumento;
 import it.tredi.dw4.adapters.AdaptersConfigurationLocator;
 import it.tredi.dw4.adapters.ErrormsgFormsAdapter;
 import it.tredi.dw4.docway.doc.adapters.DocDocWayDocEditFormsAdapter;
@@ -8,13 +7,14 @@ import it.tredi.dw4.docway.model.Partenza;
 import it.tredi.dw4.docway.model.Prot_differito;
 import it.tredi.dw4.docway.model.RifEsterno;
 import it.tredi.dw4.i18n.I18N;
+import it.tredi.dw4.model.XmlEntity;
 import it.tredi.dw4.utils.AppStringPreferenceUtil;
 import it.tredi.dw4.utils.Const;
 import it.tredi.dw4.utils.DateUtil;
+import it.tredi.dw4.utils.XMLDocumento;
+import org.dom4j.Document;
 
 import javax.faces.context.FacesContext;
-
-import org.dom4j.Document;
 
 public class DocEditPartenza extends DocEditDoc {
 	private Partenza doc = new Partenza();
@@ -37,6 +37,13 @@ public class DocEditPartenza extends DocEditDoc {
 		
 		// inizializzazione common per tutte le tipologie di documenti di DocWay
 		initCommon(domDocumento);
+		
+		// mbernardini 15/09/2017 : azzeramento dei campi customSelect1 e customSelect2 in caso di doc in 
+		// partenza (rispondi o inoltra da doc in arrivo)
+		if (this.doc.getExtra() != null) {
+			this.doc.getExtra().setCustom_select_1("");
+			this.doc.getExtra().setCustom_select_2("");
+		}
 		
 		// mbernardini 03/04/2015 : in caso di risposta di un doc in arrivo viene riportata erroneamente sul doc in partenza la data
 		// del doc in arrivo (se lasciato vuoto il campo data doc del protocollo in partenza)
@@ -75,7 +82,9 @@ public class DocEditPartenza extends DocEditDoc {
 	@Override
 	public String saveDocument() throws Exception {
 		try {
-			if (checkRequiredField()) return null;
+			boolean checkDestinatari = !doceditRep && !doc.isHideDestinatari();
+
+			if (checkRequiredField(checkDestinatari)) return null;
 			
 			// personalizzazione del salvataggio per il repertorio
 			boolean isRepertorio = false;
@@ -193,19 +202,38 @@ public class DocEditPartenza extends DocEditDoc {
 	
 	/**
 	 * Controllo dei campo obbligatori
-	 * 
+	 * @param checkDestinatari true se occorre controllare la validita' dei destinatari del documento, false altrimenti (nessun controllo su destinatari)
 	 * @return false se tutti i campo obbligatori sono stati compilati, true se anche un solo campo obbligatorio non e' compilato
 	 */
-	public boolean checkRequiredField() {
+	public boolean checkRequiredField(boolean checkDestinatari) {
 		String formatoData = Const.DEFAULT_DATE_FORMAT; // TODO Dovrebbe essere caricato dal file di properties dell'applicazione
 		boolean result = false;
 		
 		result = super.checkRequiredFieldCommon(false); // controlli comuni a tutte le tipologie di documenti
 		
 		// Controllo se almeno un destinatario del documento e' valorizzato
-		if (!doceditRep) { // eseguo il controllo solo se non si tratta di un repertorio
-			if (getDoc().getRif_esterni().get(0).getNome() == null || getDoc().getRif_esterni().get(0).getNome().length() == 0) {
-				this.setErrorMessage("templateForm:docEditDestinatari:0:nomeDestinatario_input", I18N.mrs("acl.requiredfield") + " '" + I18N.mrs("dw4.destinatario") + "'");
+		if (checkDestinatari) { // eseguo il controllo solo se la gestione dei destinatari e' abilitata per il repertorio
+			
+			//Controllo se almeno un destinatrio è diretto (in TO) in entrambi casi, sia quando si trata di une Protocollo in Partenza anche nel caso di un Repertorio
+			boolean allDestinatariCC = true;
+			int destinatari = this.getDoc().getRif_esterni().size();
+			for(int i = 0; i < destinatari; i++) {
+				RifEsterno rifEsterno = getDoc().getRif_esterni().get(i);
+				if(!rifEsterno.isCopia_conoscenza())
+					allDestinatariCC = false;
+				
+				if (rifEsterno.getNome() == null || rifEsterno.getNome().length() == 0) {
+					String fieldId = "templateForm:docEditDestinatari:" + i + ":nomeDestinatario_input";
+					if (!rifEsterno.isVincolato())
+						fieldId = "templateForm:docEditDestinatari:" + i + ":nomeDestinatarioLibero";
+					this.setErrorMessage(fieldId, I18N.mrs("acl.requiredfield") + " '" + I18N.mrs("dw4.destinatario") + "'");
+					result = true;
+				}
+			}
+			
+			if(allDestinatariCC) {
+				String fieldId = "templateForm:docEditDestinatari:#{indice.index}:ccCheck";
+				this.setErrorMessage(fieldId, I18N.mrs("dw4.cc_destinatario"));
 				result = true;
 			}
 		}
@@ -241,4 +269,8 @@ public class DocEditPartenza extends DocEditDoc {
 		return result;
 	}
 	
+	@Override
+	public XmlEntity getModel() {
+		return this.doc;
+	}
 }

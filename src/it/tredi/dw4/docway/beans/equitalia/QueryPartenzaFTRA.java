@@ -34,7 +34,8 @@ public class QueryPartenzaFTRA extends QueryGlobale {
 	private void forzaRepertorio() {
 		setRepertori_multipli(true);
 		forceRepertorioSelected("FTRA", "P");
-		setArrivo(true);
+		setCurrentCustomFieldSection("partenza_FTRA");
+		setPartenza(true);
 	}
 	
 	@Override

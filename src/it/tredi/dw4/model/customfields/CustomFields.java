@@ -1,10 +1,5 @@
 package it.tredi.dw4.model.customfields;
 
-import it.tredi.dw4.beans.Page;
-import it.tredi.dw4.model.XmlEntity;
-import it.tredi.dw4.utils.StringUtil;
-import it.tredi.dw4.utils.XMLUtil;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -13,6 +8,12 @@ import java.util.Map;
 import org.dom4j.Document;
 import org.dom4j.Element;
 
+import it.tredi.dw4.beans.Page;
+import it.tredi.dw4.model.XmlEntity;
+import it.tredi.dw4.model.customfields.specialized_fields.NumeroAnnoInstance;
+import it.tredi.dw4.utils.StringUtil;
+import it.tredi.dw4.utils.XMLUtil;
+
 public class CustomFields extends XmlEntity {
 	
 	private String pageType = "";
@@ -20,6 +21,8 @@ public class CustomFields extends XmlEntity {
 	private HashMap<String, Boolean> hiddenFields = new HashMap<String, Boolean>();
 	private HashMap<String, String> hiddenFieldsVariables = new HashMap<String, String>();
 	private List<Section> sections = new ArrayList<Section>();
+	
+	private List<Relationship> relationships = new ArrayList<Relationship>();
 	
 	@Override
 	public XmlEntity init(Document dom) {
@@ -32,6 +35,8 @@ public class CustomFields extends XmlEntity {
 		this.sections 			= XMLUtil.parseSetOfElement(dom, "response/customfields/page/section", new Section());
 		this.hiddenSections 	= initHiddenSection(dom, "response/customfields/page/hide/section");
 		this.hiddenFields 		= initHiddenSection(dom, "response/customfields/page/hide/field");
+		
+		this.relationships 		= XMLUtil.parseSetOfElement(dom, "response/customfields/page/relationships/relationship", new Relationship());
 		
 		List<?> hidevariables = dom.selectNodes("response/customfields/page/hide/variable");
 		if (hidevariables != null && hidevariables.size() > 0) {
@@ -140,6 +145,14 @@ public class CustomFields extends XmlEntity {
 		this.hiddenFieldsVariables = hiddenFieldsVariables;
 	}
 	
+	public List<Relationship> getRelationships() {
+		return relationships;
+	}
+
+	public void setRelationships(List<Relationship> relationships) {
+		this.relationships = relationships;
+	}
+	
 	/**
 	 * riempimento dei valori dei campi custom definiti in base al contenuto della response (contenuto del doc)
 	 * per la pagina di docEdit (inserimento/modifica)
@@ -196,13 +209,137 @@ public class CustomFields extends XmlEntity {
 							}
 							else {
 								// campo base (singola istanza)
-								FieldInstance fieldInstance = new FieldInstance();
+								FieldInstance fieldInstance;
+								// Gestione possibili instanze specializzate
+								switch (field.getType()) {
+									case "numero_anno":
+										fieldInstance = new NumeroAnnoInstance();
+										break;
+									default:
+										fieldInstance = new FieldInstance();
+								}
 								fieldInstance.init(XMLUtil.getDOM(field.getXml()));
 								fieldInstance.initFieldValue(sectionelement, field.getType(), field.getXpath(), field.getDefaultvalue());
 								field.getInstances().add(fieldInstance);
 							}
 						}
 					}
+				}
+			}
+			
+			// Verifica delle relazioni fra campi in fase di costruzione del form dei campi custom
+			this.evaluateRelationships();
+		}
+	}
+	
+	/**
+	 * Verifica di eventuali relazioni fra campi con attivazione di azioni (es. obbligatorieta'/visibilita' 
+	 * di campi in base al valore di una tendina)
+	 */
+	public String evaluateRelationships() {
+		// TODO al momento le relazioni fra campi custom sono supportate solo al di fuori di gruppi/campi multi-istanza, nel caso deve essere prevista un'implementazione specifica
+		if (this.relationships != null && !this.relationships.isEmpty()) {
+			List<String> filledXPaths = new ArrayList<String>();
+			for (Relationship relationship : relationships) {
+				processRelationshipAction(relationship, filledXPaths);
+			}
+		}
+		return null;
+	}
+	
+	/**
+	 * Esecuzione dell'azione prevista su una specifica relazione fra campi custom
+	 * @param relationship
+	 * @param filledXPaths
+	 */
+	private void processRelationshipAction(Relationship relationship, List<String> filledXPaths) {
+		if (relationship != null) {
+			if (filledXPaths == null)
+				filledXPaths = new ArrayList<String>();
+			String value = getValueFromPath(relationship.getFieldFrom());
+			boolean todo = false;
+			boolean boolValue = (value != null && value.equals(relationship.getValueFrom()));
+			if (boolValue) {
+				if (!filledXPaths.contains(relationship.getFieldTo()))
+					filledXPaths.add(relationship.getFieldTo());
+				todo = true;
+			}
+			else {
+				// Se il valore corrente non corriponde a quello definito nella relazione applico la regola solo se
+				// il path di destinazione non e' gia' stato settato 
+				if (!filledXPaths.contains(relationship.getFieldTo()))
+					todo = true;
+			}
+			
+			if (todo)
+				processActionOnField(relationship.getFieldTo(), relationship.getAction(), boolValue);
+		}
+	}
+	
+	/**
+	 * Recupera il valore associato ad un campo identificato da un path.
+	 * Formato del campo custom: section[0].field_2[0].field_3[2]
+	 * 
+	 * @param fieldPath definizione del campo per il quale recuperare il valore (es. section[0].field_2[0].field_3[2])
+	 * @return Valore associato al campo
+	 */
+	private String getValueFromPath(String fieldPath) {
+		String value = null;
+		if (fieldPath != null && !fieldPath.equals("")) {
+			
+			// recupero della sezione
+			int sectionIndex = fieldPath.indexOf(".");
+			if (sectionIndex != -1) {
+				String propertyName = fieldPath.substring(0, sectionIndex); // la prima property corrisponde sempre ad una sezione
+				String currentPath = fieldPath.substring(sectionIndex+1);
+				
+				String index = "0";
+				if (propertyName.indexOf("_") != -1) {
+					index = propertyName.substring(propertyName.indexOf("_") + 1);
+					
+					value = this.getSections().get(new Integer(index).intValue()).getValueFromPath(currentPath);
+				}
+			}
+		}
+		return value;
+	}
+	
+	/**
+	 * Esecuzione di una azione su un campo identificato da un path.
+	 * Formato del campo custom: section[0].field_2[0].field_3[2]
+	 * 
+	 * @param fieldPath definizione del campo da aggiornare (es. section[0].field_2[0].field_3[2])
+	 * @param action azione da svolgere sul campo
+	 * @param value Valore da settare in base all'azione
+	 */
+	private void processActionOnField(String fieldPath, RelationshipAction action, Object value) {
+		if (fieldPath != null && !fieldPath.equals("") && action != null) {
+			
+			// recupero della sezione
+			int sectionIndex = fieldPath.indexOf(".");
+			if (sectionIndex != -1) {
+				String propertyName = fieldPath.substring(0, sectionIndex); // la prima property corrisponde sempre ad una sezione
+				String currentPath = fieldPath.substring(sectionIndex+1);
+				
+				String index = "0";
+				if (propertyName.indexOf("_") != -1) {
+					index = propertyName.substring(propertyName.indexOf("_") + 1);
+					
+					this.getSections().get(new Integer(index).intValue()).processActionOnField(currentPath, action, value);
+				}
+			}
+		}
+	}
+	
+	/**
+	 * Verifica di eventuali relazioni relative ad uno specifico campo
+	 * @param fieldFrom
+	 */
+	public void checkRelationships(String fieldFrom) {
+		if (fieldFrom != null && !fieldFrom.isEmpty() && this.relationships != null && !this.relationships.isEmpty()) {
+			for (Relationship relationship : relationships) {
+				if (relationship.getFieldFrom().equalsIgnoreCase(fieldFrom)) {
+					processRelationshipAction(relationship, null);
 				}
 			}
 		}
@@ -256,7 +393,15 @@ public class CustomFields extends XmlEntity {
 							}
 							else {
 								// campo base (singola istanza)
-								FieldInstance fieldInstance = new FieldInstance();
+								FieldInstance fieldInstance;
+								// Gestione possibili instanze specializzate
+								switch (field.getType()) {
+									case "numero_anno":
+										fieldInstance = new NumeroAnnoInstance();
+										break;
+									default:
+										fieldInstance = new FieldInstance();
+								}
 								fieldInstance.init(XMLUtil.getDOM(field.getXml()));
 								if (fieldInstance.showFieldValue(sectioncontext, field.getType(), field.getXpath(), field.getXslOut()))
 									campiValorizzati = true;
@@ -274,7 +419,7 @@ public class CustomFields extends XmlEntity {
 	/**
 	 * controllo su eventuali campi custom obbligatori
 	 * 
-	 * @param modify true se si devono eseguire i controlli su una modifica, false in caso di inserimento
+	 * @param isModify true se si devono eseguire i controlli su una modifica, false in caso di inserimento
 	 * @param formatoData formato da utilizzare per i campi data
 	 * @param pageBean bean della pagina che contiene il form con i campi custom
 	 * @return false se tutti i campo obbligatori sono stati compilati, true se anche un solo campo obbligatorio non e' compilato

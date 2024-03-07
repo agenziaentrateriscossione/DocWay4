@@ -317,8 +317,11 @@ public class DocWayLookup extends Lookup {
 								if (doc != null) {
 									if (titolo.isOverrideCC()) {
 										// Azzero tutti i CC del documento
-										doc.setAssegnazioneCC(new ArrayList<Rif>());
-										doc.setAssegnazioneCDS(new ArrayList<Rif>());
+										// mbernardini 17/12/2015 : azzeramento di CC e CDS solo se effettivamente esistono CC e CDS all'interno del titolo
+										if (value.indexOf("CC") != -1)
+											doc.setAssegnazioneCC(new ArrayList<Rif>());
+										if (value.indexOf("CDS") != -1)
+											doc.setAssegnazioneCDS(new ArrayList<Rif>());
 									}
 									
 									// Assegno tutti i responsabili al documento

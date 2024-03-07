@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+    template="../#{docEditModifyRaccoglitoreINDICE.pageTemplate}"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:c="http://java.sun.com/jsp/jstl/core">
+
+<ui:define name="content">
+	<div class="raccoglitore indice docedit">
+
+		<!-- toolbar: inizio -->
+		<div class="btn-toolbar" role="toolbar">
+			<div class="btn-group">
+				<h:commandLink id="saveBtn" action="#{docEditModifyRaccoglitoreINDICE.saveDocument}" styleClass="btn btn-primary openwaitmsg">#{i18n['acl.save']}</h:commandLink>
+				<h:commandLink action="#{docEditModifyRaccoglitoreINDICE.clearDocument}" styleClass="btn btn-default">#{i18n['acl.back']}</h:commandLink>
+			</div>
+		</div>
+		<!-- toolbar: fine -->
+
+		<h5 class="sub-header">
+			<span class="doc-tipo-raccoglitore glyphicon glyphicon-inbox #{(!empty docEditModifyRaccoglitoreINDICE.raccoglitore.codiceRaccoglitoreCustom) ? docEditModifyRaccoglitoreINDICE.raccoglitore.codiceRaccoglitoreCustom : ''}"></span>&#160;
+			#{(!empty docEditModifyRaccoglitoreINDICE.raccoglitore.descrizioneRaccoglitoreCustom) ? docEditModifyRaccoglitoreINDICE.raccoglitore.descrizioneRaccoglitoreCustom : i18n['dw4.raccoglitore']} - #{i18n['acl.modify']}
+		</h5>
+
+		<!-- messages: inizio -->
+		<h:panelGroup rendered="#{not empty facesContext.messageList}" layout="block" styleClass="docedit-messages alert alert-danger">
+			<h:messages styleClass="" id="validationMesseges" />
+		</h:panelGroup>
+		<h:inputHidden id="errorFieldIds" value="#{docEditModifyRaccoglitoreINDICE.errorFieldIds}" />
+		<!-- messages: fine -->
+
+		<script type="text/javascript">
+		$(document).ready(function() {
+			// disabilita link esterni al form per rilascio del lock sul documento
+			disableNoTemplateFormLinks("#{i18n['dw4.abbandona_alert_msg']}");
+
+			setInvalidInputFields();
+		});
+		</script>
+
+		<!-- scheda edit: inizio -->
+		<div class="row-fluid" style="margin-top:10px;">
+			<div id="fixedshowdoc" class="box span12 fixed-showdoc">
+				<div class="box-content">
+
+					<div class="fieldset">
+						<div class="legend">
+							#{i18n['dw4.datiracc']}
+
+							<div class="pull-right">
+								<span class="glyphicon glyphicon-inbox" title="#{i18n['dw4.datiracc']}"></span>
+							</div>
+						</div>
+
+						<div class="form-group">
+	        				<label for="templateForm:raccPubblico" class="col-sm-2 control-label">#{i18n['dw4.pubblico']}</label>
+							<div class="col-sm-7">
+								<h:selectBooleanCheckbox id="raccPubblico" immediate="true" value="#{docEditModifyRaccoglitoreINDICE.raccoglitore.pubblico}" />
+								<label class="uppercase margin-left-5" style="vertical-align: super;">#{i18n['dw4.rendi_visibile_tutti_ricerca_all_interno_della_corte']} </label>
+							</div>
+	        			</div>
+	        			<div class="form-group">
+							<label for="templateForm:racc_oggetto" class="col-sm-2 control-label requiredField"><span>* #{i18n['dw4.object']}</span></label>
+							<div class="col-sm-9">
+								<h:inputTextarea id="racc_oggetto" value="#{docEditModifyRaccoglitoreINDICE.raccoglitore.oggetto}" rows="4" cols="120" styleClass="#{ component.valid ? '' : 'invalidinput' } form-control" />
+							</div>
+						</div>
+					</div> <!-- /fieldset -->
+
+					<ui:include src="../../customfields/docedit@customfields.xhtml">
+						<ui:param name="bean" value="#{docEditModifyRaccoglitoreINDICE}" />
+		        	</ui:include>
+
+					<div class="fieldset">
+						<div class="legend">
+							#{i18n['dw4.other']}
+
+	        				<div class="pull-right">
+								<span class="glyphicon glyphicon-list-alt" title="#{i18n['dw4.other']}"></span>
+							</div>
+						</div>
+
+						<div class="form-group">
+			               	<label for="templateForm:note" class="col-sm-2 control-label">#{i18n['acl.notes']}</label>
+			               	<div class="col-sm-9">
+			               		<h:inputTextarea id="note" value="#{docEditModifyRaccoglitoreINDICE.raccoglitore.note.text}" rows="4" cols="120" styleClass="form-control" />
+			               	</div>
+						</div>
+					</div> <!-- /fieldset -->
+				</div>
+			</div>
+		</div>
+		<!-- scheda edit: fine -->
+
+		<ui:include src="../lookup.xhtml"> <ui:param name="pageBean" value="#{docEditModifyRaccoglitoreINDICE}"/></ui:include>
+
+		<h:inputTextarea value="#{docEditModifyRaccoglitoreINDICE.xml}" rendered="#{docEditModifyRaccoglitoreINDICE.debugMode}" styleClass="form-control debug-textarea" rows="10" />
+	</div>
+</ui:define>
+
+</ui:composition>

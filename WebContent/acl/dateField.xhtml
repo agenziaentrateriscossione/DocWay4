@@ -9,7 +9,7 @@
 		#{(required eq 'true') ? '* ' : ''}#{label}
 	</label>
 	<div class="col-sm-2">
-		<div class="input-group date" data-date-format="dd/mm/yyyy">
+		<div class="input-group date free" data-date-format="dd/mm/yyyy">
 			<h:inputText id="#{id}" value="#{value}" styleClass="#{ component.valid ? '' : 'invalidinput' } form-control datepicker" onblur="#{ (!empty onblur) ? onblur : ''}">
 				<f:converter converterId="DateConverter"/>
 			</h:inputText>

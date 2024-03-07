@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" 
+	  xmlns:h="http://java.sun.com/jsf/html" 
+	  xmlns:ui="http://java.sun.com/jsf/facelets" 
+	  xmlns:f="http://java.sun.com/jsf/core">
+<ui:composition>
+
+	<h:panelGroup layout="block" id="showWorkflowHistory_block">
+		<h:panelGroup id="showWorkflowHistory" rendered="#{pageBean.showWorkflowHistory}">
+			<!-- Modal -->
+			<div id="showWorkflowHistoryModal" class="modal fade in" aria-hidden="false" aria-labelledby="showWorkflowHistoryModalLabel" role="dialog" tabindex="-1" style="display: block;">
+				<div class="modal-dialog">
+					<div class="modal-content jsf-modal">
+						<div class="modal-header">
+							<h:commandLink styleClass="close" action="#{pageBean.hideWorkflowHistory}" value="&#215;">
+		                    	<f:ajax render="showWorkflowHistory_block"/>
+		                   	</h:commandLink>
+							
+							<h4 class="modal-title" id="showWorkflowHistoryModalLabel">#{wfInstanceHistory.label}</h4>
+						</div>
+						<div class="modal-body">
+						
+							<h:panelGroup rendered="#{!empty wfInstanceHistory.endedDate}">	
+								<div class="alert alert-info uppercase" role="alert">
+									<h:panelGroup rendered="#{workflowInstance.status == 'cancelled'}">
+										<h:outputText value="#{i18n['dw4.workflow_annullato']}" />
+									</h:panelGroup>
+									<h:panelGroup rendered="#{wfInstanceHistory.status == 'finished'}">
+										<h:outputText value="#{i18n['dw4.workflow_concluso']}" />
+									</h:panelGroup>
+									&#160;
+									<h:outputText value="#{wfInstanceHistory.endedDate}">
+										<f:converter converterId="DateTimeConverter"/>
+									</h:outputText>
+								</div>
+							</h:panelGroup>
+						
+							<h:panelGroup rendered="#{fn:length(wfInstanceHistory.ex_actions) > 0}">
+								<table class="table table-striped">
+									<thead>
+										<tr>
+											<th class="essential">#{i18n['dw4.azione']}</th>
+											<th class="essential">#{i18n['dw4.user']}</th>
+											<th class="essential">#{i18n['dw4.data']}</th>
+										</tr>
+									</thead>
+									<tbody>
+										<ui:repeat var="ex_action" value="#{wfInstanceHistory.ex_actions}" varStatus="indice">
+											<tr>
+												<td class="essential">
+													#{ex_action.descrizione}
+												</td>
+												<td class="essential">
+													<h:outputText value="#{ex_action.nome_persona}" />
+													<h:panelGroup rendered="#{!empty ex_action.login_persona}"> <h:outputText value=" (#{ex_action.login_persona})" /> </h:panelGroup>
+												</td>
+												<td class="essential">
+													<h:panelGroup rendered="#{!empty ex_action.data}">
+														<h:outputText value="#{ex_action.data}"><f:converter converterId="DateConverter"/></h:outputText><h:outputText value=" #{ex_action.ora}"/>
+													</h:panelGroup>
+													<h:panelGroup rendered="#{empty ex_action.data}" >
+														<h:outputText value="#{i18n['dw4.taskInAttesa']}"> </h:outputText>													
+													</h:panelGroup>
+												</td>
+											</tr>
+										</ui:repeat>
+									</tbody>
+								</table>
+							</h:panelGroup>
+						</div>
+					</div>
+				</div>
+			</div>
+		</h:panelGroup>
+	</h:panelGroup>
+
+</ui:composition>   
+</html>

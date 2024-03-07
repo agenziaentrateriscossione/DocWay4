@@ -66,6 +66,7 @@ public class QueryVarieNA extends QueryGlobale {
 	private void forzaRepertorio() {
 		setRepertori_multipli(true);
 		forceRepertorioSelected("NA", "V");
+		setCurrentCustomFieldSection("varie_NA");
 		setVarie(true);
 	}
 	

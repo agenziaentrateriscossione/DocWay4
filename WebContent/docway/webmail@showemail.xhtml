@@ -25,7 +25,7 @@
 							
 							<div class="row">
 								<div class="col-sm-8">
-									<strong><h:outputText value="#{pageBean.message.from.name}" escape="false" /> &lt;<h:outputText value="#{pageBean.message.from.address}" escape="false" />&gt;</strong>
+									<strong><h:outputText value="#{pageBean.message.from.name}" /> &lt;<h:outputText value="#{pageBean.message.from.address}" />&gt;</strong>
 								</div>
 								<div class="col-sm-4 text-right">
 									<h:outputText value="#{pageBean.message.sentDate}" ><f:converter converterId="DateTimeConverter"/></h:outputText>
@@ -36,7 +36,7 @@
 								<div class="col-sm-12">
 									<h:outputText value="#{i18n['dw4.a']}: " />
 									<ui:repeat var="recipient" value="#{pageBean.message.to}" varStatus="status">
-										<h:outputText value="#{recipient.name}" escape="false" /> &lt;<h:outputText value="#{recipient.address}" escape="false" />&gt;
+										<h:outputText value="#{recipient.name}" /> &lt;<h:outputText value="#{recipient.address}" />&gt;
 										<h:outputText rendered="#{status.index != (fn:length(pageBean.message.to)-1)}" value=", " />
 									</ui:repeat>
 								</div>
@@ -45,7 +45,7 @@
 								<div class="col-sm-12">
 									<h:outputText value="#{i18n['dw4.cc']}: " />
 									<ui:repeat var="recipient" value="#{pageBean.message.cc}" varStatus="status">
-										<h:outputText value="#{recipient.name}" escape="false" /> &lt;<h:outputText value="#{recipient.address}" escape="false" />&gt;
+										<h:outputText value="#{recipient.name}" /> &lt;<h:outputText value="#{recipient.address}" />&gt;
 										<h:outputText rendered="#{status.index != (fn:length(pageBean.message.cc)-1)}" value=", " />
 									</ui:repeat>
 								</div>
@@ -54,7 +54,7 @@
 								<div class="col-sm-12">
 									<h:outputText value="#{i18n['dw4.bcc']}: " />
 									<ui:repeat var="recipient" value="#{pageBean.message.bcc}" varStatus="status">
-										<h:outputText value="#{recipient.name}" escape="false" /> &lt;<h:outputText value="#{recipient.address}" escape="false" />&gt;
+										<h:outputText value="#{recipient.name}" /> &lt;<h:outputText value="#{recipient.address}" />&gt;
 										<h:outputText rendered="#{status.index != (fn:length(pageBean.message.bcc)-1)}" value=", " />
 									</ui:repeat>
 								</div>
@@ -62,7 +62,7 @@
 							
 							<div class="row" style="margin-top: 10px;">
 								<div class="col-sm-12">
-									<span class="anteprima-email-oggetto"><h:outputText value="#{(empty pageBean.message.subject) ? i18n['dw4.nessun_oggetto'] : pageBean.message.subject}" escape="false"/></span>
+									<span class="anteprima-email-oggetto"><h:outputText value="#{(empty pageBean.message.subject) ? i18n['dw4.nessun_oggetto'] : pageBean.message.subject}" /></span>
 								</div>
 							</div>
 							
@@ -77,7 +77,7 @@
 											<span class="glyphicon glyphicon-paperclip normal-size-icon"></span>
 											&#160;
 											<h:commandLink action="#{pageBean.downloadAttachment}" styleClass="blacklink">
-												<h:outputText value="#{attach.name}" escape="false" />
+												<h:outputText value="#{attach.name}" />
 											</h:commandLink>
 										</div>
 									</div>
@@ -85,7 +85,7 @@
 							</h:panelGroup>
 							
 				        	
-					       	<h:inputTextarea value="#{pageBean.xml}" rendered="#{pageBean.debugMode}" styleClass="form-control" rows="10"/>
+					       	<h:inputTextarea value="#{pageBean.xml}" rendered="#{pageBean.debugMode}" styleClass="form-control debug-textarea" rows="10"/>
 						</div>
 						<div class="modal-footer">
 							<h:panelGroup rendered="#{fn:length(pageBean.documentModels) > 0}">

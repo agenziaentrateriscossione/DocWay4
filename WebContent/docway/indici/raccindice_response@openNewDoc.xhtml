@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	  xmlns:h="http://java.sun.com/jsf/html"
+	  xmlns:ui="http://java.sun.com/jsf/facelets"
+	  xmlns:f="http://java.sun.com/jsf/core"
+	  xmlns:c="http://java.sun.com/jsp/jstl/core"
+	  xmlns:p="http://xmlns.jcp.org/jsf/passthrough">
+<ui:composition>
+
+	<h:panelGroup layout="block" id="raccNewDocPopup">
+		<h:panelGroup rendered="#{pageBean.active}">
+			<!-- Modal -->
+			<div id="raccNewDocModal" class="modal fade in" aria-hidden="false" aria-labelledby="raccNewDocModalLabel" role="dialog" tabindex="-1" style="display: block;">
+				<!--div class="modal fade" id="raccNewDocModal" tabindex="-1" role="dialog" aria-labelledby="raccNewDocModalLabel" aria-hidden="true"-->
+				<div class="modal-dialog modal-lg docedit">
+					<div class="modal-content jsf-modal">
+						<div class="modal-header">
+							<h:commandLink onclick="saveScrollbarPosition()" styleClass="close" action="#{pageBean.clearDocument}" value="&#215;">
+								<f:ajax execute="@form" render="@form" />
+							</h:commandLink>
+
+							<h4 class="modal-title" id="raccNewDocModalLabel">#{pageBean.multiple ? i18n['dw4.newdocs'] : i18n['dw4.newdoc']}</h4>
+						</div>
+						<div class="modal-body">
+
+							<h:panelGroup rendered="#{not empty facesContext.messageList}" layout="block" styleClass="alert alert-danger">
+								<h:messages styleClass="" id="raccNewDocValidationMesseges" />
+							</h:panelGroup>
+
+							<div class="fieldset">
+								<div class="legend">
+									#{pageBean.multiple ? i18n['dw4.documenti'] : i18n['dw4.datidoc']}
+
+									<div class="pull-right">
+										<span class="glyphicon glyphicon-file" title="#{pageBean.multiple ? i18n['dw4.documenti'] : i18n['dw4.datidoc']}"></span>
+									</div>
+								</div>
+
+								<h:panelGroup id="modal_form_newDocs">
+
+									<h:panelGroup rendered="#{pageBean.multiple}">
+										<div class="form-group">
+											<label for="templateForm:newDocInRacc_numNewDocs" class="col-sm-3 control-label requiredField">
+												<span class="popoveritem" data-toggle="popover" data-placement="bottom" data-trigger="hover" data-content="#{i18n['dw4.compilare_il_campo_con_il_numero_di_doc_da_inserire']}" data-original-title="" title="">
+													<span class="uppercase">* #{i18n['dw4.numero_documenti']}</span>
+													<span class="glyphicon glyphicon-info-sign popoveritem" />
+												</span>
+											</label>
+
+											<div class="col-xs-2">
+												<h:inputText id="newDocInRacc_numDocsToInsert" styleClass="form-control" value="#{pageBean.numDocsToInsert}" maxlength="2" onblur="jQuery('#templateForm\\:hiddenNewDocsButton').click()"
+															 onkeypress="if(event.which &lt; 48 || event.which &gt; 57 ) if(event.which !== 8) if(event.which !== 0) return false;">
+												</h:inputText>
+												<h:commandButton id="hiddenNewDocsButton" actionListener="#{pageBean.updateFormsNumber}" style="display: none;">
+													<f:ajax execute="@form" render="templateForm:modal_form_newDocs" />
+												</h:commandButton>
+											</div>
+										</div>
+									</h:panelGroup>
+
+									<div class="form-group">
+										<label for="templateForm:newDocInRacc_tipoDoc" class="col-sm-3 control-label requiredField"><span>* #{i18n['acl.type']}</span></label>
+										<div class="col-sm-5">
+											<h:selectOneMenu id="newDocInRacc_tipoDoc" value="#{pageBean.doc.tipoDocSelected}" styleClass="form-control">
+												<f:selectItems value="#{pageBean.doc.tipiDoc.entrySet()}" var="entry" itemValue="#{entry.key}" itemLabel="#{entry.value}" />
+											</h:selectOneMenu>
+										</div>
+									</div>
+									<h:panelGroup rendered="#{!pageBean.multiple}">
+										<div class="form-group">
+											<label for="templateForm:newDocInRacc_oggetto" class="col-sm-3 control-label requiredField"><span>* #{i18n['dw4.object']}</span></label>
+											<div class="col-sm-8">
+												<h:inputTextarea  id="newDocInRacc_oggetto" value="#{pageBean.doc.oggetto}" rows="4" cols="120" styleClass="#{ component.valid ? '' : 'invalidinput' } form-control" />
+											</div>
+										</div>
+									</h:panelGroup>
+									<h:panelGroup rendered="#{pageBean.multiple and not empty pageBean.newDocs}">
+										<ui:repeat value="#{pageBean.newDocs}" var="doc">
+											<div class="form-group">
+												<h:outputLabel for="newDocInRacc_oggetto_ripetibile" styleClass="col-sm-3 control-label requiredField">#{i18n['dw4.object']}</h:outputLabel>
+												<div class="col-sm-7">
+													<div class="input-group">
+														<h:inputText id="newDocInRacc_oggetto_ripetibile" value="#{doc.oggetto}" p:placeholder="#{i18n['dw4.titolo_da_modificare']}"  styleClass="form-control" />
+														<div class="input-group-btn">
+															<h:commandLink title="#{i18n['acl.delete']}" action="#{pageBean.deleteNewDoc}" id="deleteNewDoc_button" styleClass="btn btn-default">
+																<f:ajax execute="@form" render="templateForm:modal_form_newDocs" />
+																<span class="glyphicon glyphicon-remove"></span>
+															</h:commandLink>
+														</div>
+													</div>
+												</div>
+											</div>
+										</ui:repeat>
+									</h:panelGroup>
+									<h:panelGroup rendered="#{!pageBean.multiple}">
+										<div class="form-group">
+											<label for="templateForm:newDocInRacc_sendMailNotificaCheck" class="col-sm-3 control-label">#{i18n['dw4.email_di_notifica']}</label>
+											<div class="col-sm-1">
+												<h:selectBooleanCheckbox value="#{pageBean.doc.sendEmailNotifica}" id="newDocInRacc_sendMailNotificaCheck" />
+											</div>
+										</div>
+										<div class="form-group">
+											<label for="templateForm:newDocInRacc_importAllegatiCheck" class="col-sm-3 control-label">
+										<span class="popoveritem" data-toggle="popover" data-placement="bottom" data-trigger="hover" data-content="#{i18n['dw4.copia_allegati_da_un_altro_documento']}" data-original-title="" title="">
+											<span class="uppercase">#{i18n['dw4.importa_allegati']}</span>
+											<span class="glyphicon glyphicon-info-sign popoveritem" />
+										</span>
+											</label>
+											&#160;
+											<div class="col-sm-1">
+												<h:selectBooleanCheckbox value="#{pageBean.doc.importAllegati}" id="newDocInRacc_importAllegatiCheck" onchange="toggleLookup();" />
+											</div>
+										</div>
+										<div class="form-group" id="div-import-allegati" style="#{pageBean.doc.importAllegati ? 'display: block;' : 'display: none;'}">
+											<label for="templateForm:newDocInRacc_documentoLookup" class="col-sm-3 control-label requiredField"><span>* #{i18n['dw4.object']}</span></label>
+											<div class="col-sm-8">
+												<div class="input-group">
+													<!-- tiommi: valore di readonly solo in fase di visualizzazione utente e normale in ogni altra fase -->
+													<h:inputText id="copyFromDoc" p:placeholder="#{i18n['dw4.selezionare_documento_tramite_pulsante']}" value="#{pageBean.doc.oggetto_lookup}" styleClass="#{ component.valid ? '' : 'invalidinput' } form-control" readonly="#{not facesContext.postback or facesContext.renderResponse}"></h:inputText>
+													<h:inputHidden id="hidden-nrecord" value="#{pageBean.doc.nrecord_lookup}"></h:inputHidden>
+													<div class="input-group-btn">
+														<h:commandLink title="#{i18n['dw4.cerca_documento']}" action="#{pageBean.searchDocumento}" onclick="openCenterPopup('', 'searchDoc')" target="searchDoc" id="copyFromDoc_button" styleClass="btn btn-primary">
+															<span class="glyphicon glyphicon-search"></span>
+														</h:commandLink>
+														<a title="#{i18n['acl.clear']}" onclick="cleanCopiaAllegatiDoc();" class="btn btn-default">
+															<span class="glyphicon glyphicon-remove"></span>
+														</a>
+													</div>
+												</div>
+											</div>
+										</div>
+									</h:panelGroup>
+
+								</h:panelGroup>
+							</div>
+
+							<h:inputTextarea styleClass="form-control" rows="10" value="#{pageBean.xml}" rendered="#{pageBean.debugMode}"/>
+
+						</div>
+						<div class="modal-footer">
+							<h:commandLink onclick="saveScrollbarPosition()" action="#{pageBean.saveDocument}" styleClass="btn btn-primary openwaitmsg" value="#{i18n['acl.save']}">
+								<f:ajax execute="@form" render="@form"/>
+							</h:commandLink>
+
+							<h:commandLink onclick="saveScrollbarPosition()" styleClass="btn btn-default" action="#{pageBean.clearDocument}"  value="#{i18n['acl.close']}">
+								<f:ajax execute="@form" render="@form" />
+							</h:commandLink>
+						</div>
+					</div>
+				</div>
+			</div>
+			<!--h:outputScript>
+				$('#raccNewDocModal').modal('show');
+			</h:outputScript-->
+
+			<script type="text/javascript">
+				function toggleLookup() {
+					$("#div-import-allegati").slideToggle("fast");
+				}
+
+				function cleanCopiaAllegatiDoc() {
+					$("#templateForm\\:copyFromDoc").val("");
+					$("#templateForm\\:hidden-nrecord").val("");
+				}
+			</script>
+		</h:panelGroup>
+	</h:panelGroup>
+
+</ui:composition>
+</html>

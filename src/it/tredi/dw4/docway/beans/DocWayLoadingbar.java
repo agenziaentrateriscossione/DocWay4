@@ -1,6 +1,11 @@
 package it.tredi.dw4.docway.beans;
 
-import it.tredi.dw4.utils.XMLDocumento;
+import javax.activation.MimetypesFileTypeMap;
+import javax.faces.context.FacesContext;
+import javax.faces.event.ActionEvent;
+import javax.servlet.ServletOutputStream;
+import javax.servlet.http.HttpServletResponse;
+
 import it.tredi.dw4.adapters.AdaptersConfigurationLocator;
 import it.tredi.dw4.adapters.ErrormsgFormsAdapter;
 import it.tredi.dw4.adapters.LoadingbarFormsAdapter;
@@ -10,13 +15,8 @@ import it.tredi.dw4.beans.Page;
 import it.tredi.dw4.docway.adapters.DocWayLoadingbarFormsAdapter;
 import it.tredi.dw4.docway.model.Resoconto;
 import it.tredi.dw4.utils.Logger;
+import it.tredi.dw4.utils.XMLDocumento;
 import it.tredi.dw4.utils.XMLUtil;
-
-import javax.activation.MimetypesFileTypeMap;
-import javax.faces.context.FacesContext;
-import javax.faces.event.ActionEvent;
-import javax.servlet.ServletOutputStream;
-import javax.servlet.http.HttpServletResponse;
 
 public class DocWayLoadingbar extends Loadingbar {
 	private DocWayLoadingbarFormsAdapter formsAdapter;
@@ -125,7 +125,22 @@ public class DocWayLoadingbar extends Loadingbar {
 	
 	public String closeAndReloadFascicolo() {
 		setActive(false);
-		return "showdoc@fascicolo@reload";
+		
+		boolean reload = reloadHolderPageBean();
+		if (!reload)
+			return "showdoc@fascicolo@reload";
+		else
+			return null;
+	}
+	
+	public String closeAndReloadRaccoglitore() {
+		setActive(false);
+		
+		boolean reload = reloadHolderPageBean();
+		if (!reload)
+			return "showdoc@raccoglitore@reload";
+		else
+			return null;
 	}
 	
 	/**
@@ -135,14 +150,36 @@ public class DocWayLoadingbar extends Loadingbar {
 	 */
 	public String closeAndCallReloadMethod() {
 		setActive(false);
+		
+		boolean reload = reloadHolderPageBean();
+		if (!reload) {
+			String dbTable = this.formsAdapter.getDefaultForm().getParam("dbTable");
+			if (dbTable != null && dbTable.startsWith("@"))
+				dbTable = dbTable.substring(1);
+			return "showdoc@" + dbTable + "@reload";
+		}
+		else
+			return null;
+	}
+	
+	/**
+	 * Refresh della pagina tramite chiamata al metodo reload della pagina che contiene la loadingbar
+	 * @return
+	 */
+	private boolean reloadHolderPageBean() {
+		boolean done = false;
 		try {
-			java.lang.reflect.Method method = holderPageBean.getClass().getMethod("reload");
-			method.invoke(holderPageBean);
-		} 
+			if (holderPageBean != null) {
+				java.lang.reflect.Method method = holderPageBean.getClass().getMethod("reload");
+				method.invoke(holderPageBean);
+				
+				done = true;
+			}
+		}
 		catch (Exception e) {
 			Logger.error(e.getMessage(), e);
 		}
-		return "showdoc@fascicolo@reload";
+		return done;
 	}
 	
 	/**
@@ -378,6 +415,14 @@ public class DocWayLoadingbar extends Loadingbar {
 			formsAdapter.fillFormsFromResponse(formsAdapter.getLastResponse()); //restore delle form
 			return null;
 		}
+	}
+	
+	public XMLDocumento getDocument() {
+		return document;
+	}
+
+	public void setDocument(XMLDocumento document) {
+		this.document = document;
 	}
 
 	public void setResoconto(Resoconto resoconto) {

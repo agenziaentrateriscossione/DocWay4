@@ -1,49 +1,68 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml" 
-	  xmlns:h="http://java.sun.com/jsf/html" 
-	  xmlns:ui="http://java.sun.com/jsf/facelets" 
+<html xmlns="http://www.w3.org/1999/xhtml"
+	  xmlns:h="http://java.sun.com/jsf/html"
+	  xmlns:ui="http://java.sun.com/jsf/facelets"
 	  xmlns:f="http://java.sun.com/jsf/core"
-	  xmlns:fn="http://java.sun.com/jsp/jstl/functions">
+	  xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	  xmlns:a="http://xmlns.jcp.org/jsf/passthrough">
 <ui:composition>
 
 	<div class="showdoc-section">
 		<div class="title">
 			#{i18n['acl.servicesinformation']}
-			
+
 			<div class="pull-right">
 				<span class="glyphicons-pro settings" title="#{i18n['acl.servicesinformation']}"></span>
 			</div>
 		</div>
-	
+
 		<dl class="dl-horizontal">
 			<dt>Id</dt>
 			<dd>
 				#{bean.nrecord}
 				<h:panelGroup rendered="#{viewbean.linkToDoc ne ''}">
 					<span class="btn-group">
-						<h:commandLink title="#{i18n['dw4.copia_il_link_al_documento_negli_appunti']}" onclick="fnJsCopiaLinkDocInClipboard('#{viewbean.linkToDoc}'); return false;" styleClass="btn btn-default btn-xs">
+						<h:commandLink rendered="#{bean['class'].simpleName ne 'Fascicolo' and bean['class'].simpleName ne 'Raccoglitore'}" a:data-tooltip="#{i18n['dw4.copia_il_link_al_documento_negli_appunti']}" onclick="fnJsCopiaLinkDocInClipboard($(this), '#{viewbean.linkToDoc}'); return false;" styleClass="btn btn-default btn-xs">
+							<span class="glyphicon glyphicon-share"></span>
+						</h:commandLink>
+						<h:commandLink rendered="#{bean['class'].simpleName eq 'Fascicolo'}" a:data-tooltip="#{i18n['dw4.copia_il_link_al_fascicolo_negli_appunti']}" onclick="fnJsCopiaLinkDocInClipboard($(this), '#{viewbean.linkToDoc}'); return false;" styleClass="btn btn-default btn-xs">
+							<span class="glyphicon glyphicon-share"></span>
+						</h:commandLink>
+						<h:commandLink rendered="#{bean['class'].simpleName eq 'Raccoglitore'}" a:data-tooltip="#{i18n['dw4.copia_il_link_al_raccoglitore_negli_appunti']}" onclick="fnJsCopiaLinkDocInClipboard($(this), '#{viewbean.linkToDoc}'); return false;" styleClass="btn btn-default btn-xs">
 							<span class="glyphicon glyphicon-share"></span>
 						</h:commandLink>
 						<ui:param name="myquotes" value="'" />
 						<ui:param name="myconvetedquotes" value="\\'" />
 						<ui:param name="mynewline" value="\n" />
 						<ui:param name="myconvertednewline" value=" " />
-						<h:commandLink title="#{i18n['dw4.invia_il_link_al_documento_tramite_email']}" onclick="mailUrlTo('#{fn:replace(fn:replace(bean.oggetto, myquotes, myconvetedquotes), mynewline, myconvertednewline)}', '#{bean.converted_data_prot}', '#{viewbean.linkToDoc}'); return false;" styleClass="btn btn-default btn-xs">
+						<h:commandLink rendered="#{bean['class'].simpleName ne 'Fascicolo' and bean['class'].simpleName ne 'Raccoglitore'}" title="#{i18n['dw4.invia_il_link_al_documento_tramite_email']}" onclick="mailUrlTo('#{fn:replace(fn:replace(bean.oggetto, myquotes, myconvetedquotes), mynewline, myconvertednewline)}', '#{bean.converted_data_prot}', '#{viewbean.linkToDoc}', 'documento'); return false;" styleClass="btn btn-default btn-xs">
 							<span class="glyphicon glyphicon-envelope"></span>
-						</h:commandLink> 
+						</h:commandLink>
+						<h:commandLink rendered="#{bean['class'].simpleName eq 'Fascicolo'}" title="#{i18n['dw4.invia_il_link_al_fascicolo_tramite_email']}" onclick="mailUrlTo('#{fn:replace(fn:replace(bean.oggetto, myquotes, myconvetedquotes), mynewline, myconvertednewline)}', '#{bean.numero}', '#{viewbean.linkToDoc}', 'fascicolo'); return false;" styleClass="btn btn-default btn-xs">
+							<span class="glyphicon glyphicon-envelope"></span>
+						</h:commandLink>
+						<h:commandLink rendered="#{bean['class'].simpleName eq 'Raccoglitore'}" title="#{i18n['dw4.invia_il_link_al_raccoglitore_tramite_email']}" onclick="mailUrlTo('#{fn:replace(fn:replace(bean.oggetto, myquotes, myconvetedquotes), mynewline, myconvertednewline)}', '#{bean.nrecord}', '#{viewbean.linkToDoc}', 'raccoglitore'); return false;" styleClass="btn btn-default btn-xs">
+							<span class="glyphicon glyphicon-envelope"></span>
+						</h:commandLink>
 					</span>
 				</h:panelGroup>
 			</dd>
 			<dt>#{i18n['acl.registration']}</dt>
 			<dd>
-				<strong>#{bean.creazione.uff_oper}</strong> - 
+				<h:panelGroup rendered="#{not empty bean.creazione.delegato}">
+					<strong>#{fn:substringBefore(fn:substringAfter(bean.creazione.delegato, '('), ')')}</strong>&#160;-&#160;#{fn:substringBefore(bean.creazione.delegato, '(')} #{i18n['dw4.su_delega_di']}
+				</h:panelGroup>
+				<strong>#{bean.creazione.uff_oper}</strong> -
 				<a target="acl" href="#{facesContext.externalContext.requestContextPath}/acl/loadrif.pf?db=#{viewbean.formsAdapter.aclDb}&amp;codammaoo=#{bean.cod_amm_aoo}&amp;searchKey=#{(!empty bean.creazione.cod_oper) ? 'persint_matricola' : 'persint_nomcogn'}&amp;value=#{(!empty bean.creazione.cod_oper) ? bean.creazione.cod_oper : bean.creazione.oper}">#{bean.creazione.oper}</a>
 				&#160;#{bean.creazione.dateLong} #{bean.creazione.ora}
 			</dd>
 			<h:panelGroup rendered="#{!empty(bean.ultima_modifica.dateLong)}">
 				<dt>#{i18n['acl.lastmodify']}</dt>
 				<dd>
-					<strong>#{bean.ultima_modifica.uff_oper}</strong> - 
+					<h:panelGroup rendered="#{not empty bean.ultima_modifica.delegato}">
+						<strong>#{fn:substringBefore(fn:substringAfter(bean.ultima_modifica.delegato, '('), ')')}</strong>&#160;-&#160;#{fn:substringBefore(bean.ultima_modifica.delegato, '(')} #{i18n['dw4.su_delega_di']}
+					</h:panelGroup>
+					<strong>#{bean.ultima_modifica.uff_oper}</strong> -
 					<a target="acl" href="#{facesContext.externalContext.requestContextPath}/acl/loadrif.pf?db=#{viewbean.formsAdapter.aclDb}&amp;codammaoo=#{bean.cod_amm_aoo}&amp;searchKey=#{(!empty bean.ultima_modifica.cod_oper) ? 'persint_matricola' : 'persint_nomcogn'}&amp;value=#{(!empty bean.ultima_modifica.cod_oper) ? bean.ultima_modifica.cod_oper : bean.ultima_modifica.oper}">#{bean.ultima_modifica.oper}</a>
 					&#160;#{bean.ultima_modifica.dateLong} #{bean.ultima_modifica.ora}
 				</dd>
@@ -51,7 +70,10 @@
 			<h:panelGroup rendered="#{!empty(bean.protocollazione.dateLong)}">
 				<dt>#{i18n['dw4.protocollazione']}</dt>
 				<dd>
-					<strong>#{bean.protocollazione.uff_oper}</strong> - 
+					<h:panelGroup rendered="#{not empty bean.protocollazione.delegato}">
+						<strong>#{fn:substringBefore(fn:substringAfter(bean.protocollazione.delegato, '('), ')')}</strong>&#160;-&#160;#{fn:substringBefore(bean.protocollazione.delegato, '(')} #{i18n['dw4.su_delega_di']}
+					</h:panelGroup>
+					<strong>#{bean.protocollazione.uff_oper}</strong> -
 					<a target="acl" href="#{facesContext.externalContext.requestContextPath}/acl/loadrif.pf?db=#{viewbean.formsAdapter.aclDb}&amp;codammaoo=#{bean.cod_amm_aoo}&amp;searchKey=#{(!empty bean.protocollazione.cod_oper) ? 'persint_matricola' : 'persint_nomcogn'}&amp;value=#{(!empty bean.protocollazione.cod_oper) ? bean.protocollazione.cod_oper : bean.protocollazione.oper}">#{bean.protocollazione.oper}</a>
 					&#160;#{bean.protocollazione.dateLong} #{bean.protocollazione.ora}
 				</dd>
@@ -72,7 +94,7 @@
 				</dd>
 			</h:panelGroup>
 		</dl>
-			
+
 		<h:panelGroup id="historyPanel">
 			<h:panelGroup rendered="#{fn:length(bean.history)>0 and visible}">
 				<table class="table table-bordered">
@@ -96,18 +118,29 @@
 								</td>
 								<td>
 									<h:panelGroup rendered="#{fn:startsWith(storia.cod_uff, 'RL')==true or storia.nome_persona=='Tutti'}">#{storia.nome_uff}</h:panelGroup>
-									
+
 									<h:panelGroup rendered="#{not(fn:startsWith(storia.cod_uff, 'RL')==true or storia.nome_persona=='Tutti')}">
 										<strong><h:outputText value="#{storia.nome_persona}"/></strong>
 										<h:outputText rendered="#{!empty storia.nome_uff}" value="&#160;-&#160;#{storia.nome_uff}"/>
 									</h:panelGroup>
 								</td>
 								<td>
+									<h:panelGroup rendered="#{empty storia.delegato}">
+										<h:panelGroup rendered="#{!empty storia.operatore and storia.operatore.contains('(')}">
+											<strong>#{fn:substringBefore(storia.operatore, '(')}</strong>&#160;-&#160;#{fn:substringBefore(fn:substringAfter(storia.operatore, '('), ')')}
+										</h:panelGroup>
+										<h:panelGroup rendered="#{!empty storia.operatore and !storia.operatore.contains('(')}">
+											<strong>#{storia.operatore}</strong>
+										</h:panelGroup>
+									</h:panelGroup>
+									<h:panelGroup rendered="#{not empty storia.delegato}">
 									<h:panelGroup rendered="#{!empty storia.operatore and storia.operatore.contains('(')}">
+											<strong>#{fn:substringBefore(storia.delegato, '(')}</strong>&#160;-&#160;#{fn:substringBefore(fn:substringAfter(storia.delegato, '('), ')')} #{i18n['dw4.su_delega_di']}
 										<strong>#{fn:substringBefore(storia.operatore, '(')}</strong>&#160;-&#160;#{fn:substringBefore(fn:substringAfter(storia.operatore, '('), ')')}
 									</h:panelGroup>
 									<h:panelGroup rendered="#{!empty storia.operatore and !storia.operatore.contains('(')}">
 										<strong>#{storia.operatore}</strong>
+									</h:panelGroup>
 									</h:panelGroup>
 								</td>
 								<td>

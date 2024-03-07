@@ -1,16 +1,23 @@
 package it.tredi.dw4.docway.beans;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.faces.context.FacesContext;
 
-import it.tredi.dw4.utils.XMLDocumento;
+import org.dom4j.Document;
+
 import it.tredi.dw4.adapters.AdaptersConfigurationLocator;
 import it.tredi.dw4.docway.adapters.DocWayRifIntFormsAdapter;
+import it.tredi.dw4.docway.model.CoupleUfficioVisibilita;
 import it.tredi.dw4.docway.model.Doc;
 import it.tredi.dw4.docway.model.Rif;
+import it.tredi.dw4.i18n.I18N;
+import it.tredi.dw4.model.XmlEntity;
 import it.tredi.dw4.utils.AppStringPreferenceUtil;
+import it.tredi.dw4.utils.Const;
+import it.tredi.dw4.utils.XMLDocumento;
 import it.tredi.dw4.utils.XMLUtil;
-
-import org.dom4j.Document;
 
 public class DocWayDocRifInt extends DocWayDocedit {
 	private DocWayRifIntFormsAdapter formsAdapter;
@@ -30,6 +37,13 @@ public class DocWayDocRifInt extends DocWayDocedit {
 	private boolean trasferisciMinuta = false; // utilizzato per trasferimento RPA da lista doc. Vale true se occorre aggiornare la minuta (RPAM)
 	
 	private String xml;
+	
+	// tiommi 15/01/2018 : coppie uffici | livello di visibilita da forzare in salvataggio (se RPA appartiene all'ufficio)
+	private List<CoupleUfficioVisibilita> listaCoppieUfficioVisibilita = new ArrayList<CoupleUfficioVisibilita>();
+	private boolean overrideLivelloVisibilitaNeeded = false;
+	private String infoMessageLivelloVisibilitaUff = "";
+	private String nomeVisibilita = "";
+	private String codVisibilita = "";
 	
 	public String getXml() {
 		return xml;
@@ -84,8 +98,17 @@ public class DocWayDocRifInt extends DocWayDocedit {
 			String prefCheckboxMail = AppStringPreferenceUtil.getAppStringPreference(this.getAppStringPreferences(), AppStringPreferenceUtil.decodeAppStringPreference("CheckboxEmailNotifica"));
 			if (prefCheckboxMail != null && prefCheckboxMail.toLowerCase().equals("no"))
 				doc.setSendMailRifInterni(false);
+			// ERM012596 - rtirabassi - notifica capillare
+			String prefCheckboxMailDetail = AppStringPreferenceUtil.getAppStringPreference(this.getAppStringPreferences(), AppStringPreferenceUtil.decodeAppStringPreference("CheckboxEmailNotificaCapillare"));
+			if (prefCheckboxMailDetail != null && prefCheckboxMailDetail.toLowerCase().equals("si")) {
+				doc.setSendMailRifInterni(false);
+				doc.setSendMailSelectedRifInterni(true);
+			}
 		}
-    }
+		
+		//tiommi: 15/01/2018 funzionalità di aggiunta automatica di visibilità forzata per determinati uffici in RPA
+		listaCoppieUfficioVisibilita = XMLUtil.parseSetOfElement(dom, "/response/coppie_ufficio_visibilita/coppia", new CoupleUfficioVisibilita());
+	}
 	
 	/**
 	 * imposta sul doc del bean le informazioni minimali necessarie al lookup (utilizzato
@@ -191,12 +214,15 @@ public class DocWayDocRifInt extends DocWayDocedit {
 	 */
 	public String confirmAddRPA() throws Exception {
 		if (!this.formsAdapter.getDefaultForm().getParam("dbTable").equals("@raccoglitore") && trasferisciMinuta)
-			this.formsAdapter.confirmRifInt(doc.isSendMailRifInterni(), false, doc.getAssegnazioneRPAParam(), false, trasferisciMinuta);
+			this.formsAdapter.confirmRifInt(doc.isSendMailRifInterni(), doc.isSendMailSelectedRifInterni(), doc.getNotificheCapillariParam(), doc.isCheckNomi(), doc.getAssegnazioneRPAParam(), false, trasferisciMinuta);
 		else
-			this.formsAdapter.confirmRifInt(doc.isSendMailRifInterni(), false, doc.getAssegnazioneRPAParam());
+			if (overrideLivelloVisibilitaNeeded) 
+				this.formsAdapter.confirmRifInt(doc.isSendMailRifInterni(), doc.isSendMailSelectedRifInterni(), doc.getNotificheCapillariParam(), doc.isCheckNomi(), doc.getAssegnazioneRPAParam(), codVisibilita);
+			else
+				this.formsAdapter.confirmRifInt(doc.isSendMailRifInterni(), doc.isSendMailSelectedRifInterni(), doc.getNotificheCapillariParam(), doc.isCheckNomi(), doc.getAssegnazioneRPAParam());
 		
 		XMLDocumento response = this.formsAdapter.getDefaultForm().executePOST(getUserBean());
-		if (handleErrorResponse(response)) {
+		if (handleErrorResponse(response, Const.MSG_LEVEL_ERROR)) {
 			formsAdapter.fillFormsFromResponse(formsAdapter.getLastResponse()); //restore delle form
 			return null;
 		}
@@ -233,9 +259,9 @@ public class DocWayDocRifInt extends DocWayDocedit {
 	 * @throws Exception
 	 */
 	public String confirmAddRPAM() throws Exception{
-		this.formsAdapter.confirmRifInt(doc.isSendMailRifInterni(), false, doc.getAssegnazioneRPAMParam());
+		this.formsAdapter.confirmRifInt(doc.isSendMailRifInterni(), doc.isSendMailSelectedRifInterni(), doc.getNotificheCapillariParam(), false, doc.getAssegnazioneRPAMParam());
 		XMLDocumento response = this.formsAdapter.getDefaultForm().executePOST(getUserBean());
-		if (handleErrorResponse(response)) {
+		if (handleErrorResponse(response, Const.MSG_LEVEL_ERROR)) {
 			formsAdapter.fillFormsFromResponse(formsAdapter.getLastResponse()); //restore delle form
 			return null;
 		}
@@ -258,22 +284,34 @@ public class DocWayDocRifInt extends DocWayDocedit {
 	 * @throws Exception
 	 */
 	public String confirmAddOP() throws Exception{
-		this.formsAdapter.confirmRifInt(doc.isSendMailRifInterni(), false, doc.getAssegnazioneOPParam());
+		// mbernardini 15/02/2017 : assegnazione massiva a OP su lista titoli
+		this.formsAdapter.confirmRifInt("OP", doc.isSendMailRifInterni(), doc.isSendMailSelectedRifInterni(), doc.getNotificheCapillariParam(), false, doc.getAssegnazioneOPParam());
 		XMLDocumento response = this.formsAdapter.getDefaultForm().executePOST(getUserBean());
-		if (handleErrorResponse(response)) {
+		if (handleErrorResponse(response, Const.MSG_LEVEL_ERROR)) {
 			formsAdapter.fillFormsFromResponse(formsAdapter.getLastResponse()); //restore delle form
 			return null;
 		}
 		viewAddOP = false;
-		try {
-			java.lang.reflect.Method method = showdoc.getClass().getMethod("reload");
-			method.invoke(showdoc);
-		} catch (SecurityException e) {
-		  e.fillInStackTrace();
-		} catch (NoSuchMethodException e) {
-			e.fillInStackTrace();
+		String verbo = response.getAttributeValue("/response/@verbo");
+		if (verbo.equals("loadingbar")) {
+			DocWayLoadingbar docWayLoadingbar = new DocWayLoadingbar();
+			docWayLoadingbar.getFormsAdapter().fillFormsFromResponse(response);
+			docWayLoadingbar.init(response);
+			setLoadingbar(docWayLoadingbar);
+			docWayLoadingbar.setActive(true);
+			action = "assegnazioneOP";
 		}
-		setSessionAttribute("rifInt", null);
+		else{
+			try {
+				java.lang.reflect.Method method = showdoc.getClass().getMethod("reload");
+				method.invoke(showdoc);
+			} catch (SecurityException e) {
+			  e.fillInStackTrace();
+			} catch (NoSuchMethodException e) {
+				e.fillInStackTrace();
+			}
+			setSessionAttribute("rifInt", null);
+		}
 		return null;
 	}
 	
@@ -283,9 +321,9 @@ public class DocWayDocRifInt extends DocWayDocedit {
 	 * @throws Exception
 	 */
 	public String confirmAddOPM() throws Exception{
-		this.formsAdapter.confirmRifInt(doc.isSendMailRifInterni(), false, doc.getAssegnazioneOPMParam());
+		this.formsAdapter.confirmRifInt(doc.isSendMailRifInterni(), doc.isSendMailSelectedRifInterni(), doc.getNotificheCapillariParam(), false, doc.getAssegnazioneOPMParam());
 		XMLDocumento response = this.formsAdapter.getDefaultForm().executePOST(getUserBean());
-		if (handleErrorResponse(response)) {
+		if (handleErrorResponse(response, Const.MSG_LEVEL_ERROR)) {
 			formsAdapter.fillFormsFromResponse(formsAdapter.getLastResponse()); //restore delle form
 			return null;
 		}
@@ -309,9 +347,9 @@ public class DocWayDocRifInt extends DocWayDocedit {
 	 * @throws Exception
 	 */
 	public String confirmAddCC() throws Exception{
-		this.formsAdapter.confirmRifInt(doc.isSendMailRifInterni(), false, doc.getAssegnazioneCCParam(), true);
+		this.formsAdapter.confirmRifInt(doc.isSendMailRifInterni(), doc.isSendMailSelectedRifInterni(), doc.getNotificheCapillariParam(), false, doc.getAssegnazioneCCParam(), true);
 		XMLDocumento response = this.formsAdapter.getDefaultForm().executePOST(getUserBean());
-		if (handleErrorResponse(response)) {
+		if (handleErrorResponse(response, Const.MSG_LEVEL_ERROR)) {
 			formsAdapter.fillFormsFromResponse(formsAdapter.getLastResponse()); //restore delle form
 			return null;
 		}
@@ -345,9 +383,9 @@ public class DocWayDocRifInt extends DocWayDocedit {
 	 * @throws Exception
 	 */
 	public String confirmAddCDS() throws Exception{
-		this.formsAdapter.confirmRifInt(doc.isSendMailRifInterni(), false, doc.getAssegnazioneCDSParam());
+		this.formsAdapter.confirmRifInt(doc.isSendMailRifInterni(), doc.isSendMailSelectedRifInterni(), doc.getNotificheCapillariParam(), false, doc.getAssegnazioneCDSParam());
 		XMLDocumento response = this.formsAdapter.getDefaultForm().executePOST(getUserBean());
-		if (handleErrorResponse(response)) {
+		if (handleErrorResponse(response, Const.MSG_LEVEL_ERROR)) {
 			formsAdapter.fillFormsFromResponse(formsAdapter.getLastResponse()); //restore delle form
 			return null;
 		}
@@ -378,7 +416,14 @@ public class DocWayDocRifInt extends DocWayDocedit {
 								"|.assegnazioneRPA.@cod_uff" +
 								"|.assegnazioneRPA.@cod_persona";
 		
-		rifintLookupUfficio(doc, value, value2, campi);
+		// tiommi 17/01/2018 aggiunta logica per trigger sulla modifica del campo cod_uff dell'RPA 
+		// per logica di override della visibilità
+		if (!listaCoppieUfficioVisibilita.isEmpty()) {
+			rifintLookupUfficio(getDoc(), value, value2, campi, this, "showAlertOnCodUffChange");
+		}
+		else {
+			rifintLookupUfficio(getDoc(), value, value2, campi);
+		}
 		
 		return null;
 	}
@@ -401,6 +446,10 @@ public class DocWayDocRifInt extends DocWayDocedit {
 			doc.getAssegnazioneRPA().setUfficio_completo(false);
 		}
 		
+		overrideLivelloVisibilitaNeeded = false;
+		nomeVisibilita = "";
+		codVisibilita = "";
+		
 		return null;
 	}
 	
@@ -422,7 +471,14 @@ public class DocWayDocRifInt extends DocWayDocedit {
 		if (doc.getRepertorio().getCod() != null && doc.getRepertorio().getCod().length() > 0)
 			xq			= "([/persona_interna/personal_rights/right/@cod/]=\"_SPECIFICAPPCODE_-" + doc.getRepertorio().getCod() + "-" + doc.getTipoShort() + "-VisRep\")";
 		
-		rifintLookupPersona(doc, value, value2, campi, xq);
+		// tiommi 17/01/2018 aggiunta logica per trigger sulla modifica del campo cod_uff dell'RPA 
+		// per logica di override della visibilità
+		if (!listaCoppieUfficioVisibilita.isEmpty()) {
+			rifintLookupPersona(getDoc(), value, value2, campi, xq, this, "showAlertOnCodUffChange");
+		}
+		else {
+			rifintLookupPersona(getDoc(), value, value2, campi, xq);
+		}
 				
 		return null;
 	}
@@ -442,6 +498,10 @@ public class DocWayDocRifInt extends DocWayDocedit {
 			clearFieldRifint(campi, doc);
 			doc.getAssegnazioneRPA().setUfficio_completo(false);
 		}
+		
+		overrideLivelloVisibilitaNeeded = false;
+		nomeVisibilita = "";
+		codVisibilita = "";
 		
 		return null;
 	}
@@ -1135,5 +1195,78 @@ public class DocWayDocRifInt extends DocWayDocedit {
 	public String getAction() {
 		return action;
 	}
+	
+	public List<CoupleUfficioVisibilita> getListaCoppieUfficioVisibilita() {
+		return listaCoppieUfficioVisibilita;
+	}
 
+	public void setListaCoppieUfficioVisibilita(List<CoupleUfficioVisibilita> listaCoppieUfficioVisibilita) {
+		this.listaCoppieUfficioVisibilita = listaCoppieUfficioVisibilita;
+	}
+	
+	public boolean isOverrideLivelloVisibilitaNeeded() {
+		return overrideLivelloVisibilitaNeeded;
+	}
+
+	public void setOverrideLivelloVisibilitaNeeded(boolean overrideLivelloVisibilitaNeeded) {
+		this.overrideLivelloVisibilitaNeeded = overrideLivelloVisibilitaNeeded;
+	}
+	
+	public String getInfoMessageLivelloVisibilitaUff() {
+		return infoMessageLivelloVisibilitaUff;
+	}
+
+	public void setInfoMessageLivelloVisibilitaUff(String infoMessageLivelloVisibilitaUff) {
+		this.infoMessageLivelloVisibilitaUff = infoMessageLivelloVisibilitaUff;
+	}
+	
+	public String getNomeVisibilita() {
+		return nomeVisibilita;
+	}
+
+	public void setNomeVisibilita(String nomeVisibilita) {
+		this.nomeVisibilita = nomeVisibilita;
+	}
+	
+	public String getCodVisibilita() {
+		return codVisibilita;
+	}
+
+	public void setCodVisibilita(String codVisibilita) {
+		this.codVisibilita = codVisibilita;
+	}
+	
+	// metodo di supporto per verificare se occorre effettuare un cambio di visibilità in base all'ufficio dell'RPA
+	// in base al flag effettuaOverride effettua anche la modifica o meno
+	// ritorna true se la modifica è necessaria, false altrimenti
+	private void overrideLivelloVisibilita() {
+		String cod_uff_rpa = getDoc().getAssegnazioneRPA().getCod_uff();
+		if (cod_uff_rpa != null && !cod_uff_rpa.isEmpty()) {
+			for (CoupleUfficioVisibilita coppia : listaCoppieUfficioVisibilita) {
+				if (cod_uff_rpa.equals(coppia.getCodUfficio())) {
+					overrideLivelloVisibilitaNeeded = true;
+					nomeVisibilita = coppia.extractNomeVisibilitaSingolare();
+					codVisibilita = coppia.getCodVisibilita();
+					return;
+				}
+			}
+		}
+		overrideLivelloVisibilitaNeeded = false;
+		nomeVisibilita = "";
+		codVisibilita = "";
+	}
+	
+	//tiommi metodo per il controllo se mostrare alert possibile cambio visibilità 
+	public String showAlertOnCodUffChange() {
+		overrideLivelloVisibilita();
+		String ufficioRPA = getDoc().getAssegnazioneRPA().getNome_uff();
+		
+		infoMessageLivelloVisibilitaUff = I18N.mrs("dw4.ufficio_visibilita_override", new String[]{ ufficioRPA, nomeVisibilita });
+		return null;
+	}
+	
+	@Override
+	public XmlEntity getModel() {
+		return null;
+	}
 }

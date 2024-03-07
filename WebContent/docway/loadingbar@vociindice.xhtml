@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" 
+	  xmlns:h="http://java.sun.com/jsf/html" 
+	  xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	  xmlns:ui="http://java.sun.com/jsf/facelets" 
+	  xmlns:f="http://java.sun.com/jsf/core">
+<ui:composition>
+
+	<h:panelGroup layout="block" id="loadingbarVociIndice">
+		<h:panelGroup rendered="#{pageBean.loadingbarActive and !pageBean.loadingbar.error and pageBean.loadingbarAction =='assegnatariVociIndice'}">
+			<!-- Modal -->
+			<div id="loadingbarVociIndiceModal" class="modal fade in" aria-hidden="false" aria-labelledby="loadingbarVociIndiceModalLabel" role="dialog" tabindex="-1" style="display: block;">
+			<!--div class="modal fade" id="loadingbarVociIndiceModal" tabindex="-1" role="dialog" aria-labelledby="loadingbarVociIndiceModalLabel" aria-hidden="true"-->
+				<div class="modal-dialog">
+					<div class="modal-content jsf-modal">
+						<div class="modal-header">
+							<h:commandButton styleClass="close" action="#{pageBean.loadingbar.close}" value="&#215;" />
+							
+							<h4 class="modal-title" id="loadingbarVociIndiceModalLabel">#{pageBean.loadingbar.title}</h4>
+						</div>
+						<div class="modal-body">
+							
+		        			<div class="well">
+		        				<div class="loadingbar-message loadingbar-startdate"><h:outputText rendered="#{pageBean.loadingbar.startDate ne ''}" value="job started at #{pageBean.loadingbar.startDate}"/></div>
+			        			<div class="loadingbar-message loadingbar-status"><h:outputText value="#{pageBean.loadingbar.status}"/></div>
+			        			<div class="loadingbar-message loadingbar-exceptions"><h:outputText value="#{pageBean.loadingbar.exceptions}"/></div>
+			        			<div class="loadingbar-message loadingbar-progress"><h:outputText value="#{pageBean.loadingbar.progress}"/></div>
+			        			<div class="loadingbar-message loadingbar-stopdate"><h:outputText rendered="#{pageBean.loadingbar.stopDate ne ''}" value="job completed at #{pageBean.loadingbar.stopDate}"/></div>
+		        			</div>
+		        			
+		        			<h:panelGroup rendered="#{pageBean.loadingbar.stopDate ne ''}" display="block">
+		        				<h:panelGroup rendered="#{empty pageBean.loadingbar.resoconto.failed or pageBean.loadingbar.resoconto.failed ne '0'}">
+			        				<h:commandLink style="display:none;" id="generaReportVociIndiceBtn" immediate="true" actionListener="#{pageBean.loadingbar.generaReport}" />
+				        			<h:outputScript>
+										function generaReportVociIndice() {
+											$("#templateForm\\:generaReportVociIndiceBtn").trigger("click");
+										}
+										window.setTimeout('generaReportVociIndice()',2000);
+									</h:outputScript>
+			        			
+			        				<h:panelGroup styleClass="loadingbar-resultmessage" layout="block" style="margin-bottom:20px;">
+				        				<h:outputText value="#{i18n['dw4.generazione_del_report_in_corso_Attendere_prego']}" />
+				        			</h:panelGroup>
+			        			</h:panelGroup>
+			        			
+			        			<h:panelGroup rendered="#{!empty pageBean.loadingbar.resoconto.failed and pageBean.loadingbar.resoconto.failed eq '0'}">
+			        				<h:panelGroup styleClass="loadingbar-resultmessage alert alert-info" layout="block" style="margin-bottom:20px;">
+				        				<h:outputText styleClass="font-weight-bold" value="#{i18n['dw4.nessun_errore_riscontrato_sulle_voci_d_indice']}" />
+				        			</h:panelGroup>
+			        			</h:panelGroup>
+		        			</h:panelGroup>
+		        			
+		        			<div style="margin-top:20px;" class="progress">
+	  							<div class="progress-bar" role="progressbar" aria-valuenow="#{(pageBean.loadingbar.completed) ? '100' : pageBean.loadingbar.percentage}" aria-valuemin="0" aria-valuemax="100" style="width: #{(pageBean.loadingbar.completed) ? '100' : pageBean.loadingbar.percentage}%;">
+	    							<span class="sr-only">#{(pageBean.loadingbar.completed) ? '100' : pageBean.loadingbar.percentage}% Complete</span>
+	  							</div>
+							</div>
+				        	
+							<h:commandLink style="display:none;" id="refreshVociIndice" action="#{pageBean.loadingbar.refresh}" >
+			        				<f:ajax execute="@form" render="@form" />
+			        			</h:commandLink>
+							<script type="text/javascript">
+							function refreshVociIndice() {
+								$("#templateForm\\:refreshVociIndice").trigger("click");
+							}
+							
+							var completed = #{pageBean.loadingbar.completed};
+							if (!completed) {
+								window.setTimeout('refreshVociIndice()',2000);
+							}
+							</script>
+							
+							<h:inputTextarea value="#{pageBean.loadingbar.xml}" rendered="#{pageBean.debugMode}" styleClass="form-control debug-textarea" rows="10" />
+						</div>
+						<div class="modal-footer">
+							<h:commandButton styleClass="btn btn-default"
+									action="#{pageBean.loadingbar.close}" value="#{i18n['acl.close']}" />
+						</div>
+					</div>
+				</div>
+			</div>
+			<!--script type="text/javascript">
+			$('#loadingbarVociIndiceModal').modal('show');
+			</script-->
+		</h:panelGroup>
+	</h:panelGroup>
+
+</ui:composition>   
+</html>

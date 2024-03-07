@@ -11,7 +11,7 @@
 			<label class="col-sm-2 control-label">#{i18n['dw4.visibilita']}</label>
 			
 			<div class="col-sm-2">
-				<h:selectOneMenu styleClass="form-control" value="#{beanDoc.visibilita.tipo}" immediate="true" valueChangeListener="#{bean.validitaValueChange}">
+				<h:selectOneMenu styleClass="form-control" disabled="#{bean.overrideLivelloVisibilitaNeeded}" value="#{beanDoc.visibilita.tipo}" immediate="true" valueChangeListener="#{bean.validitaValueChange}">
 					<f:ajax execute="@form" render="templateForm:visibilitaHolder :templateForm:errormsg" />
 					<f:selectItems value="#{bean.livelliVisibilita}" var="visibilita" itemValue="#{visibilita.text}" itemLabel="#{visibilita.labelSingolare}" />
 				</h:selectOneMenu>
@@ -20,7 +20,7 @@
 			<h:panelGroup rendered="#{beanDoc.visibilita.tipo eq 'Riservato'}">
 				<label for="templateForm:dataVisibilitaRiservato" class="col-sm-offset-3 col-sm-2 control-label"><span>#{i18n['dw4.riservato_fino_al']}</span></label>
 				<div class="col-sm-2">
-					<div class="input-group date" data-date-format="dd/mm/yyyy">
+					<div class="input-group date free" data-date-format="dd/mm/yyyy">
 						<h:inputText id="dataVisibilitaRiservato" value="#{beanDoc.visibilita.fino_al}" styleClass="#{ component.valid ? '' : 'invalidinput' } form-control datepicker" />
 						<span class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></span>
 					</div>

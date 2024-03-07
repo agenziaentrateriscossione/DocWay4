@@ -38,7 +38,7 @@ public abstract class EditVoceIndice extends DocWayDocedit {
 		String value = (getIndice_titolario().getCompilazione_automatica().getClassif() != null && !"".equals(getIndice_titolario().getCompilazione_automatica().getClassif().getFiltroCod())) ? getIndice_titolario().getCompilazione_automatica().getClassif().getFiltroCod() : "";
 		if (value.length() > 0) {
 			// Devo formattare il valore passato in base alla classificazione
-			value = ClassifUtil.formatClassifCode(value);
+			value = ClassifUtil.formatNumberClassifCode(value);
 			
 			keypath = "CLASSIF_FROM_CODE";
 			startkey = "lookupHierFromClassifCode";
@@ -491,7 +491,8 @@ public abstract class EditVoceIndice extends DocWayDocedit {
 		String titolo 		= "xml,/bwf_entity/label"; //titolo 
 		String ord 			= "xml(xpart:/bwf_entity/label)"; //ord 
 		String campi 		= ".bwf_link[" + num + "].@name=xml,/bwf_entity/@name" + //campi
-							  " ; .bwf_link[" + num + "].label=xml,/bwf_entity/label";
+							  " ; .bwf_link[" + num + "].label=xml,/bwf_entity/label" +
+							  " ; .bwf_link[" + num + "].@bonitaVersion=xml,/bwf_entity/@bonitaVersion";
 		String db 			= "xdocwayproc"; //db 
 		String newRecord 	= ""; //newRecord 
 		String xq			= ""; //extraQuery

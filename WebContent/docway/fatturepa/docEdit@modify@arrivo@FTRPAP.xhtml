@@ -13,17 +13,22 @@
 		<!-- toolbar: inizio -->
 		<div class="btn-toolbar" role="toolbar">
 			<div class="btn-group">
-				<h:commandLink rendered="#{!docEditModifyArrivoFTRPAP.doc.bozza or !docEditModifyArrivoFTRPAP.formsAdapter.funzionalitaDisponibili['disabilitaBozzeInModifica']}" id="saveBtn" action="#{docEditModifyArrivoFTRPAP.saveDocument}" 
+				<h:commandLink rendered="#{!docEditModifyArrivoFTRPAP.doc.bozza or !docEditModifyArrivoFTRPAP.formsAdapter.funzionalitaDisponibili['disabilitaBozzeInModifica'] or docEditModifyArrivoFTRPAP.doc.rifiuto.stato eq 'rifiutato'}" id="saveBtn" action="#{docEditModifyArrivoFTRPAP.saveDocument}" 
 							styleClass="btn btn-primary openwaitmsg">
 					#{i18n['acl.save']}
 				</h:commandLink>
-				<h:commandLink rendered="#{docEditModifyArrivoFTRPAP.doc.bozza}" id="protocoolaBtn" action="#{docEditModifyArrivoFTRPAP.protocollaDoc}" 
-							styleClass="btn #{(!docEditModifyArrivoFTRPAP.formsAdapter.funzionalitaDisponibili['disabilitaBozzeInModifica']) ? 'btn-default' : 'btn-primary'} openwaitmsg">
+				<h:commandLink rendered="#{docEditModifyArrivoFTRPAP.doc.bozza and docEditModifyArrivoFTRPAP.doc.rifiuto.stato ne 'rifiutato' and docEditModifyArrivoFTRPAP.formsAdapter.funzionalitaDisponibili['protocollaRight'] and docEditModifyArrivoFTRPAP.doc.protocollabile}" id="protocollaBtn" action="#{docEditModifyArrivoFTRPAP.protocollaDoc}"
+							styleClass="btn #{(!docEditModifyArrivoFTRPAP.formsAdapter.funzionalitaDisponibili['disabilitaBozzeInModifica']) ? 'btn-default' : 'btn-primary'} openwaitmsg #{(!docEditModifyArrivoFTRPAP.formsAdapter.funzionalitaDisponibili['docClassifEreditabile'] and (docEditModifyArrivoFTRPAP.doc.classif eq null or docEditModifyArrivoFTRPAP.doc.classif.cod eq null or empty docEditModifyArrivoFTRPAP.doc.classif.cod)) ? 'disabled' : ''}"
+							disabled="#{!docEditModifyArrivoFTRPAP.formsAdapter.funzionalitaDisponibili['docClassifEreditabile'] and (docEditModifyArrivoFTRPAP.doc.classif eq null or docEditModifyArrivoFTRPAP.doc.classif.cod eq null or empty docEditModifyArrivoFTRPAP.doc.classif.cod)}">
 					#{i18n['dw4.protocolla']}
 				</h:commandLink>
-				<h:commandLink action="#{docEditModifyArrivoFTRPAP.clearDocument}" 
-							onclick="IwxRuntime.Client.resetJobIWX();" styleClass="btn btn-default">
+				<h:commandLink rendered="#{!docEditModifyArrivoFTRPAP.formsAdapter.funzionalitaDisponibili['trasformaByDocEdit']}" action="#{docEditModifyArrivoFTRPAP.clearDocument}"
+						onclick="IwxRuntime.Client.resetJobIWX();" styleClass="btn btn-default">
 					#{i18n['acl.back']}
+				</h:commandLink>
+				<h:commandLink rendered="#{docEditModifyArrivoFTRPAP.formsAdapter.funzionalitaDisponibili['trasformaByDocEdit']}" action="#{docEditModifyArrivoFTRPAP.clearTrasformaRep}"
+							onclick="IwxRuntime.Client.resetJobIWX();" styleClass="btn btn-default">
+					#{i18n['acl.cancel']}
 				</h:commandLink>	
 			</div>
 		</div>
@@ -31,7 +36,7 @@
 		
 		<h5 class="sub-header">
 			<span class="glyphicons-pro coins"></span>&#160;
-			<h:outputText value="#{docEditModifyArrivoFTRPAP.docEditTitle}" escape="false" />
+			<h:outputText value="#{docEditModifyArrivoFTRPAP.docEditTitle}" />
 		</h5>
 	
 		<!-- messages: inizio -->
@@ -375,7 +380,7 @@
 					        		<ui:param name="id" value="voceindice" />
 					        		<ui:param name="field" value="#{docEditModifyArrivoFTRPAP.doc.voce_indice.text}" />
 					        		<ui:param name="bean" value="#{docEditModifyArrivoFTRPAP}" />
-					        		<ui:param name="confirmOnAction" value="#{(docEditModifyArrivoFTRPAP.formsAdapter.funzionalitaDisponibili['rifInterniModificabiliDaVoceIndice']) ? i18n['dw4.se_si_seleziona_una_voce_di_indice_potrebbero_essere_sovrascritti_gli_assegnatari_del_documento_Continuare'] : ''}" />
+					        		<ui:param name="confirmOnAction" value="#{(docEditModifyArrivoFTRPAP.formsAdapter.funzionalitaDisponibili['rifInterniModificabiliDaVoceIndice']) ? i18n['dw4.se_si_seleziona_una_voce_di_indice_potrebbero_essere_aggiornati_gli_assegnatari_del_documento_Continuare'] : ''}" />
 					        		<ui:param name="action" value="lookupVoceIndice"/>
 					        		<ui:param name="clearaction" value="clearLookupVoceIndice"/>
 					        		<ui:param name="title" value="#{i18n['dw4.lookup_voce_indice']}"/>
@@ -393,7 +398,7 @@
 				        		<ui:param name="beanDoc" value="#{docEditModifyArrivoFTRPAP.doc}" />
 				        		<ui:param name="actionTitolario" value="thVincolatoTitolarioClassificazione"/>
 				        		<ui:param name="actionGerarchia" value="gerarchiaTitolarioClassificazione"/>
-				        		<ui:param name="refresh" value="templateForm:classif_holder templateForm:showthes templateForm:errormsg"/>
+				        		<ui:param name="refresh" value="templateForm:classif_holder templateForm:showthes templateForm:errormsg templateForm:protocollaBtn"/>
 				        		<ui:param name="readOnlyConservazione" value="false" />
 				        		<ui:param name="optionalField" value="#{docEditModifyArrivoFTRPAP.formsAdapter.funzionalitaDisponibili['docClassifEreditabile']}" />
 				        	</ui:include>
@@ -413,6 +418,10 @@
 		        	<ui:include src="./docEditDatiRegistroFattureFields.xhtml">
 						<ui:param name="bean" value="#{docEditModifyArrivoFTRPAP}" />
 						<ui:param name="fatturapassiva" value="true" />
+		        	</ui:include>
+		        	
+		        	<ui:include src="../../customfields/docedit@customfields.xhtml">
+						<ui:param name="bean" value="#{docEditModifyArrivoFTRPAP}" />
 		        	</ui:include>
 		        	
 		        	<h:panelGroup rendered="#{docEditModifyArrivoFTRPAP.docIsNotInFascicolo and docEditModifyArrivoFTRPAP.doc.bozza}">
@@ -490,6 +499,17 @@
 						<ui:param name="bean" value="#{docEditModifyArrivoFTRPAP}" />
 		        		<ui:param name="beanDoc" value="#{docEditModifyArrivoFTRPAP.doc}" />
 		        	</ui:include>
+		        	
+		        	<h:panelGroup rendered="#{docEditModifyArrivoFTRPAP.editAttachments}">
+			        	<ui:include src="../docInformaticiFields.xhtml">
+							<ui:param name="bean" value="#{docEditModifyArrivoFTRPAP}" />
+			        		<ui:param name="beanDoc" value="#{docEditModifyArrivoFTRPAP.doc}" />
+			        		<ui:param name="enableFiles" value="#{docEditModifyArrivoFTRPAP.docInformaticiEnabledSenzaFiles and docEditModifyArrivoFTRPAP.formsAdapter.funzionalitaDisponibili['addFile']}" />
+			        		<ui:param name="enableImages" value="#{docEditModifyArrivoFTRPAP.docInformaticiEnabled and docEditModifyArrivoFTRPAP.formsAdapter.funzionalitaDisponibili['addImg']}" />
+			        		<ui:param name="enableFileAgentPDF" value="true" />
+			        		<ui:param name="enableImageAgentPDF" value="true" />
+			        	</ui:include>
+		        	</h:panelGroup>
 				</div>
 			</div>
 		</div>
@@ -498,8 +518,16 @@
 		<ui:include src="../lookup.xhtml"> <ui:param name="pageBean" value="#{docEditModifyArrivoFTRPAP}"/></ui:include>
 		<ui:include src="../rifintLookup.xhtml"> <ui:param name="pageBean" value="#{docEditModifyArrivoFTRPAP}"/></ui:include>
 		<ui:include src="../showthes.xhtml"> <ui:param name="pageBean" value="#{docEditModifyArrivoFTRPAP}"/></ui:include>
+		<!-- template per upload e la decompressione di archivi ZIP -->
+		<ui:param name="currentBean" value="#{docEditModifyArrivoFTRPAP}" />
+		<ui:include src="../docUploadArchive.xhtml">
+			<ui:param name="bean" value="#{docWayUploadArchive}"/>
+			<ui:param name="beanDoc" value="#{currentBean}" />
+			<ui:param name="doc" value="#{currentBean.doc}" />
+			<ui:param name="enableFiles" value="#{currentBean.docInformaticiEnabled and currentBean.formsAdapter.funzionalitaDisponibili['addFile']}" />
+		</ui:include>
 		
-		<h:inputTextarea value="#{docEditModifyArrivoFTRPAP.xml}" rendered="#{docEditModifyArrivoFTRPAP.debugMode}" styleClass="form-control" rows="10" />
+		<h:inputTextarea value="#{docEditModifyArrivoFTRPAP.xml}" rendered="#{docEditModifyArrivoFTRPAP.debugMode}" styleClass="form-control debug-textarea" rows="10" />
 	</div>
 </ui:define>
 

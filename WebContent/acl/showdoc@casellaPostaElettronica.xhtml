@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	template="template.xhtml" xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core">
+
+	<ui:define name="content">
+		<div class="casellaPostaElettronica showdoc">
+
+			<!-- primo livello toolbar: inizio -->
+			<div class="btn-toolbar" role="toolbar">
+				<div class="btn-group pull-right">
+					<ui:include src="./navigationBar.xhtml">
+						<ui:param name="bean" value="#{showdocCasellaPostaElettronica}" />
+					</ui:include>
+				</div>
+
+				<div class="btn-group">
+					<h:commandLink rendered="#{showdocCasellaPostaElettronica.formsAdapter.paginaTitoliEnabled}" action="#{showdocCasellaPostaElettronica.paginaTitoli}" styleClass="btn btn-default openwaitmsg">
+						<span>#{i18n['acl.titles']}</span>
+					</h:commandLink>
+				</div>
+			</div>
+			<!-- primo livello toolbar: fine -->
+
+			<h:panelGroup rendered="#{(showdocCasellaPostaElettronica.formsAdapter.funzionalitaDisponibili['ins_casellaPostaElettronica'] and (showdocCasellaPostaElettronica.adminAcl or showdocCasellaPostaElettronica.pecInGestione)) or (showdocCasellaPostaElettronica.formsAdapter.funzionalitaDisponibili['canc_casellaPostaElettronica'] and (showdocCasellaPostaElettronica.adminAcl or showdocCasellaPostaElettronica.pecInGestione))}">
+				<!-- secondo livello toolbar: inizio -->
+				<div class="btn-toolbar" role="toolbar">
+					<div class="btn-group">
+						<h:commandLink rendered="#{showdocCasellaPostaElettronica.formsAdapter.funzionalitaDisponibili['ins_casellaPostaElettronica'] and (showdocCasellaPostaElettronica.adminAcl or showdocCasellaPostaElettronica.pecInGestione)}" action="#{showdocCasellaPostaElettronica.modifyTableDoc}" styleClass="btn btn-primary openwaitmsg">
+							<span>#{i18n['acl.modify']}</span>
+						</h:commandLink>
+						<h:commandLink rendered="#{showdocCasellaPostaElettronica.formsAdapter.funzionalitaDisponibili['canc_casellaPostaElettronica'] and (showdocCasellaPostaElettronica.adminAcl or showdocCasellaPostaElettronica.pecInGestione)}" action="#{showdocCasellaPostaElettronica.remove}" onclick="if (!owmConfirm('#{i18n['acl.deleteconfirm']}')) return false;" styleClass="btn btn-danger">
+							<span>#{i18n['acl.delete']}</span>
+						</h:commandLink>
+						
+						<ui:include src="../azionimassive/startAzioniMassiveButtons.xhtml">
+		                    <ui:param name="pageBean" value="#{showdocCasellaPostaElettronica}" />
+		                </ui:include>
+					</div>
+				</div>
+				<!-- secondo livello toolbar: fine -->
+			</h:panelGroup>
+
+			<h:panelGroup styleClass="messagesArea" layout="block">
+				<h:messages styleClass="info" id="validationMesseges" />
+			</h:panelGroup>
+
+			<h5 class="sub-header" title="#{showdocCasellaPostaElettronica.casellaPostaElettronica.nome}">
+				<span class="casellaPostaElettronica #{showdocCasellaPostaElettronica.casellaPostaElettronica.interoperabilita ? 'interop' : ''} glyphicons-pro"></span>&#160;
+				<h:outputText value="#{showdocCasellaPostaElettronica.casellaPostaElettronica.nome}" />
+			</h5>
+
+			<!-- scheda show: inizio -->
+			<div id="fixedshowdoc" class="fixed-showdoc">
+				<div class="showdoc-section">
+					<div class="title">
+						#{i18n['acl.informazioni_di_base']}
+						<div class="pull-right">
+							<span class="glyphicons-pro envelope" title="#{i18n['acl.informazioni_di_base']}"></span>
+						</div>
+					</div>
+
+					<dl class="dl-horizontal">
+						<dt>#{i18n['acl.name']}</dt>
+						<dd>
+							#{showdocCasellaPostaElettronica.casellaPostaElettronica.nome}
+							&#160;
+							(#{(showdocCasellaPostaElettronica.casellaPostaElettronica.interoperabilita) ? i18n['acl.interoperabilita'] : i18n['acl.archiviazione']})
+						</dd>
+
+						<h:panelGroup rendered="#{showdocCasellaPostaElettronica.casellaPostaElettronica.interoperabilita}">
+							<dt>#{i18n['acl.aoo_segnatura']}</dt>
+							<dd>#{showdocCasellaPostaElettronica.casellaPostaElettronica.cod_amm_segnatura}#{showdocCasellaPostaElettronica.casellaPostaElettronica.cod_aoo_segnatura}</dd>
+						</h:panelGroup>
+						<h:panelGroup rendered="#{!showdocCasellaPostaElettronica.casellaPostaElettronica.interoperabilita}">
+							<dt>#{i18n['acl.aoo']}</dt>
+							<dd>#{showdocCasellaPostaElettronica.casellaPostaElettronica.cod_amm}#{showdocCasellaPostaElettronica.casellaPostaElettronica.cod_aoo}</dd>
+						</h:panelGroup>
+
+						<h:panelGroup rendered="#{! empty showdocCasellaPostaElettronica.casellaPostaElettronica.documentModel}">
+							<dt>#{i18n['acl.documentModel']}</dt>
+							<dd>#{showdocCasellaPostaElettronica.casellaPostaElettronica.documentModel}</dd>
+						</h:panelGroup>
+
+						<h:panelGroup rendered="#{! empty showdocCasellaPostaElettronica.casellaPostaElettronica.db}">
+							<dt>#{i18n['acl.db']}</dt>
+							<dd>#{showdocCasellaPostaElettronica.casellaPostaElettronica.db}</dd>
+						</h:panelGroup>
+
+						<h:panelGroup rendered="#{! empty showdocCasellaPostaElettronica.casellaPostaElettronica.oper}">
+							<dt>#{i18n['acl.operator']}</dt>
+							<dd>
+								#{showdocCasellaPostaElettronica.casellaPostaElettronica.oper}
+								<h:panelGroup rendered="#{! empty showdocCasellaPostaElettronica.casellaPostaElettronica.uff_oper}">
+									(#{showdocCasellaPostaElettronica.casellaPostaElettronica.uff_oper})
+								</h:panelGroup>
+							</dd>
+						</h:panelGroup>
+
+						<h:panelGroup rendered="#{showdocCasellaPostaElettronica.casellaPostaElettronica.protocollaFattura or showdocCasellaPostaElettronica.casellaPostaElettronica.smistamentoFatturePA or showdocCasellaPostaElettronica.casellaPostaElettronica.splitByAttachments or showdocCasellaPostaElettronica.casellaPostaElettronica.casellaImport or showdocCasellaPostaElettronica.casellaPostaElettronica.archiviazioneTags or showdocCasellaPostaElettronica.casellaPostaElettronica.smistamentoByMittente}">
+							<dt>#{i18n['dw4.addon_di_archiviazione']}</dt>
+							<dd>
+								<h:panelGroup rendered="#{showdocCasellaPostaElettronica.casellaPostaElettronica.protocollaFattura}">
+									#{i18n['acl.protocollazione_automatica_per_fatturePA_passive']}<br/>
+								</h:panelGroup>
+								<h:panelGroup rendered="#{showdocCasellaPostaElettronica.casellaPostaElettronica.smistamentoFatturePA}">
+									#{i18n['acl.smistamento_della_fatturapa_alla_corretta_mailbox']}<br/>
+								</h:panelGroup>
+								<h:panelGroup rendered="#{showdocCasellaPostaElettronica.casellaPostaElettronica.splitByAttachments}">
+									#{i18n['acl.salvataggio_allegati_su_documenti_differenti']}<br/>
+								</h:panelGroup>
+								<h:panelGroup rendered="#{showdocCasellaPostaElettronica.casellaPostaElettronica.casellaImport}">
+									#{i18n['acl.casella_di_import']}<br/>
+								</h:panelGroup>
+								<h:panelGroup rendered="#{showdocCasellaPostaElettronica.casellaPostaElettronica.archiviazioneTags}">
+									#{i18n['acl.archiviazione_attraverso_tags']}<br/>
+								</h:panelGroup>
+								<h:panelGroup rendered="#{showdocCasellaPostaElettronica.casellaPostaElettronica.smistamentoByMittente}">
+									#{i18n['acl.smistamento_tramite_mittente']}<br/>
+								</h:panelGroup>
+							</dd>
+						</h:panelGroup>
+
+						<h:panelGroup rendered="#{! empty showdocCasellaPostaElettronica.casellaPostaElettronica.tag}">
+							<dt>#{i18n['acl.tag']}</dt>
+							<dd><strong>#{showdocCasellaPostaElettronica.casellaPostaElettronica.tag}</strong></dd>
+						</h:panelGroup>
+					</dl>
+				</div>
+
+				<h:panelGroup rendered="#{!empty showdocCasellaPostaElettronica.casellaPostaElettronica.responsabile.nome_pers or !empty showdocCasellaPostaElettronica.casellaPostaElettronica.responsabile.nome_ruolo}" layout="block" styleClass="showdoc-section">
+					<div class="title">
+						#{i18n['acl.director']}
+						<div class="pull-right">
+							<span class="glyphicons-pro user" title="#{i18n['acl.director']}"></span>
+						</div>
+					</div>
+
+					<dl class="dl-horizontal">
+						<h:panelGroup rendered="#{! empty showdocCasellaPostaElettronica.casellaPostaElettronica.responsabile.matricola}">
+							<dt>#{i18n['acl.oper']}</dt>
+							<dd>
+								#{showdocCasellaPostaElettronica.casellaPostaElettronica.responsabile.nome_pers}
+								(#{showdocCasellaPostaElettronica.casellaPostaElettronica.responsabile.nome_uff})
+								<h:panelGroup rendered="#{empty showdocCasellaPostaElettronica.casellaPostaElettronica.responsabile.matricola or empty showdocCasellaPostaElettronica.casellaPostaElettronica.responsabile.cod_uff}">
+									&#160;<span class="label label-danger">#{i18n['acl.matricola_o_codice_ufficio_mancanti']}</span>
+								</h:panelGroup>
+
+							</dd>
+							<dt>#{i18n['acl.code']}</dt>
+							<dd>#{showdocCasellaPostaElettronica.casellaPostaElettronica.responsabile.matricola}</dd>
+							<dt>#{i18n['acl.codice_ufficio']}</dt>
+							<dd>#{showdocCasellaPostaElettronica.casellaPostaElettronica.responsabile.cod_uff}</dd>
+						</h:panelGroup>
+
+						<h:panelGroup rendered="#{! empty showdocCasellaPostaElettronica.casellaPostaElettronica.responsabile.nome_ruolo}">
+							<dt>#{i18n['acl.role']}</dt>
+							<dd>
+								#{showdocCasellaPostaElettronica.casellaPostaElettronica.responsabile.nome_ruolo}
+								<h:panelGroup rendered="#{empty showdocCasellaPostaElettronica.casellaPostaElettronica.responsabile.cod_ruolo}">
+									&#160;<span class="label label-danger">#{i18n['acl.codice_ruolo_mancante']}</span>
+								</h:panelGroup>
+							</dd>
+							<dt>#{i18n['acl.codice_ruolo']}</dt>
+							<dd>#{showdocCasellaPostaElettronica.casellaPostaElettronica.responsabile.cod_ruolo}</dd>
+						</h:panelGroup>
+					</dl>
+				</h:panelGroup>
+
+				<h:panelGroup rendered="#{fn:length(showdocCasellaPostaElettronica.casellaPostaElettronica.assegnazioneCC) > 0 and
+						(!empty showdocCasellaPostaElettronica.casellaPostaElettronica.assegnazioneCC[0].nome_pers or !empty showdocCasellaPostaElettronica.casellaPostaElettronica.assegnazioneCC[0].nome_ruolo)}" layout="block" styleClass="showdoc-section">
+					<div class="title">
+						#{i18n['dw4.assegnatari']}
+						<div class="pull-right">
+							<span class="glyphicons-pro parents" title="#{i18n['dw4.assegnatari']}"></span>
+						</div>
+					</div>
+
+					<dl class="dl-horizontal">
+						<ui:repeat var="assegnatario" value="#{showdocCasellaPostaElettronica.casellaPostaElettronica.assegnazioneCC}" varStatus="indiceAssegnazioneCC">
+							<h:panelGroup rendered="#{!empty assegnatario.nome_pers or !empty assegnatario.nome_ruolo}">
+								<h:panelGroup rendered="#{assegnatario.tipo_uff ne 'ruolo' and !assegnatario.ufficio_completo}">
+									<dt>#{i18n['acl.oper']}</dt>
+									<dd>
+										#{assegnatario.nome_pers}
+										(#{assegnatario.nome_uff})
+									</dd>
+								</h:panelGroup>
+								<h:panelGroup rendered="#{assegnatario.tipo_uff ne 'ruolo' and assegnatario.ufficio_completo}">
+									<dt>#{i18n['acl.uff']}</dt>
+									<dd>
+										#{assegnatario.nome_uff}
+										(#{assegnatario.cod_uff})
+									</dd>
+								</h:panelGroup>
+								<h:panelGroup rendered="#{assegnatario.tipo_uff eq 'ruolo'}">
+									<dt>#{i18n['acl.role']}</dt>
+									<dd>
+										#{assegnatario.nome_ruolo}
+										<h:panelGroup rendered="#{empty assegnatario.cod_ruolo}">
+											&#160;<span class="label label-danger">#{i18n['acl.codice_ruolo_mancante']}</span>
+										</h:panelGroup>
+										<ui:remove>
+											<h:panelGroup rendered="#{!empty assegnatario.cod_ruolo}">
+												(#{assegnatario.cod_ruolo})
+											</h:panelGroup>
+										</ui:remove>
+									</dd>
+								</h:panelGroup>
+							</h:panelGroup>
+						</ui:repeat>
+					</dl>
+				</h:panelGroup>
+
+				<h:panelGroup rendered="#{!empty showdocCasellaPostaElettronica.casellaPostaElettronica.mailbox_in.email}" layout="block" styleClass="showdoc-section">
+					<div class="title">
+						#{i18n['acl.mailbox_in']}
+						<div class="pull-right">
+							<span class="glyphicons-pro message_in" title="#{i18n['acl.mailbox_in']}"></span>
+						</div>
+					</div>
+
+					<dl class="dl-horizontal">
+						<dt>#{i18n['acl.email']}</dt>
+						<dd>
+							<strong>#{showdocCasellaPostaElettronica.casellaPostaElettronica.mailbox_in.email}</strong>
+							<h:panelGroup rendered="#{!empty showdocCasellaPostaElettronica.casellaPostaElettronica.mailbox_in.login}">
+								&#160;(#{i18n['acl.login']}: #{showdocCasellaPostaElettronica.casellaPostaElettronica.mailbox_in.login})
+							</h:panelGroup>
+
+							<h:panelGroup rendered="#{showdocCasellaPostaElettronica.formsAdapter.funzionalitaDisponibili['ins_casellaPostaElettronica'] and (showdocCasellaPostaElettronica.adminAcl or showdocCasellaPostaElettronica.pecInGestione)}">
+								&#160;
+								<span class="btn-group">
+									<h:commandLink action="#{showdocCasellaPostaElettronica.testConnection('mailbox_in')}" title="#{i18n['acl.test_connessione_alla_casella_di_posta']}" styleClass="btn btn-default btn-xs">
+										<span class="glyphicons-pro wifi_alt"></span>
+										<f:ajax execute="@form" render="@form" />
+									</h:commandLink>
+								</span>
+							</h:panelGroup>
+						</dd>
+
+						<h:panelGroup rendered="#{!empty showdocCasellaPostaElettronica.casellaPostaElettronica.mailbox_in.protocol or !empty showdocCasellaPostaElettronica.casellaPostaElettronica.mailbox_in.host or !empty showdocCasellaPostaElettronica.casellaPostaElettronica.mailbox_in.port}">
+							<dt>#{i18n['acl.host']}</dt>
+							<dd>
+								<h:panelGroup rendered="#{!empty showdocCasellaPostaElettronica.casellaPostaElettronica.mailbox_in.protocol}">
+									#{showdocCasellaPostaElettronica.casellaPostaElettronica.mailbox_in.protocol}&#160;
+								</h:panelGroup>
+								<h:panelGroup rendered="#{!empty showdocCasellaPostaElettronica.casellaPostaElettronica.mailbox_in.host}">
+									#{showdocCasellaPostaElettronica.casellaPostaElettronica.mailbox_in.host}&#160;
+								</h:panelGroup>
+								<h:panelGroup rendered="#{!empty showdocCasellaPostaElettronica.casellaPostaElettronica.mailbox_in.port}">
+									#{showdocCasellaPostaElettronica.casellaPostaElettronica.mailbox_in.port}&#160;
+								</h:panelGroup>
+							</dd>
+						</h:panelGroup>
+					</dl>
+				</h:panelGroup>
+
+				<h:panelGroup rendered="#{!empty showdocCasellaPostaElettronica.casellaPostaElettronica.mailbox_out.email}" layout="block" styleClass="showdoc-section">
+					<div class="title">
+						#{i18n['acl.mailbox_out']}
+						<div class="pull-right">
+							<span class="glyphicons-pro message_out" title="#{i18n['acl.mailbox_out']}"></span>
+						</div>
+					</div>
+
+					<dl class="dl-horizontal">
+						<dt>#{i18n['acl.email']}</dt>
+						<dd>
+							#{showdocCasellaPostaElettronica.casellaPostaElettronica.mailbox_out.email}
+							<h:panelGroup rendered="#{!empty showdocCasellaPostaElettronica.casellaPostaElettronica.mailbox_out.login}">
+								&#160;(#{i18n['acl.login']}: #{showdocCasellaPostaElettronica.casellaPostaElettronica.mailbox_out.login})
+							</h:panelGroup>
+
+							<h:panelGroup rendered="#{showdocCasellaPostaElettronica.formsAdapter.funzionalitaDisponibili['ins_casellaPostaElettronica'] and (showdocCasellaPostaElettronica.adminAcl or showdocCasellaPostaElettronica.pecInGestione)}">
+								&#160;
+								<span class="btn-group">
+									<h:commandLink action="#{showdocCasellaPostaElettronica.testConnection('mailbox_out')}" title="#{i18n['acl.test_connessione_alla_casella_di_posta']}" styleClass="btn btn-default btn-xs">
+										<span class="glyphicons-pro wifi_alt"></span>
+										<f:ajax execute="@form" render="@form" />
+									</h:commandLink>
+								</span>
+							</h:panelGroup>
+						</dd>
+
+						<h:panelGroup rendered="#{!empty showdocCasellaPostaElettronica.casellaPostaElettronica.mailbox_out.protocol or !empty showdocCasellaPostaElettronica.casellaPostaElettronica.mailbox_out.host or !empty showdocCasellaPostaElettronica.casellaPostaElettronica.mailbox_out.port}">
+							<dt>#{i18n['acl.host']}</dt>
+							<dd>
+								<h:panelGroup rendered="#{!empty showdocCasellaPostaElettronica.casellaPostaElettronica.mailbox_out.protocol}">
+									#{showdocCasellaPostaElettronica.casellaPostaElettronica.mailbox_out.protocol}&#160;
+								</h:panelGroup>
+								<h:panelGroup rendered="#{!empty showdocCasellaPostaElettronica.casellaPostaElettronica.mailbox_out.host}">
+									#{showdocCasellaPostaElettronica.casellaPostaElettronica.mailbox_out.host}&#160;
+								</h:panelGroup>
+								<h:panelGroup rendered="#{!empty showdocCasellaPostaElettronica.casellaPostaElettronica.mailbox_out.port}">
+									#{showdocCasellaPostaElettronica.casellaPostaElettronica.mailbox_out.port}&#160;
+								</h:panelGroup>
+							</dd>
+						</h:panelGroup>
+					</dl>
+				</h:panelGroup>
+
+				<h:panelGroup rendered="#{fn:length(showdocCasellaPostaElettronica.casellaPostaElettronica.gestoriMailbox) > 0 and !empty showdocCasellaPostaElettronica.casellaPostaElettronica.gestoriMailbox[0].matricola}" layout="block" styleClass="showdoc-section">
+					<div class="title">
+						#{i18n['acl.gestori_casella']}
+						<div class="pull-right">
+							<span class="glyphicons-pro keys" title="#{i18n['acl.gestori_casella']}"></span>
+						</div>
+					</div>
+
+					<dl class="dl-horizontal">
+						<ui:repeat var="gestore" value="#{showdocCasellaPostaElettronica.casellaPostaElettronica.gestoriMailbox}" varStatus="indiceGestori">
+							<dt>#{(gestore.livello eq 'titolare') ? i18n['acl.livello_titolare'] : i18n['acl.livello_cambio_password']}</dt>
+							<dd>#{gestore.nome_pers} (#{gestore.matricola})</dd>
+						</ui:repeat>
+					</dl>
+				</h:panelGroup>
+
+				<h:panelGroup rendered="#{!empty showdocCasellaPostaElettronica.casellaPostaElettronica.notify.httpHost}" layout="block" styleClass="showdoc-section">
+					<div class="title">
+						#{i18n['acl.notify']}
+						<div class="pull-right">
+							<span class="glyphicons-pro bullhorn" title="#{i18n['acl.notify']}"></span>
+						</div>
+					</div>
+
+					<dl class="dl-horizontal">
+						<dt>#{i18n['acl.notify']}</dt>
+						<dd>
+							#{showdocCasellaPostaElettronica.casellaPostaElettronica.notify.httpHost}#{fn:startsWith(showdocCasellaPostaElettronica.casellaPostaElettronica.notify.uri,'/') ? '' : '/'}#{showdocCasellaPostaElettronica.casellaPostaElettronica.notify.uri}
+							(
+							#{i18n['acl.rpa']}: <h:outputText value="#{i18n['dw4.yes']}" styleClass="outputField" rendered="#{showdocCasellaPostaElettronica.casellaPostaElettronica.notify.rpa}" /><h:outputText value="#{i18n['dw4.no']}" styleClass="outputField" rendered="#{!showdocCasellaPostaElettronica.casellaPostaElettronica.notify.rpa}" />
+							,
+							#{i18n['dw4.cc']}: <h:outputText value="#{i18n['dw4.yes']}" styleClass="outputField" rendered="#{showdocCasellaPostaElettronica.casellaPostaElettronica.notify.cc}" /><h:outputText value="#{i18n['dw4.no']}" styleClass="outputField" rendered="#{!showdocCasellaPostaElettronica.casellaPostaElettronica.notify.cc}" />
+							)
+						</dd>
+					</dl>
+				</h:panelGroup>
+
+				<ui:include src="./history.xhtml">
+					<ui:param name="bean" value="#{showdocCasellaPostaElettronica.casellaPostaElettronica}" />
+				</ui:include>
+
+			</div>
+			<!-- scheda show: fine -->
+		</div>
+
+		<h:inputTextarea value="#{showdocCasellaPostaElettronica.xml}" rendered="#{showdocCasellaPostaElettronica.debugMode}" styleClass="form-control debug-textarea" rows="10" />
+	</ui:define>
+</ui:composition>

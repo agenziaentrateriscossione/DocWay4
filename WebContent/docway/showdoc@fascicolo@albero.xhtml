@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+    template="#{showdocFascicoloPersonale.pageTemplate}"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:f="http://java.sun.com/jsf/core"
+   	xmlns:p="http://xmlns.jcp.org/jsf/passthrough"
+   	xmlns:c="http://java.sun.com/jsp/jstl/core">
+
+<ui:define name="content">
+	<div class="fascicolo">
+		
+		<ui:remove>
+			<h5 class="sub-header">#{i18n['dw4.view_fascicolo_del_personale']}</h5>
+		</ui:remove>
+		
+		<!-- toolbar: inizio -->
+		<ui:include src="./buttonBarFascTree.xhtml">
+			<ui:param name="bean" value="${showdocFascicoloAlbero}"/>
+			<ui:param name="qFascicoloSpeciale" value="personale" />
+		</ui:include>
+		<!-- toolbar: fine -->
+		
+		<!-- scheda show: inizio -->
+		<div class="contenuto-doc row clearfix">
+			<h:panelGroup rendered="#{!showdocFascicoloAlbero.popupPage}" id="folderTreeSmartActionsJsfContainer">
+				<div class="col-xs-12 col-sm-2 col-md-2 col-lg-2 col-sm-push-10 col-md-push-10 col-lg-push-10 text-right">
+					<!-- azioni rapide: inizio -->
+					
+					<ui:include src="./smartActionsFascTree.xhtml">
+						<ui:param name="bean" value="#{showdocFascicoloAlbero}"/>
+					</ui:include>
+					
+					<!-- azioni rapide: fine -->
+				</div>
+			</h:panelGroup>
+			<div class="col-xs-12 #{(showdocFascicoloAlbero.popupPage) ? 'col-sm-12 col-md-12 col-lg-12' : 'col-sm-10 col-md-10 col-lg-10 col-sm-pull-2 col-md-pull-2 col-lg-pull-2'}">
+				<!-- contenuto fascicolo: inizio -->
+				
+				<!-- titolo del fascicolo: inizio -->
+				<div class="showdoc-title doc-tipo-fascicolo clearfix">
+					<div class="row">
+						<div class="col-xs-1">
+							<span class="doc-tipo-fascicolo glyphicons-pro folder_open"></span>
+						</div>
+						<div class="col-xs-11">
+							<div class="showdoc-first-row-title">
+								<h:outputText value="#{showdocFascicoloAlbero.getFolderTree().code}" styleClass="showdoc-title-numfasc"><f:converter converterId="NumFascConverter" /></h:outputText>
+							</div>
+							<div class="showdoc-second-row-title" title="#{showdocFascicoloAlbero.getFolderTree().title}">
+								<!-- go back link -->
+								<h:commandLink action="#{showdocFascicoloAlbero.queryFasc}">#{showdocFascicoloAlbero.getFolderTree().getTitle()}</h:commandLink>
+							</div>
+						</div>
+					</div>
+				</div>
+				<!-- titolo del fascicolo: fine -->
+				
+				<div id="fixedshowdoc" class="fixed-showdoc">
+					<div class="showdoc-section">
+						<div class="title">
+							#{i18n['dw4.gerarchia_fascicoli']}
+							
+							<div class="pull-right">
+								<span class="glyphicon glyphicon-link" title="#{i18n['dw4.gerarchia_fascicoli']}"></span>
+							</div>
+						</div>
+						
+						<div class="gerarchia-fascicoli">
+							<h:panelGroup id="folderTreeJsfContainer">
+								<div class="fspc-holder">
+									<div class="list-group list-group-root">
+							            <ui:include src="showdoc@fascicolo@albero-tree-node.xhtml">
+							            	<ui:param name="bean" value="${showdocFascicoloAlbero}"/>
+							                <ui:param name="node" value="${showdocFascicoloAlbero.getFolderTree()}" />
+							                <ui:param name="counterText" value="totale doc." />
+							                <ui:param name="isRoot" value="true" />
+							            </ui:include>
+							        </div>
+						        </div>			
+							</h:panelGroup>	
+						</div>
+					</div>
+				</div>
+				<!-- contenuto fascicolo: fine -->
+			</div>
+		</div>
+		<!-- scheda show: fine -->
+		
+		<!-- Modals: inizio -->
+		<ui:include src="./showdoc@fascicolo@albero-lista-doc-modal.xhtml">
+			<ui:param name="pageBean" value="${docWayTitlesDocumentiFascicolo}"/>
+			<ui:param name="folderTreeBean" value="${showdocFascicoloAlbero}"/>	
+		</ui:include>
+		<!-- Modals: fine -->
+		
+		<!-- Others: inizio -->
+		<ui:include src="./loadingbar@exportPersonalFolder.xhtml"><ui:param name="pageBean" value="${showdocFascicoloAlbero}"/></ui:include>
+		<!-- Others: fine -->	
+			
+		<h:inputTextarea value="${showdocFascicoloPersonale.xml}" rendered="${showdocFascicoloPersonale.debugMode}" styleClass="form-control debug-textarea" rows="10" />
+	</div>
+
+</ui:define>
+	
+</ui:composition>

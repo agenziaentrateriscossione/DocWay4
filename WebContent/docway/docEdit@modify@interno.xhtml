@@ -17,23 +17,26 @@
 							styleClass="btn btn-primary openwaitmsg">
 					#{i18n['acl.save']}
 				</h:commandLink>
-				
-				<h:commandLink rendered="#{docEditModifyInterno.doc.bozza}" id="protocoolaBtn" 
-							action="#{docEditModifyInterno.protocollaDoc}" styleClass="btn #{(!docEditModifyInterno.formsAdapter.funzionalitaDisponibili['disabilitaBozzeInModifica']) ? 'btn-default' : 'btn-primary'} openwaitmsg">
+				<h:commandLink rendered="#{docEditModifyInterno.doc.bozza and docEditModifyInterno.formsAdapter.funzionalitaDisponibili['protocollaRight'] and docEditModifyInterno.doc.protocollabile}" id="protocollaBtn" action="#{docEditModifyInterno.protocollaDoc}"
+							styleClass="btn #{(!docEditModifyInterno.formsAdapter.funzionalitaDisponibili['disabilitaBozzeInModifica']) ? 'btn-default' : 'btn-primary'} openwaitmsg #{(!docEditModifyInterno.formsAdapter.funzionalitaDisponibili['docClassifEreditabile'] and (docEditModifyInterno.doc.classif eq null or docEditModifyInterno.doc.classif.cod eq null or empty docEditModifyInterno.doc.classif.cod)) ? 'disabled' : ''}"
+							disabled="#{!docEditModifyInterno.formsAdapter.funzionalitaDisponibili['docClassifEreditabile'] and (docEditModifyInterno.doc.classif eq null or docEditModifyInterno.doc.classif.cod eq null or empty docEditModifyInterno.doc.classif.cod)}">
 					#{i18n['dw4.protocolla']}
 				</h:commandLink>
-				
-				<h:commandLink action="#{docEditModifyInterno.clearDocument}" 
-							onclick="IwxRuntime.Client.resetJobIWX();" styleClass="btn btn-default">
+				<h:commandLink rendered="#{!docEditModifyInterno.formsAdapter.funzionalitaDisponibili['trasformaByDocEdit']}" action="#{docEditModifyInterno.clearDocument}"
+						onclick="IwxRuntime.Client.resetJobIWX();" styleClass="btn btn-default">
 					#{i18n['acl.back']}
-				</h:commandLink>	
+				</h:commandLink>
+				<h:commandLink rendered="#{docEditModifyInterno.formsAdapter.funzionalitaDisponibili['trasformaByDocEdit']}" action="#{docEditModifyInterno.clearTrasformaRep}"
+							onclick="IwxRuntime.Client.resetJobIWX();" styleClass="btn btn-default">
+					#{i18n['acl.cancel']}
+				</h:commandLink>
 			</div>
 		</div>
 		<!-- toolbar: fine -->
 		
 		<h5 class="sub-header">
 			<span class="doc-tipo-interno glyphicons-pro"></span>&#160;
-			<h:outputText value="#{docEditModifyInterno.docEditTitle}" escape="false" />
+			<h:outputText value="#{docEditModifyInterno.docEditTitle}" />
 		</h5>
 
 		<!-- messages: inizio -->
@@ -196,7 +199,7 @@
 						        		<ui:param name="id" value="voceindice" />
 						        		<ui:param name="field" value="#{docEditModifyInterno.doc.voce_indice.text}" />
 						        		<ui:param name="bean" value="#{docEditModifyInterno}" />
-						        		<ui:param name="confirmOnAction" value="#{(docEditModifyInterno.formsAdapter.funzionalitaDisponibili['rifInterniModificabiliDaVoceIndice']) ? i18n['dw4.se_si_seleziona_una_voce_di_indice_potrebbero_essere_sovrascritti_gli_assegnatari_del_documento_Continuare'] : ''}" />
+						        		<ui:param name="confirmOnAction" value="#{(docEditModifyInterno.formsAdapter.funzionalitaDisponibili['rifInterniModificabiliDaVoceIndice']) ? i18n['dw4.se_si_seleziona_una_voce_di_indice_potrebbero_essere_aggiornati_gli_assegnatari_del_documento_Continuare'] : ''}" />
 						        		<ui:param name="action" value="lookupVoceIndice"/>
 						        		<ui:param name="clearaction" value="clearLookupVoceIndice"/>
 						        		<ui:param name="title" value="#{i18n['dw4.lookup_voce_indice']}"/>
@@ -231,7 +234,7 @@
 				        		<ui:param name="beanDoc" value="#{docEditModifyInterno.doc}" />
 				        		<ui:param name="actionTitolario" value="thVincolatoTitolarioClassificazione"/>
 				        		<ui:param name="actionGerarchia" value="gerarchiaTitolarioClassificazione"/>
-				        		<ui:param name="refresh" value="templateForm:classif_holder templateForm:showthes templateForm:errormsg"/>
+				        		<ui:param name="refresh" value="templateForm:classif_holder templateForm:showthes templateForm:errormsg templateForm:protocollaBtn"/>
 				        		<ui:param name="readOnlyConservazione" value="true" />
 				        		<ui:param name="optionalField" value="true" />
 				        	</ui:include>
@@ -341,11 +344,19 @@
 		</div>
 		<!-- scheda edit: fine -->
 	
-		<h:inputTextarea value="#{docEditModifyInterno.xml}" rendered="#{docEditModifyInterno.debugMode}" styleClass="form-control" rows="10" />
+		<h:inputTextarea value="#{docEditModifyInterno.xml}" rendered="#{docEditModifyInterno.debugMode}" styleClass="form-control debug-textarea" rows="10" />
 			
 		<ui:include src="./lookup.xhtml"> <ui:param name="pageBean" value="#{docEditModifyInterno}"/></ui:include>
 		<ui:include src="./rifintLookup.xhtml"> <ui:param name="pageBean" value="#{docEditModifyInterno}"/></ui:include>
 		<ui:include src="./showthes.xhtml"> <ui:param name="pageBean" value="#{docEditModifyInterno}"/></ui:include>	
+		<!-- template per upload e la decompressione di archivi ZIP -->
+		<ui:param name="currentBean" value="#{docEditModifyInterno}" />
+		<ui:include src="./docUploadArchive.xhtml">
+			<ui:param name="bean" value="#{docWayUploadArchive}"/>
+			<ui:param name="beanDoc" value="#{currentBean}" />
+			<ui:param name="doc" value="#{currentBean.doc}" />
+			<ui:param name="enableFiles" value="#{currentBean.docInformaticiEnabled and currentBean.formsAdapter.funzionalitaDisponibili['addFile']}" />
+		</ui:include>
 	</div>
 </ui:define>
 

@@ -10,40 +10,40 @@
 
 <ui:define name="content">
 	<div id="advancedSearch" class="globale submitEnterKey">
-	
+
 		<!-- toolbar: inizio -->
-		<div class="btn-toolbar docway-toolbar" role="toolbar">
+		<div class="btn-toolbar docway-toolbar #{queryGlobale.popupPage ? 'margin-bottom-10' : ''}" role="toolbar">
 			<div class="btn-group">
 				<h:commandLink id="advancedSearchBtn" action="#{queryGlobale.queryPlain}" styleClass="btn btn-primary openwaitmsg" value="#{i18n['acl.search']}" />
 				<ui:remove>
 					<h:commandLink rendered="#{queryGlobale.formsAdapter.funzionalitaDisponibili['showRefine']}" action="#{queryGlobale.refine}" value="#{i18n['dw4.refine']}" styleClass="btn btn-default" />
-				</ui:remove>				
-				
+				</ui:remove>
+
 				<h:commandLink action="#{queryGlobale.resetQuery}" styleClass="btn btn-default" value="#{i18n['acl.clear']}">
 					<f:ajax execute="@form" render="@form" />
 				</h:commandLink>
 			</div>
 		</div>
 		<!-- toolbar: fine -->
-		
+
 		<h5 class="sub-header">
 			<span class="glyphicon glyphicon-search"></span>&#160;
 			#{i18n['dw4.globale_search']}
 		</h5>
-		
+
 		<!-- messages: inizio -->
 		<h:panelGroup rendered="#{not empty facesContext.messageList}" layout="block" styleClass="docedit-messages alert alert-danger">
 			<h:messages styleClass="" id="validationMesseges" />
 		</h:panelGroup>
 		<!-- messages: fine -->
-		
+
 		<!-- scheda query: inizio -->
 		<div class="row-fluid" style="margin-top:10px;">
 		<div id="fixedshowdoc" class="box span12 fixed-showdoc">
 			<div class="box-content">
 				<div class="fieldset">
 					<div class="legend">#{i18n['acl.freesearch']}</div>
-					
+
 					<div class="form-group">
 						<label for="templateForm:doc_globale" class="col-sm-2 control-label">#{i18n['dw4.ricerca_full_text']}</label>
 						<div class="col-sm-9">
@@ -94,14 +94,14 @@
 						</div>
 					</h:panelGroup>
 				</div>
-				
+
 				<h:panelGroup id="bloccoarrivo" layout="block">
 					<h:panelGroup rendered="#{queryGlobale.arrivo or queryGlobale.partenza}" layout="block" styleClass="#{queryGlobale.arrivo and !queryGlobale.partenza ? 'arrivo' : (queryGlobale.arrivo and queryGlobale.partenza ? 'globale' : 'partenza')}">
 						<div class="fieldset">
 							<div class="legend">
 								#{i18n[queryGlobale.arrivo and !queryGlobale.partenza ? 'dw4.protarrivo' : (queryGlobale.partenza and ! queryGlobale.arrivo ? 'dw4.protpartenza' : 'dw4.protocollo')]}
 							</div>
-							
+
 							<div class="form-group">
 								<label for="templateForm:doc_rifesternirifnome" class="col-sm-2 control-label">#{i18n[queryGlobale.arrivo and !queryGlobale.partenza ? 'dw4.mittente' : (queryGlobale.partenza and ! queryGlobale.arrivo ? 'dw4.destinatario' : 'dw4.mittdestesterni')]}</label>
 								<div class="col-sm-9">
@@ -235,7 +235,9 @@
 							<div class="form-group">
 								<div class="col-sm-offset-2 col-sm-9">
 									<span class="margin-right-20" style="white-space:nowrap;">
-										<h:selectBooleanCheckbox id="interopCheck" value="#{queryGlobale.interoperabilita}"/>
+										<h:selectBooleanCheckbox id="interopCheck" value="#{queryGlobale.interoperabilita}" valueChangeListener="#{queryGlobale.resetBloccoNotifichePEC}">
+											<f:ajax execute="@form" render="templateForm:bloccoNotifichePEC" update="@form" event="click"/>
+										</h:selectBooleanCheckbox>
 										<label for="templateForm:interopCheck" class="normal-weight-text">
 											<h:outputText value="#{i18n[queryGlobale.arrivo and !queryGlobale.partenza ? 'dw4.interopdoc' : (queryGlobale.partenza and ! queryGlobale.arrivo ? 'dw4.interoppartenzadoc' : 'dw4.interoparrivopartenzadoc')]}" />
 										</label>
@@ -248,9 +250,69 @@
 											</label>
 										</span>
 									</h:panelGroup>
+									<h:panelGroup rendered="#{!queryGlobale.arrivo and queryGlobale.partenza and queryGlobale.formsAdapter.funzionalitaDisponibili['queryRifiutoBozzeArrivoConProtocollo']}">
+										<span class="margin-right-20" style="white-space:nowrap;">
+											<h:selectBooleanCheckbox id="pecRifiuto" value="#{queryGlobale.pecRifiuto}"/>
+											<label for="templateForm:pecRifiuto" class="normal-weight-text">
+												<h:outputText value="#{i18n['dw4.doc_di_rifiuto_pec']}" />
+											</label>
+										</span>
+									</h:panelGroup>
 								</div>
 							</div>
+							<h:panelGroup id="bloccoNotifichePEC" layout="block">
+								<h:panelGroup rendered="#{!queryGlobale.arrivo and queryGlobale.partenza and queryGlobale.interoperabilita}">
+									<div class="form-group">
+										<label class="col-sm-2 control-label">#{i18n['dw4.consegnati']}</label>
+										<div class="col-sm-2">
+											<span class="margin-right-10" style="white-space:nowrap;">
+												<h:selectBooleanCheckbox value="#{queryGlobale.consegnati}" id="consegnati_si" />
+												<label for="templateForm:consegnati_si" class="normal-weight-text">#{i18n['dw4.yes']}</label>
+											</span>
+											<span style="white-space:nowrap;">
+												<h:selectBooleanCheckbox value="#{queryGlobale.nonconsegnati}" id="consegnati_no"/>
+												<label for="templateForm:consegnati_no" class="normal-weight-text">#{i18n['dw4.no']}</label>
+											</span>
+										</div>
+										<label class="col-sm-1 control-label">#{i18n['dw4.accettati']}</label>
+										<div class="col-sm-2">
+											<span class="margin-right-10" style="white-space:nowrap;">
+												<h:selectBooleanCheckbox value="#{queryGlobale.accettati}" id="accettati_si"/>
+												<label for="templateForm:accettati_si" class="normal-weight-text">#{i18n['dw4.yes']}</label>
+											</span>
+											<span style="white-space:nowrap;">
+												<h:selectBooleanCheckbox value="#{queryGlobale.nonaccettati}" id="accettati_no"/>
+												<label for="templateForm:accettati_no" class="normal-weight-text">#{i18n['dw4.no']}</label>
+											</span>
+										</div>
+										<label class="col-sm-1 control-label">#{i18n['dw4.errori_invio']}</label>
+										<div class="col-sm-2">
+											<span class="margin-right-10" style="white-space:nowrap;">
+												<h:selectBooleanCheckbox value="#{queryGlobale.erroriinvio}" id="errori_invio_si"/>
+												<label for="templateForm:errori_invio_si" class="normal-weight-text">#{i18n['dw4.yes']}</label>
+											</span>
+											<span style="white-space:nowrap;">
+												<h:selectBooleanCheckbox value="#{queryGlobale.nonerroriinvio}" id="errori_invio_no"/>
+												<label for="templateForm:errori_invio_no" class="normal-weight-text">#{i18n['dw4.no']}</label>
+											</span>
+										</div>
+									</div>
+								</h:panelGroup>
+							</h:panelGroup>
 							
+							<h:panelGroup rendered="#{queryGlobale.formsAdapter.funzionalitaDisponibili['verificaVirusEnabled'] and queryGlobale.arrivo and !queryGlobale.partenza}">
+								<div class="form-group">
+									<label class="col-sm-2 control-label">#{i18n['dw4.stato_verifica_virus']}</label>
+									<div class="col-sm-9">
+										<h:selectManyCheckbox id="fileInfettiCheck" value="#{queryGlobale.statiVerificaVirus}" styleClass="radio-selection">
+											<f:selectItem itemLabel="#{i18n['dw4.verificato']}" itemValue="clean" />
+											<f:selectItem itemLabel="#{i18n['dw4.in_corso']}" itemValue="progress" />
+											<f:selectItem itemLabel="#{i18n['dw4.quarantena']}" itemValue="quarantine" />
+										</h:selectManyCheckbox>
+									</div>
+								</div>
+							</h:panelGroup>
+
 							<c:if test="#{!empty queryGlobale.currentCustomFieldSection and (queryGlobale.currentCustomFieldSection eq 'arrivo' or queryGlobale.currentCustomFieldSection eq 'partenza')}">
 								<ui:include src="../customfields/query@customfields.xhtml">
 									<ui:param name="key" value="#{queryGlobale.currentCustomFieldSection}" />
@@ -260,7 +322,7 @@
 						</div> <!-- /fieldset -->
 					</h:panelGroup>
 				</h:panelGroup>
-				
+
 				<h:panelGroup id="customFields" layout="block">
 					<c:if test="#{!empty queryGlobale.currentCustomFieldSection and (queryGlobale.currentCustomFieldSection eq 'varie' or queryGlobale.currentCustomFieldSection eq 'interno')}">
 						<div class="fieldset">
@@ -268,7 +330,7 @@
 								<h:outputText rendered="#{queryGlobale.currentCustomFieldSection eq 'varie'}" value="#{i18n['dw4.nonprotocollati']}" />
 								<h:outputText rendered="#{queryGlobale.currentCustomFieldSection eq 'interno'}" value="#{i18n['dw4.documenti_tra_uffici']}" />
 							</div>
-								
+
 							<ui:include src="../customfields/query@customfields.xhtml">
 								<ui:param name="key" value="#{queryGlobale.currentCustomFieldSection}" />
 								<ui:param name="bean" value="#{queryGlobale}"/>
@@ -276,12 +338,12 @@
 						</div>
 					</c:if>
 				</h:panelGroup>
-				
+
 				<h:panelGroup id="repertori" layout="block">
 					<h:panelGroup rendered="#{queryGlobale.repertori_multipli}" layout="block" styleClass="repertorio">
 						<div class="fieldset">
 							<div class="legend">#{i18n['dw4.repertori']}</div>
-							
+
 							<div class="form-group">
 								<label for="templateForm:repertorio_anno" class="col-sm-2 control-label">#{i18n['dw4.anno']}</label>
 								<div class="col-sm-2">
@@ -309,17 +371,17 @@
 									<h:inputHidden id="custom_repertorio"/>
 									<ul class="list-inline">
 										<c:forEach var="rep" items="#{queryGlobale.listof_rep}" varStatus="repIndice">
-											<c:forEach var="tabella" items="#{rep.list_tabelle}" varStatus="tableIndice">	
+											<c:forEach var="tabella" items="#{rep.list_tabelle}" varStatus="tableIndice">
 												<li class="repertorio-inline-item">
 													<h:selectBooleanCheckbox id="rep_#{repIndice.index}_#{tableIndice.index}" immediate="true" value="#{tabella.selected}" onclick="loadCustomFieldsRep();">
-														
+
 													</h:selectBooleanCheckbox>
 													<label for="templateForm:rep_#{repIndice.index}_#{tableIndice.index}" class="normal-weight-text" style="white-space:normal;">#{rep.descrizione} #{tabella.text}</label>
 												</li>
 											</c:forEach>
 										</c:forEach>
 									</ul>
-									
+
 									<h:commandLink id="customFieldsRepBtn" action="#{queryGlobale.existsCustomFieldsRep}">
 										<f:ajax execute="@form" render="templateForm:repertori templateForm:scadenzaaol" />
 									</h:commandLink>
@@ -391,7 +453,7 @@
 									</div>
 								</h:panelGroup>
 							</h:panelGroup>
-							
+
 							<c:if test="#{!empty queryGlobale.currentCustomFieldSection and queryGlobale.currentCustomFieldSection.contains('_')}">
 								<ui:include src="../customfields/query@customfields.xhtml">
 									<ui:param name="key" value="#{queryGlobale.currentCustomFieldSection}" />
@@ -401,31 +463,39 @@
 						</div> <!-- /fieldset -->
 					</h:panelGroup>
 				</h:panelGroup>
-				
+
 				<ui:include src="./queryDoc@EstremiProtocollo.xhtml">
 					<ui:param name="bean" value="#{queryGlobale}"/>
 				</ui:include>
-				
+
 				<ui:include src="./queryDoc@DatiDoc.xhtml">
 					<ui:param name="bean" value="#{queryGlobale}"/>
 				</ui:include>
-				
+
 				<ui:include src="./queryDoc@Workflow.xhtml">
 					<ui:param name="bean" value="#{queryGlobale}"/>
 				</ui:include>
-				
+
 				<ui:include src="./queryDoc@Assegnatari.xhtml">
 					<ui:param name="bean" value="#{queryGlobale}"/>
 				</ui:include>
 				
+				<ui:include src="./queryDoc@RegistroEmergenza.xhtml">
+					<ui:param name="bean" value="#{queryGlobale}"/>
+				</ui:include>
+
 				<ui:include src="./queryDoc@InformazioniServizio.xhtml">
+					<ui:param name="bean" value="#{queryGlobale}"/>
+				</ui:include>
+
+				<ui:include src="./queryDoc@QueryCustom.xhtml">
 					<ui:param name="bean" value="#{queryGlobale}"/>
 				</ui:include>
 			</div>
 		</div>
 		</div>
 		<!-- scheda query: fine -->
-		
+
 		<script type="text/javascript">
 		$(document).ready(function() {
 			// focus su campo globale
@@ -433,10 +503,10 @@
 		});
 		</script>
 
-		<h:inputTextarea value="#{queryGlobale.xml}" rendered="#{queryGlobale.debugMode}" styleClass="form-control" rows="10" />
+		<h:inputTextarea value="#{queryGlobale.xml}" rendered="#{queryGlobale.debugMode}" styleClass="form-control debug-textarea" rows="10" />
 	</div>
-	
+
 	<ui:include src="./showindex.xhtml"><ui:param name="pageBean" value="#{queryGlobale}"/></ui:include>
 </ui:define>
-    
-</ui:composition>    
+
+</ui:composition>

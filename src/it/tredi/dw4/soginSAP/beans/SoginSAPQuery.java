@@ -294,7 +294,7 @@ public class SoginSAPQuery extends DocWayQuery {
 		}
 		if (annullati) 		query +=  addQueryField("doc_annullato", "si");
 		if (nonannullati) 	query +=  addQueryField("doc_annullato", "no");
-		if (interoperabilita) 	query +=  addQueryField("/doc/rif_esterni/rif/interoperabilita/@title", "\"Segnatura.xml\"");
+		if (interoperabilita) 	query += "("+partialQueryField("/doc/rif_esterni/rif/interoperabilita/@title", "\"Segnatura.xml\"")+" OR "+partialQueryField("/doc/rif_esterni/interoperabilita_multipla/interoperabilita/@title", "\"Segnatura.xml\"")+") AND ";
 		if (differito) 		query +=  addQueryField("doc_protdifferito", "\"¦\"");
 		if (bozze || nonbozze){
 			if (bozze && nonbozze)	query +=  "("+addQueryField("doc_bozza", "si", "OR") +"(not([doc_bozza]=\"si\")))";
@@ -523,6 +523,27 @@ public class SoginSAPQuery extends DocWayQuery {
 //            	}
 //            }
 //        }
+  		
+  		// mbernardini 16/04/2018 : il controllo su data di registrazione deve essere spostato prima del substring su query visto che lavora
+  		// sulla variabile query
+  		if (null != dataRegistrazione_from && dataRegistrazione_from.length()> 0){
+			String formatoData = Const.DEFAULT_DATE_FORMAT; // TODO Andrebbe caricato da file di properties dell'applicazione
+			if (!DateUtil.isValidDate(dataRegistrazione_from, formatoData)) {
+				this.setErrorMessage("templateForm:range_dataregistrazioneSAP_from", I18N.mrs("acl.inserire_una_data_valida_nel_campo") + " '" + I18N.mrs("soginSAP.dataRegistrazione") +" "+I18N.mrs("dw4.da") + "': " + formatoData.toLowerCase());
+				return null;
+			}
+			String query1="";
+			if (null != dataRegistrazione_to && dataRegistrazione_to.length()> 0){
+				if (!DateUtil.isValidDate(dataRegistrazione_to, formatoData)) {
+					this.setErrorMessage("templateForm:range_dataregistrazioneSAP_to", I18N.mrs("acl.inserire_una_data_valida_nel_campo") + " '" + I18N.mrs("soginSAP.dataRegistrazione") +" "+I18N.mrs("dw4.a") + "': " + formatoData.toLowerCase());
+					return null;
+				}
+				query1 = "{"+DateUtil.formatDate2XW(dataRegistrazione_from, null)+"|"+DateUtil.formatDate2XW(dataRegistrazione_to, null)+"}";
+			}
+			else
+				query1 = DateUtil.formatDate2XW(dataRegistrazione_from, null);
+			query +=  addQueryField("/doc/extra/soginSAP/dataRegistrazione", query1);
+		}
         
         if (interno && escludi_our) formsAdapter.escludiUOR();
         if (interno && escludi_rpa) formsAdapter.escludiRPA();
@@ -542,25 +563,6 @@ public class SoginSAPQuery extends DocWayQuery {
         else if ( filtro.length() > 0 ) query = "("+filtro.trim()+") AND " + query;
 		if (query.endsWith(" AND "))
 			query = query.substring(0, query.length()-4);
-		
-		if (null != dataRegistrazione_from && dataRegistrazione_from.length()> 0){
-			String formatoData = Const.DEFAULT_DATE_FORMAT; // TODO Andrebbe caricato da file di properties dell'applicazione
-			if (!DateUtil.isValidDate(dataRegistrazione_from, formatoData)) {
-				this.setErrorMessage("templateForm:range_dataregistrazioneSAP_from", I18N.mrs("acl.inserire_una_data_valida_nel_campo") + " '" + I18N.mrs("soginSAP.dataRegistrazione") +" "+I18N.mrs("dw4.da") + "': " + formatoData.toLowerCase());
-				return null;
-			}
-			String query1="";
-			if (null != dataRegistrazione_to && dataRegistrazione_to.length()> 0){
-				if (!DateUtil.isValidDate(dataRegistrazione_to, formatoData)) {
-					this.setErrorMessage("templateForm:range_dataregistrazioneSAP_to", I18N.mrs("acl.inserire_una_data_valida_nel_campo") + " '" + I18N.mrs("soginSAP.dataRegistrazione") +" "+I18N.mrs("dw4.a") + "': " + formatoData.toLowerCase());
-					return null;
-				}
-				query1 = "{"+DateUtil.formatDate2XW(dataRegistrazione_from, null)+"|"+DateUtil.formatDate2XW(dataRegistrazione_to, null)+"}";
-			}
-			else
-				query1 = DateUtil.formatDate2XW(dataRegistrazione_from, null);
-			query +=  addQueryField("/doc/extra/soginSAP/dataRegistrazione", query1);
-		}
 		
 		//aggiungi il filtro sui repertori
     	String repFilter = "";

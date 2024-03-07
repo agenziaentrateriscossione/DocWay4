@@ -54,6 +54,11 @@ public class DocEditArrivoORD extends DocEditArrivo {
 		// inizializzazione common per tutte le tipologie di documenti di DocWay
 		initCommon(domDocumento);
 		
+		// TODO non capisco perche' in questa classe non ci sia la chiamata a super.init()... riporto la modifica sul corpo mail anche su questo metodo
+		// mbernardini 13/01/2017 : in caso di risposta da doc in partenza con corpo mail viene erroneamente registrato il corpo della mail anche nel doc in arrivo generato
+		setCorpoEmailVisibile(false);
+		getDoc().setCorpoEmail("");
+		
 		if (this.protocolloDifferito) {
 			// impostazione del valore di defualt per la data arrivo su prot differito
 			this.doc.getProt_differito().setData_arrivo(XMLUtil.parseAttribute(domDocumento, "response/@currDate", ""));
@@ -72,6 +77,7 @@ public class DocEditArrivoORD extends DocEditArrivo {
 			if (this.doc.getRif_esterni().get(0).getData_prot() != null)
 				setDataProtMittenteInitValue(this.doc.getRif_esterni().get(0).getData_prot());
 		}
+		
 	}
 	
 	@Override

@@ -223,14 +223,16 @@
 										<h:selectBooleanCheckbox id="opt_chkbox_printPostit" value="#{queryStampe.chkbox_printPostit}" />
 										<label for="templateForm:opt_chkbox_printPostit" class="normal-weight-text" style="white-space:normal;">#{i18n['dw4.stampa_le_annotazioni']}</label>
 									</li>
-									<li class="optstampa-inline-item">
-										<h:selectBooleanCheckbox id="opt_chkbox_customDocAnnullato" value="#{queryStampe.chkbox_customDocAnnullato}" immediate="true" valueChangeListener="#{queryStampe.printOptionValueChange}" onchange="checkOpzioniStampa();" />
-										<label for="templateForm:opt_chkbox_customDocAnnullato" class="normal-weight-text" style="white-space:normal;">#{i18n['dw4.solo_documenti_annullati']}</label>
-									</li>
-									<li class="optstampa-inline-item">
-										<h:selectBooleanCheckbox id="opt_chkbox_customDocNonAnnullato" value="#{queryStampe.chkbox_customDocNonAnnullato}" immediate="true" valueChangeListener="#{queryStampe.printOptionValueChange}" onchange="checkOpzioniStampa();" />
-										<label for="templateForm:opt_chkbox_customDocNonAnnullato" class="normal-weight-text" style="white-space:normal;">#{i18n['dw4.solo_documenti_non_annullati']}</label>
-									</li>
+									<h:panelGroup rendered="#{queryStampe.printType ne 'selezione'}">
+										<li class="optstampa-inline-item">
+											<h:selectBooleanCheckbox id="opt_chkbox_customDocAnnullato" value="#{queryStampe.chkbox_customDocAnnullato}" immediate="true" valueChangeListener="#{queryStampe.printOptionValueChange}" onchange="checkOpzioniStampa();" />
+											<label for="templateForm:opt_chkbox_customDocAnnullato" class="normal-weight-text" style="white-space:normal;">#{i18n['dw4.solo_documenti_annullati']}</label>
+										</li>
+										<li class="optstampa-inline-item">
+											<h:selectBooleanCheckbox id="opt_chkbox_customDocNonAnnullato" value="#{queryStampe.chkbox_customDocNonAnnullato}" immediate="true" valueChangeListener="#{queryStampe.printOptionValueChange}" onchange="checkOpzioniStampa();" />
+											<label for="templateForm:opt_chkbox_customDocNonAnnullato" class="normal-weight-text" style="white-space:normal;">#{i18n['dw4.solo_documenti_non_annullati']}</label>
+										</li>
+									</h:panelGroup>
 									<li class="optstampa-inline-item">
 										<h:selectBooleanCheckbox id="opt_chkbox_distCons" value="#{queryStampe.chkbox_distCons}" immediate="true" valueChangeListener="#{queryStampe.printOptionValueChange}" onchange="checkOpzioniStampa();" />
 										<label for="templateForm:opt_chkbox_distCons" class="normal-weight-text" style="white-space:normal;">#{i18n['dw4.distinta_di_consegna']}</label>
@@ -258,7 +260,7 @@
 	<ui:include src="./lookup.xhtml"> <ui:param name="pageBean" value="#{queryStampe}"/></ui:include>
 	<ui:include src="./loadingbar@ctrl_gestione.xhtml"><ui:param name="pageBean" value="#{queryStampe}"/></ui:include>
 			
-	<h:inputTextarea value="#{queryStampe.xml}" rendered="#{queryStampe.debugMode}" styleClass="form-control" rows="10" />
+	<h:inputTextarea value="#{queryStampe.xml}" rendered="#{queryStampe.debugMode}" styleClass="form-control debug-textarea" rows="10" />
 </ui:define>
     
 </ui:composition>    

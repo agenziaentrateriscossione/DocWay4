@@ -18,6 +18,7 @@ public class Ex_Action extends XmlEntity {
 	private String data = "";
 	private String ora = "";
 	private String state = "";
+	private String login_persona = "";
 	
 	public String getDescrizione() {
 		return descrizione;
@@ -102,6 +103,7 @@ public class Ex_Action extends XmlEntity {
     	this.ora 			= XMLUtil.parseAttribute(dom, "ex_action/@ora");
     	this.taskId			= XMLUtil.parseAttribute(dom, "ex_action/@taskId");
     	this.state			= XMLUtil.parseAttribute(dom, "ex_action/@state");
+    	this.login_persona	= XMLUtil.parseAttribute(dom, "ex_action/@login_persona");
 
     	return this;
 	}
@@ -109,6 +111,14 @@ public class Ex_Action extends XmlEntity {
 	@Override
 	public Map<String, String> asFormAdapterParams(String prefix) {
 		return null;
+	}
+
+	public String getLogin_persona() {
+		return login_persona;
+	}
+
+	public void setLogin_persona(String login_persona) {
+		this.login_persona = login_persona;
 	}
 	
 }

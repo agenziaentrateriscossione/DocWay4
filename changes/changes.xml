@@ -1,28 +1,1158 @@
 <document xmlns="http://maven.apache.org/changes/1.0.0"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/changes/1.0.0 http://maven.apache.org/xsd/changes-1.0.0.xsd">
-	<properties> 
+	<properties>
 		<title>DocWay4</title>
 		<author email="mbernardini@3di.it">Mirko Bernardini</author>
 	</properties>
 	<body>
+	
+		<release version="4.14.1" date="2019-10-03">
+            <action dev="tiommi" type="fix" date="2019-09-26">
+                Reso visibile il menù delle vaschette anche per le risoluzioni inferiori ai 988px (bootstrap xs)
+            </action>
+			<action dev="dpranteda" type="add" date="2019-09-26">
+				Integrazione Firma Remota OTP Uniserv (UNIMATICA)  (Task #18017).
+			</action>
+			<action dev="mbernardini" type="add" date="2019-09-25">
+				Smistamento documenti da MSA in base all'indirizzo email del mittente (Task #19514).
+			</action>
+			<action dev="rtirabassi" type="add" date="2019-09-24">
+				Reso capillare l'invio di notifiche ai riferimenti interni, introducendo una nuova voce di profilo nel file it.highwaytech.apps.xdocway.properties, "CheckboxEmailNotificaCapillare".
+				Il valore 'si' attiva la modalità capillare che inibisce il checkbox "Invio Mail di Notifica" ed accende un checkbox alla sinistra di ogni riferimento interno.
+				L'invio di mail è condizionato comunque dagli altri fattori di filtro (non si manda la mail a chi edita il record, non si manda la mail a chi ha notifica differita) (Task #12596).
+			</action>
+			<action dev="tiommi" type="add" date="2019-09-23">
+				Aggiunta la possibilità di inserire allegati nelle annotazioni / postit (Task #11687)
+				N.B. richiede aggiornamento dei conf di archivio.
+			</action>
+			<action dev="mbernardini" type="add" date="2019-09-23">
+				Ricerca e visualizzazione di documenti in attesa di rifiuto a causa di allegati non supportati (documenti registrati in 
+				bozza tramite MSA) (Task #18041).
+			</action>
+		</release>
+	
+		<release version="4.14.0" date="2019-09-23">
+			<action dev="dpranteda" type="update" date="2019-09-17">
+				Esecuzione automatica dell'applet di firma digitale mediante chiamata con protocollo jnlp. (Task #19479)
+			</action>
+			<action dev="mbernardini" type="update" date="2019-09-16">
+				Supporto ad Apache Tomcat ver. 8.5 (Task #19294).
+			</action>
+			<action dev="rtirabassi" type="fix" date="2019-09-13">
+				Apertura del dialog di richiesta di scansione di ulteriori documenti su IWX sempre in primo piano (Task #19464).
+			</action>
+			<action dev="mbernardini" type="fix" date="2019-08-01">
+				Eliminati il pulsante di notifica esito della fatturaPA in caso di destinatario privato (Task #19191).
+			</action>
+			<action dev="mbernardini" type="update" date="2019-07-23">
+				Eliminati gli stati del documento relative a fatturePA in caso di destinatario privato (le fatture vanno considerate implicitamente 
+				accettate) (Task #19191).
+			</action>
+			<action dev="mbernardini" type="fix" date="2019-07-23">
+				Rimosso escape degli URL di caricamento dei manuali online di DocWay e ACL.
+			</action>
+			<action dev="mbernardini" type="add" date="2019-07-04">
+				Nuove implementazioni su campi custom (REALIZZATO PARZIALMENTE SULLA VERSIONE 
+				PRECEDENTE, MA A LIVELLO UFFICIALE DEVE ESSERE RILASCIATO CON QUESTA RELEASE) (Task #18067): 
+				(*) Validazione di campi numerici e di tipo data tramite controllo sul valore minimo e massimo previsti;
+				(*) Possibilità di abilitare il prepend di un carattere su un campo testo fino al raggiungimento di una lunghezza massima;
+				(*) Possibilità di rendere obbligatori o visibili alcuni campi in base alla selezione di specifici valori da una tendina custom (relazione fra campi custom);
+				(*) Possibilità di cambiare il valore della classificazione in base alla selezione di determinati valori da una tendina su campi custom;
+				(*) Possibilità di definire lookup misti su campi custom (lookup che permettono la valorizzazione di campi custom e non, es. RPA del documento);
+			</action>
+		</release>
+	
+		<release version="4.13.2" date="2019-07-22">
+			<action dev="tiommi" type="add" date="2019-07-08">
+				Aggiunto campo custom di tipologia numero-anno
+			</action>
+			<action dev="tiommi" type="add" date="2019-07-04">
+				Integrata la liberia DSS per l'estrazione dei dati e la validazione delle firme digitali
+			</action>
+			<action dev="mbernardini" type="fix" date="2019-06-20">
+				Corretti i controlli di obbligatorietà su destinatari di documenti e repertori in partenza (Task #18090).
+			</action>
+			<action dev="tiommi" type="fix" date="2019-06-19">
+				Abilitato il pulsante per la stampa senza segnatura anche per i repertori di tipo varie se la property abilitaSegnaturaRepertori=si
+			</action>
+			<action dev="mbernardini" type="add" date="2019-06-19">
+				Gestione TAGS di archiviazione: Archiviazione documenti tramite TAGS presenti sull'oggetto del messaggio 
+				elaborato da MSA (Task #18039).
+			</action>
+		</release>
+
+		<release version="4.13.1" date="2019-06-07">
+			<action dev="mbernardini" type="fix" date="2019-06-07">
+				Ripristino del flag "Doc non fascicolati" in caso di reset del form di ricerca di documenti (Task #17962).
+			</action>
+			<action dev="mbernardini" type="fix" date="2019-06-06">
+				Corretta etichetta property associata alla funzione di ricerca documenti non fascicolati (Task #18030).
+			</action>
+			<action dev="mbernardini" type="add" date="2019-05-27">
+				Implementazione delle caselle di import: Caselle per le quali i messaggi da elaborare non corrispondono ai messaggi letti 
+				dalla casella ma risultato allegati ad essi - messaggi con allegato un altro eml. (Task #17664).
+			</action>
+		</release>
+		
+		<release version="4.13.0" date="2019-05-27">
+			<action dev="lsopko" type="update" date="2019-05-22">
+                Modificato il titolo nella lista alegati del fascicilo del personale
+            </action>
+            <action dev="mbernardini" type="add" date="2019-05-04">
+                Aggiunto tema grafico per "Fondazione Scuola Beni Attività Culturali"
+            </action>
+            <action dev="tiommi" type="update" date="2019-04-17">
+                Rispondi/Risposta abilitato anche per i repertori
+            </action>
+			<action dev="mbernardini" type="add" date="2019-04-16">
+				Aggiunta la ricerca di documenti non fascicolati su pagina di ricerca documenti (Task #17658).
+			</action>
+			<action dev="mbernardini" type="update" date="2019-04-16">
+				Possibilità di disabilitare tutte le stampe o esportazioni (funzioni di lunga durata con loadingbar) nella fascia oraria di sovraccarico del
+				sistema (Task #17652).
+			</action>
+		</release>
+
+		<release version="4.12.5" date="2019-04-04">
+			<action dev="tiommi" type="fix" date="2019-03-13">
+				Fix dei css in Genera Anteprima di Ricerca per IE11 per CorteCostituzionale
+			</action>
+            <action dev="tiommi" type="fix" date="2019-03-03">
+                Aggiunti css personalizzati Corte Costituzionale
+            </action>
+			<action dev="mbernardini" type="add" date="2019-03-01">
+				Ricerca di documenti attraverso i dati del registro di emergenza (Task #17333).
+			</action>
+			<action dev="tiommi" type="fix" date="2019-02-27">
+				Corretta disposizione pulsante elimina tutti i selezionati nello showdoc@raccoglitore@INDICE
+			</action>
+			<action dev="mbernardini" type="add" date="2019-02-25">
+				Smistamento fatturaPA agli assegnatari in base all'indirizzo email presente sulla fattura e non alla mailbox alla 
+				quale è stata spedita la fattura da parte dello SdI (Task #17297)
+			</action>
+			<action dev="lsopko" type="fix" date="2019-02-25">
+				ERM017280 : - iwx.runtime.js agiustato scan multiplo con QRCode  
+			</action>
+		</release>
+
+		<release version="4.12.4" date="2019-02-25">
+			<action dev="tiommi" type="add" date="2019-02-22">
+				Alcuni sviluppi per Corte Costituzionale:
+				(*) Aggiunta logica e properties specifiche per l'idividuazione e per la stampa dell'indice del raccoglitore Ufficio Ruolo
+				(*) Cambiata la logica con la quale viene mostrato l'oggetto per la stampa e corretto il fatto che non si vedesse in showdoc-preview
+				(*) Implementata l'eliminazione massiva di documenti del raccoglitore indice.
+			</action>
+			<action dev="mbernardini" type="update" date="2019-02-20">
+				Inibita la visualizzazione di file allegati ad un documento per il quale è in corso la verifica di virus per ogni utente che non risulta
+				essere l'incaricato dell'analisi di virus (Task #17267).
+			</action>
+			<action dev="mbernardini" type="fix" date="2019-02-14">
+				Rimosso pulsante di cambio di RPA da azioni rapide su un documento in caso di documento fascicolato (Task #17233).
+			</action>
+			<action dev="mbernardini" type="update" date="2019-02-14">
+				Assegnazione del flusso di verifica virus ad un ufficio (UOR) anziché ad una persona (RPA).
+			</action>
+			<action dev="tiommi" type="fix" date="2019-02-14">
+				Sistemata visualizzazione delle voci d'Indice durante la selezione per la stampa
+			</action>
+			<action dev="mbernardini" type="add" date="2019-02-08">
+				Aggiunti i pulsanti di inserimento sottofascicolo/inserto/annesso sul popup di fascicolazione di un documento (Task #17163).
+			</action> 
+			<action dev="mbernardini" type="fix" date="2019-02-08">
+				Mantenimento dello stato 'popup' in caso di navigazione gerarchia fascicolo in popup di fascicolazione di un documento (Task #17163).
+			</action>
+			<action dev="tiommi" type="add" date="2019-01-30">
+				Merge con il branch di sviluppo di Corte Costituzionale:
+					(*) Puntatore modifica rapida alla voce d'indice in lavorazione
+					(*) Evidenziazione della voce d'indice in lavorazione
+					(*) Pulsantiera replicata in alto nella modifica rapida
+					(*) Glyphicon modificate per apertura/chiusura metadati
+					(*) Aggiunta opzione colore nella strumentazione dell'editor web
+					(*) Riduzione ampiezza menù contestuale raccoglitore (portare su 2 righe invece che 3)
+					(*) Eliminato pulsante link per i raccoglitore di tipo indice.
+					(*) Riduzione altezza header (tema specifico custom per corte)
+					(*) Selezione multipla su voci d'indice per operazione massiva di setting dello stato del documento
+					(*) Aggiunta sottovoci in numero definito dall'utente
+					(*) Correzione label 'Visualiza'
+					(*) Preview documento automatica dopo inserimento di documenti nel raccoglitore Indice
+					(*) Correzione dei refresh AJAX
+					(*) Funzionalità di duplicazione di un raccoglitore di tipo Indice
+					(*) Pulsante per lo scrolling al documento correntemente in preview
+					(*) Funzionalità di rimozione del raccoglitore Indice e di tutti i suoi docs
+					(*) Funzionalità di riapertura di una ricerca chiusa a seguito della generazione della ricerca
+					(*) Info per inserimento massivo di docs
+					(*) Adattamento apertura menù contestuale per contenere più voci
+					(*) Pulsanti per la cancellazione della formattazione di TinyMCE
+					(*) Correzione bug TinyMCE (mancanza di una icona per la funzione "seleziona tutto")
+			</action>
+			<action dev="mbernardini" type="fix" date="2019-01-30">
+				Corretto il formato dei titoli di tutti i lookup verso ACL (Task #17081).
+			</action>
+		</release>
+
+		<release version="4.12.3" date="2019-01-28">
+			<action dev="lsopko" type="fix" date="2019-01-28">
+				ERM016747 : 
+					- setup_iwx.msi added link to auto-startup folder
+			</action>
+			<action dev="lsopko" type="fix" date="2019-01-25">
+				ERM016747 : 
+					- disabilita sstunel
+					- diminuisce numero di eventi del progress, e cambia modalita di gestione della coda dei eventi
+					- polyfill per findIndex in docway.js
+			</action>
+			<action dev="lsopko" type="fix" date="2019-01-15">
+				ERM016747 : 
+					- bug del IWX per il download massivo, aggiunto sync su file del job, e limitazione a max 10 file in stesso momento.
+			</action>
+			<action dev="lsopko" type="add" date="2019-01-15">
+				ERM016747 : 
+					- modifica principalmente iwx.runtime.js per gestire le stampe in bulk con aggiunta dei file e download dei file via IWX
+			</action>
+			<action dev="mbernardini" type="add" date="2019-01-10">
+				Flusso operativo di verifica di virus su file allegati ad un documento (Task #16758).			
+			</action>
+			<action dev="mbernardini" type="fix" date="2019-01-07">
+				Controllo validità della voce di indice in 'Ripeti Nuovo' di un documento. Eventuale warning in caso di voce indice non presente (Task #16837).
+			</action>
+			<action dev="mbernardini" type="add" date="2018-12-06">
+				Aggiunta della colonna Società in caso di ricerca su archivi multisocietà (Task #16744).
+			</action>
+		</release>
+
+		<release version="4.12.2" date="2018-11-28">
+			<action dev="lsopko" type="fix" date="2018-11-21">
+				ERM016618 : bug del messagio del loading bar
+			</action>
+			<action dev="lsopko" type="add" date="2018-11-21">
+				ERM016618 : - midificate le i18n
+				- aginuto pulsate smartActionsFasc.xhtml
+				- modificati e tooltip in smartActionsFascTree.xhtml
+			</action>
+			<action dev="mbernardini" type="add" date="2018-11-15">
+				Aggiunto un alert di conferma sull'operazione di trasformazione di una bozza in documento non protocollato (Task #16376).
+			</action>
+			<action dev="mbernardini" type="add" date="2018-11-08">
+				Aggiunta di un link prettyFaces su ACL per il caricamento di una generica risorsa (struttura interna/esterna, persona interna/esterna).
+			</action>
+			<action dev="mbernardini" type="fix" date="2018-10-29">
+				Ripristinato il funzionamento della procedura di rigenerazione della gerarchia fascicoli da strumenti di amministrazione
+				di DocWay (Task #16428).
+			</action>
+			<action dev="mbernardini" type="fix" date="2018-10-24">
+				Ripristinato il funzionamento del check bozza di default su repertori in partenza (Task #16395).
+			</action>
+			<action dev="lsopko" type="add" date="2018-10-09">
+				ERM015806 : visibilità del  pulsante 'albero fascicolo' e legata alla property 'pfolders.active' 
+			</action>
+			<action dev="lsopko" type="add" date="2018-10-03">
+				ERM015806 : - Aggiunto un pulsante visibile su Fascicolo del personale principale 
+				che consenta di accedere a una maschera di visualizzazione della struttura completa del fascicolo (e quindi dei sottofascicoli e degli inserti) 
+				in cui sono evidenziati gli inserti che contengono almeno un documento; 
+				inoltre è presente l’indicazione del numero dei documenti contenuti per ogni livello (fascicolo, sottofascicolo e inserto). 
+				A livello del Fascicolo principale, è conteggiato il numero totale dei documenti contenuti nel fascicolo, sottofascicoli/inserti inclusi. 
+				- Aggiunto un pulsante, visibile sulla maschera di visualizzazione dell’albero del fascicolo del personale, 
+				che consenta di avviare la procedura di esportazione dei file allegati ai documenti contenuti nel fascicolo e nei relativi sottofascicoli e inserti.
+			</action>
+		</release>
+
+		<release version="4.12.1" date="2018-09-25">
+			<action dev="tiommi" type="add" date="2018-09-25">
+                Piccoli sviluppi corte costituzionale
+				(*) Aggiunta label esplicativa su flag "pubblico" nei raccoglitori di tipo indice
+                (*) Aggiunta label personalizzata su nuovo CC
+                (*) Aggiunto pulsante per salvare direttamente come completato per la stampa
+			</action>
+			<action dev="mbernardini" type="fix" date="2018-09-25">
+				Nascosti i check di filtro su documenti 'annullati' o 'non annullati' in caso di stampa di una selezione di documenti. I filtri sull'annullamento
+				vengono applicati solo nel caso in cui la stampa non derivi da una precedente selezione (costruzione della query in base ai filtri impostati
+				sul form di stampa) (Task #16250).
+			</action>
+			<action dev="mbernardini" type="fix" date="2018-09-25">
+				Migliorato il livello di errore (non FATALE) in caso di eccezione in fase di assegnazione di un documento (Task #16227).
+			</action>
+			<action dev="tiommi" type="update" date="2018-09-10">
+				(*) Disabilitato il forceParse del widget js DatePicker.
+				(*) Aggiunto un js per la gestione della chiusura degli showdoc-section in indici.
+			</action>
+		</release>
+		
+		<release version="4.12.0" date="2018-09-03">
+			<action dev="tiommi" type="fix" date="2018-08-31">
+				Corretto bug nella procedura di annullamento di una fascicolazione massiva
+			</action>
+			<action dev="tiommi" type="fix" date="2018-08-07">
+				Corretto bug accesso in  delega in audit e bug per il quale i dati di delega rimanevano anche una volta rilasciati
+			</action>
+			<action dev="tiommi" type="add" date="2018-07-30">
+				Possibilità di configurare tramite property l'inibizione della protocollazione di una bozza che non abbia specificato
+				il secondo livello di Classificazione.
+			</action>
+			<action dev="mbernardini" type="add" date="2018-07-13">
+				Aggiunto il campo Partita IVA sulle persone esterne in ACL per la gestione di ditte individuali (Task #15912).
+			</action>
+            <action dev="tiommi" type="add" date="2018-06-26">
+                Aggiunta possibilità di scaricare watermark di copia conforme anche per le immagini convertite con FCA
+            </action>
+			<action dev="mbernardini" type="fix" date="2018-06-25">
+				Corretto bug in applicazione del foglio di stile XSLT in preview di fatturePA in formato PDF su ambiente Windows (Task #15814).
+			</action>
+			<action dev="tiommi mbernardini" type="add" date="2018-06-25">
+				Aggiunto modulo di audit delle azioni svolte dagli operatori (richiede configurazione sul broker e aggancio ad un database MongoDB).
+			</action>
+			<action dev="mbernardini" type="update" date="2018-06-20">
+				Definizione delle tipologie di font e relative dimensioni su editor TinyMCE.
+			</action>
+			<action dev="mbernardini" type="fix" date="2018-06-12">
+				Corretto bug in visualizzazione del pulsante di assegnazione del numero di protocollo: Numero di protocollo assegnabile sui documenti
+				in bozza e sui documenti non protocollati.
+			</action>
+			<action dev="mbernardini" type="update" date="2018-06-07">
+				Aggiunti i title alle etichette relative ai campi custom in showdoc.
+			</action>
+			<action dev="mbernardini" type="add" date="2018-06-07">
+				Aggiunte a formaAdapter la login e la matricola dell'utente reale (azione svolta in delega) per registrazione dell'audit applicativo.
+			</action>
+		</release>
+		
+		<release version="4.11.4" date="2018-06-01">
+			<action dev="mbernardini" type="fix" date="2018-05-29">
+				Abilitata la protocollazione di bozze prive di classificazione da pagina di modifica nel caso in cui è attiva la 
+				property 'docClassifEreditabile' (Task #15585).
+			</action>
+			<action dev="tiommi" type="fix" date="2018-05-25">
+				Richiamato il refresh del raccoglitore di tipo indice dopo il salvataggio, per mostrare il corretto stato dei documenti
+			</action>
+			<action dev="tiommi" type="add" date="2018-05-22">
+				Aggiunti nuovi flag per la ricerca dei documenti in partenza in base ai file di notifica PEC
+			</action>
+			<action dev="mbernardini" type="fix" date="2018-05-21">
+				Corretto il template di modifica (e relativo salvataggio) di sottofascicoli custom (personale o studente) (Task #15226).
+			</action>
+			<action dev="tiommi" type="add" date="2018-05-17">
+				Aggiunta possibilità di ricerca sui file di notifica PEC per i doc. in partenza in query globale: 
+				(*) Accettazione
+				(*) Consegna
+				(*) Avviso di non accettazione
+				(*)	Avviso di non accettazione per virus
+				(*)	Avviso di mancata consegna
+				(*)	Avviso di mancata consegna per sup. tempo massimo
+				(*)	Problema di sicurezza
+				(*)	Avviso di mancata consegna per virus
+				(*)	Errore
+			</action>
+			<action dev="tiommi" type="fix" date="2018-05-17">
+				Corretto l'import della modale per il rifiuto delle bozze in arrivo da PEC sui vari repertori
+			</action>
+			<action dev="mbernardini, tiommi" type="add" date="2018-05-10">
+				Personalizzazione dei fogli di stile XSLT per le fatturePA:
+				(*) Personalizzazione dei fogli di stile XSLT per ogni tipologia
+				(*) Generazione di un PDF con Apache FOP invece che una pagina HTML
+				(*) Aggiunta al PDF dei dati di segnatura
+			</action>
+			<action dev="tiommi" type="add" date="2018-05-10">
+				Introdotto nuovo pannello di controllo per la gestione delle deleghe in ACL
+			</action>
+			<action dev="tiommi" type="fix" date="2018-04-19">
+				Inserita property per inserire gli assegnatari CC direttamente con diritto di intervento
+			</action>
+			<action dev="tiommi" type="fix" date="2018-04-19">
+				Funzione che setta tutti completati per la stampa negli indici di ricerca (Corte)
+			</action>
+		</release>
+		
+		<release version="4.11.3" date="2018-04-18">
+			<action dev="mbernardini" type="fix" date="2018-04-16">
+				Corretta la costruzione della query di ricerca per SoginSAP (Task #14698).
+			</action>
+			<action dev="kveizi" type="add" date="2018-03-26">
+				Aggiunto nella storia del documento anche l'operazione di transformazione della bozza in non protocollato. (Task #1309)
+			</action>
+			<action dev="tiommi" type="add" date="2018-03-26">
+				Abilitazione diritto in ACL per rimuovere una bozza in arrivo da PEC
+			</action>
+			<action dev="tiommi" type="add" date="2018-03-26">
+				Miglioramenti gestione PEC archiviate automaticamente:
+				(*) Implementazione nuova funzionalità rigetta bozza PEC abilitata da property
+				(*) Alla richiesta di rigetto della bozza si apre un popup in cui vengono richieste le motivazioni del rifiuto
+				(*) Marca la bozza in arrivo come rigettata nello stato del documento
+				(*) Prepara un doc. in partenza e gestisce l'invio della notifica di rifiuto via PEC
+				(*) Gestita la ricerca (query globale) di documenti in partenza generati dalla richiesta di rifiuto di una bozza in arrivo da PEC
+			</action>
+			<action dev="tiommi" type="add" date="2018-03-19">
+				Aggiunto il pulsante per formattazione underline nella toolbar di TinyMCE
+			</action>
+			<action dev="tiommi" type="add" date="2018-03-15">
+				Inseriti due nuovi attributi per i repertori.xml per la non fascicolazione e la non cancellazione (Task #13640).
+			</action>
+			<action dev="mbernardini" type="fix" date="2018-03-14">
+				Controllo su property 'repertorioInBozzaByDefault' fatto solo in fase di inserimento di documenti (Task #13987).
+			</action>
+			<action dev="tiommi" type="fix" date="2018-03-13">
+				Aggiustata la gestione della property disabilitaModificaInBozza:
+				(*) Creata la funzionalità 'protocollaRight' che individua solamente se l'utente ha diritto di protocollazione sul documento.
+				(*) Nello showDoc viene controllato se l'utente ha i diritti di protocollazione, ma non che la classificazione sia stata inserita.
+				(*) Nel docEdit viene inserito il pulsante di protocollazione in ogni caso, ma è disabilitato se la classificazione non è stata ancora inserita.
+			</action>
+			<action dev="tiommi" type="fix" date="2018-03-06">
+				Rimossa data di default dal protocollo invio differito
+				Aggiornata funzionalità copia nella clipboard del link del documento anche al fascicolo e al raccoglitore, più piccole implementazioni correttive
+			</action>
+			<action dev="tiommi" type="add" date="2018-03-02">
+				Aggiunta modalità di presa in carico di tipo "gruppo", basta un utente qualsiasi ad effettuare la presa in carico per tutto l'ufficio/ruolo
+			</action>
+		</release>
+
+		<release version="4.11.2" date="2018-02-23">
+			<action dev="tiommi" type="fix" date="2018-02-23">
+				Aggiornamento della query per doc in partenza di interoperabilità effettuati con invio multiplo 
+			</action>
+			<action dev="kveizi" type="fix" date="2018-02-21">
+				Ricarica documento dopo visualizzazione warning per destinatario assente/malformato (Task #13849)
+				L'aggiornamento del documento dopo la chiusura del pop-up warning fixed. 
+			</action>
+			<action dev="tiommi" type="fix" date="2018-02-21">
+				Aggiunto controllo per evitare un'eccezione se la visibilità da forzare con la property forzaVisibilitaUfficio=si non corrisponde ad un codice visibilità sensato.
+			</action>
+			<action dev="tiommi" type="fix" date="2018-02-21">
+				Corretti bug su visibilità forzata in caso di cambio RPA da pagina di showDoc e visualizzazione info.
+			</action>
+			<action dev="mbernardini" type="fix" date="2018-02-20">
+				Corretti bug in caricamento delegante con utenti aventi la stessa login impostata come principale (prima login della lista).
+			</action>
+			<action dev="kveizi" type="fix" date="2018-02-16">
+				L'inibizione del pulsante di Modifica nel menu di Azioni sul doc. per i casi quando l'unico pulsante disponibile quando si va in Modifica sia il pulsante "Abbandona".
+			</action>
+			<action dev="mbernardini" type="fix" date="2018-02-15">
+				Sostituito indexOf con lastIndexOf per problemi di caricamento di personalView interne alla directory 'rep_standard'.
+			</action>
+			<action dev="mbernardini" type="add" date="2018-02-13">
+				Possibilità di attivare la trasformazione doc. in Repertorio tramite DocEdit (Task #13450).
+			</action>
+			<action dev="kveizi" type="fix" date="2018-02-07">
+			    Aggiunto il messaggio di conferma al termine dell'attività di upload del file repertori.xml e dei file di segnatura.xml dalla pagina di Amministrazione di Docway.(Task #4262)
+			</action>
+			<action dev="tiommi" type="add" date="2018-02-02">
+				Aggiunta possibilità di fare l'upload di archivi .zip. I file vengono decompressi e inseriti nel form di modifica come fosse stato fatto un upload multiplo
+			</action>
+			<action dev="mbernardini" type="fix" date="2018-01-30">
+				Corretto il controllo di attivazione del componente DragAndDrop su immagini nelle maschere di docEdit in caso di IWX disabilitato
+			</action>
+			<action dev="mbernardini" type="fix" date="2018-01-29">
+				Forzato il caricamento del componente DragAndDrop su checkin di files in caso di IWX disabilitato per l'utente.
+			</action>
+			<action dev="tiommi" type="add" date="2018-01-23">
+				Aggiunta possibilità di inserire un watermark di copia conforme per i documenti PDF o convertiti PDF.
+			</action>
+			<action dev="kveizi" type="fix" date="2018-01-19">
+				Controllo che sia almeno un destinatario diretto (in To) prima della registrazione del documento in partenza (Task #13369)
+				Validazione sul flag CC (Copia_conoscenza), non si puo salvare il documento nel caso quando tutti i destinatari sono flaggati in CC.
+			</action>
+			<action dev="mbernardini" type="fix" date="2018-01-19">
+				Disabilitazione di vecchi tab del browser aperti sull'applicazione (solo l'ultimo aperto risulta attivo). Si evitano problemi derivanti da un 
+				utilizzo in multischeda dell'applicazione. Può essere disabilitato tramite la property 'abilitaCheckClientWindowId' del file docway.properties. (Task #13376)
+			</action>
+			<action dev="tiommi" type="add" date="2018-01-18">
+				Aggiunta funzionalita per forzare la visibilita del documento in base all'uffico dell'RPA, configurabile da properties
+			</action>
+			<action dev="mbernardini" type="fix" date="2018-01-17">
+				Limitata la possibilità di lavorare in multischeda su singolo browser con DocWay. Disabilitati tutti i menù contestuali di apertura
+				link in nuova scheda o finestra tramite Override del renderer su CommandLink (Task #13376).
+			</action>
+			<action dev="kveizi" type="fix" date="2018-01-11">
+			  Validazione su i campi D.Model e DB per inserimento e modifica di caselle di posta di interoperabilita (Task #13325)
+			  Nel caso di posta di interoperabilita (quando Interoperabilita=Si) questi due campi sono obligatori e devono essere compilati
+			</action>
+		</release>
+		
+		<release version="4.11.1" date="2018-01-11">
+			<action dev="mbernardini" type="fix" date="2018-01-11">
+				Trim di tutti i codici su formAdapters in ACL (Task #13342).
+			</action>
+			<action dev="tiommi" type="add" date="2018-01-09">
+				Aggiunta funzionalità per contrassegnare come letto una selezione di documenti dalla lista titoli, utilizzando la loadingbar. Attivabile da property.
+			</action>
+			<action dev="tiommi" type="fix" date="2017-12-28">
+				Corretto bug per inserimento repertori in bozza by default con property repertoriInBozzaByDefault=si
+			</action>
+			<action dev="tiommi" type="fix" date="2017-12-20">
+				Corretto bug che permetteva a chi non ha diritto di inserimento di documenti protocollabili di protocollare le bozze in caso di assegnazione.
+			</action>
+			<action dev="tiommi" type="add" date="2017-12-19">
+				Aggiunta property e implementato sistema per inibire la protocollazione di bozze di documenti in partenza se il documento contiene file in libro firma
+			</action>
+			<action dev="mbernardini" type="fix" date="2017-12-19">
+				Problema su selezione multipla di documenti (Task #13253): 
+				(*) Impossibilità di deselezionare alcuni documenti una volta fatto il check su "Seleziona tutti"; 
+				(*) Il comportamento indicato è corretto in caso di integrazione con Elasticsearch. 
+			</action>
+			<action dev="mbernardini" type="add" date="2017-12-14">
+				Aggiunte nuove modalità di validazione su campi custom (Task #13224):
+				(*) Controllo formale del valore inserito tramite regex;
+				(*) Controllo sulla lunghezza del valore inserito (num. min e max di caratteri richiesti);
+			</action>
+			<action dev="tiommi" type="add" date="2017-12-04">
+				Sistemati diritti per effettuare Rigetta.
+				Aggiunta nuova funzionalità Restituisci di tipo Reso e diversificata la storia dal Rigetta.
+				Ripristinata possibilità di aggiungere PostIt in operazioni di tipo Reso.
+			</action>
+			<action dev="mbernardini" type="update" date="2017-12-01">
+				Aumentato il log di eventuali errori sulla lettura di risorse da parte del configuratore.
+			</action>
+			<action dev="mbernardini" type="fix" date="2017-12-01">
+				Corretto bug in upload immagini relativi a workflow Bonita ver. 5 su archivio procedimenti.
+			</action>
+			<action dev="dpranteda" type="fix" date="2017-11-27">
+				Modificata integrazione firma digitale tramite applet jnlp (problema troncamento url GET Internet Explorer)
+			</action>
+			<action dev="tiommi" type="add" date="2017-11-27">
+				Aggiunta una property per la gestione di tutti i fascicoli speciali anche in fascicolazione massiva e in ricerca fascicoli
+			</action>
+			<action dev="tiommi" type="fix" date="2017-11-24">
+				Sistemati i template per firma digitale tramite applet jnlp (problema doppia inclusione elemento jsf)
+			</action>
+			<action dev="tiommi" type="add" date="2017-11-20">
+				Aggiunta property in xdocway per avere i repertori checkati in bozza di default
+			</action>
+		</release>
+
+		<release version="4.11.0" date="2017-11-09">
+			<action dev="tiommi" type="fix" date="2017-11-08">
+				Risolto problema all'invio telematico a più destinatari con property per l'invio di una sola PEC:
+				(*) Ricollocati tutti i messaggi relativi all'invio multiplo in una sezione apposita
+			</action>
+			<action dev="mbernardini" type="fix" date="2017-11-03">
+				DragAndDrop su immagini in docEdit di documenti possibile solo se IWX disabilitato. Se si utilizza IWX ci sarebbero problemi nel caricamento
+				dell'anteprima delle immagini caricate tramite DragAndDrop.
+			</action>
+			<action dev="mbernardini" type="fix" date="2017-11-03">
+				Disattivato il caricamento files tramite IWX in caso di modifica rapida di documenti da raccoglitore di tipo
+				indice per problemi di caricamento del componente: Viene utilizzato il modulo di upload files classico.
+			</action>
+			<action dev="mbernardini" type="fix" date="2017-11-03">
+				Aggiunta assegnatari su casella di posta elettronica in ACL inibita a tutti gli utenti senza permessi
+				di amministrazione della casella (Task #12943).
+			</action>
+			<action dev="mbernardini" type="fix" date="2017-11-03">
+				Corretto vocabolario in campo "Protocollazione a cura di" su maschera di ricerca documenti (Task #12941).
+			</action>
+			<action dev="mbernardini" type="fix" date="2017-11-02">
+				Corretto errore IWX in seguito a click su 'Copia Collegamento' su un documento (Task #12928).
+			</action>
+			<action dev="mbernardini" type="fix" date="2017-11-02">
+				Corretto bug in upload file da edit rapido su raccoglitore di tipo Indice: Eliminati i commenti dal javascript di attivazione
+				dell'upload DragAndDrop.
+			</action>
+			<action dev="mbernardini" type="fix" date="2017-10-19">
+				Aggiunto check di notifica per CC su configurazione caselle PEC in ACL (Task #12848)
+			</action>
+			<action dev="tiommi" type="update" date="2017-10-17">
+				Gestione fascicoli e raccoglitori in preview HomePage
+				Implementata possibilità di configurare se avere la barra laterale del menù aperta di default o meno
+			</action>
+			<action dev="mbernardini" type="add" date="2017-10-12">
+				Implementazione di azioni massive tramite stored procedure LUA (Task #8783).
+			</action>
+			<action dev="tiommi" type="add" date="2017-10-12">
+				Implementata la gestione di accesso delega (Task #11306). Prevede:
+				PARTE PERSONALE (DOCWAY)
+				(*) Menù di gestione deleghe (inserimento, modifica, eliminazione)
+				(*) Interfaccia (css e labels) per distinzione login normale da delega
+				(*) Menù di selezione deleghe attive e valide (query su persona_interna)
+				(*) Swap degli utenti in sessione
+				(*) Menù di rilascio delega
+				PARTE ADMIN (ACL)
+				(*) Nel form di modifica persona_interna parte di gestione delle deleghe
+				(*) Visualizzazione delle deleghe in show di una persona_interna
+				(*) Gestione dei diritti di delega sia personali che admin
+				(*) Query di ricerca su campo "deleganti" delle persone interne
+			</action>
+		</release>
+
+		<release version="4.10.2" date="2017-10-06">
+			<action dev="mbernardini" type="fix" date="2017-10-02">
+				Eliminati da DocWay i componenti swfupload (file upload tramite Flash Player) per problemi di compatibilità su nuove versioni di
+				Firefox (e forse Chrome): Componente sostituito da iframe con upload classico o Drag and Drop.
+			</action>
+			<action dev="mbernardini" type="fix" date="2017-09-29">
+				Corretto bug in recupero info di assegnazione/visto (Task #12739): Non è sufficiente verificare il
+				nome della persona, occorre controllare anche l'ufficio (potrebbe essere stata aggiunta in CC la stessa persona più volte con associato
+				l'ufficio di appartenenza o responsabilità).
+			</action>
+			<action dev="mbernardini" type="fix" date="2017-09-26">
+				Corretto bug su template home di SoginSAP.
+			</action>
+			<action dev="mbernardini" type="fix" date="2017-09-18">
+				Corretta la visualizzazione del fascicolo in caso di protocolli interni privi di RPAM (modifica a controlli in template
+				showdoc@datiarchivio) (Task #12558).
+			</action>
+		</release>
+
+		<release version="4.10.1" date="2017-09-18">
+			<action dev="mbernardini" type="update" date="2017-09-15">
+				Visualizzazione dei campi customSelect1 e customSelect2 in showdoc di un documento solo se effettivamente abilitati da file di properties.
+			</action>
+			<action dev="mbernardini" type="fix" date="2017-09-14">
+				Eliminati i campi customSelect1 e customSelect2 sui doc in partenza derivanti da 'Rispondi' o 'Inoltra' su
+				protocolli in arrivo (Task #12669).
+			</action>
+			<action dev="mbernardini" type="fix" date="2017-09-14">
+				Aggiornata la visualizzazione dei campi 'date' sul widget di caricamento form di Bonita5 (Task #12117).
+			</action>
+			<action dev="mbernardini" type="fix" date="2017-09-13">
+				Ripristinata la versione 1.0.2 del configuratore per problemi su caricamento di property tomcat 'TREDI_CONF_ROOT' custom per applicazione
+				in base a suffisso webapp.
+			</action>
+			<action dev="mbernardini" type="add" date="2017-09-13">
+				Abilitazione della modifica dei campi custom in caso di archivio settato come ReadOnly (la modifica dei campi custom viene concessa a tutti
+				gli utenti che hanno la visibilità del documento).
+			</action>
+		</release>
+
+		<release version="4.10.0" date="2017-09-05">
+			<action dev="mbernardini" type="fix" date="2017-09-04">
+				Controllato l'effettivo completamento del lookup sulla classificazione in caso di cambio classificazione su fascicolo o documenti (Task #12588).
+			</action>
+			<action dev="mbernardini" type="fix" date="2017-09-04">
+				Migliorato l'aggiornamento di diritti di tipo 'ALFA' in ACL (Task #12554).
+			</action>
+			<action dev="tiommi" type="add" date="2017-08-10">
+				Implementata la logica e i template per l'inserimento dei documenti di repertorio in bozza
+			</action>
+			<action dev="tiommi" type="add" date="2017-08-01">
+				Implementata la logica di presa in carico sul documento:
+				(*) Richiesta presa in carico
+				(*) Accettazione presa in carico
+				(*) Filtro sui documenti presi in carico (anche su singolo utente) o da prendere in carico
+				(*) Modale di richiesta presa in carico
+				(*) Modale status presa in carico rispetto a tutti gli incaricati
+				(*) Status del documento relativo alla presa in carico
+				(*) Storicizzazione delle operazioni di presa in carico
+				(*) Vaschetta documenti da prendere in carico (da parte dell'utente loggato)
+			</action>
+			<action dev="tiommi" type="add" date="2017-07-07">
+				Corretto bug di assegnazione CC in docEditPartenza.
+			</action>
+			<action dev="tiommi" type="add" date="2017-07-18">
+				Miglioramento del PDF di aggregazione dei documenti del raccoglitore:
+				(*) Inserito il numero di pagina anche nell'indice del pdf dei raccoglitori di indice.
+				(*) Tradotto il plug-in di formattazione testuale TinyMCE in lingua italiana.
+				(*) Introdotto campo "oggetto per la stampa" attivato tramite property, che consente una formattazione testuale anche all'oggetto da visualizzare nel PDF delle voci di indice.
+				Fix vari ai raccoglitori d'indice:
+				(*) Aggiornamento della voce di indice al salvataggio della preview tramite "Modifica rapida"
+				(*) Mantenimento della scrollbar all'apertura/chiusura/salvataggio del popup di modifica
+				(*) Mantenimento della scrollbar all'apertura/chiusura/salvataggio del popup di inserimento tramite url
+			</action>
+			<action dev="tiommi" type="add" date="2017-07-07">
+				Definizione dei CC sulle caselle di posta elettronica (sia archiviazione che interoperabilità) in ACL.
+				La sezione "Responsabilità" è stata ampliata con la sezione "Assegnatari";
+			</action>
+			<action dev="dpranteda" type="add" date="2017-06-29">
+				Integrazione applet firma versione 4.0 (JNLP).
+			</action>
+			<action dev="mbernardini" type="add" date="2017-06-23">
+				Aggiunti i filtri su nrecord in maschera di ricerca fascicoli.
+			</action>
+			<action dev="mbernardini" type="add" date="2017-06-16">
+				Possibilità di assegnazione di indirizzi PEC a ruoli in ACL (in questo modo e' possibile supportare l'invio telematico di documenti assegnati in RPA ad un ruolo) (Task #11299).
+			</action>
+			<action dev="mbernardini" type="add" date="2017-06-14">
+			 	Nuova gestione watermark di segnatura su file PDF firmati PADES (Task #11298).
+			</action>
+			<action dev="tiommi" type="add" date="2017-06-12">
+				Ulteriore miglioramento alle preview dei raccoglitori di tipo indice:
+				(*) Classi css e toggle tramite ajax del fullscreen delle voci di indice;
+				(*) Aggiunta property per applicazione automatica delle modifiche alle voci di indice (attivazione/disattivazione da file it.highwaytech.apps.xdocway.properties -> indiceRaccoglitori.autoApplyOrderChanges);
+				(*) Mantenimento dello scroll nelle voci di inidice dopo qualsiasi chiamata ajax;
+				(*) Miglioramento della visibilità del menù contestuale alle voci;
+			</action>
+			<action dev="mbernardini" type="add" date="2017-05-30">
+				Integrazione Elasticsearch per gestione indici (attivazione/disattivazione da file it.highwaytech.broker.properties).
+			</action>
+		</release>
+
+		<release version="4.9.5" date="2017-05-17">
+			<action dev="tiommi" type="add" date="2017-05-04">
+				Implementata la copia degli allegati da un altro documento
+			</action>
+			<action dev="tiommi" type="add" date="2017-04-26">
+				Implementata la shortcut nel menù delle voci di indice per settare il documento a "completato";
+			</action>
+			<action dev="tiommi" type="add" date="2017-04-21">
+				Miglioramento alle preview dei raccoglitori di tipo indice:
+				(*) Gestione multilivello delle voci dell'indice;
+				(*) Ordinamento tramite drag and drop;
+				(*) Differenti colorazioni sulle voci completate (distinzione con e senza allegati);
+				(*) Anteprima del documento sempre visibile sulla parte destra del widget;
+				(*) In cancellazione di una voce dall'indice impostata di default la cancellazione del documento dall'archivio;
+			</action>
+			<action dev="mbernardini" type="update" date="2017-04-05">
+				Modifica di un raccoglitore possibile solo se il raccoglitore non risulta già chiuso.
+			</action>
+			<action dev="mbernardini" type="fix" date="2017-04-05">
+				Corretto bug in apertura di lookup su campi custom da pagina di modifica di raccoglitori.
+			</action>
+			<action dev="mbernardini" type="fix" date="2017-04-04">
+				Corretto problema derivante da doppio click su pulsante di protocollazione remota tramite comunicazione intraAOO (Task #11457).
+			</action>
+			<action dev="mbernardini" type="update" date="">
+				Ottimizzata la query di ricerca dalla home di ACL in modo da migliorare le performance di esecuzione su eXtraWay (Task #11430).
+			</action>
+			<action dev="mbernardini" type="update" date="2017-03-08">
+				Sostituiti sul log di DocWay4 tutte gli errori in conversione dei dati con dei warning: Si tratta di conversioni richieste da componenti JSF che, in
+				caso di fallimento, mostrano il dato non formattato.
+			</action>
+			<action dev="mbernardini" type="add" date="2017-03-06">
+				In generazione della distribuzione di un raccoglitore di tipo indice:
+				(*) Aggiunta a tutti i documenti contenuti al suo interno (voci dell'indice) di eventuali CC specificati da file XML di definizione del raccoglitore di tipo Indice;
+				(*) Impostazione di tutti i documenti contenuti al suo interno (voci dell'indice) come READ ONLY;
+			</action>
+		</release>
+
+		<release version="4.9.4" date="2017-02-28">
+			<action dev="mbernardini" type="update" date="2017-02-27">
+				Migliata l'interfaccia di generazione dell'aggregato di documenti inclusi all'interno di un raccoglitore di tipo Indice.
+			</action>
+			<action dev="mbernardini" type="add" date="2017-02-22">
+				Aggiunta servlet di controllo dello stack applicativo (DocWay4 -> DocWa4-service -> eXtraWay). Possibili risposte: OK in caso di stack
+				funzionante, KO altrimenti. URL: http://HOST[:PORT]/DocWay4/stacktester?login=USERNAME[&amp;matricola=MATRICOLA]
+			</action>
+			<action dev="mbernardini" type="add" date="2017-02-22">
+				Protocollazione massiva di documenti: Richiede l'attivazione della property 'protocollazioneMassivaSuSelezione' sul
+				file it.highwaytech.apps.xdocway.properties.
+			</action>
+			<action dev="mbernardini" type="fix" date="2017-02-17">
+				In caso di property 'visualizzaScarto=No' viene comunque visualizzato il campo scarto sul documento (Task #11114).
+			</action>
+			<action dev="mbernardini" type="add" date="2017-02-17">
+				Assegnazione massiva di una selezione di documenti ad un Operatore Incaricato da lista titoli.
+			</action>
+			<action dev="mbernardini" type="update" date="2017-02-15">
+				Disattivazione di tutti i diritti su DocWay (ad esclusione di annotazioni e aggiunta CC) per blocco vecchi archivi di Equitalia (Task #11085).
+			</action>
+			<action dev="mbernardini" type="fix" date="2017-02-14">
+				Corretto bug in caricamento di fascicoli personalizzati (con campi custom) in baso di interfaccia fascicoli specifica
+				per un cliente (es. sottodirectory sogin).
+			</action>
+			<action dev="mbernardini" type="fix" date="2017-02-14">
+				Corretto bug in aggiornamento di documenti contenuti in raccoglitore di tipo Indice da preview del documento. Dopo l'aggiornamento del doc. non
+				risultava possibile procedere con il checkout/checkin dei file allegati.
+			</action>
+			<action dev="mbernardini" type="update" date="2017-02-09">
+				Sostituzione del pulsante 'Importa da Sigico2' con il pulsante 'Importa da URL' che permette di caricare contenuto da un URL esterno a DocWay
+				recuperato da una lista predefinita di siti web (Task #9335).
+			</action>
+			<action dev="mbernardini" type="add" date="2017-02-07">
+				In caso di cancellazione di immagini post conversione in PDF (property 'deleteImagesAfterPDF'), viene inibito l'invio telematico
+				di protocolli in partenza fino al termine dell'operazione di conversione di tutte le immagini.
+			</action>
+		</release>
+
+		<release version="4.9.3" date="2017-02-01">
+			<action dev="mbernardini" type="add" date="2017-01-24">
+				Porting da DocWay3 dell'importazione di fascicoli in base a file excel (XLS) allegato ad un documento in arrivo (Task #9081).
+			</action>
+			<action dev="mbernardini" type="add" date="2017-01-20">
+				Aggiunto nuovo pulsante 'Stampa Indice'.
+			</action>
+			<action dev="mbernardini" type="add" date="2017-01-17">
+				Lo stato dei documenti caricati come voci dell'indice di un raccoglitore di tipo INDICE è settato di default a 'In lavorazione'.
+			</action>
+			<action dev="mbernardini" type="add" date="2017-01-17">
+				Possibilità di sostituire la generazione automatica della copertina di un raccoglitore di tipo INDICE con l'utilizzo del primo file (convertito in PDF)
+				caricato sul primo nodo dell'indice (primo documento incluso nel raccoglitore).
+			</action>
+			<action dev="mbernardini" type="fix" date="2017-01-17">
+				Corretto bug in AclCrawler nella costruzione delle query su mancanza di visualizzazione completa su repertori (Task #9337).
+			</action>
+			<action dev="mbernardini" type="update" date="2017-01-13">
+				Aggiunta la possibilità di modificare (aggiungere/rimuovere) i file associati a fatturePA passive (Task #9312). Richiede l'abilitazione
+				della property 'fatturepa.editAttachments' sul file docway.properties.
+			</action>
+			<action dev="mbernardini" type="fix" date="2017-01-13">
+				Corretto BUG in risposta da doc. in partenza con corpo mail: Registrazione del corpo della mail anche nel doc in arrivo generato (Task #9292).
+				Lo stesso fix è stato applicato sulla generazione di doc. non protocollati da protocollo in partenza con corpo mail valorizzato.
+			</action>
+			<action dev="mbernardini" type="add" date="2017-01-12">
+				Aggiunta gestione account di ACL (xDams EC) a pacchetto standard di DocWay: Modificato campo ICO da text a select in pagina
+				di modifica di un account (Task #9240).
+			</action>
+			<action dev="mbernardini" type="add" date="2016-12-22">
+				Porting della personalView 'ALBO' da DocWay3 (repertorio personalizzato).
+			</action>
+			<action dev="mbernardini" type="fix" date="2016-12-20">
+				Corrette le pagine di destinazione dei pulsanti di inserimento da showdoc di fascicoli personalizzati (nuovo, ripeti nuovo, ecc.).
+			</action>
+			<action dev="mbernardini" type="add" date="2016-12-20">
+				Porting dei fascicoli degli studenti da DocWay3 (fascicoli speciali).
+			</action>
+			<action dev="mbernardini" type="update" date="2016-12-16">
+				Ripristinato il supporto a formati di classificazione differenti da R/D (configurazione disponibile su DocWay3) (Task #9136).
+			</action>
+			<action dev="abarducci" type="fix" date="2016-12-23">
+				Corretta la formattazione in jsf della data delle decretazioni nella console APV che mostrava il giorno precedente a quello corretto.
+			</action>
+		</release>
+
+		<release version="4.9.2" date="2016-12-15">
+			<action dev="mbernardini" type="fix" date="2016-12-14">
+				Ripristinato il caricamento dei titoli relativi a "Documenti non disponibili" (BUG segnalato sul Task #8914).
+			</action>
+			<action dev="mbernardini" type="fix" date="2016-12-14">
+				Inibita la protocollazione di bozze in arrivo rifiutate da pagina di modifica del documento (Task #9123).
+			</action>
+			<action dev="mbernardini" type="fix" date="2016-12-14">
+				In visualizzazione di documenti, corretto bug in visualizzazione degli assegnatari in caso di reso
+				al protocollista (pulsante 'Rigetta').
+			</action>
+			<action dev="mbernardini" type="fix" date="2016-12-13">
+				Corretto bug in modifica di una casella di posta elettronica nel caso di utente non amministratore di ACL (Task #8648).
+			</action>
+			<action dev="mbernardini" type="update" date="2016-12-13">
+				Gestione delle restrizioni su aoo tramite extraquery su lookup (Task #8713).
+			</action>
+			<action dev="mbernardini" type="fix" date="2016-12-13">
+				Corretti bug in inserimento/modifica di campi custom su multi-istanza di gruppo (Task #8713).
+			</action>
+			<action dev="mbernardini" type="fix" date="2016-12-09">
+				In inserimento di documenti, corretto controllo di obbligatorietà sul campo 'allegato' in caso di inserimento di uno o più spazi (Task #9101).
+			</action>
+			<action dev="mbernardini" type="update" date="2016-12-09">
+				Spostati dal menù 'Nuovo' al menù 'Azioni sul doc.' i comandi 'Richiesta di pubblicazione' e 'Pubblica' riferiti alle
+				rispettive funzionalità dell’Albo on-line (AOL).
+			</action>
+			<action dev="mbernardini" type="add" date="2016-12-09">
+				Aggiunto il pulsante 'Protocolla' alle azioni rapide su un documento.
+			</action>
+			<action dev="mbernardini" type="add" date="2016-12-02">
+				Rifiuto di bozze in arrivo (invio email al mittente, assegnazione a specifico RPA, fascicolazione).
+			</action>
+			<action dev="mbernardini" type="add" date="2016-11-28">
+				Aggiunto pulsante per lo scaricamento in formato ZIP di tutti gli allegati di un documento.
+			</action>
+			<action dev="mbernardini" type="update" date="2016-11-28">
+				In ACL, gestione "mailbox out" per le caselle di archiviazione (oltre che per le caselle PEC): Compilazione non obbigatoria, ma
+				necessaria in caso di attivazione di specifiche funzioni sull'archiviatore (es. rifiuto email in base agli allegati contenuti).
+			</action>
+			<action dev="mbernardini" type="update" date="2016-11-24">
+				Modifiche al template di Richiesta Pubblicazione AOL:
+				(*) Campo "Tipo documento" obbligatorio;
+				(*) Controlli su date di Pubblicazione (data di inizio pubblicazione successiva alla data odierna, data di fine pubblicazione successiva alla data di inizio pubblicazione);
+				(*) In modifica del documento di RAOL possibilità di variare l'indice di classificazione.
+			</action>
+			<action dev="mbernardini" type="fix" date="2016-10-13">
+				Corretto bug (problema JSF) nel caricamento di una pagina di showdoc tramite 'reload()', se richiesto dopo la visualizzazione di una personalView gestita
+				tramite sottodirectory su docway (es. fatturepa, rep_standard, ecc.) (Task #8674).
+			</action>
+			<action dev="mbernardini" type="add" date="2016-10-05">
+				Gestione di raccoglitori di tipo 'indice' (raccoglitori per i quali è definito un set di documenti da generare).
+			</action>
+		</release>
+
+		<release version="4.9.1" date="2016-11-18">
+			<action dev="mbernardini" type="add" date="2016-11-08">
+				Aggiornato IWX a ver. 3.0.11.0 e ver. 2.2.10r:
+				(*) Supporto a dimensione massima dei file in upload.
+			</action>
+			<action dev="mbernardini" type="add" date="2016-11-04">
+				Comunicazione Intra-AOO: Protocollazione di un documento in arrivo su una differente AOO (selezione dell'RPA e protocollazione di un nuovo documento
+				attraverso chiamate ai 3diWS). Richiede la configurazione della property 'intraAoo.codiciAmmAoo' (e di tutte le altre annesse) sul
+				file it.highwaytech.apps.xdocway.properties.
+			</action>
+			<action dev="mbernardini" type="fix" date="2016-10-28">
+				Ripristinato controllo su dimensione massima dell'allegato in upload di files.
+			</action>
+			<action dev="mbernardini" type="fix" date="2016-10-18">
+				Corretto bug su encoding di caratteri speciali (es. accenti) in caso di filtro di autenticazione SQL.
+			</action>
+			<action dev="mbernardini" type="update" date="2016-10-14">
+				Gestito il forceLogin sul filtro di autenticazione SQL (SqlAuthenticationServlet).
+			</action>
+			<action dev="mbernardini" type="fix" date="2016-10-08">
+				Corretto bug in visualizzazione dei flussi completati su Bonita 7.
+			</action>
+			<action dev="mbernardini" type="fix" date="2016-09-19">
+				Corretto bug in visualizzazione del campo 'Stato Avanzamento' (SAL) di una fatturaPA (Task #8679).
+			</action>
+		</release>
+
+		<release version="4.9.0" date="2016-09-13">
+			<action dev="mbernardini" type="update" date="2016-07-21">
+				Aggiornato il componente javascript di upload tramite drag and drop di files da dropzone.js a jQuery fileUplaod (maggiore libertà su interfaccia utente).
+			</action>
+			<action dev="mbernardini" type="add" date="2016-07-19">
+				Integrazione nuova release IWX (con supporto a tutti i browser, ver. 3.x):
+				(*) Possibilità di passare dalla ver. 2.x di IWX alla ver. 3.x e viceversa;
+				(*) Necessaria configurazione del file docway.properties; Impostare 'iwx.legacyMode=false' e configurare i corretti valore per 'requiredVersionIWX' e 'currentVersionIWX'.
+			</action>
+			<action dev="mbernardini" type="add" date="2016-07-15">
+				Possibilità di attivare la gestione dei CC sui raccoglitori (inclusione dei CC anche su fascicoli e documenti inclusi nel raccoglitore). Richiede
+				l'attivazione della property 'abilitaCCRaccoglitori' sul file it.highwaytech.apps.generic.properties.
+			</action>
+			<action dev="mbernardini" type="fix" date="2016-07-06">
+				Corretto bug in svuotamento della password sulle caselle di posta elettronica e migliorata la visualizzazione del campo in modifica (Task #8373).
+			</action>
+			<action dev="mbernardini" type="fix" date="2016-07-04">
+				Corretto bug in svuotamento dell'elenco di gestori di una casella di posta elettronica (Task #8347).
+			</action>
+			<action dev="mbernardini" type="add" date="2016-06-27">
+				Eliminato UPPERCASE sull'oggetto all'interno della sezione 'Dati del Documento' in showdoc.
+			</action>
+			<action dev="mbernardini" type="add" date="2016-06-27">
+				Possibilità di attivare lo scarto di un documento su singoli ruoli assegnatari del doc. stesso. Richiede l'attivazione della
+				property 'abilitaScartoSingoloRuolo' sul file it.highwaytech.apps.xdocway.properties.
+			</action>
+			<action dev="mbernardini" type="update" date="2016-06-24">
+				Migliorato l’aspetto grafico dei campi di ricerca su assegnatari all'interno delle pagine di ricerca di documenti e fascicoli (passaggio
+				da uffici/persone a ruoli e viceversa).
+			</action>
+			<action dev="mbernardini" type="add" date="2016-06-23">
+				Possibilità di sostituire la vaschetta 'Ruoli' con una tendina che mostra tutti i ruoli ricoperti dall'operatore e per ogni ruolo la cardinalità
+				dei documenti assegnati. Richiede l'attivazione della property 'abilitaSplitVaschettaRuoli' sul file it.highwaytech.apps.xdocway.properties.
+			</action>
+			<action dev="mbernardini" type="update" date="2016-06-21">
+				In inserimento/modifica del responsabile delle caselle di posta elettronica aggiunta la visualizzazione di matricola, cod. ufficio, cod. ruolo come
+				campi non modificabili (retrocompatibilità con vecchia gestione caselle interne all'AOO).
+			</action>
+			<action dev="mbernardini" type="fix" date="2016-06-21">
+				Corretto bug in lookup responsabile in modifica di una casella di posta elettronica su ACL (Task #8260).
+			</action>
+			<action dev="mbernardini" type="add" date="2016-06-17">
+				Aggiunto un alert di conferma di generazione di un documento non protocollato tramite Drag And Drop di files da homepage di DocWay.
+			</action>
+			<action dev="mbernardini" type="update" date="2016-06-17">
+				Distinzione fra caselle di archiviazione ed interoperabilità in lista titoli e showdoc di caselle di posta elettronica in ACL. Richiede l'aggiornamento
+				del file conf di acl e la rigenerazione dei titoli (Task #7049).
+			</action>
+			<action dev="mbernardini" type="update" date="2016-06-16">
+				Possibilità di definire l'archivio xdocway di default da utilizzare (se differente da xdocwaydoc). Richiede la configurazione
+				della property 'xdocway.dbName.default' su docway.properties (Task #8100).
+			</action>
+		</release>
+
+		<release version="4.8.0" date="2016-06-14">
+			<action dev="mbernardini" type="fix" date="2016-06-13">
+				Visualizzazione di un alert di errore in caso di problemi durante il salvataggio di files su eXtraWay (SWFUpload, IWX) (Task #8133).
+			</action>
+			<action dev="mbernardini" type="update" date="2016-05-30">
+				Costruzione dinamica (senza nome app predefinita) dell'URL di caricamento di files javascript relativi al locale (Task #8127).
+			</action>
+			<action dev="mbernardini" type="update" date="2016-05-30">
+				In ACL aggiunti i codici relativi al responsabile in visualizzazione di una casella di posta elettronica (Task #8120).
+			</action>
+			<action dev="mbernardini" type="fix" date="2016-05-30">
+				Corretto bug nel riconoscimento del numero di protocollo da ricerca globale in altro a dx (Task #8119).
+			</action>
+			<action dev="mbernardini" type="fix" date="2016-05-27">
+				Corretto bug in visualizzazione dell'ultima modifica nella storia di tutte le risorse (persone, strutture, ecc.) in ACL (Task #8113).
+			</action>
+			<action dev="mbernardini" type="add" date="2016-05-25">
+				Aggiunti filtri a vaschette custom: documenti letti/non letti, documenti scartati/non scartati (richiede l'abilitazione dei filtri su documenti
+				letti/non letti, scartati/non scartati).
+			</action>
+			<action dev="mbernardini" type="add" date="2016-05-23">
+				Da maschera di ricerca dei documenti, possibilità di attivare i filtri su documenti letti/non letti, scartati/non scartati. Richiede l'attivazione
+				della property 'abilitaFiltriDocNonLettiNonScartati' sul file 'it.highwaytech.apps.xdocway.properties'.
+			</action>
+			<action dev="mbernardini" type="add" date="2016-05-19">
+				Possibilità di visualizzare le info esplose sulla lista titoli di documenti. Richiede l'attivazione della property 'titles.info.expanded'
+				sul file docway.properties.
+			</action>
+			<action dev="mbernardini" type="update" date="2016-05-18">
+				In caso di aggiornamento delle vaschette tramite pulsante 'refresh' viene forzato l'aggiornamento delle vaschette anche nel caso in cui il timeout di cache
+				non sia trascorso.
+			</action>
+		</release>
+
+		<release version="4.7.0" date="2016-05-18">
+			<action dev="mbernardini" type="fix" date="2016-05-18">
+				Corretto bug in modifica caselle di posta elettronica: Impossibile rimuovere la spunta di "Salvataggio allegati su documenti differenti".
+			</action>
+			<action dev="mbernardini" type="fix" date="2016-05-17">
+				Corretto bug in caricamento vocabolari in maschera di ricerca su campi extra dei fascicoli: Fornitore, Cod-SAP Fornitore.
+			</action>
+			<action dev="mbernardini" type="fix" date="2016-05-16">
+				Visualizzazione dell'esito dell'operazione di inserimento documenti/fascicoli in raccoglitore (loadingbar con dettagli dell'attività) (Task #5292).
+			</action>
+			<action dev="mbernardini" type="add" date="2016-05-13">
+				Login a DocWay tramite Slider CAPTCHA anzichè classico pulsante di submit.
+			</action>
+			<action dev="mbernardini" type="add" date="2016-05-13">
+				Test di connessione alle mailbox definite sulle caselle di posta elettronica in ACL.
+			</action>
+			<action dev="mbernardini" type="update" date="2016-05-10">
+				La protocollazione di documenti in bozza è stata vincolata al permesso di modifica sul documento stesso.
+			</action>
+			<action dev="mbernardini" type="fix" date="2016-05-10">
+				Corretto bug in verifica permessi su azione di rispondi/risposta/inoltra (Task #5256).
+			</action>
+			<action dev="mbernardini" type="add" date="2016-05-05">
+				Separazione delle caselle di interoperabilità e archiviazione (gestite tramite archiviatore) dall'information unit 'aoo'. Creata
+				una nuova Infomation Unit 'casellaPostaElettronica'.
+			</action>
+			<action dev="mbernardini" type="fix" date="2016-04-28">
+				Disallineamento query fra Docway4 e Docway3 in caso di fascicolazione di documenti in fascicoli speciali (Task #5211).
+			</action>
+			<action dev="mbernardini" type="add" date="2016-04-28">
+				Possibilità di registrare destinatari non vincolati (inserimento libero senza lookup in ACL) sui documenti in partenza. Richiede l'attivazione
+				della property 'destinatariLiberi' nel file 'it.highwaytech.apps.xdocway.properties'.
+			</action>
+			<action dev="mbernardini" type="fix" date="2016-04-26">
+				Corretta la mancata visualizzazione del campo 'Spesa' all'interno della sezione 'Altro' in showdoc di un Documento (Task #5205).
+			</action>
+			<action dev="mbernardini" type="add" date="2016-04-26">
+				Possibilità di assegnare più indirizzi PEC ad una struttura interna con selezione dell'indirizzo da utilizzare in
+				fase di invio telematico di un documento con quella struttura in RPA
+			</action>
+		</release>
+
+		<release version="4.6.3" date="2016-04-26">
+			<action dev="mbernardini" type="add" date="2016-04-15">
+				Upload file tramite Drag And Drop (caricamento allegati in documenti, creazione di documenti non protocollati tramite upload di un file). Richiede la configurazione delle seguenti
+				properties sul file 'it.highwaytech.apps.xdocway.properties': abilitaDragAndDropUploadFiles, abilitaDragAndDropCreateDocVarie, dragAndDrop.templateDoc.
+			</action>
+			<action dev="mbernardini" type="add" date="2016-04-05">
+				Possibilità di attivare lo scarto CC massivo di documenti assegnati ad una persona o su ruoli. Richiede la configurazione delle seguenti properties sul file 'it.highwaytech.apps.xdocway.properties':
+				(*) 'abilitaScartoMassivoDocs', abilitazione dello scarto massivo di documenti da lista titoli (visualizzazione del pulsante) ('si', 'no' - Default = 'no');
+				(*) 'scartoMassivoDocs.abilitaVisto', abilita il set del visto in caso di attivita' di scarto massivo di documenti da lista titoli ('si', 'no' - Default = 'si').
+			</action>
+			<action dev="mbernardini" type="add" date="2016-03-31">
+				Pagina di login multiarchivio su DocWay. Per il funzionamento richiede la configurazione delle relative properties
+				sul file it.highwaytech.apps.xdocway.properties ('multiarchLogin.mode' e correlate).
+			</action>
+			<action dev="mbernardini" type="add" date="2016-03-29">
+				Caricamento della homepage di DocWay personalizzata per singolo utente tramite 'Profilo Personale'. Richiede le seguenti properties attive sul file 'it.highwaytech.apps.xdocway.properties':
+				(*) customUserHomePage, per il caricamento dei documenti recenti sull'homepage di docway;
+				(*) abilitaHomePageDocWayCustom, per la definizione (da profilo personale di ogni utente) della tipologia di lista da caricare sulla homepage di docway.
+			</action>
+			<action dev="mbernardini" type="add" date="2016-03-29">
+				Formato della lista titoli (lista o tabella) personalizzata per singolo utente tramite definizione da 'Profilo Personale': Richiede l'attivazione della property 'titles.mode.switch.enabled'
+				sul file docway.properties della webapp DocWay4.
+			</action>
+		</release>
+
+		<release version="4.6.2" date="2016-03-21">
+			<action dev="mbernardini" type="add" date="2016-03-18">
+				Possibilità di specificare una query custom (in formato eXtraWay) dalla pagina di ricerca globale di documenti. Richiede l'attivazione
+				della property abilitaExtraQueryOnRicercaGlobale sul file it.highwaytech.apps.xdocway.properties (disattivata di default).
+			</action>
+			<action dev="mbernardini" type="fix" date="2016-03-18">
+				Corretto bug in controllo delle ripetizioni su campo oggetto in modifica di un documento con oggetto non
+				modificabile (Task #5009).
+			</action>
+			<action dev="mbernardini" type="fix" date="2016-03-17">
+				Corretti bugs in focus di un campo input dopo un'azione di lookup (fix JavaScript):
+				(*) Problema di focus su IE11;
+				(*) Problema nel caso in cui il campo dopo il lookup sia readonly.
+			</action>
+			<action dev="mbernardini" type="add" date="2016-03-17">
+				Gestione del check di 'Controlla variazione nome ufficio/persona' in trasferimento RPA di un documento o selezione di documenti.
+			</action>
+			<action dev="mbernardini" type="fix" date="2016-03-16">
+				Corretto bug in aggiornamento del nome ufficio/persona in trasferimento RPA di un fascicolo: check
+				'Controlla variazione nome ufficio/persona' (Task #4956).
+			</action>
+			<action dev="mbernardini" type="fix" date="2016-03-09">
+				Corretto escape del corpo dei messaggi di posta per il modulo 'Ricezione Posta' (Task #4910).
+			</action>
+			<action dev="mbernardini" type="add" date="2016-03-04">
+				Sincronizzazione utenti con DB di Bonita BPM in fase di login su DocWay. Registrazione utenti su Bonita con password recuperata
+				da file di properties e identica per tutti gli utenti (accesso a Bonita Portal non consentito, se non per gli amministratori -
+				autenticazione integrata fra DocWay e Bonita BPM tramite recupero del COOKIE di Sessione di Bonita).
+			</action>
+			<action dev="dpranteda" type="add" date="2016-02-22">
+				Integrazione con Bonita7.
+			</action>
+			<action dev="mbernardini" type="add" date="2016-02-12">
+				Aggiunta la funzionalità di controllo del certificato di firma digitale su file P7M e PDF (firma PADES): Estrazione delle
+				informazioni in esso contenuto in modalità OFFLINE.
+			</action>
+			<action dev="sstagni" type="add" date="2016-02-10">
+				Definiti due nuovi tipi di campi custom in visualizzazione di documenti (solo showdoc, non previsti in inserimento/modifica):
+				(*) tipo 'gmap' per la visualizzazione di mappe di google;
+				(*) tipo 'html' per l'inclusione di codice html.
+			</action>
+			<action dev="mbernardini" type="add" date="2016-02-08">
+				Aggiunta la gestione dei campi custom ai repertori personalizzati (PersonalView).
+			</action>
+		</release>
+
+		<release version="4.6.1" date="2016-02-04">
+			<action dev="mbernardini" type="add" date="2016-01-25">
+				In stampa repertorio fascicoli, in caso di lookup su campo Proprietario sono stati esclusi i profili dai risultati ottenuti (ricerca delle sole persone interne).
+			</action>
+			<action dev="mbernardini" type="update" date="2016-01-25">
+				Migliorata la selezione delle opzioni di stampa del controllo di gestione (Task #4653):
+				(*) In caso di selezione di 'Stampa mittenti per UOR' viene automaticamente settata la spunta su 'Stampa dettaglio per UOR' (altrimenti il flag sarebbe ignorato);
+				(*) In caso di selezione di 'Stampa mittenti per protocollista' viene automaticamente settata la spunta su 'Stampa dettaglio per protocollista' (altrimenti il flag sarebbe ignorato).
+			</action>
+			<action dev="mbernardini" type="fix" date="2016-01-25">
+				In caso di protocollazione di una bozza da pagina di modifica, invio del parametro '*sendMailRifInterni' in modo da forzare l'invio delle
+				mail di notifica in caso di protocollazione di bozze (property protocollazioneBozzeInvioEmailNotifica attiva).
+			</action>
+			<action dev="mbernardini" type="update" date="2015-12-22">
+				Migliorato il messaggio di ritorno in caso di errore nel caricamento di una selezione documenti SCADUTA (su eXtraWay) da vaschette di DocWay. Segnalazione
+				di errore 'File non trovato' che provocava il logout da DocWay.
+			</action>
+			<action dev="mbernardini" type="add" date="2015-12-22">
+				Aggiunta favicon all'applicazione DocWay.
+			</action>
+			<action dev="mbernardini" type="fix" date="2015-12-16">
+				Ripristinata la visualizzazione di etichette personalizzate per 'Dati Attività' e 'Dati Personali' in visualizzazione
+				di una persona esterna.
+			</action>
+			<action dev="mbernardini" type="update" date="2015-12-11">
+				Modificato il livello di errore da fatale a warning in caso di SQLException sulle pagine di ricerca di DocWay.
+			</action>
+			<action dev="mbernardini" type="fix" date="2015-12-11">
+				Corretto bug in caricamento nuova immagine tramite IWX dopo un'attività di eliminazione pagine da tiff multipagina (sempre
+				tramite IWX) (Task #4270)
+			</action>
+			<action dev="mbernardini" type="add" date="2015-12-10">
+				Porting della personalView 'Contratti' da DocWay3 (repertorio personalizzato).
+			</action>
+			<action dev="mbernardini" type="add" date="2015-12-10">
+				Aggiunti i protocolli IMAP e IMAP-SSL alla configurazione delle mailbox per lo scaricamento posta tramite MailArchiver (sezione PEC in ACL).
+			</action>
+			<action dev="mbernardini" type="fix" date="2015-12-09">
+				Applicato l'escape su tutti i campi di output di DocWay e ACL in modo da evitare HTML e Javascript Injection.
+			</action>
+			<action dev="mbernardini" type="update" date="2015-12-03">
+				Integrazione di IWX versione 2.2.6r:
+				(*) Gestione multiriga in stampa segnatura e info (elenco CC con ritorni a capo);
+				(*) Corretto bug in salvataggio delle preferenze di stampa (profilo personale).
+			</action>
+			<action dev="mbernardini" type="fix" date="2015-12-03">
+				Corretto bug in invio dati fatture a NAV (casi di doppia invocazione dei WS di NAV) (Task #3547).
+			</action>
+			<action dev="mbernardini" type="fix" date="2015-12-03">
+				Modificata chiamata alla funzione javascript di init di IWX per problemi di escape sul valore di customTupleName.
+			</action>
+			<action dev="mbernardini" type="update" date="2015-12-02">
+				Migliorato il controllo del formato numerico di valuta (decimali con punto) nei template di fatturePA attive/passive.
+			</action>
+			<action dev="mbernardini" type="fix" date="2015-12-02">
+				Ripristinato il dialog di richiesta aggiunta/sovrascrittura CC in caso di lookup su voce di indice (Task #3747).
+			</action>
+		</release>
 
 		<release version="4.6.0" date="2015-12-01">
 			<action dev="abarducci" type="add" date="2015-11-30">
 				Aggiunta delle console Decretazioni, Ordini e Fatture per APV.
 			</action>
 			<action dev="mbernardini" type="fix" date="2015-11-27">
-				Rimosso dal progetto il componente server dei WS di SoginSAP per problemi di compatibilità e maggiore difficoltà di 
+				Rimosso dal progetto il componente server dei WS di SoginSAP per problemi di compatibilità e maggiore difficoltà di
 				manutenzione in fase di installazione (la versione attualmente inclusa nel progetto non risulta funzionante neppure
-				sul cliente, viene utilizzata per la chiamata la vecchia webapp 'SoginSAP'). 
-				Occorre scaricare ed installare lo specifico modulo "SoginSAPDocWS". 
+				sul cliente, viene utilizzata per la chiamata la vecchia webapp 'SoginSAP').
+				Occorre scaricare ed installare lo specifico modulo "SoginSAPDocWS".
 			</action>
 			<action dev="mbernardini" type="fix" date="2015-11-25">
 				Caricamento del file di properties di soginSAP (da url PrettyFaces) tramite modulo configuratore (riscontrato durante la verifica del Task #4289).
 			</action>
 			<action dev="mbernardini" type="add" date="2015-11-23">
-				Aggiunto un messaggio di warning nelle pagine di ricerca in ACL in caso di restrizioni parziali su anagrafica. Per restrizioni parziali si intende 
-				il fatto che un operatore sia privo di restrizioni su anagrafica interna ma non sull'esterna o viceversa. Richiede l'abilitazione dal file docway.properties 
+				Aggiunto un messaggio di warning nelle pagine di ricerca in ACL in caso di restrizioni parziali su anagrafica. Per restrizioni parziali si intende
+				il fatto che un operatore sia privo di restrizioni su anagrafica interna ma non sull'esterna o viceversa. Richiede l'abilitazione dal file docway.properties
 				(abilitaWarningSuRestrizioniParziali=si).
 			</action>
 			<action dev="mbernardini" type="add" date="2015-11-18">
@@ -36,13 +1166,13 @@
 			<action dev="mbernardini" type="update" date="2015-11-16">
 				Limitato (come da specifiche SdI) a 255 il numero di caratteri nella motivazione di rifiuto di una fatturaPA passiva.
 			</action>
-			<action dev="mbernardini" type="add" date="2015-11-06"> 
+			<action dev="mbernardini" type="add" date="2015-11-06">
 				Gestione della motivazione di rifiuto di una fatturaPA attiva/passiva: notifiche di esito committente (EC) e notifiche
 				di esito cedente (NE).
 			</action>
 			<action dev="mbernardini" type="update" date="2015-10-29">
-				Applicate le restrizioni su AOO in ricerche su anagrafica interna/esterna in modo da 
-				supportare installazioni multi-aoo con anagrafiche esterne non condivise (caso di archivi ACL accorpati in 
+				Applicate le restrizioni su AOO in ricerche su anagrafica interna/esterna in modo da
+				supportare installazioni multi-aoo con anagrafiche esterne non condivise (caso di archivi ACL accorpati in
 				uno unico con conflitti su codici).
 			</action>
 			<action dev="mbernardini" type="update" date="2015-10-27">
@@ -69,14 +1199,14 @@
 				filtrare i risultati delle ricerche in ACL (solo se attiva la configurazione di archiviaoo.xml).
 			</action>
 			<action dev="mbernardini" type="add">
-				Definizione dei gestori di caselle di archiviazione e interoperabilità in ACL (modifica di PEC): 
+				Definizione dei gestori di caselle di archiviazione e interoperabilità in ACL (modifica di PEC):
 				(*) Possibilità di specificare, per ogni casella, gli utenti che possono modificare i dati della casella stessa;
 				(*) Sono stati definiti due livelli: "Titolare" e "Cambio Password". Un utente con assegnato il livello "Titolare" può modificare
 				ogni dato relativo alla casella, mentre un utente con livello "Cambio Password" può solamente modificare lo username e la password da utilizzare
-				per la connessione alla casella. 
+				per la connessione alla casella.
 			</action>
 			<action dev="mbernardini" type="add">
-				Aggiunto alle Smart Actions di un documento/fascicolo il pulsante di cambio proprietario ("Proprietario" sul documento e "Trasferisci" 
+				Aggiunto alle Smart Actions di un documento/fascicolo il pulsante di cambio proprietario ("Proprietario" sul documento e "Trasferisci"
 				sul fascicolo).
 			</action>
 			<action dev="mbernardini" type="add">
@@ -89,6 +1219,6 @@
 				Encoding dei contenuti (documenti xml) da ISO-8859-1 a UTF-8.
 			</action>
 		</release>
-		
+
 	</body>
 </document>

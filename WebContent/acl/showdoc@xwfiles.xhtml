@@ -34,7 +34,7 @@
 												&#160;	
 											</h:panelGroup>
 											<h:commandLink action="#{bean.downloadFile(modello.file.name,modello.file.title)}" title="#{i18n['dw4.scarica_il_file']}">
-												<h:outputText value="#{modello.nome}" escape="false" />
+												<h:outputText value="#{modello.nome}" />
 											</h:commandLink>
 											<h:panelGroup rendered="#{modello.file.usedFile}">
 												<span class="fileprenotato-icon glyphicon glyphicon-lock normal-size-icon popoveritem" data-toggle="popover" data-placement="top" data-trigger="hover" data-content="#{i18n['dw4.prenotato_da']} #{modello.file.chkout.operatore}"></span>
@@ -62,7 +62,6 @@
 												</h:panelGroup>
 											</ui:repeat>
 										</ui:remove>
-										<ui:param name="azioniSuFirma" value="#{(bean.formsAdapter.funzionalitaDisponibili['abilitaFirmaAppletActalis']) or (bean.formsAdapter.funzionalitaDisponibili['abilitaFirmaApplet3di']) or (((fn:contains(xwfile.name, '.p7m') or fn:contains(xwfile.name, '.s@s') or xwfile.force_sign=='true')) and bean.formsAdapter.funzionalitaDisponibili['enableVerificaFirmaVOL'])}" />
 										<ui:param name="azioniSuCheckInCheckOut" value="#{(bean.formsAdapter.funzionalitaDisponibili['addFile'] and bean.formsAdapter.funzionalitaDisponibili['disableSegnatura']) and (xwfile.checkoutFile or xwfile.checkinFile)}" />
 										<ui:param name="azioniSuVersioniPrecedenti" value="#{(xwfile.withVersions) or (bean.formsAdapter.funzionalitaDisponibili['versionsDiffEnable'] and xwfile.withVersions)}" />
 										
@@ -108,23 +107,6 @@
 												</h:panelGroup>
 											</ul>
 										</div>
-										
-										<h:panelGroup rendered="#{azioniSuFirma}" layout="block" styleClass="btn-group">
-											<button class="btn btn-default btn-xs dropdown-toggle" type="button" data-toggle="dropdown" title="#{i18n['dw4.firma']}">
-												<span class="glyphicons-pro pen firma-digitale-btn"></span> <span class="caret"></span>
-											</button>
-											<ul class="dropdown-menu">
-												<h:panelGroup rendered="#{bean.formsAdapter.funzionalitaDisponibili['abilitaFirmaAppletActalis']}">
-													<li><h:commandLink action="#{bean.firmaAppletActalis}" onclick="openCenterPopup('', 'firmaDigitaleActalis', 430, 340)" value="#{i18n['dw4.firma_del_documento_con_applet_actalis']}" target="firmaDigitaleActalis" /></li>
-												</h:panelGroup>
-												<h:panelGroup rendered="#{bean.formsAdapter.funzionalitaDisponibili['abilitaFirmaApplet3di']}">
-													<li><h:commandLink action="#{bean.firmaApplet3di}" onclick="openCenterPopup('', 'firmaDigitale3di', 430, 290)" value="#{i18n['dw4.firma_del_documento']}" target="firmaDigitale3di" /></li>
-												</h:panelGroup>
-												<h:panelGroup rendered="#{((fn:contains(modello.file.name, '.p7m') or fn:contains(modello.file.name, '.s@s') or modello.file.force_sign=='true')) and bean.formsAdapter.funzionalitaDisponibili['enableVerificaFirmaVOL']}">
-													<li><h:commandLink action="#{bean.verificaFirma}" value="#{i18n['dw4.verifica_firma_digitale']}" /></li>
-												</h:panelGroup>
-											</ul>
-										</h:panelGroup>
 									</div>
 									<div id="fileinfo#{indice.index}Content" style="display:none;" class="file-info-holder">
 										<table class="table table-condensed docinfo-table fileinfo-table">

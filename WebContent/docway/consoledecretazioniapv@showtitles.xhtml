@@ -131,7 +131,7 @@
 							</h:outputLink>
 						</td>
 						<td class="webmail-coldata essential">
-							<h:outputText value="#{decr.data}"><f:convertDateTime pattern="dd/MM/yyyy"/></h:outputText>
+							<h:outputText value="#{decr.data}"><f:convertDateTime pattern="dd/MM/yyyy" timeZone="CET"/></h:outputText>
 						</td>
 						<td class="webmail-coldata essential">
 							<h:outputText value="#{decr.oggetto}" rendered="#{!decr.linkContenutoAttoShow}"></h:outputText>

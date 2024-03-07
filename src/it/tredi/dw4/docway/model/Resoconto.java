@@ -13,12 +13,17 @@ public class Resoconto extends XmlEntity {
 	private String locked;
 	private String restored;
 	private String updated;
+	private String created;
 	private String failed;
+	private String deleted;
+	private String present;
 	private String skipped;
 	private String transferred;
 	private String trasf_non_nec;
 	private String update_non_nec;
 	private String processed;
+	// tiommi : aggiunto nrecord da ritornare al bean showdoc a loadingbar ultimata
+	private String nrecordToPreview;
 	private List<HistoryLoadingbar> historyLoadingbar;
 	
 	public Resoconto() {}
@@ -32,12 +37,16 @@ public class Resoconto extends XmlEntity {
     	this.locked = XMLUtil.parseAttribute(dom, "resoconto/@locked");
     	this.updated = XMLUtil.parseAttribute(dom, "resoconto/@updated");
     	this.restored = XMLUtil.parseAttribute(dom, "resoconto/@restored");
+    	this.created = XMLUtil.parseAttribute(dom, "resoconto/@created");
     	this.failed = XMLUtil.parseAttribute(dom, "resoconto/@failed");
+		this.deleted = XMLUtil.parseAttribute(dom, "resoconto/@deleted");
+		this.present = XMLUtil.parseAttribute(dom, "resoconto/@present");
     	this.skipped = XMLUtil.parseAttribute(dom, "resoconto/@skipped");
     	this.processed = XMLUtil.parseAttribute(dom, "resoconto/@processed");
     	this.transferred= XMLUtil.parseAttribute(dom, "resoconto/@transferred");
     	this.trasf_non_nec = XMLUtil.parseAttribute(dom, "resoconto/@trasf_non_nec");
     	this.update_non_nec = XMLUtil.parseAttribute(dom, "resoconto/@update_non_nec");
+    	this.nrecordToPreview = XMLUtil.parseAttribute(dom, "resoconto/@nrecordToPreview");
     	this.historyLoadingbar = XMLUtil.parseSetOfElement(dom, "//item", new HistoryLoadingbar());
         return this;
     }
@@ -70,6 +79,14 @@ public class Resoconto extends XmlEntity {
 
 	public String getFailed() {
 		return failed;
+	}
+
+	public String getDeleted() {
+		return deleted;
+	}
+
+	public void setDeleted(String deleted) {
+		this.deleted = deleted;
 	}
 
 	public void setSkipped(String skipped) {
@@ -128,5 +145,28 @@ public class Resoconto extends XmlEntity {
 		return processed;
 	}
 	
+	public String getCreated() {
+		return created;
+	}
+
+	public void setCreated(String created) {
+		this.created = created;
+	}
+
+	public String getPresent() {
+		return present;
+	}
+
+	public void setPresent(String present) {
+		this.present = present;
+	}
+
+	public String getNrecordToPreview() {
+		return nrecordToPreview;
+	}
+
+	public void setNrecordToPreview(String nrecordToPreview) {
+		this.nrecordToPreview = nrecordToPreview;
+	}
 }
 

@@ -1,18 +1,20 @@
 package it.tredi.dw4.docway.doc.adapters;
 
-import it.tredi.dw4.utils.XMLDocumento;
+import java.util.List;
+
+import org.dom4j.DocumentException;
+import org.dom4j.Element;
+
 import it.tredi.dw4.acl.model.Mailbox;
 import it.tredi.dw4.adapters.AdaptersConfigurationLocator.AdapterConfig;
 import it.tredi.dw4.adapters.FormsAdapter;
 import it.tredi.dw4.adapters.QueryFormsAdapter;
 import it.tredi.dw4.docway.model.ExportPersonalizzato;
+import it.tredi.dw4.docway.model.HomeContentDefinition;
 import it.tredi.dw4.docway.model.Option;
 import it.tredi.dw4.docway.model.VaschettaCustom;
-
-import java.util.List;
-
-import org.dom4j.DocumentException;
-import org.dom4j.Element;
+import it.tredi.dw4.utils.Logger;
+import it.tredi.dw4.utils.XMLDocumento;
 
 public class DocDocWayQueryFormsAdapter extends QueryFormsAdapter {
 
@@ -103,6 +105,45 @@ public class DocDocWayQueryFormsAdapter extends QueryFormsAdapter {
 	}
 	
 	/**
+	 * Ritorna il valore impostato come sizeMaxFile (dimensione massima dei file da uploadare)
+	 * @return
+	 */
+	public int getSizeMaxFile() {
+		int size = 0;
+		String sizeMaxFile = defaultForm.getParam("sizeMaxFile");
+		try {
+			if (sizeMaxFile == null || sizeMaxFile.isEmpty())
+				sizeMaxFile = "0";
+			size = Integer.parseInt(sizeMaxFile);
+		}
+		catch (Exception e) {
+			Logger.warn("DocDocWayQueryFormsAdapter.getSizeMaxFile(): unable to parse sizeMaxFile -> " + sizeMaxFile);
+			size = 0;
+		}
+		return size;
+	}
+	
+	/**
+	 * Ritorna il valore impostato come sizeMaxImg (dimensione massima delle immagini da uploadare)
+	 * @return
+	 */
+	public int getSizeMaxImg() {
+		int size = 0;
+		String sizeMaxImg = defaultForm.getParam("sizeMaxImg");
+		try {
+			if (sizeMaxImg == null || sizeMaxImg.isEmpty())
+				sizeMaxImg = "0";
+			size = Integer.parseInt(sizeMaxImg);
+		}
+		catch (Exception e) { 
+			Logger.warn("DocDocWayQueryFormsAdapter.getSizeMaxImg(): unable to parse sizeMaxImg -> " + sizeMaxImg);
+			size = 0;
+		}
+		return size;
+	}
+	
+	
+	/**
 	 * Ritorna la stringa relativa all'attributo della response 'attach'.
 	 * @return Valore impostato sull'attributo attach
 	 */
@@ -173,6 +214,16 @@ public class DocDocWayQueryFormsAdapter extends QueryFormsAdapter {
     
     public void findplain() {
     	findplain("");
+    }
+    
+    public void findplain(String codSocieta, String filtroLetto, String filtroScartato) {
+    	findplain(codSocieta);
+    	
+    	// aggiunta del parametro di applicazione filtri su doc letti/non letti, scartati/non scartati
+    	if (filtroLetto != null && !filtroLetto.isEmpty())
+    		defaultForm.addParam("filtroLetto", filtroLetto);
+    	if (filtroScartato != null && !filtroScartato.isEmpty())
+    		defaultForm.addParam("filtroScartato", filtroScartato);
     }
     
     public void findplain(String codSocieta) {
@@ -284,6 +335,9 @@ public class DocDocWayQueryFormsAdapter extends QueryFormsAdapter {
     	indexForm.addParam("verbo", "query");
     	indexForm.addParam("xverb", "");
     	indexForm.addParam("dbTable", "");
+    	
+    	// mbernardini 17/05/2016 : aggiunto parametro per forzare il refresh delle vaschette anche se il timeout della cache non e' trascorso
+    	indexForm.addParam("xverb", "@renewCache"); 
     }
     
     /**
@@ -317,15 +371,26 @@ public class DocDocWayQueryFormsAdapter extends QueryFormsAdapter {
      * 
      * @param rights
      * @param info
+     * @param titlesMode modalita' di visualizzazione titoli per l'utente (lista o tabella)
+     * @param homeContent definizione del contenuto da mostrare sull'homepage di docway per l'utente
      * @param mailboxes caselle di posta personali dell'utente (definite da profilo personale)
      * @param vaschette vaschette personalizzate dell'utente
      */
-    public void saveProfilo(String rights, String info, List<Mailbox> mailboxes, List<VaschettaCustom> vaschette, List<ExportPersonalizzato> esportazioni) {
+    public void saveProfilo(String rights, String info, String titlesMode, HomeContentDefinition homeContent, List<Mailbox> mailboxes, List<VaschettaCustom> vaschette, List<ExportPersonalizzato> esportazioni) {
     	defaultForm.addParam("toDo", rights);
     	defaultForm.addParam("xMode", info);
     	defaultForm.addParam("dbTable", "");
     	defaultForm.addParam("xverb", "@salvaProfilo");
-
+    	
+    	// salvataggio di modalita' di visualizzazione titoli e configurazione homepage di docway
+    	if (titlesMode != null && !titlesMode.isEmpty())
+    		defaultForm.addParam("dwTitlesMode", titlesMode);
+    	if (homeContent != null && homeContent.getType() != null && !homeContent.getType().isEmpty()) {
+    		defaultForm.addParam("dwHomeContent.type", homeContent.getType());
+    		defaultForm.addParam("dwHomeContent.title", homeContent.getTitle());
+    		defaultForm.addParam("dwHomeContent.query", homeContent.getCustomQuery());
+    	}
+    	
 		// invio dei parametri di configurazione della mailbox (solo se configurata dall'utente)
     	if (mailboxes != null && mailboxes.size() > 0) {
     		for (int i=0; i<mailboxes.size(); i++) {
@@ -598,6 +663,8 @@ public class DocDocWayQueryFormsAdapter extends QueryFormsAdapter {
 		
 		defaultForm.addParam("selid", selid);
 		defaultForm.addParam("count", count);
+
+		defaultForm.addParam("auditVisualizzazione", "true");
 	}
     
     /**
@@ -663,4 +730,37 @@ public class DocDocWayQueryFormsAdapter extends QueryFormsAdapter {
 		defaultForm.addParam("dbTable", table);
 		defaultForm.addParam("userRights", "");
     }
+    
+    /**
+     * Creazione di documenti tramite drag&drop di files
+     */
+    public void creaDocByDragAndDrop(String fileIds, String fileTitles) {
+    	defaultForm.addParam("verbo", "draganddropfiles");
+    	defaultForm.addParam("xverb", "createDoc");
+    	defaultForm.addParam("pos", "");
+		defaultForm.addParam("selid", "");
+		defaultForm.addParam("physDoc", "");
+    	defaultForm.addParam("fileids", fileIds);
+    	defaultForm.addParam("filetitles", fileTitles);
+    }
+    
+    /**
+     * Individuazione degli errori presenti all'interno degli assegnatari definiti sulle voci d'indice dell'archivio
+	 * procedimenti
+     */
+    public void evaluateAssegnatariVociIndice() {
+    	defaultForm.addParam("verbo", "vociindice_response");
+    	defaultForm.addParam("xverb", "evaluateAssegnatari");
+    }
+    
+    /*
+     * Controlla se è possibile effettuare il login con le credenziali passate e in caso restituisce la username/login
+     */
+	public void checkDelegaAndGetLogin(String codDelegante, String codDelegato) {
+		defaultForm.addParam("verbo", "deleghe");
+		defaultForm.addParam("xverb", "checkOkDelega");
+		defaultForm.addParam("codDelegante", codDelegante);
+		defaultForm.addParam("codDelegato", codDelegato);
+	}
+
 }

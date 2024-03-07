@@ -1,6 +1,10 @@
 package it.tredi.dw4.acl.beans;
 
-import it.tredi.dw4.utils.XMLDocumento;
+import javax.faces.context.FacesContext;
+import javax.faces.event.ValueChangeEvent;
+
+import org.dom4j.Document;
+
 import it.tredi.dw4.acl.adapters.AclDocEditFormsAdapter;
 import it.tredi.dw4.acl.model.Appartenenza;
 import it.tredi.dw4.acl.model.PersonaEsterna;
@@ -9,12 +13,8 @@ import it.tredi.dw4.adapters.ErrormsgFormsAdapter;
 import it.tredi.dw4.i18n.I18N;
 import it.tredi.dw4.utils.Const;
 import it.tredi.dw4.utils.DateUtil;
+import it.tredi.dw4.utils.XMLDocumento;
 import it.tredi.dw4.utils.XMLUtil;
-
-import javax.faces.context.FacesContext;
-import javax.faces.event.ValueChangeEvent;
-
-import org.dom4j.Document;
 
 public class DocEditModifyPersonaEsterna extends AclDocEdit {
 	private AclDocEditFormsAdapter formsAdapter;
@@ -259,7 +259,7 @@ public class DocEditModifyPersonaEsterna extends AclDocEdit {
 
 		String aliasName 	= "struest_nome";
 		String aliasName1 	= "";
-		String titolo 		= "xml,/struttura_esterna/nome &quot;^ [csap: ~&quot; XML,/struttura_esterna/@cod_SAP &quot;~^]&quot;"; //titolo 
+		String titolo 		= "xml,/struttura_esterna/nome \"^ [csap: ~\" XML,/struttura_esterna/@cod_SAP \"~^]\""; //titolo 
 		String ord 			= "xml(xpart:/struttura_esterna/nome)"; //ord 
 		String campi 		= ".appartenenza["+num+"].@cod_uff=xml,/struttura_esterna/@cod_uff ; .appartenenza["+num+"].@nome=xml,/struttura_esterna/nome"; //campi
 		String db 			= ""; //db 

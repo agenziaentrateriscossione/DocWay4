@@ -66,7 +66,7 @@
 							</div>
 							<div class="col-sm-4">
 								<p class="form-control-static">
-									<h:outputText rendered="#{!empty docEditModifyIndiceTitolario.indice_titolario.compilazione_automatica.classif.cod}" value="#{docEditModifyIndiceTitolario.indice_titolario.compilazione_automatica.classif.cod.concat(' - ').concat(docEditModifyIndiceTitolario.indice_titolario.compilazione_automatica.classif.text)}" escape="false"><f:converter converterId="ClassifConverter"/></h:outputText>
+									<h:outputText rendered="#{!empty docEditModifyIndiceTitolario.indice_titolario.compilazione_automatica.classif.cod}" value="#{docEditModifyIndiceTitolario.indice_titolario.compilazione_automatica.classif.cod.concat(' - ').concat(docEditModifyIndiceTitolario.indice_titolario.compilazione_automatica.classif.text)}" ><f:converter converterId="ClassifConverter"/></h:outputText>
 								</p>
 							</div>
 							<label for="templateForm:scarto" class="control-label col-sm-1"><span>#{i18n['dw4.scarto']}</span></label>
@@ -218,7 +218,7 @@
 		<ui:include src="./rifintLookup.xhtml"> <ui:param name="pageBean" value="#{docEditModifyIndiceTitolario}"/></ui:include>
 		<ui:include src="./showthes.xhtml"> <ui:param name="pageBean" value="#{docEditModifyIndiceTitolario}"/></ui:include>
 		
-		<h:inputTextarea value="#{docEditModifyIndiceTitolario.xml}" rendered="#{docEditModifyIndiceTitolario.debugMode}" styleClass="form-control" rows="10" />
+		<h:inputTextarea value="#{docEditModifyIndiceTitolario.xml}" rendered="#{docEditModifyIndiceTitolario.debugMode}" styleClass="form-control debug-textarea" rows="10" />
 	</div>
 </ui:define>
 

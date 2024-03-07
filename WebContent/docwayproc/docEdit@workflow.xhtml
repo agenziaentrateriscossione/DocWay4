@@ -41,27 +41,65 @@
 						<div class="form-group">
 							<label class="col-sm-2 control-label requiredField"><span>* #{i18n['dw4.file_bar']}</span></label>
 							<div class="col-sm-1">
-								<div id="swfupload-bar-control">
-									<span id="swfuploadBarHolder"></span>
-									<h:commandLink id="swfuploadBarBtn" onclick="return false;" styleClass="btn btn-default">#{i18n['dw4.sfoglia']}</h:commandLink>
+								<h:commandLink onclick="return addBarDragAndDrop();" styleClass="btn btn-default">#{i18n['dw4.sfoglia']}</h:commandLink>
+								<script type="text/javascript">
+								<!--
+								function addBarDragAndDrop() {
+									$('#dropzoneBars').contents().find('#fileupload').trigger('click');
+									return false;
+								}
+								//-->
+								</script>
+								<div style="display: none;">
+									<iframe id="dropzoneBars" class="dropzone-iframe dropzone-files form-control" src="#{facesContext.externalContext.requestContextPath}/docway/dropzoneFileUpload.jsf?dadType=Bar&amp;dadTempUpload=true&amp;dadKeepUserDir=true"></iframe>
+									<script type="text/javascript">
+									var dadBarsTypes = "*.bar";
+									var dadMaxBars = 1;
+									function updateBarsFromDragAndDrop(dadFilesIds, dadFilesNames) {
+										if (dadFilesIds &amp;&amp; dadFilesNames) {
+											$('#dadBarFileText').html(dadFilesIds.substring(1));
+									    	$('#templateForm\\:dadBarFileHidden').val(dadFilesIds.substring(1));
+										}
+										hideOpenwaitmsg();
+									}
+									</script>
 								</div>
 							</div>
 							<div class="col-sm-8">
-								<p class="form-control-static"><span id="swfuploadBarFileText">#{docEditWorkflow.workflow.fileNameBar}</span></p>
-								<h:inputHidden id="swfuploadBarFileHidden" value="#{docEditWorkflow.workflow.fileNameBar}" />
+								<p class="form-control-static"><span id="dadBarFileText">#{docEditWorkflow.workflow.fileNameBar}</span></p>
+								<h:inputHidden id="dadBarFileHidden" value="#{docEditWorkflow.workflow.fileNameBar}" />
 							</div>
 						</div>
 						<div class="form-group">
 							<label class="col-sm-2 control-label"><span>#{i18n['dw4.immagine_flusso']}</span></label>
 							<div class="col-sm-1">
-								<div id="swfupload-image-control">
-									<span id="swfuploadImageHolder"></span>
-									<h:commandLink id="swfuploadImageBtn" onclick="return false;" styleClass="btn btn-default">#{i18n['dw4.sfoglia']}</h:commandLink>
+								<h:commandLink onclick="return addImageDragAndDrop();" styleClass="btn btn-default">#{i18n['dw4.sfoglia']}</h:commandLink>
+								<script type="text/javascript">
+								<!--
+								function addImageDragAndDrop() {
+									$('#dropzoneImages').contents().find('#fileupload').trigger('click');
+									return false;
+								}
+								//-->
+								</script>
+								<div style="display: none;">
+									<iframe id="dropzoneImages" class="dropzone-iframe dropzone-files form-control" src="#{facesContext.externalContext.requestContextPath}/docway/dropzoneFileUpload.jsf?dadType=Image&amp;dadTempUpload=true&amp;dadKeepUserDir=true"></iframe>
+									<script type="text/javascript">
+									var dadImagesTypes = "*.png";
+									var dadMaxImages = 1;
+									function updateImagesFromDragAndDrop(dadFilesIds, dadFilesNames) {
+										if (dadFilesIds &amp;&amp; dadFilesNames) {
+											$('#dadImageFileText').html(dadFilesIds.substring(1));
+									    	$('#templateForm\\:dadImageFileHidden').val(dadFilesIds.substring(1));
+										}
+										hideOpenwaitmsg();
+									}
+									</script>
 								</div>
 							</div>
 							<div class="col-sm-8">
-								<p class="form-control-static"><span id="swfuploadImageFileText">#{docEditWorkflow.workflow.fileNameImage}</span></p>
-								<h:inputHidden id="swfuploadImageFileHidden" value="#{docEditWorkflow.workflow.fileNameImage}" />
+								<p class="form-control-static"><span id="dadImageFileText">#{docEditWorkflow.workflow.fileNameImage}</span></p>
+								<h:inputHidden id="dadImageFileHidden" value="#{docEditWorkflow.workflow.fileNameImage}" />
 							</div>
 						</div>
 						<div class="form-group">
@@ -70,30 +108,22 @@
 						      <h:selectBooleanCheckbox value="#{docEditWorkflow.workflow.subprocess}" ></h:selectBooleanCheckbox>
 						  </div>
 						</div>
+						<div class="form-group">
+						  <label class="col-sm-2 control-label"><span>#{i18n['dw4.bonita_version']}</span></label>
+						  <div class="col-sm-1">
+						     <h:selectOneMenu class="form-control" value="#{docEditWorkflow.workflow.bonitaVersion}">
+								<f:selectItems value="#{docEditWorkflow.workflow.bonitaActiveVersions}" var="option" itemValue="#{option.value}" itemLabel="#{option.label}"/>
+							 </h:selectOneMenu>
+						  </div>
+						</div>
 					</div>
 				</div>
 			</div>
 		</div>
 		<!-- scheda edit: fine -->
-		
-		<script type="text/javascript">
-		window.loadSWFUpload = function() {
-			initWorkflowUploadSWFU("swfupload-bar-control", "swfuploadBarHolder", "swfuploadBarFile", "*.bar", "#{i18n['dw4.bar_file_bonita']}", "#{facesContext.externalContext.requestContextPath}/fileupload", "#{userBean.login}", "#{userBean.matricola}");
-			initWorkflowUploadSWFU("swfupload-image-control", "swfuploadImageHolder", "swfuploadImageFile", "*.png", "#{i18n['dw4.png_file']}", "#{facesContext.externalContext.requestContextPath}/fileupload", "#{userBean.login}", "#{userBean.matricola}");
-		}
-		
-		$(window).load(function() {
-			jsf.ajax.addOnEvent(function(data) { 
-				if (data.status == 'success') {
-					initWorkflowUploadSWFU("swfupload-bar-control", "swfuploadBarHolder", "swfuploadBarFile", "*.bar", "#{i18n['dw4.bar_file_bonita']}", "#{facesContext.externalContext.requestContextPath}/fileupload", "#{userBean.login}", "#{userBean.matricola}");
-					initWorkflowUploadSWFU("swfupload-image-control", "swfuploadImageHolder", "swfuploadImageFile", "*.png", "#{i18n['dw4.png_file']}", "#{facesContext.externalContext.requestContextPath}/fileupload", "#{userBean.login}", "#{userBean.matricola}");
-				}
-			});
-		});
-		</script>
 	</div>
 
-	<h:inputTextarea value="#{docEditWorkflow.xml}" rendered="#{docEditWorkflow.debugMode}" styleClass="form-control" rows="10" />
+	<h:inputTextarea value="#{docEditWorkflow.xml}" rendered="#{docEditWorkflow.debugMode}" styleClass="form-control debug-textarea" rows="10" />
 </ui:define>
 	
 </ui:composition>

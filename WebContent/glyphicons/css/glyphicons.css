@@ -1465,7 +1465,11 @@
 }
 
 .glyphicons-pro.aoo:before {
-    content: "\E128"
+    content: "\E372"
+}
+
+.glyphicons-pro.casellaPostaElettronica:before {
+    content: "\2709"
 }
 
 .glyphicons-pro.ruoli:before, .glyphicons-pro.ruolo:before {
@@ -1504,9 +1508,9 @@
 	content: "\E037"
 }
 
-.glyphicons-pro.doc-history.responsabilita:before, .glyphicons-pro.doc-history.responsabilita_minuta:before, 
+.glyphicons-pro.doc-history.responsabilita:before, .glyphicons-pro.doc-history.responsabilita_minuta:before,
 .glyphicons-pro.doc-history.assegnazione_opm:before, .glyphicons-pro.doc-history.assegnazione_op:before,
-.glyphicons-pro.doc-history.assegnazione_cds:before, .glyphicons-pro.doc-history.assegnazione_cc:before, 
+.glyphicons-pro.doc-history.assegnazione_cds:before, .glyphicons-pro.doc-history.assegnazione_cc:before,
 .glyphicons-pro.doc-history.incaricato_tenuta_fascicolo:before {
 	content: "\E007"
 }
@@ -1580,6 +1584,10 @@
 	content: "\E333"
 }
 
+.glyphicons-pro.doc-history.transformaInNonProtocollato:before {
+	content: "\E359"
+}
+
 .glyphicons-pro.doc-history.annullamento:before {
 	content: "\E197"
 }
@@ -1617,9 +1625,25 @@
 	content: "\E360"
 }
 
+.glyphicons-pro.doc-history.ripristinoDaTrasformazioneRepertorio:before {
+	content: "\E366"
+}
+
+.glyphicons-pro.doc-history.ordinaContenuto:before {
+	content: "\E404"
+}
+
+.glyphicons-pro.doc-history.readonly:before {
+	content: "\E200"
+}
+
+.glyphicons-pro.doc-history.richiesta_verifica_virus:before, .glyphicons-pro.doc-history.esito_verifica_virus:before {
+	content: "\E271"
+}
+
 .glyphicons-pro.log-book:before{
 	content: "\E088"
-} 
+}
 
 /*############################### PERSONALIZZAZIONI DOCWAY - FINE ###############################*/
 
@@ -1633,3 +1657,10 @@
 }
 
 /*############################### PERSONALIZZAZIONI DELIBERE - FINE ###############################*/
+
+.glyphicons-pro.doc-history.presa_in_carico:before {
+	content: "\E362"
+}
+.glyphicons-pro.doc-history.assegnazione_num_repertorio:before {
+	content: "\E088"
+}

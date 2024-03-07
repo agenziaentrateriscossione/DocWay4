@@ -13,6 +13,7 @@ public class Link_interno extends XmlEntity {
 	private String text;
 	private String remove;
 	private String alias;
+	private boolean fromRifiutoArrivo = false;
 	
 	public Link_interno() {}
     
@@ -25,6 +26,7 @@ public class Link_interno extends XmlEntity {
     	this.remove = XMLUtil.parseAttribute(dom, "link_interno/@remove");
     	this.alias = XMLUtil.parseAttribute(dom, "link_interno/@alias");
     	this.text = XMLUtil.parseElement(dom, "link_interno");
+    	this.fromRifiutoArrivo = Boolean.parseBoolean(XMLUtil.parseElement(dom, "link_interno/@fromRifiutoArrivo"));
         return this;
     }
     
@@ -66,6 +68,14 @@ public class Link_interno extends XmlEntity {
 
 	public String getAlias() {
 		return alias;
+	}
+
+	public boolean isFromRifiutoArrivo() {
+		return fromRifiutoArrivo;
+	}
+
+	public void setFromRifiutoArrivo(boolean fromRifiutoArrivo) {
+		this.fromRifiutoArrivo = fromRifiutoArrivo;
 	}
 	
 }

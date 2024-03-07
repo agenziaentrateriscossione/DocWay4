@@ -4,15 +4,16 @@ import java.util.List;
 
 import javax.faces.context.FacesContext;
 
-import it.tredi.dw4.utils.XMLDocumento;
+import org.dom4j.Document;
+
 import it.tredi.dw4.adapters.AdaptersConfigurationLocator;
 import it.tredi.dw4.adapters.ErrormsgFormsAdapter;
 import it.tredi.dw4.docway.doc.adapters.DocDocWayDocEditFormsAdapter;
 import it.tredi.dw4.docway.model.TipologiaFascicolo;
+import it.tredi.dw4.model.XmlEntity;
 import it.tredi.dw4.utils.Const;
+import it.tredi.dw4.utils.XMLDocumento;
 import it.tredi.dw4.utils.XMLUtil;
-
-import org.dom4j.Document;
 
 public class DocEditFascicolocustom extends DocWayDocedit {
 
@@ -101,4 +102,10 @@ public class DocEditFascicolocustom extends DocWayDocedit {
 			return null;			
 		}
 	}
+	
+	@Override
+	public XmlEntity getModel() {
+		return null;
+	}
+	
 }

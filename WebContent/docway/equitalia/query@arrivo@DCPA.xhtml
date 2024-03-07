@@ -166,6 +166,14 @@
 								<h:inputText styleClass="form-control" value="#{queryArrivoDCPA.custom_numeri_rep}" id="custom_numeri_rep" p:placeholder="#{i18n['dw4.separare_i_valori_da_virgola']}" title="#{i18n['dw4.separare_i_valori_da_virgola']}" />
 							</div>
 						</div>
+						
+						<c:if test="#{!empty queryArrivoDCPA.currentCustomFieldSection and queryArrivoDCPA.currentCustomFieldSection.contains('_')}">
+							<hr/>
+							<ui:include src="../../customfields/query@customfields.xhtml">
+								<ui:param name="key" value="#{queryArrivoDCPA.currentCustomFieldSection}" />
+								<ui:param name="bean" value="#{queryArrivoDCPA}"/>
+				        	</ui:include>
+						</c:if>
 					</div>
 				</h:panelGroup>
 				
@@ -200,7 +208,7 @@
 		});
 		</script>
 
-		<h:inputTextarea value="#{queryArrivoDCPA.xml}" rendered="#{queryArrivoDCPA.debugMode}" styleClass="form-control" rows="10" />
+		<h:inputTextarea value="#{queryArrivoDCPA.xml}" rendered="#{queryArrivoDCPA.debugMode}" styleClass="form-control debug-textarea" rows="10" />
 	</div>
 	
 	<ui:include src="../showindex.xhtml"><ui:param name="pageBean" value="#{queryArrivoDCPA}"/></ui:include>

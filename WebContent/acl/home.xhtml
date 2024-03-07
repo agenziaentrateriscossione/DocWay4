@@ -22,13 +22,15 @@
 		<h:panelGroup rendered="#{not empty facesContext.messageList}" layout="block" styleClass="docedit-messages alert alert-danger">
 			<h:messages styleClass="" id="validationMesseges" />
 		</h:panelGroup>
-		<h:panelGroup rendered="#{aclHome.warningSuRestrizioniPartizialiEnabled and aclHome.formsAdapter.funzionalitaDisponibili['acl_int_aoo_restriction'] and !aclHome.formsAdapter.funzionalitaDisponibili['acl_ext_aoo_restriction']}" layout="block" styleClass="docedit-messages alert alert-warning">
-			<h:outputText value="#{i18n['acl.la_selezione_di_anagrafica_interna_verra_filtrata_in_base_alla_propria_aoo_di_appartenenza_e_non_sara_presa_in_considerazione_la_selezione_dell_aoo_dal_menu_a_sinistra']}" />
-			(<strong><h:outputText value="#{i18n['acl.l_utente_ha_restrizioni_su_anagrafica_interna']}" /></strong>)
-		</h:panelGroup>
-		<h:panelGroup rendered="#{aclHome.warningSuRestrizioniPartizialiEnabled and !aclHome.formsAdapter.funzionalitaDisponibili['acl_int_aoo_restriction'] and aclHome.formsAdapter.funzionalitaDisponibili['acl_ext_aoo_restriction']}" layout="block" styleClass="docedit-messages alert alert-warning">
-			<h:outputText value="#{i18n['acl.la_selezione_di_anagrafica_esterna_verra_filtrata_in_base_alla_propria_aoo_di_appartenenza_e_non_sara_presa_in_considerazione_la_selezione_dell_aoo_dal_menu_a_sinistra']}" />
-			(<strong><h:outputText value="#{i18n['acl.l_utente_ha_restrizioni_su_anagrafica_esterna']}" /></strong>)
+		<h:panelGroup rendered="#{fn:length(aclHome.sedi) > 0 and aclHome.warningSuRestrizioniPartizialiEnabled}">
+			<h:panelGroup rendered="#{aclHome.formsAdapter.funzionalitaDisponibili['acl_int_aoo_restriction'] and !aclHome.formsAdapter.funzionalitaDisponibili['acl_ext_aoo_restriction']}" layout="block" styleClass="docedit-messages alert alert-warning">
+				<h:outputText value="#{i18n['acl.la_selezione_di_anagrafica_interna_verra_filtrata_in_base_alla_propria_aoo_di_appartenenza_e_non_sara_presa_in_considerazione_la_selezione_dell_aoo_dal_menu_a_sinistra']}" />
+				(<strong><h:outputText value="#{i18n['acl.l_utente_ha_restrizioni_su_anagrafica_interna']}" /></strong>)
+			</h:panelGroup>
+			<h:panelGroup rendered="#{!aclHome.formsAdapter.funzionalitaDisponibili['acl_int_aoo_restriction'] and aclHome.formsAdapter.funzionalitaDisponibili['acl_ext_aoo_restriction']}" layout="block" styleClass="docedit-messages alert alert-warning">
+				<h:outputText value="#{i18n['acl.la_selezione_di_anagrafica_esterna_verra_filtrata_in_base_alla_propria_aoo_di_appartenenza_e_non_sara_presa_in_considerazione_la_selezione_dell_aoo_dal_menu_a_sinistra']}" />
+				(<strong><h:outputText value="#{i18n['acl.l_utente_ha_restrizioni_su_anagrafica_esterna']}" /></strong>)
+			</h:panelGroup>
 		</h:panelGroup>
 		<!-- messages: fine -->
 
@@ -116,7 +118,7 @@
 		
 		<ui:include src="./aooSelectorPopup.xhtml"/>
 		
-		<h:inputTextarea value="#{aclHome.xml}" rendered="#{aclHome.debugMode}" styleClass="form-control" rows="10" />
+		<h:inputTextarea value="#{aclHome.xml}" rendered="#{aclHome.debugMode}" styleClass="form-control debug-textarea" rows="10" />
 	</div>
 </ui:define>
 

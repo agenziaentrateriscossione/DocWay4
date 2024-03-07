@@ -24,13 +24,14 @@ public class History extends XmlEntity {
 	private String data;
 	private String ora;
 	private String uff_oper;
-    
+	private String delegato;
+
 	public History() {}
-    
+
 	public History(String xml) throws Exception {
         this.init(XMLUtil.getDOM(xml));
     }
-    
+
     public History init(Document dom) {
     	this.tipo 	 		= XMLUtil.parseAttribute(dom, "item/@tipo");
     	this.azione	 		= XMLUtil.parseAttribute(dom, "item/@azione");
@@ -46,13 +47,14 @@ public class History extends XmlEntity {
     	this.cod_uff_oper 	= XMLUtil.parseAttribute(dom, "item/@cod_uff_oper");
     	this.data 			= XMLUtil.parseAttribute(dom, "item/@data");
     	this.ora 			= XMLUtil.parseAttribute(dom, "item/@ora");
+    	this.delegato 		= XMLUtil.parseAttribute(dom, "item/@delegato");
         return this;
     }
-    
+
     public Map<String, String> asFormAdapterParams(String prefix){
     	return new HashMap<String, String>();
     }
-    
+
     public String getOper() {
 		return oper;
 	}
@@ -156,13 +158,21 @@ public class History extends XmlEntity {
 	public String getNome_persona() {
 		return nome_persona;
 	}
-	
+
 	public String getAzione() {
 		return azione;
 	}
 
 	public void setAzione(String azione) {
 		this.azione = azione;
+	}
+
+	public String getDelegato() {
+		return delegato;
+	}
+
+	public void setDelegato(String delegato) {
+		this.delegato = delegato;
 	}
 }
 

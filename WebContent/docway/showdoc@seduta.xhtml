@@ -8,13 +8,13 @@
 
 <ui:define name="content">
 	<div class="seduta">
-		
+
 		<!-- toolbar: inizio -->
 		<ui:include src="./buttonBarSeduta.xhtml">
 			<ui:param name="bean" value="#{showdocSeduta}"/>
 		</ui:include>
 		<!-- toolbar: fine -->
-		
+
 		<!-- scheda show: inizio -->
 		<div class="contenuto-doc row clearfix">
 			<h:panelGroup rendered="#{!showdocSeduta.popupPage}">
@@ -35,56 +35,56 @@
 					<ui:include src="./showdoc@seduta@title.xhtml">
 						<ui:param name="bean" value="#{showdocSeduta}"/>
 					</ui:include>
-					
+
 					<h:panelGroup rendered="#{showdocSeduta.formsAdapter.funzionalitaDisponibili['maschRis'] || showdocSeduta.formsAdapter.funzionalitaDisponibili['maschComp'] || showdocSeduta.formsAdapter.funzionalitaDisponibili['maschDelib']}">
 						<ui:include src="./errorHandler.xhtml">
 							<ui:param name="bean" value="#{showdocSeduta}"/>
 						</ui:include>
 					</h:panelGroup>
-					
+
 					<div id="fixedshowdoc" class="fixed-showdoc">
 
 						<!-- hxp-containerof-seduta -->
 						<ui:include src="./showdoc@seduta@datidoc.xhtml">
 							<ui:param name="bean" value="#{showdocSeduta}"/>
 						</ui:include>
-						
+
 						<!-- hxp-doc-action-enableFunctionality-funzionalita_disponibili/@defaultMasch -->
 						<h:panelGroup rendered="#{showdocSeduta.formsAdapter.funzionalitaDisponibili['defaultMasch']}">
 							<ui:include src="./showdoc@seduta@componenti.xhtml">
 								<ui:param name="bean" value="#{showdocSeduta}"/>
 							</ui:include>
-							
+
 							<ui:include src="./showdoc@seduta@proposteInOdg.xhtml">
 								<ui:param name="bean" value="#{showdocSeduta}"/>
 							</ui:include>
 						</h:panelGroup>
-						
+
 						<!-- hxp-doc-action-enableFunctionality-funzionalita_disponibili/@maschRis" -->
 						<h:panelGroup rendered="#{showdocSeduta.formsAdapter.funzionalitaDisponibili['maschRis']}">
 							<ui:include src="./showdoc@seduta@proposteInOdg@maschRis.xhtml">
 								<ui:param name="bean" value="#{showdocSeduta}"/>
 							</ui:include>
 						</h:panelGroup>
-						
+
 						<!-- hxp-doc-action-enableFunctionality-funzionalita_disponibili/@maschComp" -->
 						<h:panelGroup rendered="#{showdocSeduta.formsAdapter.funzionalitaDisponibili['maschComp']}">
 							<ui:include src="./showdoc@seduta@componenti@maschComp.xhtml">
 								<ui:param name="bean" value="#{showdocSeduta}"/>
 							</ui:include>
 						</h:panelGroup>
-						
+
 						<!-- hxp-doc-action-enableFunctionality-funzionalita_disponibili/@maschDelib" -->
 						<h:panelGroup rendered="#{showdocSeduta.formsAdapter.funzionalitaDisponibili['maschDelib']}">
 							<ui:include src="./showdoc@seduta@proposteDaDeliberare.xhtml">
 								<ui:param name="bean" value="#{showdocSeduta}"/>
-							</ui:include>							
+							</ui:include>
 							<ui:include src="./showdoc@seduta@componenti@maschDelib.xhtml">
 								<ui:param name="bean" value="#{showdocSeduta}"/>
 							</ui:include>
 						</h:panelGroup>
-						
-						
+
+
 						<!-- hxp-containerof-seduta -->
 						<ui:include src="./history.xhtml">
 							<ui:param name="bean" value="#{showdocSeduta.doc}"/>
@@ -92,49 +92,49 @@
 							<ui:param name="visible" value="#{showdocSeduta.formsAdapter.funzionalitaDisponibili['showHistory']}" />
 						</ui:include>
 
-						
+
 				<ui:remove>
 						<ui:include src="./showdoc@datisocieta.xhtml">
 							<ui:param name="bean" value="#{showdocSeduta}"/>
 						</ui:include>
-						
+
 						<ui:include src="./showdoc@datiarchivio.xhtml">
 							<ui:param name="bean" value="#{showdocSeduta}"/>
 						</ui:include>
-						
+
 						<ui:include src="../customfields/showdoc@customfields.xhtml">
 							<ui:param name="bean" value="#{showdocSeduta}"/>
 			        	</ui:include>
-						
+
 						<ui:include src="./aspects.xhtml">
 							<ui:param name="bean" value="#{showdocSeduta}"/>
 						</ui:include>
-						
+
 						<ui:include src="./showdoc@responsabilita.xhtml">
 							<ui:param name="bean" value="#{showdocSeduta}"/>
 						</ui:include>
-						
+
 						<ui:include src="./showdoc@xwfiles.xhtml">
 							<ui:param name="bean" value="#{showdocSeduta}"/>
 						</ui:include>
-						
+
 						<ui:include src="./showdoc@workflow.xhtml">
 							<ui:param name="bean" value="#{showdocSeduta}"/>
 						</ui:include>
-						
+
 						<ui:include src="./showdoc@postit.xhtml">
 							<ui:param name="bean" value="#{showdocSeduta}"/>
 						</ui:include>
-						
+
 						<ui:include src="./showdoc@datialtro.xhtml">
 							<ui:param name="bean" value="#{showdocSeduta}"/>
-						</ui:include>					
-						
+						</ui:include>
+
 		</ui:remove>
 					</div>
-	
+
 				</h:panelGroup>
-				
+
 				<!-- INIZIO: hxp-custom-onlyIfDocIsNotVisible -->
 					<h:panelGroup rendered="#{!empty showdocSeduta.doc.non_disponibile.estremi}">
 					<ui:include src="showdoc@docnondisponibile.xhtml">
@@ -142,17 +142,17 @@
 					</ui:include>
 				</h:panelGroup>
 				<!-- FINE: hxp-custom-onlyIfDocIsNotVisible -->
-				
-				<h:inputTextarea value="#{showdocSeduta.xml}" rendered="#{showdocSeduta.debugMode}" styleClass="form-control" rows="10" />	
-				
+
+				<h:inputTextarea value="#{showdocSeduta.xml}" rendered="#{showdocSeduta.debugMode}" styleClass="form-control debug-textarea" rows="10" />
+
 				<!-- contenuto doc: fine -->
 			</div>
-			
+
 		</div>
 		<!-- scheda show: fine -->
-		
+
 		<ui:include src="./lookupSeduta.xhtml"> <ui:param name="pageBean" value="#{showdocSeduta}"/></ui:include>
-		
+
 		<ui:remove>
 			<ui:include src="./postit.xhtml"><ui:param name="pageBean" value="#{docwayPostit}"/></ui:include>
 			<ui:include src="./verificaFirma.xhtml"><ui:param name="pageBean" value="#{docwayVerificaFirma}"/></ui:include>
@@ -167,8 +167,10 @@
 			<ui:include src="./rifintLookup.xhtml"> <ui:param name="pageBean" value="#{rifInt}"/></ui:include>
 			<ui:include src="./show@task@vars.xhtml"><ui:param name="bean" value="#{docwayWfTaskVars}"/></ui:include>
 			<ui:include src="./showPersoneRuolo.xhtml"><ui:param name="bean" value="#{docwayShowPersoneRuolo}"/></ui:include>
+			<ui:include src="./modalePresaInCarico.xhtml"><ui:param name="bean" value="#{showdocSeduta}"/></ui:include>
+			<ui:include src="./modalePersoneIncaricate.xhtml"><ui:param name="bean" value="#{docWayShowPersonePresaInCarico}"/></ui:include>
 		</ui:remove>
-		
+
 	</div>
 </ui:define>
 

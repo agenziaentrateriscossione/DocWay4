@@ -15,7 +15,7 @@
 			<ui:include src="../docway/showtitles@buttonBar.xhtml"><ui:param name="beanTitles" value="#{soginSAPTitles}"/></ui:include>
 			
 			<h:panelGroup rendered="#{!empty soginSAPTitles.oggetto_fasc}" layout="block" styleClass="titles-oggettofascicolo showdoc-section">
-				<div class="title"><h:commandLink action="#{soginSAPTitles.queryFasc}"><h:outputText value="#{soginSAPTitles.oggetto_fasc}" escape="false" /></h:commandLink></div>
+				<div class="title"><h:commandLink action="#{soginSAPTitles.queryFasc}"><h:outputText value="#{soginSAPTitles.oggetto_fasc}" /></h:commandLink></div>
 				<h:panelGroup rendered="#{!empty soginSAPTitles.classif_fasc}">
 					<p>(#{soginSAPTitles.classif_fasc})</p>
 				</h:panelGroup>
@@ -51,7 +51,7 @@
 		
 	</h:panelGroup>
 	
-	<h:inputTextarea value="#{soginSAPTitles.xml}" rendered="#{soginSAPTitles.debugMode}" styleClass="form-control" rows="10" />
+	<h:inputTextarea value="#{soginSAPTitles.xml}" rendered="#{soginSAPTitles.debugMode}" styleClass="form-control debug-textarea" rows="10" />
 </ui:define>
 
 </ui:composition>

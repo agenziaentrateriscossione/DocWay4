@@ -47,7 +47,7 @@
 				<h:panelGroup rendered="#{!bean.customfields.hiddenFields['classificazione'] and !empty bean.doc.minuta.classif.text and (empty hideClassificazione or hideClassificazione ne 'true')}">
 					<dt>#{i18n['dw4.classif_minuta']}</dt>
 					<dd>
-						<h:outputText value="#{bean.doc.minuta.classif.text}" escape="false"><f:converter converterId="ClassifConverter"/></h:outputText>
+						<h:outputText value="#{bean.doc.minuta.classif.text}" ><f:converter converterId="ClassifConverter"/></h:outputText>
 						<h:panelGroup rendered="#{!empty bean.doc.minuta.scarto}">
 							&#160;
 							<h:outputText value="(#{i18n['dw4.scartomsg']} "/>
@@ -95,7 +95,7 @@
 				<h:panelGroup rendered="#{!bean.customfields.hiddenFields['classificazione'] and !empty bean.doc.classif.text and (empty hideClassificazione or hideClassificazione ne 'true')}">
 					<dt>#{i18n['dw4.classif']}</dt>
 					<dd>
-						<h:outputText value="#{bean.doc.classif.text}" escape="false"><f:converter converterId="ClassifConverter"/><f:attribute name="classifFormat" value="#{bean.classifFormat}" /></h:outputText>
+						<h:outputText value="#{bean.doc.classif.text}" ><f:converter converterId="ClassifConverter"/><f:attribute name="classifFormat" value="#{bean.classifFormat}" /></h:outputText>
 						<h:panelGroup rendered="#{!empty bean.doc.scarto}">
 							&#160;
 							<h:outputText value="(#{i18n['dw4.scartomsg']} "/>

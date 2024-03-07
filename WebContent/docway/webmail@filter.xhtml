@@ -98,7 +98,7 @@
 	       		<label for="templateForm:sentDateFrom" class="col-sm-4 control-label"><span>#{i18n['dw4.data_spedizione']} #{i18n['dw4.dal']}</span></label>
 	       		<div class="col-sm-7">
 	       			<h:panelGroup rendered="#{bean.filter.type eq 'sentdate'}">
-	       				<div class="input-group date" data-date-format="dd/mm/yyyy">
+	       				<div class="input-group date free" data-date-format="dd/mm/yyyy">
 							<h:inputText id="sentDateFrom" value="#{bean.filter.from}" styleClass="#{ component.valid ? '' : 'invalidinput' } form-control datepicker">
 								<f:converter converterId="DateConverter"/>
 							</h:inputText>

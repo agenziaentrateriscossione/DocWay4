@@ -26,12 +26,22 @@
 				<span id="iwx-images-der_froms">
 					<ui:repeat var="derFromXwfile" value="#{bean.doc.files}">
 						<h:panelGroup rendered="#{not empty derFromXwfile.der_from and derFromXwfile.extension ne 'txt'}" styleClass="iwx_der_from_image_#{derFromXwfile.der_from} iwx_der_froms" style="#{bean.doc.showIwxSelectedImage ne derFromXwfile.der_from ? 'display:none;' : '' }">
-							<h:commandLink action="#{bean.downloadFileConvertito}" title="#{i18n['dw4.download_documento_convertito']}: #{derFromXwfile.extension}" styleClass="btn btn-default btn-xs">
-								<span class="glyphicon glyphicon-file #{derFromXwfile.extension}"></span> #{fn:toUpperCase(derFromXwfile.extension)}
-								<ui:remove>
-									<span class="filetype #{derFromXwfile.extension} icon" title="#{i18n['dw4.download_documento_convertito']}: #{derFromXwfile.extension}"></span>
-								</ui:remove>
-							</h:commandLink>
+							<h:panelGroup rendered="#{not bean.formsAdapter.funzionalitaDisponibili['watermarkCustom'] or derFromXwfile.extension ne 'pdf'}">
+								<h:commandLink action="#{bean.downloadFileConvertito}" title="#{i18n['dw4.download_documento_convertito']}: #{derFromXwfile.extension}" styleClass="btn btn-default btn-xs">
+									<span class="glyphicon glyphicon-file #{derFromXwfile.extension}"></span>#{fn:toUpperCase(derFromXwfile.extension)}
+								</h:commandLink>
+							</h:panelGroup>
+							<h:panelGroup rendered="#{bean.formsAdapter.funzionalitaDisponibili['watermarkCustom'] and derFromXwfile.extension eq 'pdf'}">
+								<div class="btn-group dropup">
+									<button class="btn btn-default btn-xs dw4-splitted-button dropdown-toggle" type="button" data-toggle="dropdown" title="#{i18n['dw4.download_documento_convertito']}: #{derFromXwfile.extension}">
+										<span class="glyphicon glyphicon-file #{derFromXwfile.extension}"></span>#{fn:toUpperCase(derFromXwfile.extension)} <span class="caret"></span>
+									</button>
+									<ul class="dropdown-menu">
+										<li><h:commandLink action="#{bean.downloadFileConvertito}" title="#{i18n['dw4.download_documento_convertito']}: #{derFromXwfile.extension}" value="#{i18n['dw4.download_documento_convertito']}" styleClass="#{image.name}_btn" /></li>
+										<li><h:commandLink action="#{bean.downloadFileConvertitoCustomWatermark}" title="#{i18n['dw4.download_documento_convertito_conforme']}: #{derFromXwfile.extension}" value="#{i18n['dw4.download_documento_convertito_conforme']}" styleClass="#{image.name}_btn" /></li>
+									</ul>
+								</div>
+							</h:panelGroup>
 						</h:panelGroup>
 					</ui:repeat>
 				</span>
@@ -128,14 +138,14 @@
 		<script type="text/javascript">
 		window.loadIWX = function() {
 			// inizializzazione di iwx con apertura in visualizzazione dell'immagine selezionata
-			initIwxAfterReload('#{facesContext.externalContext.requestContextPath}/fileupload', '#{cookie.JSESSIONID.value}', '#{userBean.login}', '#{userBean.matricola}', '#{bean.formsAdapter.customTupleName}', '#{bean.formsAdapter.db}', resetJobsIwx, 'downloadCurrentImage', null, null, '#{bean.iwxFileTypes}', '#{bean.iwxImageTypes}');
+			initIwxAfterReload("#{facesContext.externalContext.requestContextPath}/fileupload", "#{cookie.JSESSIONID.value}", "#{userBean.login}", "#{userBean.matricola}", "#{bean.formsAdapter.customTupleName}", "#{bean.formsAdapter.db}", resetJobsIwx, "downloadCurrentImage", null, null, "#{bean.iwxFileTypes}", "#{bean.iwxImageTypes}", #{bean.formsAdapter.sizeMaxFile}, #{bean.formsAdapter.sizeMaxImg});
 		}
 		
 		$(window).load(function() {
 			jsf.ajax.addOnEvent(function(data) {
 				if (data.status == 'success') {
 					// inizializzazione di iwx con apertura in visualizzazione dell'immagine selezionata
-					initIwxAfterAjax('#{facesContext.externalContext.requestContextPath}/fileupload', '#{cookie.JSESSIONID.value}', '#{userBean.login}', '#{userBean.matricola}', '#{bean.formsAdapter.customTupleName}', '#{bean.formsAdapter.db}', 'downloadCurrentImage', null, null, '#{bean.iwxFileTypes}', '#{bean.iwxImageTypes}');
+					initIwxAfterAjax("#{facesContext.externalContext.requestContextPath}/fileupload", "#{cookie.JSESSIONID.value}", "#{userBean.login}", "#{userBean.matricola}", "#{bean.formsAdapter.customTupleName}", "#{bean.formsAdapter.db}", "downloadCurrentImage", null, null, "#{bean.iwxFileTypes}", "#{bean.iwxImageTypes}", #{bean.formsAdapter.sizeMaxFile}, #{bean.formsAdapter.sizeMaxImg});
 				}
 			});
 		});

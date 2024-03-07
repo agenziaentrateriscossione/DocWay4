@@ -7,25 +7,14 @@
 	<title>#{i18n['dw4.firma_web_errori_title']}</title>
 	
 	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-	<h:panelGroup rendered="#{fn:containsIgnoreCase(header['User-Agent'], 'Trident/7.0;')}"> <!-- TODO identifica correttamente IE11?  -->
-		<!-- Pare ci sia un bug su IE11 per la quale non funziona la registrazione di funzioni su eventi (addEventListener/attachEvent) -->
-		<meta http-equiv="X-UA-Compatible" content="IE=9" />
-	</h:panelGroup>
-	<h:panelGroup rendered="#{!fn:containsIgnoreCase(header['User-Agent'], 'Trident/7.0;')}">
-		<meta http-equiv="X-UA-Compatible" content="IE=edge" />
-	</h:panelGroup>
-
+	<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+	
 	<!-- javascript -->
 	<script type="text/javascript" src="#{facesContext.externalContext.requestContextPath}/common/js/jquery.js"></script>
 	<script type="text/javascript" src="#{facesContext.externalContext.requestContextPath}/common/js/jquery.formatCurrency-1.4.0.js"></script>
 	<script type="text/javascript" src="#{facesContext.externalContext.requestContextPath}/bootstrap/js/bootstrap.js"></script>
 	<script type="text/javascript" src="#{facesContext.externalContext.requestContextPath}/common/js/bootstrap-datepicker.js"></script>
 	<script type="text/javascript" src="#{facesContext.externalContext.requestContextPath}/common/js/docs.js"></script>
-	<script type="text/javascript" src="#{facesContext.externalContext.requestContextPath}/common/js/iwx.core.js"></script>
-	<script type="text/javascript" src="#{facesContext.externalContext.requestContextPath}/docway/js/iwx.runtime.js"></script>
-	<script type="text/javascript" src="#{facesContext.externalContext.requestContextPath}/docway/js/swfupload/swfupload.js"></script>
-	<script type="text/javascript" src="#{facesContext.externalContext.requestContextPath}/docway/js/swfupload/swfupload.queue.js"></script>
-	<script type="text/javascript" src="#{facesContext.externalContext.requestContextPath}/docway/js/jquery.swfupload.js"></script>
 	<script type="text/javascript" src="#{facesContext.externalContext.requestContextPath}/common/js/common.js"></script>
 	<script type="text/javascript" src="#{facesContext.externalContext.requestContextPath}/docway/js/docway.js"></script>
 

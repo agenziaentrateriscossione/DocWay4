@@ -1,0 +1,16 @@
+@charset "UTF-8";
+
+body {
+	padding: 5px;
+	font-size: 12px;
+}
+
+.ie-warning-message {
+	padding:5px;
+	margin-bottom:10px;
+}
+
+.fileupload-progress {
+	margin-top:3px;
+	margin-bottom:3px;
+}

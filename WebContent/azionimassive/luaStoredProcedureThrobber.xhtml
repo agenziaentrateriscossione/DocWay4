@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" 
+	  xmlns:h="http://java.sun.com/jsf/html" 
+	  xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	  xmlns:ui="http://java.sun.com/jsf/facelets" 
+	  xmlns:f="http://java.sun.com/jsf/core">
+<ui:composition>
+
+	<h:panelGroup rendered="#{luaStoredProcThrobber.active}">
+		<!-- Modal -->
+		<div id="luaStoredProcedureThrobberModal" class="modal fade in" aria-hidden="false" aria-labelledby="luaStoredProcedureThrobberModalLabel" role="dialog" tabindex="-1" style="display: block;">
+		<!--div class="modal fade" id="luaStoredProcedureThrobberModal" tabindex="-1" role="dialog" aria-labelledby="luaStoredProcedureThrobberModalLabel" aria-hidden="true"-->
+			<div class="modal-dialog">
+				<div class="modal-content jsf-modal">
+					<div class="modal-header">
+						<h:commandButton styleClass="close" action="#{luaStoredProcThrobber.close}" value="&#215;" />
+						
+						<h4 class="modal-title" id="luaStoredProcedureThrobberModalLabel">#{luaStoredProcThrobber.title}</h4>
+					</div>
+					<div class="modal-body">
+						
+	        			<div class="well">
+	        				<div class="loadingbar-message loadingbar-startdate"><h:outputText rendered="#{luaStoredProcThrobber.startDate ne ''}" value="job started at #{luaStoredProcThrobber.startDate}"/></div>
+		        			<div class="loadingbar-message loadingbar-status"><h:outputText value="#{luaStoredProcThrobber.status}"/></div>
+		        			<div class="loadingbar-message loadingbar-exceptions"><h:outputText value="#{luaStoredProcThrobber.exceptions}"/></div>
+		        			<div class="loadingbar-message loadingbar-stopdate"><h:outputText rendered="#{luaStoredProcThrobber.endDate ne ''}" value="job completed at #{luaStoredProcThrobber.endDate}"/></div>
+	        			</div>
+	        			
+	        			<h:panelGroup rendered="#{luaStoredProcThrobber.completed}">
+	        				
+	        				<h:panelGroup rendered="#{!empty luaStoredProcThrobber.procFault}" layout="block" styleClass="alert alert-danger">
+        				    	<strong>#{luaStoredProcThrobber.procFault}</strong>
+        				    </h:panelGroup>
+        				    
+        				    <h:panelGroup rendered="#{empty luaStoredProcThrobber.procFault}" layout="block" styleClass="loadingbar-message">
+	        				    <h:panelGroup rendered="#{!empty luaStoredProcThrobber.done}" layout="block" styleClass="loadingbar-message">
+	        				    	#{i18n['dw4.documenti_elaborati']}: <strong>#{luaStoredProcThrobber.done}</strong>
+	        				    </h:panelGroup>
+	        				    <h:panelGroup rendered="#{!empty luaStoredProcThrobber.locked}" layout="block" styleClass="loadingbar-message">
+	        				    	#{i18n['dw4.documenti_bloccati_Falliti']}: <strong>#{luaStoredProcThrobber.locked}</strong>
+	        				    </h:panelGroup>
+	        				    <h:panelGroup rendered="#{!empty luaStoredProcThrobber.failed}" layout="block" styleClass="loadingbar-message">
+	        				    	#{i18n['dw4.documenti_falliti']}: <strong>#{luaStoredProcThrobber.failed}</strong>
+	        				    </h:panelGroup>
+        				    </h:panelGroup>
+        				    
+						</h:panelGroup>
+	        			
+	        			<h:panelGroup rendered="#{!luaStoredProcThrobber.completed}" layout="block" style="margin-top:20px;text-align:center;">
+	        				<h:graphicImage url="/azionimassive/css/images/loader.gif" id="loading-indicator" alt="loading..." />
+	        				<h:panelGroup layout="block" style="margin-top:10px;" >
+	        					<h:outputText value="#{i18n['dw4.attendere_il_completamento_dell_operazione']}" />
+	        				</h:panelGroup>
+	        			</h:panelGroup>
+			        	
+						<h:commandLink style="display:none;" id="refreshLuaStoredProcedureThrobber" action="#{luaStoredProcThrobber.refresh}" >
+	        				<f:ajax execute="@form" render="@form" />
+	        			</h:commandLink>
+						<script type="text/javascript">
+						function refreshLuaStoredProcedureThrobber() {
+							$("#templateForm\\:refreshLuaStoredProcedureThrobber").trigger("click");
+						}
+						
+						var completed = #{luaStoredProcThrobber.completed};
+						if (!completed) {
+							window.setTimeout('refreshLuaStoredProcedureThrobber()',2000);
+						}
+						</script>
+						
+						<h:inputTextarea value="#{luaStoredProcThrobber.xml}" rendered="#{pageBean.debugMode}" styleClass="form-control debug-textarea" rows="10" />
+					</div>
+					<div class="modal-footer">
+						<h:commandButton styleClass="btn btn-default" action="#{luaStoredProcThrobber.close}" value="#{i18n['acl.close']}" />
+					</div>
+				</div>
+			</div>
+		</div>
+		<!--script type="text/javascript">
+		$('#luaStoredProcedureThrobberModal').modal('show');
+		</script-->
+	</h:panelGroup>
+
+</ui:composition>   
+</html>

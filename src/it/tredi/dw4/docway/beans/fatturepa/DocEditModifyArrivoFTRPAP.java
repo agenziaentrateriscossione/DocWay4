@@ -1,5 +1,6 @@
 package it.tredi.dw4.docway.beans.fatturepa;
 
+import it.tredi.dw4.utils.DocWayProperties;
 import it.tredi.dw4.utils.XMLDocumento;
 import it.tredi.dw4.adapters.ErrormsgFormsAdapter;
 import it.tredi.dw4.docway.beans.DocEditModifyArrivo;
@@ -13,8 +14,13 @@ public class DocEditModifyArrivoFTRPAP extends DocEditModifyArrivo {
 	// campi specifici del repertorio di fatturePA passive
 	private FatturaPA fatturaPA = new FatturaPA();
 	
+	// mbernardini 13/01/2017 : abilita/disabilita la modifica (aggiunta/eliminazione) degli allegati della fatturaPA
+	private boolean editAttachments = false;
+	
 	public DocEditModifyArrivoFTRPAP() throws Exception {
 		super();
+		
+		editAttachments = DocWayProperties.readProperty("fatturepa.editAttachments", "no").equalsIgnoreCase("si");
 	}
 	
 	public FatturaPA getFatturaPA() {
@@ -23,6 +29,14 @@ public class DocEditModifyArrivoFTRPAP extends DocEditModifyArrivo {
 
 	public void setFatturaPA(FatturaPA fatturaPA) {
 		this.fatturaPA = fatturaPA;
+	}
+	
+	public boolean isEditAttachments() {
+		return editAttachments;
+	}
+
+	public void setEditAttachments(boolean editAttachments) {
+		this.editAttachments = editAttachments;
 	}
 	
 	public boolean isDocEditModify() {

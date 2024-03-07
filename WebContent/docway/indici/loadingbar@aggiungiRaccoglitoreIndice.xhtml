@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" 
+	  xmlns:h="http://java.sun.com/jsf/html" 
+	  xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	  xmlns:ui="http://java.sun.com/jsf/facelets" 
+	  xmlns:f="http://java.sun.com/jsf/core"
+	  xmlns:p="http://xmlns.jcp.org/jsf/passthrough">
+<ui:composition>
+
+	<h:panelGroup rendered="#{pageBean.loadingbarActive and !pageBean.loadingbar.error and pageBean.action =='aggiungiRaccoglitoreIndice'}">
+		<!-- Modal -->
+		<div id="loadingbarAggiungiRaccoglitoreIndiceModal" class="modal fade in" aria-hidden="false" aria-labelledby="loadingbarAggiungiRaccoglitoreIndiceModalLabel" role="dialog" tabindex="-1" style="display: block;">
+		<!--div class="modal fade" id="loadingbarAggiungiRaccoglitoreIndiceModal" tabindex="-1" role="dialog" aria-labelledby="loadingbarAggiungiRaccoglitoreIndiceModalLabel" aria-hidden="true"-->
+			<div class="modal-dialog modal-lg">
+				<div class="modal-content jsf-modal">
+					<div class="modal-header">
+						<h:commandButton styleClass="close" action="#{docwaymenu.loadDocWayMainPage}" value="&#215;" />
+						
+						<h4 class="modal-title" id="loadingbarAggiungiRaccoglitoreIndiceModalLabel">#{pageBean.loadingbar.title}</h4>
+					</div>
+					<div class="modal-body">
+						
+	        			<div class="well">
+	        				<div class="loadingbar-message loadingbar-startdate"><h:outputText rendered="#{pageBean.loadingbar.startDate ne ''}" value="job started at #{pageBean.loadingbar.startDate}"/></div>
+		        			<div class="loadingbar-message loadingbar-status"><h:outputText value="#{pageBean.loadingbar.status}"/></div>
+		        			<div class="loadingbar-message loadingbar-exceptions"><h:outputText value="#{pageBean.loadingbar.exceptions}"/></div>
+		        			<div class="loadingbar-message loadingbar-progress"><h:outputText value="#{pageBean.loadingbar.progress}"/></div>
+		        			<div class="loadingbar-message loadingbar-stopdate"><h:outputText rendered="#{pageBean.loadingbar.stopDate ne ''}" value="job completed at #{pageBean.loadingbar.stopDate}"/></div>
+	        			</div>
+	        			
+	        			<h:panelGroup rendered="#{!empty pageBean.loadingbar.resoconto.updated || !empty pageBean.loadingbar.resoconto.failed || !empty pageBean.loadingbar.resoconto.created}">
+                            <div class="loadingbar-message">#{i18n['dw4.salvataggi_eseguiti_correttamente']}: <strong>#{!empty pageBean.loadingbar.resoconto.updated ? pageBean.loadingbar.resoconto.updated : pageBean.loadingbar.resoconto.created}</strong></div>
+                            <div class="loadingbar-message">#{i18n['dw4.falliti']}: <strong>#{pageBean.loadingbar.resoconto.failed}</strong></div>
+                            
+                            <h:commandLink id="loadRaccoglitoreBtn" rendered="#{pageBean.loadingbar.completed}" action="#{pageBean.loadShowdocRaccoglitore}" value="#{i18n['dw4.carica_il_raccoglitore']}" styleClass="btn btn-primary" style="margin: 10px 0;" />
+                            
+                            <h:panelGroup rendered="#{fn:length(pageBean.loadingbar.resoconto.historyLoadingbar) > 0}">
+	                            <table class="table table-bordered" style="margin-top:10px;">
+	                            	<thead>
+										<tr>
+											<th style="width:20%;">#{i18n['dw4.ora_inizio']}</th>
+											<th style="width:45%;">#{i18n['dw4.descrizione_attivita']}</th>
+											<th style="width:35%;">#{i18n['dw4.esito']}</th>
+										</tr>
+									</thead>
+									<tbody>
+		                            	<ui:repeat var="history" value="#{pageBean.loadingbar.resoconto.historyLoadingbar}">
+											<tr>
+												<td>#{history.data}&#160;-&#160;#{history.ora}</td>
+												<td>#{history.descr}&#160;</td>
+												<td><span style="font-style:italic;">#{history.esito}</span></td>
+											</tr>
+		    	                        </ui:repeat>
+	    	                        </tbody>
+								</table>
+							</h:panelGroup>
+						</h:panelGroup>
+			        	
+			        	<div style="margin-top:20px;" class="progress">
+  							<div class="progress-bar" role="progressbar" aria-valuenow="#{(pageBean.loadingbar.completed) ? '100' : pageBean.loadingbar.percentage}" aria-valuemin="0" aria-valuemax="100" style="width: #{(pageBean.loadingbar.completed) ? '100' : pageBean.loadingbar.percentage}%;">
+    							<span class="sr-only">#{(pageBean.loadingbar.completed) ? '100' : pageBean.loadingbar.percentage}% Complete</span>
+  							</div>
+						</div>
+						
+						<h:commandLink style="display:none;" id="refreshAggiungiRaccoglitoreIndice" action="#{pageBean.loadingbar.refresh}" >
+	        				<f:ajax execute="@form" render="@form" />
+	        			</h:commandLink>
+						<script type="text/javascript">
+						function refreshAggiungiRaccoglitoreIndice() {
+							if (document.getElementById("templateForm:refreshAggiungiRaccoglitoreIndice")!=null)
+								$("#templateForm\\:refreshAggiungiRaccoglitoreIndice").trigger("click");
+							if (document.getElementById("leftsideContentForm:refreshAggiungiRaccoglitoreIndice")!=null)
+								$("#leftsideContentForm\\:refreshAggiungiRaccoglitoreIndice").trigger("click");
+						}
+						
+						var completed = #{pageBean.loadingbar.completed};
+						if (!completed) {
+							window.setTimeout('refreshAggiungiRaccoglitoreIndice()',2000);
+						}
+						else {
+							$("#progressbar").progressbar(100);
+						}
+						</script>
+						
+						<h:inputTextarea value="#{pageBean.loadingbar.xml}" rendered="#{pageBean.debugMode}" styleClass="form-control debug-textarea" rows="10" />
+					</div>
+					<div class="modal-footer">
+						<h:commandButton styleClass="btn btn-default" action="#{docwaymenu.loadDocWayMainPage}" value="#{i18n['acl.close']}" />
+					</div>
+				</div>
+			</div>
+		</div>
+		<!--script type="text/javascript">
+		$('#loadingbarAggiungiRaccoglitoreIndiceModal').modal('show');
+		</script-->
+	</h:panelGroup>
+
+</ui:composition>   
+</html>

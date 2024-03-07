@@ -1,16 +1,17 @@
 package it.tredi.dw4.docway.beans;
 
-import it.tredi.dw4.utils.XMLDocumento;
+import javax.faces.context.FacesContext;
+
+import org.dom4j.Document;
+
 import it.tredi.dw4.adapters.AdaptersConfigurationLocator;
 import it.tredi.dw4.docway.adapters.DocWayRifIntFormsAdapter;
 import it.tredi.dw4.docway.model.Fascicolo;
 import it.tredi.dw4.docway.model.Rif;
+import it.tredi.dw4.model.XmlEntity;
 import it.tredi.dw4.utils.AppStringPreferenceUtil;
+import it.tredi.dw4.utils.XMLDocumento;
 import it.tredi.dw4.utils.XMLUtil;
-
-import javax.faces.context.FacesContext;
-
-import org.dom4j.Document;
 
 public class DocWayFascRifInt extends DocWayDocedit {
 	private DocWayRifIntFormsAdapter formsAdapter;
@@ -55,6 +56,12 @@ public class DocWayFascRifInt extends DocWayDocedit {
 		String prefCheckboxMail = AppStringPreferenceUtil.getAppStringPreference(this.getAppStringPreferences(), AppStringPreferenceUtil.decodeAppStringPreference("CheckboxEmailNotifica"));
 		if (prefCheckboxMail != null && prefCheckboxMail.toLowerCase().equals("no"))
 			fascicolo.setSendMailRifInterni(false);
+		// ERM012596 - rtirabassi - notifica capillare
+		String prefCheckboxMailDetail = AppStringPreferenceUtil.getAppStringPreference(this.getAppStringPreferences(), AppStringPreferenceUtil.decodeAppStringPreference("CheckboxEmailNotificaCapillare"));
+		if (prefCheckboxMailDetail != null && prefCheckboxMailDetail.toLowerCase().equals("si")) {
+			fascicolo.setSendMailRifInterni(false);
+			fascicolo.setSendMailSelectedRifInterni(true);
+		}
 	}	
 	
 	public DocWayRifIntFormsAdapter getFormsAdapter() {
@@ -137,7 +144,7 @@ public class DocWayFascRifInt extends DocWayDocedit {
 	 */
 	public String confirmAddRPA() throws Exception {
 		// il cambio di RPA sui fascicoli viene eseguito sempre come TRASF // TODO da verificare
-		this.formsAdapter.confirmRifInt(fascicolo.isSendMailRifInterni(), fascicolo.isCheckNomi(), fascicolo.getAssegnazioneTRASFParam());
+		this.formsAdapter.confirmRifInt(fascicolo.isSendMailRifInterni(), fascicolo.isSendMailSelectedRifInterni(), fascicolo.getNotificheCapillariParam(), fascicolo.isCheckNomi(), fascicolo.getAssegnazioneTRASFParam());
 		XMLDocumento response = this.formsAdapter.getDefaultForm().executePOST(getUserBean());
 		if (handleErrorResponse(response)) {
 			formsAdapter.fillFormsFromResponse(formsAdapter.getLastResponse()); //restore delle form
@@ -169,7 +176,7 @@ public class DocWayFascRifInt extends DocWayDocedit {
 	
 	public String confirmAddITF() throws Exception {
 		// su DocWay3 checkNomi viene passato solo in caso di RPA // TODO è corretto
-		this.formsAdapter.confirmRifInt(fascicolo.isSendMailRifInterni(), false, fascicolo.getAssegnazioneITFParam());
+		this.formsAdapter.confirmRifInt(fascicolo.isSendMailRifInterni(), fascicolo.isSendMailSelectedRifInterni(), fascicolo.getNotificheCapillariParam(), false, fascicolo.getAssegnazioneITFParam());
 		XMLDocumento response = this.formsAdapter.getDefaultForm().executePOST(getUserBean());
 		if (handleErrorResponse(response)) {
 			formsAdapter.fillFormsFromResponse(formsAdapter.getLastResponse()); //restore delle form
@@ -192,7 +199,7 @@ public class DocWayFascRifInt extends DocWayDocedit {
 		// mbernardini 09/02/2015 : aggiunta loadingbar in aggiunta CC a fascicolo
 		// verra' attivato il processo di aggiornamento dei CC di tutti i sottofascicoli e documenti
 		// contenuti
-		this.formsAdapter.confirmCConFascicolo(fascicolo.isSendMailRifInterni(), fascicolo.getAssegnazioneCCParam());
+		this.formsAdapter.confirmCConFascicolo(fascicolo.isSendMailRifInterni(), fascicolo.isSendMailSelectedRifInterni(), fascicolo.getNotificheCapillariParam(), fascicolo.getAssegnazioneCCParam());
 		XMLDocumento response = this.formsAdapter.getDefaultForm().executePOST(getUserBean());
 		if (handleErrorResponse(response)) {
 			formsAdapter.fillFormsFromResponse(formsAdapter.getLastResponse()); //restore delle form
@@ -584,6 +591,11 @@ public class DocWayFascRifInt extends DocWayDocedit {
 		Rif rif = (Rif) FacesContext.getCurrentInstance().getExternalContext().getRequestMap().get("rif");
 		if (rif != null)
 			rif.setUfficioCompleto();
+		return null;
+	}
+	
+	@Override
+	public XmlEntity getModel() {
 		return null;
 	}
 

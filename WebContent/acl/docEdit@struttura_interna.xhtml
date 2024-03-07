@@ -20,7 +20,7 @@
 		
 		<h5 class="sub-header">
             <span class="strutture-interne glyphicons-pro"></span>&#160;
-            <h:outputText value="#{i18n['acl.ins_struint']}" escape="false" />
+            <h:outputText value="#{i18n['acl.ins_struint']}" />
         </h5>
         
 		<!-- messages: inizio -->
@@ -136,6 +136,7 @@
 			        	<ui:include src="./websites.xhtml"> <ui:param name="pageBean" value="#{docEditStrutturaInterna.struttura_interna}"/></ui:include>
 					</div> <!-- /fieldset -->
 					
+					
 					<div class="fieldset">
 						<div class="legend">#{i18n['acl.posta_elettronica_certificata']}
 						    <div class="pull-right">
@@ -143,22 +144,7 @@
                             </div>
 						</div>
 						
-						<div class="form-group">
-							<label for="templateForm:strutint_pec_email" class="col-sm-2 control-label">#{i18n['acl.email']}</label>
-							<div class="col-sm-9">
-								<h:inputText id="strutint_pec_email" value="#{docEditStrutturaInterna.struttura_interna.email_certificata.addr}" styleClass="form-control" />
-							</div>
-						</div>
-						<div class="form-group">
-							<label for="templateForm:strutint_pec_login" class="col-sm-2 control-label">#{i18n['acl.login']}</label>
-							<div class="col-sm-4">
-								<h:inputText id="strutint_pec_login" value="#{docEditStrutturaInterna.struttura_interna.email_certificata.login}" styleClass="form-control" />
-							</div>
-							<label for="templateForm:strutint_pec_pwd" class="col-sm-1 control-label">#{i18n['acl.password']}</label>
-							<div class="col-sm-4">
-								<h:inputSecret id="strutint_pec_pwd" value="#{docEditStrutturaInterna.struttura_interna.email_certificata.password}" redisplay="true" styleClass="form-control" />
-							</div>
-						</div>
+						<ui:include src="./editEmailCertificata.xhtml"> <ui:param name="pageBean" value="#{docEditStrutturaInterna.struttura_interna}"/></ui:include>
 					</div> <!-- /fieldset -->
 					
 					<h:panelGroup rendered="#{docEditStrutturaInterna.abilitaFatturePA}" layout="block" styleClass="fieldset">
@@ -240,7 +226,7 @@
 	<ui:include src="./lookup.xhtml"> <ui:param name="pageBean" value="#{docEditStrutturaInterna}"/></ui:include>
 	<ui:include src="./thvincolato.xhtml"> <ui:param name="pageBean" value="#{docEditStrutturaInterna}"/></ui:include>
 	
-	<h:inputTextarea value="#{docEditStrutturaInterna.xml}" rendered="#{docEditStrutturaInterna.debugMode}" styleClass="form-control" rows="10" />
+	<h:inputTextarea value="#{docEditStrutturaInterna.xml}" rendered="#{docEditStrutturaInterna.debugMode}" styleClass="form-control debug-textarea" rows="10" />
 </ui:define>
 
 </ui:composition>    

@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+				xmlns:ui="http://java.sun.com/jsf/facelets"
+				xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+				template="../#{showdocRaccoglitoreINDICE.pageTemplate}"
+				xmlns:h="http://java.sun.com/jsf/html"
+				xmlns:f="http://java.sun.com/jsf/core"
+				xmlns:p="http://java.sun.com/jsf/passthrough">
+
+	<ui:define name="content">
+
+		<h:panelGroup rendered="#{docwayHome.showdocSectionCollapsable}">
+			<script id="showdoc-section-script" type="text/javascript" open-default="#{docwayHome.showdocSectionDefault}" src="#{facesContext.externalContext.requestContextPath}/docway/js/compress-showdoc-section.js?ver=#{docwayHome.versioneDocway}"></script>
+		</h:panelGroup>
+
+		<div class="raccoglitore indice">
+			<ui:remove>
+				<h5 class="sub-header">#{i18n['dw4.view_raccoglitore']}</h5>
+			</ui:remove>
+
+			<!-- toolbar: inizio -->
+			<ui:include src="../buttonBarRacc.xhtml">
+				<ui:param name="bean" value="#{showdocRaccoglitoreINDICE}" />
+			</ui:include>
+
+			<h:panelGroup rendered="#{!empty showdocRaccoglitoreINDICE.doc2attachment or showdocRaccoglitoreINDICE.formsAdapter.funzionalitaDisponibili['copertinaByVoce'] or showdocRaccoglitoreINDICE.formsAdapter.funzionalitaDisponibili['modifica']}" layout="block" styleClass="fieldsetButtons">
+				<div class="btn-toolbar hidden-print" role="toolbar">
+					<div class="btn-group">
+						<h:outputLink
+								rendered="#{!showdocRaccoglitoreINDICE.formsAdapter.funzionalitaDisponibili['copertinaByVoce'] and !empty showdocRaccoglitoreINDICE.doc2attachment}"
+								value="#{facesContext.externalContext.requestContextPath}/doc2attachment?physDoc=#{showdocRaccoglitoreINDICE.formsAdapter.physDoc}&amp;selid=#{showdocRaccoglitoreINDICE.formsAdapter.selid}&amp;pos=#{showdocRaccoglitoreINDICE.formsAdapter.pos}&amp;template=#{showdocRaccoglitoreINDICE.doc2attachment}&amp;db=#{showdocRaccoglitoreINDICE.formsAdapter.db}&amp;_cd=#{showdocRaccoglitoreINDICE.formsAdapter.urlEncodedCustomTupleName}"
+								title="#{i18n['dw4.mostra_copertina']}"
+								styleClass="btn btn-primary"
+								target="_blank">
+							#{i18n['dw4.copertina']}
+						</h:outputLink>
+						<h:commandLink rendered="#{showdocRaccoglitoreINDICE.formsAdapter.funzionalitaDisponibili['copertinaByVoce']}" action="#{showdocRaccoglitoreINDICE.loadCopertina}" title="#{i18n['dw4.mostra_copertina']}" class="btn btn-primary">
+							#{i18n['dw4.copertina']}
+						</h:commandLink>
+
+						<h:panelGroup rendered="#{showdocRaccoglitoreINDICE.formsAdapter.funzionalitaDisponibili['modifica']}">
+							<div class="btn-group">
+								<button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown">
+									#{i18n['dw4.raccind_aggrega_docs']} <span class="caret"></span>
+								</button>
+								<ul class="dropdown-menu">
+									<li>
+										<h:commandLink action="#{showdocRaccoglitoreINDICE.openAggregaDocs}"><f:ajax execute="@form" render="@form" />#{i18n['dw4.raccind_anteprima_aggregato']}</h:commandLink>
+									</li>
+									<h:panelGroup rendered="#{showdocRaccoglitoreINDICE.formsAdapter.funzionalitaDisponibili['enableUfficioRuolo']}">
+										<li>
+											<h:commandLink action="#{showdocRaccoglitoreINDICE.openStampaUfficioRuolo}"><f:ajax execute="@form" render="@form" />#{i18n['dw4.genera_stampa_ufficio_ruolo']}</h:commandLink>
+										</li>
+									</h:panelGroup>
+									<li class="divider"></li>
+									<li>
+										<h:commandLink action="#{showdocRaccoglitoreINDICE.generaAggregatoDocs}" onclick="return confirmGeneraAggregatoDocs();"><f:ajax execute="@form" render="@form" />#{i18n['dw4.raccind_genera_aggregato_e_chiudi_raccoglitore']}</h:commandLink>
+									</li>
+								</ul>
+								<script type="text/javascript">
+									function confirmGeneraAggregatoDocs() {
+										var available = #{showdocRaccoglitoreINDICE.storeAggregatoEnabled};
+										if (available) {
+											if (!owmConfirm("#{i18n['dw4.al_termine_dell_operazione_il_raccoglitore_verra_chiuso_e_non_sara_piu_possibile_modificare_alcuna_voce_al_suo_interno_Proseguire']}"))
+												return false;
+											else
+												return true;
+										}
+										else {
+											var raccChiuso = #{showdocRaccoglitoreINDICE.raccoglitore.stato eq 'chiuso'};
+											if (raccChiuso)
+												alert("#{i18n['dw4.non_e_possibile_generare_il_documento_di_output_perche_il_raccoglitore_e_chiuso']}");
+											else
+												alert("#{i18n['dw4.non_e_possibile_salvare_l_aggregato_perche_ci_sono_documenti_dell_indice_che_risultano_incompleti']}");
+											return false;
+										}
+									}
+								</script>
+							</div>
+
+							<h:commandLink action="#{showdocRaccoglitoreINDICE.scaricaIndice}" class="btn btn-primary">
+								#{i18n['dw4.scarica_indice']}
+							</h:commandLink>
+						</h:panelGroup>
+					</div>
+				</div>
+			</h:panelGroup>
+			<!-- toolbar: fine -->
+
+			<!-- scheda show: inizio -->
+			<div class="contenuto-doc clearfix">
+				<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+					<!-- titolo del raccoglitore: inizio -->
+					<div class="showdoc-title doc-tipo-raccoglitore clearfix">
+						<div class="row">
+						<span style="margin-left: 20px;">
+							<span style="font-size: 12px;" class="doc-tipo-raccoglitore glyphicon glyphicon-inbox #{(!empty showdocRaccoglitoreINDICE.raccoglitore.codiceRaccoglitoreCustom) ? showdocRaccoglitoreINDICE.raccoglitore.codiceRaccoglitoreCustom : ''}"></span>
+						</span>
+							<span>
+							<span class="showdoc-first-row-title-small">
+								<h:outputText value="#{showdocRaccoglitoreINDICE.raccoglitore.creazione.dateLong}"></h:outputText>
+							</span> -
+							<span class="showdoc-second-row-title-small" title="#{showdocRaccoglitoreINDICE.raccoglitore.oggetto}">
+								#{showdocRaccoglitoreINDICE.raccoglitore.oggetto}
+							</span>
+						</span>
+						</div>
+					</div>
+					<!-- titolo del raccoglitore: fine -->
+
+					<div id="fixedshowdoc" class="fixed-showdoc">
+						<!-- dati del raccoglitore: inizio -->
+						<div class="showdoc-section">
+							<div class="title">
+								#{i18n['dw4.datiracc']}
+
+								<div class="pull-right">
+									<span class="glyphicon glyphicon-inbox" title="#{i18n['dw4.datiracc']}"></span>
+								</div>
+
+							</div>
+							<dl class="dl-horizontal" id="dl_dati_raccoglitore">
+								<dt>#{i18n['dw4.object']}</dt>
+								<dd>#{showdocRaccoglitoreINDICE.raccoglitore.oggetto}</dd>
+								<dt>#{i18n['dw4.opendate']}</dt>
+								<dd><h:outputText value="#{showdocRaccoglitoreINDICE.raccoglitore.creazione.dateLong}" />&#160;</dd>
+								<h:panelGroup rendered="#{showdocRaccoglitoreINDICE.raccoglitore.stato == 'chiuso'}">
+									<dt>#{i18n['dw4.closedate']}</dt>
+									<dd>
+										<h:outputText value="#{showdocRaccoglitoreINDICE.raccoglitore.data_chiusura}">
+											<f:converter converterId="DateConverter"/>
+										</h:outputText>
+									</dd>
+								</h:panelGroup>
+								<dt>#{i18n['acl.type']}</dt>
+								<dd>#{showdocRaccoglitoreINDICE.raccoglitore.pubblico ? i18n['dw4.pubblico'] : i18n['dw4.privato']}</dd>
+								<h:panelGroup rendered="#{showdocRaccoglitoreINDICE.formsAdapter.funzionalitaDisponibili['enableRaccoglitori'] and fn:length(showdocRaccoglitoreINDICE.raccoglitore.contenuto_in) > 0}">
+									<dt>#{i18n['dw4.contenutoin']}</dt>
+									<dd>
+										<ui:repeat var="contenuto" value="#{showdocRaccoglitoreINDICE.raccoglitore.contenuto_in}">
+											<h:panelGroup rendered="#{!empty contenuto.cod}">
+												<h:commandLink value="#{contenuto.text}" action="#{showdocRaccoglitoreINDICE.navigateToRac}" />
+												&#160;
+												<h:panelGroup rendered="#{showdocRaccoglitoreINDICE.formsAdapter.funzionalitaDisponibili['raccoglitorigestione'] and showdocRaccoglitoreINDICE.formsAdapter.funzionalitaDisponibili['disableSegnatura']}">
+												<span class="btn-group">
+													<h:commandLink action="#{showdocRaccoglitoreINDICE.removeFromRac}" title="#{i18n['dw4.removeFromRac']}" styleClass="btn btn-default btn-xs">
+														<span class="glyphicon glyphicon-remove"></span>
+													</h:commandLink>
+												</span>
+												</h:panelGroup>
+												<br/>
+											</h:panelGroup>
+										</ui:repeat>
+									</dd>
+								</h:panelGroup>
+								<h:panelGroup rendered="#{showdocRaccoglitoreINDICE.formsAdapter.funzionalitaDisponibili['enableRaccoglitori'] and fn:length(showdocRaccoglitoreINDICE.raccoglitore.link_interni) > 0}">
+									<dt>#{i18n['dw4.collegamenti']}</dt>
+									<dd>
+										<ui:repeat var="link_interno" value="#{showdocRaccoglitoreINDICE.raccoglitore.link_interni}">
+											<h:panelGroup rendered="#{!empty link_interno.href}">
+												<h:commandLink action="#{showdocRaccoglitoreINDICE.navigateInternalLink}">
+													#{link_interno.text}
+												</h:commandLink>
+												&#160;
+												<h:panelGroup rendered="#{link_interno.remove =='true'}">
+												<span class="btn-group">
+													<h:commandLink action="#{showdocRaccoglitoreINDICE.removeInternalLink}" title="#{i18n['dw4.removeLink']}" onclick="if (!owmConfirm('#{i18n['dw4.rimuovi_collegamento_procedere_con_l_operazione']}')) return false;" styleClass="btn btn-default btn-xs">
+														<span class="glyphicon glyphicon-remove"></span>
+													</h:commandLink>
+												</span>
+												</h:panelGroup>
+												<br/>
+											</h:panelGroup>
+										</ui:repeat>
+									</dd>
+								</h:panelGroup>
+							</dl>
+						</div>
+						<!-- dati del raccoglitore: fine -->
+
+						<ui:include src="../../customfields/showdoc@customfields.xhtml">
+							<ui:param name="bean" value="#{showdocRaccoglitoreINDICE}"/>
+						</ui:include>
+
+						<!-- vista raccoglitori di tipo indice: inizio -->
+						<h:panelGroup id="widgetIndice" rendered="#{showdocRaccoglitoreINDICE.raccoglitore.numeroDocContenuti != 0}" layout="block" styleClass="widget-box #{showdocRaccoglitoreINDICE.divFullscreen ? 'fullscreen-container' : ''}">
+							<div class="row" style="height: 100%;">
+								<div class="col-md-6" style="height: 100%;">
+									<h:panelGroup id="widgetDocContenuti" layout="block" styleClass="widget-box div-doc-contenuti #{showdocRaccoglitoreINDICE.divFullscreen ? 'fullscreen-height' : ''}">
+										<div class="panel panel-default panel-racc-indice" style="height: 100%;">
+											<div class="panel-heading clearfix indice-div-header">
+												<h3 class="panel-title col-xs-5">#{i18n['dw4.doc_contenuti']}</h3>
+
+												<!-- pulsante fullscreen -->
+												<h:commandLink rendered="#{!showdocRaccoglitoreINDICE.divFullscreen}" action="#{showdocRaccoglitoreINDICE.openDivFullscreen}" class="btn btn-xs btn-primary pull-right margin-left-10" title="#{i18n['dw4.apri_fullscreen']}">
+													<f:ajax execute="@form" render="templateForm:widgetIndice" />
+													<span class="glyphicon glyphicon-resize-full"></span>
+												</h:commandLink>
+												<h:commandLink rendered="#{showdocRaccoglitoreINDICE.divFullscreen}" action="#{showdocRaccoglitoreINDICE.closeDivFullscreen}" class="btn btn-xs btn-primary pull-right margin-left-10" title="#{i18n['dw4.chiudi_fullscreen']}">
+													<f:ajax execute="@form" render="templateForm:widgetIndice" />
+													<span class="glyphicon glyphicon-resize-small"></span>
+												</h:commandLink>
+
+												<!-- pulsante elimina selezionati -->
+												<h:commandLink onclick="saveScrollbarPosition()" action="#{showdocRaccoglitoreINDICE.deleteSelected}" class="btn btn-xs btn-primary pull-right margin-left-10" title="#{i18n['dw4.elimina_selezionati']}">
+													<f:ajax execute="@form" render="@form" />
+													<span class="glyphicons-pro bin"></span>
+												</h:commandLink>
+
+												<!-- pulsante imposta tutti come completati -->
+												<h:commandLink onclick="saveScrollbarPosition()" action="#{showdocRaccoglitoreINDICE.setAllReady}" class="btn btn-xs btn-primary pull-right margin-left-10" title="#{i18n['dw4.setta_tutti_completati']}">
+													<f:ajax execute="@form" render="@form" />
+													<span class="glyphicons-pro book"></span>
+												</h:commandLink>
+
+												<!-- pulsante imposta selezionati come completati -->
+												<h:commandLink onclick="saveScrollbarPosition()" action="#{showdocRaccoglitoreINDICE.setSelectedReady}" class="btn btn-xs btn-primary pull-right margin-left-10" title="#{i18n['dw4.setta_selezionati_completati']}">
+													<f:ajax execute="@form" render="@form" />
+													<span class="glyphicons-pro log-book"></span>
+												</h:commandLink>
+
+												<!-- pulsante seleziona voce in preview -->
+												<button type="button" onclick="scrollToSelected()" class="btn btn-xs btn-primary pull-right margin-left-10" title="#{i18n['dw4.vai_al_documento_selezionato']}">
+													<span class="glyphicon glyphicon-eye-open"></span>
+												</button>
+
+												<!-- approva / annulla modifiche -->
+												<h:panelGroup rendered="#{showdocRaccoglitoreINDICE.showApplyModificheContenuto}" layout="block" styleClass="pull-right">
+													<h:commandLink onclick="saveScrollbarPosition()" action="#{showdocRaccoglitoreINDICE.saveOrdineVoci}" class="btn btn-xs btn-primary uppercase" value="#{i18n['dw4.applica_modifiche']}">
+														<f:ajax execute="@form" render="templateForm:widgetDocContenuti" />
+													</h:commandLink>
+													&#160;
+													<h:commandLink onclick="saveScrollbarPosition()" action="#{showdocRaccoglitoreINDICE._reloadWithoutNavigationRule}" class="btn btn-xs btn-default uppercase" value="#{i18n['acl.cancel']}">
+														<f:ajax execute="@form" render="templateForm:widgetDocContenuti" />
+													</h:commandLink>
+												</h:panelGroup>
+											</div>
+											<div class="panel-body indice-div-scroll" id="documenti-contenuti-scroll">
+
+												<ul class="nav nav-pills nav-stacked drag-and-drop-sortable">
+													<ui:repeat var="doc" value="#{showdocRaccoglitoreINDICE.raccoglitore.rif_contenuto}" varStatus="status">
+														<li class="doc-raccoglitore" level="#{doc.level}">
+															<div class="row doc-in-racc-item #{(showdocRaccoglitoreINDICE.previewedDocNrecord == doc.cod) ? 'voce-selected' : ''}">
+																<div class="#{(showdocRaccoglitoreINDICE.raccoglitore.stato=='aperto' and showdocRaccoglitoreINDICE.formsAdapter.funzionalitaDisponibili['modifica']) ? 'col-xs-3' : 'col-xs-1'}">
+																<span class="nowrap-racc-item">
+
+																	<h:commandLink action="#{showdocRaccoglitoreINDICE.toggleDocSelection}" onclick="saveScrollbarPosition()">
+																		<f:ajax execute="@form" render="templateForm:widgetDocContenuti templateForm:errormsg" />
+																		<span class="badge #{doc.selected ? 'yellow' : (doc.state eq 'ready' ? (doc.hasContent ? 'green' : 'blue') : 'grey')}" title="#{(doc.state eq 'ready') ? (doc.hasContent ? i18n['dw4.documento_completato_con_allegato'] : i18n['dw4.documento_completato_senza_allegato']) : i18n['dw4.documento_in_lavorazione']}">
+																			<i class="#{doc.selected ? 'glyphicon glyphicon-check' : (doc.state eq 'ready' ? 'glyphicon glyphicon-ok' : 'glyphicon glyphicon-ban-circle')}"></i>
+																		</span>
+																	</h:commandLink>
+
+																	<h:panelGroup rendered="#{showdocRaccoglitoreINDICE.raccoglitore.stato=='aperto' and showdocRaccoglitoreINDICE.formsAdapter.funzionalitaDisponibili['modifica']}" layout="block" styleClass="btn-group doc-in-racc-item-actions">
+
+																		<h:commandLink onclick="saveScrollbarPosition()" action="#{showdocRaccoglitoreINDICE.moveDownVoce}" title="#{i18n['dw4.sposta_giu']}" styleClass="btn btn-xs btn-default #{(status.index == fn:length(showdocRaccoglitoreINDICE.raccoglitore.rif_contenuto)-1) ? 'disabled' : ''}">
+																			<f:ajax execute="@form" render="templateForm:widgetDocContenuti templateForm:errormsg" />
+																			<span class="glyphicon glyphicon-chevron-down"></span>
+																		</h:commandLink>
+																		<h:commandLink onclick="saveScrollbarPosition()" action="#{showdocRaccoglitoreINDICE.moveUpVoce}" title="#{i18n['dw4.sposta_su']}" styleClass="btn btn-xs btn-default #{(status.index == 0) ? 'disabled' : ''}">
+																			<f:ajax execute="@form" render="templateForm:widgetDocContenuti templateForm:errormsg" />
+																			<span class="glyphicon glyphicon-chevron-up"></span>
+																		</h:commandLink>
+																		<div class="btn-group">
+																			<button class="btn btn-default btn-xs dropdown-toggle" type="button" data-toggle="dropdown" title="#{i18['dw4.altre_azioni']}" onclick="changeDrop($(this).parent())">
+																				<span class="glyphicon glyphicon-cog"></span> <span class="caret"></span>
+																			</button>
+																			<ul class="dropdown-menu">
+																				<li class="#{(showdocRaccoglitoreINDICE.showApplyModificheContenuto) ? 'disabled' : ''}">
+																					<h:commandLink onclick="saveScrollbarPosition()" action="#{showdocRaccoglitoreINDICE.addDocBefore}" value="#{i18n['dw4.aggiungi_voce_prima']}" disabled="#{showdocRaccoglitoreINDICE.showApplyModificheContenuto}">
+																						<f:ajax execute="@form" render="@form" />
+																					</h:commandLink>
+																				</li>
+																				<li class="#{(showdocRaccoglitoreINDICE.showApplyModificheContenuto or doc.level >= 3) ? 'disabled' : ''}">
+																					<h:commandLink onclick="saveScrollbarPosition()" action="#{showdocRaccoglitoreINDICE.addDocInside}" value="#{i18n['dw4.aggiungi_voce_dentro']}" disabled="#{showdocRaccoglitoreINDICE.showApplyModificheContenuto or doc.level >= 3}">
+																						<f:ajax execute="@form" render="@form" />
+																					</h:commandLink>
+																				</li>
+																				<li class="#{(showdocRaccoglitoreINDICE.showApplyModificheContenuto) ? 'disabled' : ''}">
+																					<h:commandLink onclick="saveScrollbarPosition()" action="#{showdocRaccoglitoreINDICE.addDocAfter}" value="#{i18n['dw4.aggiungi_voce_dopo']}" disabled="#{showdocRaccoglitoreINDICE.showApplyModificheContenuto}">
+																						<f:ajax execute="@form" render="@form" />
+																					</h:commandLink>
+																				</li>
+																				<li class="divider"></li>
+																				<li class="#{(showdocRaccoglitoreINDICE.showApplyModificheContenuto) ? 'disabled' : ''}">
+																					<h:commandLink onclick="saveScrollbarPosition()" action="#{showdocRaccoglitoreINDICE.addDocsBefore}" value="#{i18n['dw4.aggiungi_voci_prima']}" disabled="#{showdocRaccoglitoreINDICE.showApplyModificheContenuto}">
+																						<f:ajax execute="@form" render="@form" />
+																					</h:commandLink>
+																				</li>
+																				<li class="#{(showdocRaccoglitoreINDICE.showApplyModificheContenuto or doc.level >= 3) ? 'disabled' : ''}">
+																					<h:commandLink onclick="saveScrollbarPosition()" action="#{showdocRaccoglitoreINDICE.addDocsInside}" value="#{i18n['dw4.aggiungi_voci_dentro']}" disabled="#{showdocRaccoglitoreINDICE.showApplyModificheContenuto or doc.level >= 3}">
+																						<f:ajax execute="@form" render="@form" />
+																					</h:commandLink>
+																				</li>
+																				<li class="#{(showdocRaccoglitoreINDICE.showApplyModificheContenuto) ? 'disabled' : ''}">
+																					<h:commandLink onclick="saveScrollbarPosition()" action="#{showdocRaccoglitoreINDICE.addDocsAfter}" value="#{i18n['dw4.aggiungi_voci_dopo']}" disabled="#{showdocRaccoglitoreINDICE.showApplyModificheContenuto}">
+																						<f:ajax execute="@form" render="@form" />
+																					</h:commandLink>
+																				</li>
+																				<li class="divider"></li>
+																				<li class="#{(showdocRaccoglitoreINDICE.showApplyModificheContenuto or (doc.state eq 'ready')) ? 'disabled' : ''}">
+																					<h:commandLink onclick="saveScrollbarPosition()" action="#{showdocRaccoglitoreINDICE.setReady}" value="#{i18n['dw4.imposta_come_completato']}" disabled="#{showdocRaccoglitoreINDICE.showApplyModificheContenuto or (doc.state eq 'ready')}">
+																						<f:ajax execute="@form" render="@form" />
+																					</h:commandLink>
+																				</li>
+																				<li class="divider"></li>
+																				<li class="#{(status.index == 0) or ((doc.level - 1) == showdocRaccoglitoreINDICE.raccoglitore.rif_contenuto[status.index - 1].level) or doc.level == 3 ? 'disabled' : ''}">
+																					<h:commandLink onclick="saveScrollbarPosition()" action="#{showdocRaccoglitoreINDICE.moveInVoce}" value="#{i18n['dw4.aumenta_livello']}" disabled="#{(status.index == 0) or ((doc.level - 1) == showdocRaccoglitoreINDICE.raccoglitore.rif_contenuto[status.index - 1].level) or doc.level == 3}">
+																						<f:ajax execute="@form" render="@form" />
+																					</h:commandLink>
+																				</li>
+																				<li class="#{(doc.level == 0) ? 'disabled' : ''}">
+																					<h:commandLink onclick="saveScrollbarPosition()" action="#{showdocRaccoglitoreINDICE.moveOutVoce}" value="#{i18n['dw4.diminuisci_livello']}" disabled="#{(doc.level == 0)}">
+																						<f:ajax execute="@form" render="@form" />
+																					</h:commandLink>
+																				</li>
+																				<li class="divider"></li>
+																				<li class="#{showdocRaccoglitoreINDICE.showApplyModificheContenuto ? 'disabled' : ''}">
+																					<h:commandLink onclick="saveScrollbarPosition()" action="#{showdocRaccoglitoreINDICE.removeDoc}" value="#{i18n['dw4.elimina_voce']}" disabled="#{showdocRaccoglitoreINDICE.showApplyModificheContenuto}">
+																						<f:ajax execute="@form" render="@form" />
+																					</h:commandLink>
+																				</li>
+																			</ul>
+																		</div>
+																	</h:panelGroup>
+																</span>
+																</div>
+																<div class="#{(showdocRaccoglitoreINDICE.raccoglitore.stato=='aperto' and showdocRaccoglitoreINDICE.formsAdapter.funzionalitaDisponibili['modifica']) ? 'col-xs-9' : 'col-xs-11'}">
+																	<h:commandLink class="voce-indice-link" title="#{doc.text}" action="#{showdocRaccoglitoreINDICE.previewDoc}" onclick="saveScrollbarPosition()">
+																		<span class="#{(empty doc.level or doc.level == 0) ? '' : ('level-').concat(doc.level)}"></span>
+																		<h:outputText value="#{doc.text}" styleClass="#{(empty doc.level or doc.level == 0) ? 'voce-indice-uppercase' : 'voce-indice-level-'.concat(doc.level)}" />
+																		<f:ajax execute="@form" render="@form" />
+																	</h:commandLink>
+																</div>
+															</div>
+														</li>
+													</ui:repeat>
+												</ul>
+
+												<h:commandLink action="#{showdocRaccoglitoreINDICE.updateListDragAndDrop}" value="prova" id="commandLinkDragAndDrop" class="hidden">
+													<h:inputHidden id="docIndex" value="#{showdocRaccoglitoreINDICE.docIndex}" />
+													<h:inputHidden id="destinationIndex" value="#{showdocRaccoglitoreINDICE.destinationIndex}" />
+													<h:inputHidden id="afterLevel" value="#{showdocRaccoglitoreINDICE.afterLevel}" />
+													<f:ajax execute="@form" render="@form" />
+												</h:commandLink>
+
+											</div>
+										</div>
+									</h:panelGroup>
+								</div>
+								<div class="col-md-6">
+									<h:panelGroup id="widgetPreview" layout="block" styleClass="widget-box">
+										<!-- preview di un documento contenuto nel raccoglitore -->
+										<ui:include src="./showdoc@raccoglitore@previewDoc.xhtml">
+											<ui:param name="containerBean" value="#{showdocRaccoglitoreINDICE}"/>
+											<ui:param name="bean" value="#{showdocPreviewDoc}"/>
+										</ui:include>
+									</h:panelGroup>
+								</div>
+							</div>
+						</h:panelGroup>
+						<!-- vista raccoglitori di tipo indice: fine -->
+
+						<ui:include src="../showdoc@raccoglitore@responsabilita.xhtml">
+							<ui:param name="bean" value="#{showdocRaccoglitoreINDICE}"/>
+						</ui:include>
+
+						<h:panelGroup rendered="#{!empty showdocRaccoglitoreINDICE.raccoglitore.note.text}">
+							<!-- dati altro: inizio -->
+							<div class="showdoc-section">
+								<div class="title">
+									#{i18n['dw4.other']}
+
+									<div class="pull-right">
+										<span class="glyphicon glyphicon-list-alt" title="#{i18n['dw4.other']}"></span>
+									</div>
+								</div>
+
+								<dl class="dl-horizontal">
+									<h:panelGroup rendered="#{!empty showdocRaccoglitoreINDICE.raccoglitore.note.text}">
+										<dt>#{i18n['acl.notes']}</dt>
+										<dd><pre>#{showdocRaccoglitoreINDICE.raccoglitore.note.text}</pre></dd>
+									</h:panelGroup>
+								</dl>
+							</div>
+							<!-- dati altro: fine -->
+						</h:panelGroup>
+
+						<ui:include src="../history.xhtml">
+							<ui:param name="bean" value="#{showdocRaccoglitoreINDICE.raccoglitore}"/>
+							<ui:param name="viewbean" value="#{showdocRaccoglitoreINDICE}"/>
+							<ui:param name="visible" value="true" />
+						</ui:include>
+
+					</div>
+
+				</div>
+			</div>
+			<!-- scheda show: fine -->
+
+			<!-- modal conferma eliminazione voce: inizio -->
+			<h:panelGroup layout="block" id="modalRemoveDoc">
+				<h:panelGroup rendered="#{showdocRaccoglitoreINDICE.showRemoveDocDialog}">
+					<div id="removeDocModal" class="modal fade in" aria-hidden="false" aria-labelledby="removeDocModalLabel" role="dialog" tabindex="-1" style="display: block;">
+						<div class="modal-dialog">
+							<div class="modal-content jsf-modal">
+								<ui:remove>
+									<div class="modal-header">
+										<h:commandLink styleClass="close" action="#{showdocRaccoglitoreINDICE.cancelRemoveDoc}" value="&#215;">
+											<f:ajax execute="@form" render="templateForm:widgetDocContenuti templateForm:modalRemoveDoc templateForm:errormsg" />
+										</h:commandLink>
+										<h4 class="modal-title">#{i18n['dw4.eliminazione_voce']}</h4>
+									</div>
+								</ui:remove>
+								<div class="modal-body" style="padding-bottom: 0;">
+									<p style="margin-bottom: 20px;">#{i18n['dw4.confermare_l_eliminazione_della_voce_dall_indice']}</p>
+									<p>
+										<label for="templateForm:raccIndiceRemoveDoc" class="normal-weight-text">
+										<span class="popoveritem" data-toggle="popover" data-placement="bottom" data-trigger="hover" data-content="#{i18n['dw4.selezionare_il_check_per_eliminare_definitivamente_dall_archivio_il_documento_selezionato']}" data-original-title="" title="">
+											<span class="uppercase">#{i18n['dw4.cancellazione_documento']}</span>
+											<span class="glyphicon glyphicon-info-sign popoveritem" />
+										</span>
+										</label>
+										&#160;
+										<h:selectBooleanCheckbox value="#{showdocRaccoglitoreINDICE.removeDoc}" id="raccIndiceRemoveDoc" styleClass="#{ component.valid ? '' : 'invalidinput' }" />
+									</p>
+								</div>
+								<div class="modal-footer">
+									<h:commandLink onclick="saveScrollbarPosition()" action="#{showdocRaccoglitoreINDICE.confirmRemoveDoc}" styleClass="btn btn-default openwaitmsg" value="#{i18n['acl.confirm']}">
+										<f:ajax execute="@form" render="@form" />
+									</h:commandLink>
+									<h:commandLink onclick="saveScrollbarPosition()" styleClass="btn btn-default" action="#{showdocRaccoglitoreINDICE.cancelRemoveDoc}"  value="#{i18n['acl.cancel']}">
+										<f:ajax execute="@form" render="@form" />
+									</h:commandLink>
+								</div>
+							</div><!-- /.modal-content -->
+						</div><!-- /.modal-dialog -->
+					</div><!-- /.modal -->
+				</h:panelGroup>
+			</h:panelGroup>
+			<!-- modal conferma eliminazione voce: fine -->
+
+			<ui:include src="../rifinterni@racc@RPA.xhtml"><ui:param name="bean" value="#{rifIntRacc}"/></ui:include>
+			<ui:include src="../rifinterni@racc@CC.xhtml">
+				<ui:param name="bean" value="#{rifIntRacc}"/>
+				<ui:param name="customLabel" value="#{i18n['dw4.assegna_visibilita_cc_diritti_internvento']}"/>
+			</ui:include>
+			<ui:include src="../loadingbar@assegnazioneCCracc.xhtml"><ui:param name="pageBean" value="#{rifIntRacc}"/></ui:include>
+			<ui:include src="../loadingbar@aggiornamentoCCracc.xhtml"><ui:param name="pageBean" value="#{showdocRaccoglitoreINDICE}"/></ui:include>
+			<ui:include src="../lookup.xhtml"> <ui:param name="pageBean" value="#{rifIntRacc}"/></ui:include>
+			<ui:include src="../rifintLookup.xhtml"> <ui:param name="pageBean" value="#{rifIntRacc}"/></ui:include>
+			<ui:include src="../showPersoneRuolo.xhtml"><ui:param name="bean" value="#{docwayShowPersoneRuolo}"/></ui:include>
+			<ui:include src="../loadingbar@ir.xhtml"><ui:param name="pageBean" value="#{showdocRaccoglitoreINDICE}"/></ui:include>
+			<ui:include src="./docPreview@editData.xhtml"><ui:param name="pageBean" value="#{docEditPreviewDoc}"/></ui:include>
+			<ui:include src="./docPreview@importFromWeb.xhtml"><ui:param name="pageBean" value="#{showdocPreviewDoc}"/></ui:include>
+			<ui:include src="./raccindice_response@openNewDoc.xhtml"><ui:param name="pageBean" value="#{raccNewDoc}"/></ui:include>
+			<ui:include src="./raccindice@aggregaDocs.xhtml"></ui:include>
+			<ui:include src="./loadingbar@mergeDocs.xhtml"><ui:param name="pageBean" value="#{showdocRaccoglitoreINDICE}"/></ui:include>
+			<ui:include src="./loadingbar@setAllReadyDocs.xhtml"><ui:param name="pageBean" value="#{showdocRaccoglitoreINDICE}"/></ui:include>
+			<ui:include src="./loadingbar@massiveSaveDocs.xhtml"><ui:param name="pageBean" value="#{showdocRaccoglitoreINDICE}"/></ui:include>
+			<ui:include src="./loadingbar@deleteAllDocs.xhtml"><ui:param name="pageBean" value="#{showdocRaccoglitoreINDICE}"/></ui:include>
+			<ui:include src="./loadingbar@ripristinaRaccoglitoreIndice.xhtml"><ui:param name="pageBean" value="#{showdocRaccoglitoreINDICE}"/></ui:include>
+
+			<!-- input hidden per override stili visualizzazione TinyMCE -->
+			<input type="hidden" id="overrideTinyMceCss" value="corte/tinyMCEindici.css" />
+
+			<h:inputTextarea value="#{showdocRaccoglitoreINDICE.xml}" rendered="#{showdocRaccoglitoreINDICE.debugMode}" styleClass="form-control debug-textarea" rows="10" />
+
+			<script type="text/javascript">
+				/*<![CDATA[*/
+
+				function saveScrollbarPosition() {
+					setScrollBarPosition("#documenti-contenuti-scroll");
+				}
+
+				//funzione che applica la classe per apertura del menù contestuale in dropdown o dropup
+				function changeDrop(elem) {
+					var row = $(elem).closest("li.doc-raccoglitore");
+					if(checkInView(row)) {
+						$(elem).removeClass("dropup");
+					}
+					else {
+						$(elem).addClass("dropup");
+					}
+				}
+
+				//funzione per decidere se il menù deve essere aperto verso l'alto o verso il basso
+				//true = dropdown, false = dropup
+				//la variabile canBeUpdrop serve per vedere se il menù ha abbastanza spazio per essere aperto verso l'alto
+				//senza andare in overflow (che lo renderebbe inutilizzabile, al contrario della situazione dropdown)
+				function checkInView(elem) {
+					var container = $("#documenti-contenuti-scroll");
+					var contHeight = container.outerHeight();
+					var contTop = container.scrollTop();
+					var contHalf = contHeight / 2;
+					var elemTop = $(elem).offset().top - container.offset().top;
+					var canBeUpdrop = (elemTop - 300) >= 0;
+					if((contHalf > elemTop) || !canBeUpdrop) {
+						return true;
+					}
+					else if((contHalf <= elemTop) && canBeUpdrop){
+						return false;
+					}
+				}
+
+				/*]]>*/
+			</script>
+
+		</div>
+
+		<ui:fragment rendered="#{showdocRaccoglitoreINDICE.close}">
+			<script type="text/javascript">
+				window.opener.$('#templateForm\\:reloadPage').trigger("click");
+				self.close();
+			</script>
+		</ui:fragment>
+
+	</ui:define>
+
+</ui:composition>

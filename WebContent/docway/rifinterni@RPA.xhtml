@@ -23,10 +23,19 @@
 						<div class="modal-body">
 							
 							<div id="rpa_Fields">
+								<h:panelGroup rendered="#{!bean.doc.sendMailSelectedRifInterni}">
+									<div class="form-group">
+										<label for="templateForm:rpa_sendMailRifInterniCheck" class="col-sm-2 control-label">#{i18n['dw4.invia_email_di_notifica']}</label>
+										<div class="col-sm-1">
+											<h:selectBooleanCheckbox value="#{bean.doc.sendMailRifInterni}" id="rpa_sendMailRifInterniCheck" styleClass="#{ component.valid ? '' : 'invalidinput' }" />
+										</div>
+									</div>
+								</h:panelGroup>
+								
 								<div class="form-group">
-									<label for="templateForm:rpa_sendMailRifInterniCheck" class="col-sm-2 control-label">#{i18n['dw4.invia_email_di_notifica']}</label>
+									<label for="templateForm:rpa_controllaNomiCheck" class="col-sm-2 control-label">#{i18n['dw4.controlla_variazione_nome_ufficio_persona']}</label>
 									<div class="col-sm-1">
-										<h:selectBooleanCheckbox value="#{bean.doc.sendMailRifInterni}" id="rpa_sendMailRifInterniCheck" styleClass="#{ component.valid ? '' : 'invalidinput' }"  />
+										<h:selectBooleanCheckbox value="#{bean.doc.checkNomi}" id="rpa_controllaNomiCheck" />
 									</div>
 								</div>
 								
@@ -37,7 +46,18 @@
 					        		<ui:param name="pageBean" value="#{bean}" />
 					        		<ui:param name="rifintBean" value="#{bean.doc.assegnazioneRPA}" />
 					        		<ui:param name="refresh" value="@form"/>
+					        		<ui:param name="sendMailSelectedRifInterni" value="#{bean.doc.sendMailSelectedRifInterni}"/>
 					        	</ui:include>
+					        	
+					        	<h:panelGroup rendered="#{bean.overrideLivelloVisibilitaNeeded}">
+									<div class="form-group">
+										<div class="col-xs-offset-1 col-xs-10">
+											<div class="alert alert-danger" role="alert">
+												#{bean.infoMessageLivelloVisibilitaUff}
+											</div>
+										</div>
+									</div>
+								</h:panelGroup>
 					        	
 					        	<h:panelGroup rendered="#{bean.fromShowTitles}">
 					        		<h:inputHidden id="trasferMinuta" value="#{bean.trasferisciMinuta}" />

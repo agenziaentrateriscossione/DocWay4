@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" 
+	  xmlns:h="http://java.sun.com/jsf/html" 
+	  xmlns:ui="http://java.sun.com/jsf/facelets" 
+	  xmlns:f="http://java.sun.com/jsf/core">
+<ui:composition>
+
+	<h:panelGroup id="emailAddressSelInvioTelematico" rendered="#{pageBean.visible}">
+		<!-- Modal -->
+		<div id="emailAddressSelInvioTelematicoModal" class="modal fade in" aria-hidden="false" aria-labelledby="emailAddressSelInvioTelematicoModalLabel" role="dialog" tabindex="-1" style="display: block;">
+			<div class="modal-dialog">
+				<div class="modal-content jsf-modal">
+					<div class="modal-header">
+						<h:commandLink styleClass="close" action="#{pageBean.close}" value="&#215;">
+	                    	<f:ajax render="@form"/>
+	                   	</h:commandLink>
+						
+						<h4 class="modal-title" id="emailAddressSelInvioTelematicoModalLabel">#{i18n['dw4.indirizzo_pec_mittente']}</h4>
+					</div>
+					<div class="modal-body">
+					
+						<div class="alert alert-info">
+							#{i18n['dw4.selezionare_l_indirizzo_pec_da_utilizzare_come_mittente_della_mail']}
+						</div>
+						
+						<fieldset>
+							<div class="form-group">
+								<div class="col-sm-12">
+									<h:selectOneMenu value="#{pageBean.selectedEmail}" styleClass="form-control">
+										<f:selectItems value="#{pageBean.addresses}" var="address" itemValue="#{address}" itemLabel="#{address}"></f:selectItems>
+									</h:selectOneMenu>
+								</div>
+							</div>
+						</fieldset>
+						
+					</div>
+					<div class="modal-footer">
+						<h:commandLink action="#{pageBean.confirmEmailAddress}" styleClass="btn btn-primary openwaitmsg" value="#{i18n['dw4.conferma']}">
+							<f:ajax execute="@form" render="@form"/>
+						</h:commandLink>
+						<h:commandLink styleClass="btn btn-default" action="#{pageBean.close}" value="#{i18n['acl.close']}">
+	                    	<f:ajax execute="@form" render="@form"/>
+	                   	</h:commandLink>
+					</div>
+				</div>
+			</div>
+		</div>
+	</h:panelGroup>
+	
+</ui:composition>   
+</html>

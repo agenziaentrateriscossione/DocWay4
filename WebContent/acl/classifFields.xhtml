@@ -40,7 +40,7 @@
 				</div>
 				
 				  	<div class="#{ (readOnlyConservazione eq 'false' or beanDoc.scarto ne '') ? 'col-sm-4' : 'col-sm-7' }">
-				  		<p class="form-control-static"><strong><h:outputText id="#{id}_output" value="#{beanDoc.classif.text_ro}" escape="false" /></strong></p>
+				  		<p class="form-control-static"><strong><h:outputText id="#{id}_output" value="#{beanDoc.classif.text_ro}" /></strong></p>
 						<h:inputHidden id="#{id}_text" value="#{beanDoc.classif.text}" />
 						<h:inputHidden id="#{id}_cod" value="#{beanDoc.classif.cod}" />
 					</div>

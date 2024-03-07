@@ -1,0 +1,42 @@
+
+.navbar-nav > li > a {
+  padding-top: 5px;
+  padding-bottom: 5px;
+}
+
+.sidebar {
+  top: 83px;
+}
+
+.main {
+  top: 33px;
+}
+
+.navbar-menu-icon {
+  font-size: 17px;
+}
+
+@media screen and (max-width: 988px) {
+  .main {
+    top: 48px;
+  }
+
+  .navbar-brand {
+    padding: 14px 15px;
+    height: 30px;
+    line-height: normal;
+  }
+
+  .navbar-toggle {
+    padding: 5px 7px;
+  }
+
+  .navbar-form {
+    margin: 0;
+    border: 0;
+  }
+
+  .resizescreen-logo .application-logo {
+    height: 30px;
+  }
+}

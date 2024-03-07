@@ -8,16 +8,16 @@
 
 <ui:define name="content">
 	<div class="offerta">
-		
+
 		<ui:remove>
 			<h5 class="sub-header">#{i18n['dw4.view_offerta']}</h5>
 		</ui:remove>
-	
+
 		<!-- toolbar: inizio -->
 		<ui:include src="./buttonBar.xhtml">
 			<ui:param name="bean" value="#{showdocPartenzaOFF}"/>
 		</ui:include>
-		
+
 		<h:panelGroup rendered="#{!showdocPartenzaOFF.doc.cestino and showdocPartenzaOFF.formsAdapter.funzionalitaDisponibili['ripetinuovo']}" layout="block" styleClass="fieldsetButtons">
 			<div class="btn-toolbar hidden-print" role="toolbar">
 				<div class="btn-group">
@@ -26,99 +26,103 @@
 			</div>
 		</h:panelGroup>
 		<!-- toolbar: fine -->
-	
-	
+
+
 		<!-- scheda show: inizio -->
 		<div class="contenuto-doc row clearfix">
 			<h:panelGroup rendered="#{!showdocPartenzaOFF.popupPage}">
 				<div class="col-xs-12 col-sm-2 col-md-2 col-lg-2 col-sm-push-10 col-md-push-10 col-lg-push-10 text-right">
 					<!-- azioni rapide: inizio -->
-					
+
 					<ui:include src="./smartActions.xhtml">
 						<ui:param name="bean" value="#{showdocPartenzaOFF}"/>
 					</ui:include>
-					
+
 					<!-- azioni rapide: fine -->
 				</div>
 			</h:panelGroup>
 			<div class="col-xs-12 #{(showdocPartenzaOFF.popupPage) ? 'col-sm-12 col-md-12 col-lg-12' : 'col-sm-10 col-md-10 col-lg-10 col-sm-pull-2 col-md-pull-2 col-lg-pull-2'}">
 				<!-- contenuto doc: inizio -->
-				
+
 				<h:panelGroup rendered="#{empty showdocPartenzaOFF.doc.non_disponibile.estremi}">
 					<ui:include src="./showdoc@title.xhtml">
 						<ui:param name="doc" value="#{showdocPartenzaOFF.doc}"/>
 						<ui:param name="icon" value="glyphicons-pro euro offerta" />
 					</ui:include>
-					
+
 					<ui:include src="./showdoc@annullato.xhtml"><ui:param name="bean" value="#{showdocPartenzaOFF}"/></ui:include>
 					<ui:include src="./showdoc@conservazione.xhtml"><ui:param name="bean" value="#{showdocPartenzaOFF}"/></ui:include>
-					
+
 					<div id="fixedshowdoc" class="fixed-showdoc">
 						<ui:include src="./showdoc@statidoc.xhtml">
 							<ui:param name="bean" value="#{showdocPartenzaOFF}"/>
 						</ui:include>
-						
+
 						<ui:include src="./showdoc@datidoc.xhtml">
 							<ui:param name="bean" value="#{showdocPartenzaOFF}"/>
 						</ui:include>
-						
+
 						<ui:include src="./showdoc@datiarchivio.xhtml">
 							<ui:param name="bean" value="#{showdocPartenzaOFF}"/>
 						</ui:include>
-						
+
 						<ui:include src="./aspects.xhtml">
 							<ui:param name="bean" value="#{showdocPartenzaOFF}"/>
 						</ui:include>
-						
+
 						<ui:include src="./showdoc@datiOrdine.xhtml">
 							<ui:param name="bean" value="#{showdocPartenzaOFF}" />
 							<ui:param name="titoloBlocco" value="#{i18n['dw4.informazioni_dell_offerta']}" />
 							<ui:param name="titoloTotale" value="#{i18n['dw4.totale_offerta']}" />
 			        	</ui:include>
-						
+
+			        	<ui:include src="../customfields/showdoc@customfields.xhtml">
+							<ui:param name="bean" value="#{showdocPartenzaOFF}"/>
+			        	</ui:include>
+
 						<ui:include src="./showdoc@responsabilita.xhtml">
 							<ui:param name="bean" value="#{showdocPartenzaOFF}"/>
 						</ui:include>
-						
+
 						<ui:include src="./showdoc@xwfiles.xhtml">
 							<ui:param name="bean" value="#{showdocPartenzaOFF}"/>
 						</ui:include>
-						
+
 						<ui:include src="./showdoc@workflow.xhtml">
 							<ui:param name="bean" value="#{showdocPartenzaOFF}"/>
 						</ui:include>
-						
+
 						<ui:include src="./showdoc@postit.xhtml">
 							<ui:param name="bean" value="#{showdocPartenzaOFF}"/>
 						</ui:include>
-						
+
 						<ui:include src="./showdoc@datialtro.xhtml">
 							<ui:param name="bean" value="#{showdocPartenzaOFF}"/>
-						</ui:include>					
-						
+						</ui:include>
+
 						<ui:include src="./history.xhtml">
 							<ui:param name="bean" value="#{showdocPartenzaOFF.doc}"/>
 							<ui:param name="viewbean" value="#{showdocPartenzaOFF}"/>
 							<ui:param name="visible" value="#{showdocPartenzaOFF.formsAdapter.funzionalitaDisponibili['showHistory']}" />
 						</ui:include>
 					</div>
-					
+
 				</h:panelGroup>
 				<h:panelGroup rendered="#{!empty showdocPartenzaOFF.doc.non_disponibile.estremi}">
-				
+
 					<ui:include src="showdoc@docnondisponibile.xhtml">
 						<ui:param name="bean" value="#{showdocPartenzaOFF}"/>
 					</ui:include>
-					
+
 				</h:panelGroup>
-				
-				<h:inputTextarea value="#{showdocPartenzaOFF.xml}" rendered="#{showdocPartenzaOFF.debugMode}" styleClass="form-control" rows="10" />	
-				
+
+				<h:inputTextarea value="#{showdocPartenzaOFF.xml}" rendered="#{showdocPartenzaOFF.debugMode}" styleClass="form-control debug-textarea" rows="10" />
+
 				<!-- contenuto doc: fine -->
 			</div>
 		</div>
 		<!-- scheda show: fine -->
-		
+
 		<ui:include src="./postit.xhtml"><ui:param name="pageBean" value="#{docwayPostit}"/></ui:include>
 		<ui:include src="./verificaFirma.xhtml"><ui:param name="pageBean" value="#{docwayVerificaFirma}"/></ui:include>
 		<ui:include src="./annullamentoDoc.xhtml"><ui:param name="pageBean" value="#{docwayAnnullamentoDoc}"/></ui:include>
@@ -132,7 +136,10 @@
 		<ui:include src="./rifintLookup.xhtml"> <ui:param name="pageBean" value="#{rifInt}"/></ui:include>
 		<ui:include src="./show@task@vars.xhtml"><ui:param name="bean" value="#{docwayWfTaskVars}"/></ui:include>
 		<ui:include src="./showPersoneRuolo.xhtml"><ui:param name="bean" value="#{docwayShowPersoneRuolo}"/></ui:include>
-		
+		<ui:include src="./modalePresaInCarico.xhtml"><ui:param name="bean" value="#{showdocPartenzaOFF}"/></ui:include>
+		<ui:include src="./modalePersoneIncaricate.xhtml"><ui:param name="bean" value="#{docWayShowPersonePresaInCarico}"/></ui:include>
+		<ui:include src="../customfields/customFields@editPopup.xhtml"><ui:param name="pageBean" value="#{docEditCustomFields}"/></ui:include>
+
 	</div>
 </ui:define>
 

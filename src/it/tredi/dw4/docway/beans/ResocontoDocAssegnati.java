@@ -1,6 +1,9 @@
 package it.tredi.dw4.docway.beans;
 
-import it.tredi.dw4.utils.XMLDocumento;
+import javax.faces.context.FacesContext;
+
+import org.dom4j.Document;
+
 import it.tredi.dw4.adapters.AdaptersConfigurationLocator;
 import it.tredi.dw4.adapters.DocEditFormsAdapter;
 import it.tredi.dw4.adapters.ErrormsgFormsAdapter;
@@ -9,12 +12,10 @@ import it.tredi.dw4.docway.model.Doc;
 import it.tredi.dw4.docway.model.Email;
 import it.tredi.dw4.docway.model.EmailRecipient;
 import it.tredi.dw4.i18n.I18N;
+import it.tredi.dw4.model.XmlEntity;
 import it.tredi.dw4.utils.StringUtil;
+import it.tredi.dw4.utils.XMLDocumento;
 import it.tredi.dw4.utils.XMLUtil;
-
-import javax.faces.context.FacesContext;
-
-import org.dom4j.Document;
 
 public class ResocontoDocAssegnati extends DocWayDocedit {
 	private DocDocWayDocEditFormsAdapter formsAdapter;
@@ -396,6 +397,11 @@ public class ResocontoDocAssegnati extends DocWayDocedit {
 						" ; .destinatario_est[" + num + "].email=xml,/persona_esterna/recapito/email/@addr" +
 						" ; .destinatario_est[" + num + "].full_email=xml,/persona_esterna/@cognome xml,/persona_esterna/@nome xml,/persona_esterna/recapito/email/@addr";
 		return clearField(campi, email);
+	}
+	
+	@Override
+	public XmlEntity getModel() {
+		return null;
 	}
 	
 }

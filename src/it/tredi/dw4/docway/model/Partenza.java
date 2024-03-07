@@ -1,7 +1,11 @@
 package it.tredi.dw4.docway.model;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 
+import it.tredi.dw4.utils.DocWayProperties;
+import it.tredi.dw4.utils.XMLUtil;
 import org.dom4j.Document;
 
 import it.tredi.dw4.model.XmlEntity;
@@ -9,9 +13,26 @@ import it.tredi.dw4.utils.Const;
 
 public class Partenza extends Doc {
 
+	private boolean hideDestinatari = false;
+
 	@Override
 	public XmlEntity init(Document dom) {
 		super.init(dom, Const.DOCWAY_TIPOLOGIA_PARTENZA);
+
+		// repertori partenza senza destinatari
+		String codiceRep;
+		if (nrecord.equals(".")) {
+			// caso inserimento
+			codiceRep = XMLUtil.parseStrictAttribute(dom, "/response/@codice_rep", "");
+		} else {
+			// caso modifica
+			codiceRep = repertorio.getCod();
+		}
+		if (!codiceRep.isEmpty()) {
+			List<String> repCodsWithoutDest = Arrays.asList(DocWayProperties.readProperty("repertoriPartenzaSenzaDestinatari", "").split(","));
+			hideDestinatari = repCodsWithoutDest.stream().anyMatch(cod -> cod.equalsIgnoreCase(codiceRep));
+		}
+
 		return null;
 	}
 	
@@ -50,4 +71,11 @@ public class Partenza extends Doc {
     	return params;
 	}
 
+	public boolean isHideDestinatari() {
+		return hideDestinatari;
+	}
+
+	public void setHideDestinatari(boolean hideDestinatari) {
+		this.hideDestinatari = hideDestinatari;
+	}
 }

@@ -277,6 +277,14 @@
 									</span>
 								</div>
 							</div>
+							
+							<c:if test="#{!empty queryVarieFPN.currentCustomFieldSection and queryVarieFPN.currentCustomFieldSection.contains('_')}">
+								<hr/>
+								<ui:include src="../../customfields/query@customfields.xhtml">
+									<ui:param name="key" value="#{queryVarieFPN.currentCustomFieldSection}" />
+									<ui:param name="bean" value="#{queryVarieFPN}"/>
+					        	</ui:include>
+							</c:if>
 						</h:panelGroup>
 					</div>
 				</h:panelGroup>
@@ -308,7 +316,7 @@
 		});
 		</script>
 
-		<h:inputTextarea value="#{queryVarieFPN.xml}" rendered="#{queryVarieFPN.debugMode}" styleClass="form-control" rows="10" />
+		<h:inputTextarea value="#{queryVarieFPN.xml}" rendered="#{queryVarieFPN.debugMode}" styleClass="form-control debug-textarea" rows="10" />
 	</div>
 	
 	<ui:include src="../showindex.xhtml"><ui:param name="pageBean" value="#{queryVarieFPN}"/></ui:include>

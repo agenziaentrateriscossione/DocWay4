@@ -1,7 +1,8 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml" 
-	  xmlns:h="http://java.sun.com/jsf/html" 
-	  xmlns:ui="http://java.sun.com/jsf/facelets" 
+<html xmlns="http://www.w3.org/1999/xhtml"
+	  xmlns:h="http://java.sun.com/jsf/html"
+	  xmlns:ui="http://java.sun.com/jsf/facelets"
+	  xmlns:c="http://java.sun.com/jsp/jstl/core"
 	  xmlns:f="http://java.sun.com/jsf/core">
 <ui:composition>
 
@@ -9,22 +10,22 @@
 		<h:panelGroup id="postit" rendered="#{pageBean.visible}">
 			<!-- Modal -->
 			<div id="postitModal" class="modal fade in" aria-hidden="false" aria-labelledby="postitModalLabel" role="dialog" tabindex="-1" style="display: block;">
-			<!--div class="modal fade" id="postitModal" tabindex="-1" role="dialog" aria-labelledby="postitModalLabel" aria-hidden="true"-->
+				<!--div class="modal fade" id="postitModal" tabindex="-1" role="dialog" aria-labelledby="postitModalLabel" aria-hidden="true"-->
 				<div class="modal-dialog">
 					<div class="modal-content jsf-modal">
 						<div class="modal-header">
-							<h:commandLink class="close" action="#{pageBean.clearDocument}" value="&#215;">
-		                    	<f:ajax render="annotazione"/>
-		                   	</h:commandLink>
-							
+							<h:commandLink styleClass="close" action="#{pageBean.clearDocument}" value="&#215;">
+								<f:ajax render="annotazione"/>
+							</h:commandLink>
+
 							<h4 class="modal-title" id="postitModalLabel">#{i18n['dw4.annotazione']}</h4>
 						</div>
 						<div class="modal-body">
-						
+
 							<h:panelGroup rendered="#{not empty facesContext.messageList}" layout="block" styleClass="alert alert-danger">
 								<h:messages styleClass="" id="validationMessegesPostit" />
 							</h:panelGroup>
-						
+
 							<fieldset>
 								<div class="form-group">
 									<label class="col-sm-2 control-label">&#160;</label>
@@ -39,17 +40,124 @@
 										<h:inputTextarea id="annotazione_text" value="#{pageBean.postit.text}" rows="4" cols="120" styleClass="#{ component.valid ? '' : 'invalidinput' } form-control" />
 									</div>
 								</div>
+								<!-- sezione allegati annotazione -->
+								<h:panelGroup rendered="#{pageBean.abilitaFiles}">
+
+									<div class="form-group">
+										<label class="col-sm-2 control-label">#{i18n['dw4.file']}</label>
+										<div class="col-sm-9 check-selection">
+											<h:inputHidden id="nFileId_postit" value="#{pageBean.xwFileIdsAttached}" />
+											<h:inputHidden id="nFileName_postit" value="#{pageBean.xwFileNamesAttached}" />
+											<h:inputHidden id="nFileTitle_postit" value="#{pageBean.xwFileTitlesAttached}" />
+											<h:commandLink id="addFilesButton_postit" action="#{pageBean.addFiles}" style="display:none;">
+												<f:ajax execute="@form" render=":templateForm:annotazione :templateForm:errormsg" />
+											</h:commandLink>
+										</div>
+									</div>
+									<c:forEach var="file" items="#{pageBean.files}" varStatus="indice">
+										<div class="form-group">
+											<label class="col-sm-2 control-label">#{i18n['acl.title']}</label>
+											<div class="col-sm-10">
+												<h:inputHidden id="xwFiles_#{indice.index}_fileName_postit" value="#{file.name}" />
+												<h:inputHidden id="xwFiles_#{indice.index}_xwayId_postit" value="#{file.xwayId}" />
+												<h:inputHidden id="xwFiles_#{indice.index}_iwxGuId_postit" value="#{file.iwxGuId}" />
+
+												<div class="input-group">
+													<h:inputText id="xwFiles_#{indice.index}_fileTitle_postit" value="#{file.title}" styleClass="#{ component.valid ? '' : 'invalidinput' } form-control" />
+													<div class="input-group-btn">
+														<h:outputLink rendered="#{file.xwayId ne ''}" onclick="alert('#{i18n['dw4.apertura_del_file_non_consentita_su_file_appena_caricati']}'); return false;" onkeypress="alert('#{i18n['dw4.apertura_del_file_non_consentita_su_file_appena_caricati']}'); return false;" title="#{i18n['dw4.apri_il_file']}" styleClass="btn btn-default disabled">
+															<span class="glyphicon glyphicon-download-alt"></span>
+														</h:outputLink>
+														<h:outputLink rendered="#{file.xwayId eq '' and file.name ne ''}" value="#{facesContext.externalContext.requestContextPath}/filedownload?name=#{file.urlEncodedName}&amp;title=#{file.urlEncodedTitle}&amp;mode=inline&amp;db=#{bean.formsAdapter.db}&amp;_cd=#{bean.formsAdapter.urlEncodedCustomTupleName}&amp;physDoc=#{bean.formsAdapter.physDoc}&amp;selid=#{bean.formsAdapter.selid}&amp;pos=#{bean.formsAdapter.pos}" title="#{i18n['dw4.apri_il_file']}" styleClass="btn btn-default" target="_blank">
+															<span class="glyphicon glyphicon-download-alt"></span>
+														</h:outputLink>
+
+														<h:commandLink rendered="#{!file.readonly}" action="#{pageBean.deleteXwFile(indice.index)}" title="#{i18n['dw4.elimina_istanza']}" styleClass="btn btn-default #{!(indice.index &lt; fn:length(pageBean.files)-1) ? 'disabled' : ''}">
+															<f:ajax execute="@form" render=":templateForm:annotazione :templateForm:errormsg"/>
+															<span class="glyphicon glyphicon-minus"></span>
+														</h:commandLink>
+														<h:commandLink rendered="#{file.readonly}" onclick="return false;" onkeypress="return false;" title="#{i18n['dw4.elimina_istanza']}" styleClass="btn btn-default disabled">
+															<f:ajax execute="@form" render=":templateForm:annotazione :templateForm:errormsg"/>
+															<span class="glyphicon glyphicon-minus"></span>
+														</h:commandLink>
+														<h:commandLink action="#{pageBean.moveUpXwFile(indice.index)}" title="#{i18n['acl.up']}" styleClass="btn btn-default #{!(indice.index > 0 and indice.index != fn:length(pageBean.files)-1) ? 'disabled' : ''}">
+															<f:ajax execute="@form" render=":templateForm:annotazione :templateForm:errormsg"/>
+															<span class="glyphicon glyphicon-chevron-up"></span>
+														</h:commandLink>
+														<h:commandLink action="#{pageBean.moveDownXwFile(indice.index)}" title="#{i18n['acl.down']}" styleClass="btn btn-default #{!(indice.index &lt; fn:length(pageBean.files)-2) ? 'disabled' : ''}">
+															<f:ajax execute="@form" render=":templateForm:annotazione :templateForm:errormsg"/>
+															<span class="glyphicon glyphicon-chevron-down"></span>
+														</h:commandLink>
+
+														<h:panelGroup rendered="#{indice.index == fn:length(pageBean.files)-1}">
+															<h:commandLink onclick="return addDocDragAndDrop();" styleClass="btn btn-default sfogliaButton">#{i18n['dw4.sfoglia']}</h:commandLink>
+															<script type="text/javascript">
+																function addDocDragAndDrop() {
+																	$('#dropzoneFiles').contents().find('#fileupload').trigger('click');
+																	return false;
+																}
+															</script>
+														</h:panelGroup>
+													</div>
+												</div>
+											</div>
+										</div>
+									</c:forEach>
+									<h:panelGroup layout="block" styleClass="form-group">
+										<label class="col-sm-2 control-label">#{i18n['dw4.drag_and_drop']}</label>
+										<div class="col-sm-10">
+											<iframe id="dropzoneFiles" class="dropzone-iframe dropzone-files form-control" src="#{facesContext.externalContext.requestContextPath}/docway/dropzoneFileUpload.jsf"></iframe>
+											<script type="text/javascript">
+												var dadFilesTypes = "#{pageBean.docInformaticiFileTypes}";
+												var dadMaxFileSize = #{pageBean.formsAdapter.sizeMaxFile};
+
+												function updateFilesFromDragAndDrop(dadFilesIds, dadFilesNames) {
+													if (dadFilesIds &amp;&amp; dadFilesNames) {
+														$('#templateForm\\:nFileId_postit').val(dadFilesIds);
+														$('#templateForm\\:nFileName_postit').val(dadFilesNames);
+														$('#templateForm\\:nFileTitle_postit').val(dadFilesNames);
+
+														$('#templateForm\\:addFilesButton_postit').trigger('click');
+													}
+													else {
+														hideOpenwaitmsg();
+													}
+												}
+											</script>
+										</div>
+									</h:panelGroup>
+									<script type="text/javascript">
+										var docInformaticiUploadUrl = "#{facesContext.externalContext.requestContextPath}/fileupload";
+										var docInformaticiFileLimit = #{pageBean.formsAdapter.sizeMaxFile}; // dim massima files, recuperarla da file di properties
+										//var docInformaticiFileDescription = "#{i18n['dw4.all_files']}";
+										var docInformaticiFileDescription = "#{pageBean.docInformaticiFileDescription}";
+										//var docInformaticiFileTypes = "*.*";
+										var docInformaticiFileTypes = "#{pageBean.docInformaticiFileTypes}";
+
+										window.loadSWFUpload = function() {
+											initSWFU(docInformaticiUploadUrl, "doc", "#{userBean.login}", "#{userBean.matricola}", "#{pageBean.formsAdapter.customTupleName}", "#{pageBean.formsAdapter.db}", docInformaticiFileLimit, '1', docInformaticiFileDescription, docInformaticiFileTypes, "_postit");
+										}
+
+										$(window).load(function() {
+											jsf.ajax.addOnEvent(function(data) {
+												if (data.status == 'success') {
+													initSWFU(docInformaticiUploadUrl, "doc", "#{userBean.login}", "#{userBean.matricola}", "#{pageBean.formsAdapter.customTupleName}", "#{pageBean.formsAdapter.db}", docInformaticiFileLimit, '1', docInformaticiFileDescription, docInformaticiFileTypes, "_postit");
+												}
+											});
+										});
+									</script>
+								</h:panelGroup>
 							</fieldset>
-							
+
 						</div>
 						<div class="modal-footer">
 							<h:commandLink action="#{pageBean.confirmPostit}" styleClass="btn btn-primary openwaitmsg" value="#{i18n['acl.save']}">
 								<f:ajax execute="@form" render="@form"/>
 							</h:commandLink>
-							
+
 							<h:commandLink styleClass="btn btn-default" action="#{pageBean.clearDocument}"  value="#{i18n['acl.close']}">
-		                    	<f:ajax render="annotazione"/>
-		                   	</h:commandLink>
+								<f:ajax render="annotazione"/>
+							</h:commandLink>
 						</div>
 					</div>
 				</div>
@@ -60,5 +168,5 @@
 		</h:panelGroup>
 	</h:panelGroup>
 
-</ui:composition>   
+</ui:composition>
 </html>

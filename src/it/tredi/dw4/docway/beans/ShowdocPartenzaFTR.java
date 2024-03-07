@@ -5,6 +5,7 @@ import it.tredi.dw4.adapters.AdaptersConfigurationLocator;
 import it.tredi.dw4.docway.doc.adapters.DocDocWayDocumentFormsAdapter;
 import it.tredi.dw4.docway.model.custom.Fattura;
 
+import javax.faces.context.FacesContext;
 import javax.faces.event.ComponentSystemEvent;
 
 import org.dom4j.Document;
@@ -30,7 +31,7 @@ public class ShowdocPartenzaFTR extends ShowdocDoc {
 	
 	@Override
 	public void reload() throws Exception {
-		super._reload("showdoc@partenza@FTR");
+		super._reload(FacesContext.getCurrentInstance().getExternalContext().getRequestContextPath() + "/docway/showdoc@partenza@FTR");
 	}
 	
 	@Override

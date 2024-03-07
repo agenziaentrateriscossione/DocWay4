@@ -105,6 +105,7 @@ public class HierBrowserFormsAdapter extends FormsAdapter {
 		defaultForm.addParam("xverb", "@hierBrowser");
 		defaultForm.addParam("pos", String.valueOf((Integer.valueOf(nDoc) -1)));
 		defaultForm.addParam("selid", "");
+		defaultForm.addParam("auditVisualizzazione", "true");
 	}
 	
 	/**

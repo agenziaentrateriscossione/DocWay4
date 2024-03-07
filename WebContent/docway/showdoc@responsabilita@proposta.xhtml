@@ -77,9 +77,7 @@
 									<td class="resp-date optional">
 										<h:outputText value="#{bean.data_assegOPM}"><f:converter converterId="DateConverter"/></h:outputText>
 										<h:panelGroup rendered="#{!empty bean.infoAssegnazioneOPM}">
-											<a class="popoveritem" data-toggle="popover" data-placement="top" data-trigger="hover" data-content="#{bean.infoAssegnazioneOPM}" href='#'>
-												<i class="glyphicon glyphicon-info-sign normal-size-icon"></i>
-											</a>
+											<a class="popoveritem" data-toggle="popover" data-placement="top" data-trigger="hover" data-content="#{bean.infoAssegnazioneOPM}" href='#'><i class="glyphicon glyphicon-info-sign vertical-top-icon"></i></a>
 										</h:panelGroup>
 									</td>
 									<td class="resp-cmds optional">
@@ -91,9 +89,13 @@
 												</h:commandLink>
 											</h:panelGroup> 
 											<h:panelGroup rendered="#{bean.formsAdapter.funzionalitaDisponibili['disableSegnatura'] and bean.doc.assegnazioneOPM.scartabile =='true' and bean.doc.assegnazioneOPM.scartato != 'true'}">
-												<h:commandLink action="#{bean.scartaDocOPM}" title="#{i18n['dw4.scarta_il_documento_dalla_cartella_personale']}" styleClass="btn btn-default btn-xs">
+												<h:commandLink rendered="#{rif.tipo_uff ne 'ruolo'}" action="#{bean.scartaDocOPM}" title="#{i18n['dw4.scarta_il_documento_dalla_cartella_personale']}" styleClass="btn btn-default btn-xs">
 													<f:ajax execute="@form" render=":templateForm:responsabilitaDoc" />
 													<span class="glyphicon glyphicon-ban-circle scarta-doc-da-cartella-personale"></span>
+												</h:commandLink>
+												<h:commandLink rendered="#{rif.tipo_uff eq 'ruolo'}" action="#{bean.scartaSingoloRuolo(rif.cod_uff)}" title="#{i18n['dw4.scarta_singolo_ruolo']}" styleClass="btn btn-default btn-xs">
+													<f:ajax execute="@form" render=":templateForm:responsabilitaDoc" />
+													<span class="glyphicon glyphicon-ban-circle scarta-doc-da-cartella-personale scarta-ruolo"></span>
 												</h:commandLink>
 											</h:panelGroup>
 										</h:panelGroup>
@@ -194,11 +196,19 @@
 															</td>
 															<td class="resp-date optional" colspan="3">
 																<h:outputText value="#{bean.data_asseg}"><f:converter converterId="DateConverter"/></h:outputText>
-																<h:outputText value=" (CC fascicolo: #{rif.cc_from_fasc}) "/>
+																<h:outputText value=" (#{i18n['dw4.cc_fascicolo']}: #{rif.cc_from_fasc}) "/>
 																<h:panelGroup rendered="#{!empty bean.infoAssegnazione}">
-																	<a class="popoveritem" data-toggle="popover" data-placement="top" data-trigger="hover" data-content="#{bean.infoAssegnazione}" href='#'>
-																		<i class="glyphicon glyphicon-info-sign normal-size-icon"></i>
-																	</a>
+																	<a class="popoveritem" data-toggle="popover" data-placement="top" data-trigger="hover" data-content="#{bean.infoAssegnazione}" href='#'><i class="glyphicon glyphicon-info-sign vertical-top-icon"></i></a>
+																</h:panelGroup>
+																
+																<h:panelGroup rendered="#{bean.formsAdapter.funzionalitaDisponibili['disableSegnatura'] and rif.scartabile =='true' and rif.scartato != 'true'}">
+																	&#160;
+																	<h:commandLink rendered="#{rif.tipo_uff ne 'ruolo'}" action="#{bean.scartaDoc}" title="#{i18n['dw4.scarta_il_documento_dalla_cartella_personale']}" styleClass="btn btn-default btn-xs">
+																		<span class="glyphicon glyphicon-ban-circle scarta-doc-da-cartella-personale"></span>
+																	</h:commandLink>
+																	<h:commandLink rendered="#{rif.tipo_uff eq 'ruolo'}" action="#{bean.scartaSingoloRuolo(rif.cod_uff)}" title="#{i18n['dw4.scarta_singolo_ruolo']}" styleClass="btn btn-default btn-xs">
+																		<span class="glyphicon glyphicon-ban-circle scarta-doc-da-cartella-personale scarta-ruolo"></span>
+																	</h:commandLink>
 																</h:panelGroup>
 															</td>
 														</tr>
@@ -227,9 +237,17 @@
 														<h:outputText value="#{bean.data_asseg}"><f:converter converterId="DateConverter"/></h:outputText>
 														<h:outputText value=" (#{i18n['dw4.cc_fascicolo']}: #{rif.cc_from_fasc}) "/>
 														<h:panelGroup rendered="#{!empty bean.infoAssegnazione}">
-															<a class="popoveritem" data-toggle="popover" data-placement="top" data-trigger="hover" data-content="#{bean.infoAssegnazione}" href='#'>
-																<i class="glyphicon glyphicon-info-sign normal-size-icon"></i>
-															</a>
+															<a class="popoveritem" data-toggle="popover" data-placement="top" data-trigger="hover" data-content="#{bean.infoAssegnazione}" href='#'><i class="glyphicon glyphicon-info-sign vertical-top-icon"></i></a>
+														</h:panelGroup>
+														
+														<h:panelGroup rendered="#{bean.formsAdapter.funzionalitaDisponibili['disableSegnatura'] and rif.scartabile =='true' and rif.scartato != 'true'}">
+															&#160;
+															<h:commandLink rendered="#{rif.tipo_uff ne 'ruolo'}" action="#{bean.scartaDoc}" title="#{i18n['dw4.scarta_il_documento_dalla_cartella_personale']}" styleClass="btn btn-default btn-xs">
+																<span class="glyphicon glyphicon-ban-circle scarta-doc-da-cartella-personale"></span>
+															</h:commandLink>
+															<h:commandLink rendered="#{rif.tipo_uff eq 'ruolo'}" action="#{bean.scartaSingoloRuolo(rif.cod_uff)}" title="#{i18n['dw4.scarta_singolo_ruolo']}" styleClass="btn btn-default btn-xs">
+																<span class="glyphicon glyphicon-ban-circle scarta-doc-da-cartella-personale scarta-ruolo"></span>
+															</h:commandLink>
 														</h:panelGroup>
 													</td>
 												</tr>
@@ -326,9 +344,13 @@
 										<td class="resp-cmds optional">
 											<h:panelGroup rendered="#{(bean.formsAdapter.funzionalitaDisponibili['disableSegnatura'] and rif.scartabile =='true' and rif.scartato != 'true') or (bean.formsAdapter.funzionalitaDisponibili['interventoConfigurabileSuDoc'])}" styleClass="btn-group">
 												<h:panelGroup rendered="#{bean.formsAdapter.funzionalitaDisponibili['disableSegnatura'] and rif.scartabile =='true' and rif.scartato != 'true'}">
-													<h:commandLink action="#{bean.scartaDoc}" title="#{i18n['dw4.scarta_il_documento_dalla_cartella_personale']}" styleClass="btn btn-default btn-xs">
+													<h:commandLink rendered="#{rif.tipo_uff ne 'ruolo'}" action="#{bean.scartaDoc}" title="#{i18n['dw4.scarta_il_documento_dalla_cartella_personale']}" styleClass="btn btn-default btn-xs">
 														<f:ajax execute="@form" render=":templateForm:responsabilitaDoc" />
 														<span class="glyphicon glyphicon-ban-circle scarta-doc-da-cartella-personale"></span>
+													</h:commandLink>
+													<h:commandLink rendered="#{rif.tipo_uff eq 'ruolo'}" action="#{bean.scartaSingoloRuolo(rif.cod_uff)}" title="#{i18n['dw4.scarta_singolo_ruolo']}" styleClass="btn btn-default btn-xs">
+														<f:ajax execute="@form" render=":templateForm:responsabilitaDoc" />
+														<span class="glyphicon glyphicon-ban-circle scarta-doc-da-cartella-personale scarta-ruolo"></span>
 													</h:commandLink>
 												</h:panelGroup>
 												<h:panelGroup rendered="#{bean.formsAdapter.funzionalitaDisponibili['interventoConfigurabileSuDoc']}">
@@ -370,9 +392,7 @@
 									<td class="resp-date optional">
 										<h:outputText value="#{bean.data_assegOP}"><f:converter converterId="DateConverter"/></h:outputText>
 										<h:panelGroup rendered="#{!empty bean.infoAssegnazioneOP}">
-											<a class="popoveritem" data-toggle="popover" data-placement="top" data-trigger="hover" data-content="#{bean.infoAssegnazioneOP}" href='#'>
-												<i class="glyphicon glyphicon-info-sign normal-size-icon"></i>
-											</a>
+											<a class="popoveritem" data-toggle="popover" data-placement="top" data-trigger="hover" data-content="#{bean.infoAssegnazioneOP}" href='#'><i class="glyphicon glyphicon-info-sign vertical-top-icon"></i></a>
 										</h:panelGroup>
 									</td>
 									<td class="resp-cmds optional">
@@ -384,9 +404,13 @@
 												</h:commandLink>
 											</h:panelGroup>
 											<h:panelGroup rendered="#{bean.formsAdapter.funzionalitaDisponibili['disableSegnatura'] and bean.doc.assegnazioneOP.scartabile =='true' and bean.doc.assegnazioneOP.scartato != 'true'}">
-												<h:commandLink action="#{bean.scartaDocOP}" title="#{i18n['dw4.scarta_il_documento_dalla_cartella_personale']}" styleClass="btn btn-default btn-xs">
+												<h:commandLink rendered="#{rif.tipo_uff ne 'ruolo'}" action="#{bean.scartaDocOP}" title="#{i18n['dw4.scarta_il_documento_dalla_cartella_personale']}" styleClass="btn btn-default btn-xs">
 													<f:ajax execute="@form" render=":templateForm:responsabilitaDoc" />
 													<span class="glyphicon glyphicon-ban-circle scarta-doc-da-cartella-personale"></span>
+												</h:commandLink>
+												<h:commandLink rendered="#{rif.tipo_uff eq 'ruolo'}" action="#{bean.scartaSingoloRuolo(rif.cod_uff)}" title="#{i18n['dw4.scarta_singolo_ruolo']}" styleClass="btn btn-default btn-xs">
+													<f:ajax execute="@form" render=":templateForm:responsabilitaDoc" />
+													<span class="glyphicon glyphicon-ban-circle scarta-doc-da-cartella-personale scarta-ruolo"></span>
 												</h:commandLink>
 											</h:panelGroup>
 										</h:panelGroup>
@@ -488,9 +512,7 @@
 														<td class="resp-date optional">
 															<h:outputText value="#{bean.data_asseg}"><f:converter converterId="DateConverter"/></h:outputText>
 															<h:panelGroup rendered="#{!empty bean.infoAssegnazione}">
-																<a class="popoveritem" data-toggle="popover" data-placement="top" data-trigger="hover" data-content="#{bean.infoAssegnazione}" href='#'>
-																	<i class="glyphicon glyphicon-info-sign normal-size-icon"></i>
-																</a>
+																<a class="popoveritem" data-toggle="popover" data-placement="top" data-trigger="hover" data-content="#{bean.infoAssegnazione}" href='#'><i class="glyphicon glyphicon-info-sign vertical-top-icon"></i></a>
 															</h:panelGroup>
 														</td>
 														<td class="resp-cmds optional">
@@ -502,8 +524,11 @@
 																	</h:commandLink>
 																</h:panelGroup>
 																<h:panelGroup rendered="#{bean.formsAdapter.funzionalitaDisponibili['disableSegnatura'] and rif.scartabile =='true' and rif.scartato != 'true'}">
-																	<h:commandLink action="#{bean.scartaDoc}" title="#{i18n['dw4.scarta_il_documento_dalla_cartella_personale']}" styleClass="btn btn-default btn-xs">
+																	<h:commandLink rendered="#{rif.tipo_uff ne 'ruolo'}" action="#{bean.scartaDoc}" title="#{i18n['dw4.scarta_il_documento_dalla_cartella_personale']}" styleClass="btn btn-default btn-xs">
 																		<span class="glyphicon glyphicon-ban-circle scarta-doc-da-cartella-personale"></span>
+																	</h:commandLink>
+																	<h:commandLink rendered="#{rif.tipo_uff eq 'ruolo'}" action="#{bean.scartaSingoloRuolo(rif.cod_uff)}" title="#{i18n['dw4.scarta_singolo_ruolo']}" styleClass="btn btn-default btn-xs">
+																		<span class="glyphicon glyphicon-ban-circle scarta-doc-da-cartella-personale scarta-ruolo"></span>
 																	</h:commandLink>
 																</h:panelGroup>
 																<h:panelGroup rendered="#{bean.formsAdapter.funzionalitaDisponibili['interventoConfigurabileSuDoc']}">
@@ -554,9 +579,7 @@
 												<td class="resp-date optional">
 													<h:outputText value="#{bean.data_asseg}"><f:converter converterId="DateConverter"/></h:outputText>
 													<h:panelGroup rendered="#{!empty bean.infoAssegnazione}">
-														<a class="popoveritem" data-toggle="popover" data-placement="top" data-trigger="hover" data-content="#{bean.infoAssegnazione}" href='#'>
-															<i class="glyphicon glyphicon-info-sign normal-size-icon"></i>
-														</a>
+														<a class="popoveritem" data-toggle="popover" data-placement="top" data-trigger="hover" data-content="#{bean.infoAssegnazione}" href='#'><i class="glyphicon glyphicon-info-sign vertical-top-icon"></i></a>
 													</h:panelGroup>
 												</td>
 												<td class="resp-cmds optional">
@@ -568,9 +591,13 @@
 															</h:commandLink>
 														</h:panelGroup>
 														<h:panelGroup rendered="#{bean.formsAdapter.funzionalitaDisponibili['disableSegnatura'] and rif.scartabile =='true' and rif.scartato != 'true'}">
-															<h:commandLink action="#{bean.scartaDoc}" title="#{i18n['dw4.scarta_il_documento_dalla_cartella_personale']}" styleClass="btn btn-default btn-xs">	
+															<h:commandLink rendered="#{rif.tipo_uff ne 'ruolo'}" action="#{bean.scartaDoc}" title="#{i18n['dw4.scarta_il_documento_dalla_cartella_personale']}" styleClass="btn btn-default btn-xs">	
 																<f:ajax execute="@form" render=":templateForm:responsabilitaDoc" />
 																<span class="glyphicon glyphicon-ban-circle scarta-doc-da-cartella-personale"></span>
+															</h:commandLink>
+															<h:commandLink rendered="#{rif.tipo_uff eq 'ruolo'}" action="#{bean.scartaSingoloRuolo(rif.cod_uff)}" title="#{i18n['dw4.scarta_singolo_ruolo']}" styleClass="btn btn-default btn-xs">
+																<f:ajax execute="@form" render=":templateForm:responsabilitaDoc" />
+																<span class="glyphicon glyphicon-ban-circle scarta-doc-da-cartella-personale scarta-ruolo"></span>
 															</h:commandLink>
 														</h:panelGroup>
 														<h:panelGroup rendered="#{bean.formsAdapter.funzionalitaDisponibili['interventoConfigurabileSuDoc']}">
@@ -683,11 +710,19 @@
 															</td>
 															<td class="resp-date optional" colspan="3">
 																<h:outputText value="#{bean.data_asseg}"><f:converter converterId="DateConverter"/></h:outputText>
-																<h:outputText value=" (CC fascicolo: #{rif.cc_from_fasc}) "/>
+																<h:outputText value=" (#{i18n['dw4.cc_fascicolo']}: #{rif.cc_from_fasc}) "/>
 																<h:panelGroup rendered="#{!empty bean.infoAssegnazione}">
-																	<a class="popoveritem" data-toggle="popover" data-placement="top" data-trigger="hover" data-content="#{bean.infoAssegnazione}" href='#'>
-																		<i class="glyphicon glyphicon-info-sign normal-size-icon"></i>
-																	</a>
+																	<a class="popoveritem" data-toggle="popover" data-placement="top" data-trigger="hover" data-content="#{bean.infoAssegnazione}" href='#'><i class="glyphicon glyphicon-info-sign vertical-top-icon"></i></a>
+																</h:panelGroup>
+																
+																<h:panelGroup rendered="#{bean.formsAdapter.funzionalitaDisponibili['disableSegnatura'] and rif.scartabile =='true' and rif.scartato != 'true'}">
+																	&#160;
+																	<h:commandLink rendered="#{rif.tipo_uff ne 'ruolo'}" action="#{bean.scartaDoc}" title="#{i18n['dw4.scarta_il_documento_dalla_cartella_personale']}" styleClass="btn btn-default btn-xs">
+																		<span class="glyphicon glyphicon-ban-circle scarta-doc-da-cartella-personale"></span>
+																	</h:commandLink>
+																	<h:commandLink rendered="#{rif.tipo_uff eq 'ruolo'}" action="#{bean.scartaSingoloRuolo(rif.cod_uff)}" title="#{i18n['dw4.scarta_singolo_ruolo']}" styleClass="btn btn-default btn-xs">
+																		<span class="glyphicon glyphicon-ban-circle scarta-doc-da-cartella-personale scarta-ruolo"></span>
+																	</h:commandLink>
 																</h:panelGroup>
 															</td>
 														</tr>
@@ -714,11 +749,19 @@
 													</td>
 													<td class="resp-date optional" colspan="3">
 														<h:outputText value="#{bean.data_asseg}"><f:converter converterId="DateConverter"/></h:outputText>
-														<h:outputText value=" (CC fascicolo: #{rif.cc_from_fasc}) "/>
+														<h:outputText value=" (#{i18n['dw4.cc_fascicolo']}: #{rif.cc_from_fasc}) "/>
 														<h:panelGroup rendered="#{!empty bean.infoAssegnazione}">
-															<a class="popoveritem" data-toggle="popover" data-placement="top" data-trigger="hover" data-content="#{bean.infoAssegnazione}" href='#'>
-																<i class="glyphicon glyphicon-info-sign normal-size-icon"></i>
-															</a>
+															<a class="popoveritem" data-toggle="popover" data-placement="top" data-trigger="hover" data-content="#{bean.infoAssegnazione}" href='#'><i class="glyphicon glyphicon-info-sign vertical-top-icon"></i></a>
+														</h:panelGroup>
+														
+														<h:panelGroup rendered="#{bean.formsAdapter.funzionalitaDisponibili['disableSegnatura'] and rif.scartabile =='true' and rif.scartato != 'true'}">
+															&#160;
+															<h:commandLink rendered="#{rif.tipo_uff ne 'ruolo'}" action="#{bean.scartaDoc}" title="#{i18n['dw4.scarta_il_documento_dalla_cartella_personale']}" styleClass="btn btn-default btn-xs">
+																<span class="glyphicon glyphicon-ban-circle scarta-doc-da-cartella-personale"></span>
+															</h:commandLink>
+															<h:commandLink rendered="#{rif.tipo_uff eq 'ruolo'}" action="#{bean.scartaSingoloRuolo(rif.cod_uff)}" title="#{i18n['dw4.scarta_singolo_ruolo']}" styleClass="btn btn-default btn-xs">
+																<span class="glyphicon glyphicon-ban-circle scarta-doc-da-cartella-personale scarta-ruolo"></span>
+															</h:commandLink>
 														</h:panelGroup>
 													</td>
 												</tr>
@@ -727,6 +770,156 @@
 									</h:panelGroup>
 								</h:panelGroup>
 							</h:panelGroup>
+							
+							<h:panelGroup rendered="#{not empty bean.doc.cc_racc_list}">
+								<tr>
+									<td class="resp-type">#{i18n['dw4.cc_racc']}</td>
+									<td class="resp-name" colspan="4">
+										<h:commandLink rendered="#{!bean.showCCracc}" action="#{bean.hideShowCCfromRacc}" value="#{i18n['dw4.visualizza_i_cc_ereditati_dal_raccoglitore']}"><f:ajax execute="@form" render="templateForm:responsabilitaDoc" /></h:commandLink>
+										<h:commandLink rendered="#{bean.showCCracc}" action="#{bean.hideShowCCfromRacc}" value="#{i18n['dw4.nascondi_i_cc_ereditati_dal_raccoglitore']}"><f:ajax execute="@form" render="templateForm:responsabilitaDoc" /></h:commandLink>
+									</td>
+								</tr>
+								<h:panelGroup rendered="#{bean.showCCracc}">
+									<h:panelGroup rendered="#{bean.formsAdapter.funzionalitaDisponibili['raggruppaCC'] and bean.raggruppaCC_statoIniziale ne ''}">
+										<tr>
+											<td class="resp-type">&#160;</td>
+											<td class="resp-name">
+												<h:outputText value="#{bean.doc.countCcRaccoglitore}"/>&#160;
+												<h:outputText rendered="#{bean.doc.countCcRaccoglitore == 1}" value="#{i18n['dw4.nominativo']}"/>
+												<h:outputText rendered="#{bean.doc.countCcRaccoglitore != 1}" value="#{i18n['dw4.nominativi']}"/>
+											</td>
+											<td class="resp-cmds optional" colspan="3">
+												<div class="btn-group">
+													<h:commandLink rendered="#{bean.raggruppaCC_statoIniziale eq 'compact' and bean.raggruppaCC_racc_statoCorrente eq ''}" action="#{bean.hideShowCCracc}" title="#{i18n['dw4.visualizza_una_riga_riassuntiva_per_ogni_ufficio']}" styleClass="btn btn-default btn-xs">
+														<f:ajax execute="@form" render="templateForm:responsabilitaDoc" />
+														<span class="glyphicon glyphicon-plus"></span>
+													</h:commandLink>
+													<h:commandLink rendered="#{bean.raggruppaCC_statoIniziale eq 'minimized' and bean.raggruppaCC_racc_statoCorrente eq ''}" action="#{bean.hideShowCCracc}" title="#{i18n['dw4.visualizza_tutti_i_nominativi']}" styleClass="btn btn-default btn-xs">
+														<f:ajax execute="@form" render="templateForm:responsabilitaDoc" />
+														<span class="glyphicon glyphicon-plus"></span>
+													</h:commandLink>
+													<h:commandLink rendered="#{bean.raggruppaCC_racc_statoCorrente eq 'expand'}" action="#{bean.hideShowCCracc}" title="#{i18n['dw4.visualizza_tutti_i_nominativi']}" styleClass="btn btn-default btn-xs">
+														<f:ajax execute="@form" render="templateForm:responsabilitaDoc" />
+														<span class="glyphicon glyphicon-th-list"></span>
+													</h:commandLink>
+													<h:commandLink rendered="#{bean.raggruppaCC_racc_statoCorrente eq 'minimized'}" action="#{bean.hideShowCCracc}" title="#{i18n['dw4.contrai_tutti_i_nominativi']}" styleClass="btn btn-default btn-xs">
+														<f:ajax execute="@form" render="templateForm:responsabilitaDoc" />
+														<span class="glyphicon glyphicon-minus"></span>
+													</h:commandLink>
+												</div>
+											</td>
+										</tr>
+									</h:panelGroup>
+									<h:panelGroup rendered="#{bean.raggruppaCC_statoIniziale eq '' or (bean.raggruppaCC_statoIniziale ne '' and bean.raggruppaCC_racc_statoCorrente ne '')}">
+										<h:panelGroup rendered="#{bean.raggruppaCC_statoIniziale eq 'compact'}">
+											<c:forEach items="#{bean.doc.cc_racc_ufficio}" var="ufficioKey" varStatus="indice">
+												<tr>
+													<td class="resp-type">&#160;</td>
+													<td class="resp-name">
+														<h:outputText value="#{ufficioKey.value[0].nome_uff}"/>&#160;
+														<h:outputText value="("/>
+														<h:outputText value="#{fn:length(ufficioKey.value)}"/>&#160;
+														<h:outputText rendered="#{fn:length(ufficioKey.value) == 1}" value="#{i18n['dw4.nominativo']}"/>
+														<h:outputText rendered="#{fn:length(ufficioKey.value) != 1}" value="#{i18n['dw4.nominativi']}"/>
+														<h:outputText value=")"/>
+													</td>
+													<td class="resp-cmds optional" colspan="3">
+														<h:panelGroup rendered="#{bean.raggruppaCC_racc_statoCorrente eq 'expand'}">
+															<div class="btn-group">
+																<h:commandLink rendered="#{!fn:contains(bean.raggruppaCC_racc_uffici_aperti, ufficioKey.key)}" action="#{bean.hideShowCCufficioRacc}" actionListener="#{bean.attrListenerUfficioCorrente}" title="#{i18n['dw4.visualizza_i_nominativi_dell_ufficio']}" styleClass="btn btn-default btn-xs">
+																	<f:ajax execute="@form" render="templateForm:responsabilitaDoc" />
+																	<f:attribute name="raggruppaCC_ufficio_corrente" value="#{ufficioKey.key}" />
+																	<span class="glyphicon glyphicon-plus"></span>
+																</h:commandLink>
+																<h:commandLink rendered="#{fn:contains(bean.raggruppaCC_racc_uffici_aperti, ufficioKey.key)}" action="#{bean.hideShowCCufficioRacc}" actionListener="#{bean.attrListenerUfficioCorrente}" title="#{i18n['dw4.nascondi_i_nominativi_dell_ufficio']}" styleClass="btn btn-default btn-xs">
+																	<f:ajax execute="@form" render="templateForm:responsabilitaDoc" />
+																	<f:attribute name="raggruppaCC_ufficio_corrente" value="#{ufficioKey.key}" />
+																	<span class="glyphicon glyphicon-minus"></span>
+																</h:commandLink>
+															</div>
+														</h:panelGroup>
+													</td>
+												</tr>
+												<h:panelGroup rendered="#{bean.raggruppaCC_racc_statoCorrente ne 'expand' or fn:contains(bean.raggruppaCC_racc_uffici_aperti, ufficioKey.key)}">
+													<ui:repeat var="rif" value="#{ufficioKey.value}">
+														<tr>
+															<td class="resp-type">&#160;</td>
+															<td class="resp-name">
+																<span class="margin-left-20" style="#{(rif.personale) ? 'font-weight: bold;' : ''}">
+																	<h:panelGroup rendered="#{rif.tipo_uff eq 'ruolo'}">
+																		<h:commandLink action="#{bean.showPersoneRuolo(rif.cod_uff)}" title="#{i18n['dw4.mostra_tutte_le_persone_associate_al_ruolo']}"><f:ajax execute="@form" render="templateForm:showPersoneRuolo templateForm:errormsg" />#{rif.nome_persona}</h:commandLink>	
+																	</h:panelGroup>
+																	<h:panelGroup rendered="#{rif.tipo_uff ne 'ruolo'}">
+																		#{rif.nome_persona}
+																	</h:panelGroup>
+																</span>
+																<h:panelGroup rendered="#{rif.intervento}">
+																	<em>(#{i18n['dw4.intervento']})</em>
+																</h:panelGroup>
+															</td>
+															<td class="resp-date optional" colspan="3">
+																<h:outputText value="#{bean.data_asseg}"><f:converter converterId="DateConverter"/></h:outputText>
+																<h:outputText value=" (#{i18n['dw4.cc_racc']}: #{rif.cc_from_racc}) "/>
+																<h:panelGroup rendered="#{!empty bean.infoAssegnazione}">
+																	<a class="popoveritem" data-toggle="popover" data-placement="top" data-trigger="hover" data-content="#{bean.infoAssegnazione}" href='#'><i class="glyphicon glyphicon-info-sign vertical-top-icon"></i></a>
+																</h:panelGroup>
+																
+																<h:panelGroup rendered="#{bean.formsAdapter.funzionalitaDisponibili['disableSegnatura'] and rif.scartabile =='true' and rif.scartato != 'true'}">
+																	&#160;
+																	<h:commandLink rendered="#{rif.tipo_uff ne 'ruolo'}" action="#{bean.scartaDoc}" title="#{i18n['dw4.scarta_il_documento_dalla_cartella_personale']}" styleClass="btn btn-default btn-xs">
+																		<span class="glyphicon glyphicon-ban-circle scarta-doc-da-cartella-personale"></span>
+																	</h:commandLink>
+																	<h:commandLink rendered="#{rif.tipo_uff eq 'ruolo'}" action="#{bean.scartaSingoloRuolo(rif.cod_uff)}" title="#{i18n['dw4.scarta_singolo_ruolo']}" styleClass="btn btn-default btn-xs">
+																		<span class="glyphicon glyphicon-ban-circle scarta-doc-da-cartella-personale scarta-ruolo"></span>
+																	</h:commandLink>
+																</h:panelGroup>
+															</td>
+														</tr>
+													</ui:repeat>
+												</h:panelGroup>
+											</c:forEach>
+										</h:panelGroup>
+										<h:panelGroup rendered="#{bean.raggruppaCC_statoIniziale ne 'compact'}">
+											<ui:repeat var="rif" value="#{bean.doc.cc_racc_list}">
+												<tr>
+													<td class="resp-type">&#160;</td>
+													<td class="resp-name">
+														<h:panelGroup rendered="#{rif.tipo_uff eq 'ruolo'}">
+															<h:commandLink action="#{bean.showPersoneRuolo(rif.cod_uff)}" title="#{i18n['dw4.mostra_tutte_le_persone_associate_al_ruolo']}"><f:ajax execute="@form" render="templateForm:showPersoneRuolo templateForm:errormsg" />#{rif.nome_uff}</h:commandLink>
+														</h:panelGroup>
+														<h:panelGroup rendered="#{rif.tipo_uff ne 'ruolo'}">
+															#{rif.nome_uff}
+															<h:panelGroup rendered="#{rif.personale}"> - <strong>#{rif.nome_persona}</strong></h:panelGroup>
+															<h:panelGroup rendered="#{!rif.personale}"> - #{rif.nome_persona}</h:panelGroup>
+														</h:panelGroup>
+														<h:panelGroup rendered="#{rif.intervento}">
+															<em>(#{i18n['dw4.intervento']})</em>
+														</h:panelGroup>
+													</td>
+													<td class="resp-date optional" colspan="3">
+														<h:outputText value="#{bean.data_asseg}"><f:converter converterId="DateConverter"/></h:outputText>
+														<h:outputText value=" (#{i18n['dw4.cc_racc']}: #{rif.cc_from_racc}) "/>
+														<h:panelGroup rendered="#{!empty bean.infoAssegnazione}">
+															<a class="popoveritem" data-toggle="popover" data-placement="top" data-trigger="hover" data-content="#{bean.infoAssegnazione}" href='#'><i class="glyphicon glyphicon-info-sign vertical-top-icon"></i></a>
+														</h:panelGroup>
+														
+														<h:panelGroup rendered="#{bean.formsAdapter.funzionalitaDisponibili['disableSegnatura'] and rif.scartabile =='true' and rif.scartato != 'true'}">
+															&#160;
+															<h:commandLink rendered="#{rif.tipo_uff ne 'ruolo'}" action="#{bean.scartaDoc}" title="#{i18n['dw4.scarta_il_documento_dalla_cartella_personale']}" styleClass="btn btn-default btn-xs">
+																<span class="glyphicon glyphicon-ban-circle scarta-doc-da-cartella-personale"></span>
+															</h:commandLink>
+															<h:commandLink rendered="#{rif.tipo_uff eq 'ruolo'}" action="#{bean.scartaSingoloRuolo(rif.cod_uff)}" title="#{i18n['dw4.scarta_singolo_ruolo']}" styleClass="btn btn-default btn-xs">
+																<span class="glyphicon glyphicon-ban-circle scarta-doc-da-cartella-personale scarta-ruolo"></span>
+															</h:commandLink>
+														</h:panelGroup>
+													</td>
+												</tr>
+											</ui:repeat>
+										</h:panelGroup>
+									</h:panelGroup>
+								</h:panelGroup>
+							</h:panelGroup>
+							
 							<h:panelGroup rendered="#{bean.formsAdapter.funzionalitaDisponibili['rolesManagement'] and bean.formsAdapter.funzionalitaDisponibili['scartoRuoli']}">
 								<tr>
 									<td class="resp-type">#{i18n['dw4.scarta_ruoli']}</td>
@@ -745,6 +938,6 @@
 		</div>
 			
 	</h:panelGroup> 
-
+	
 </ui:composition>   
 </html>

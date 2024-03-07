@@ -14,7 +14,7 @@ public class DocwayprocQueryWorkflow  extends DocWayQuery {
 	private String xml = "";
 	private DocDocWayQueryFormsAdapter formsAdapter;
 	private String focusElement;
-	
+
 	private String bwf_name = "";
 	private String bwf_version = "";
 	private String bwf_label = "";
@@ -23,12 +23,12 @@ public class DocwayprocQueryWorkflow  extends DocWayQuery {
 	private boolean non_abilitati = false;
 	private boolean subprocess = false;
 	private boolean subprocess_no = false;
-	
+
 	public DocwayprocQueryWorkflow() throws Exception {
 		this.formsAdapter = new DocDocWayQueryFormsAdapter(AdaptersConfigurationLocator.getInstance().getAdapterConfiguration("docwayService"));
 		clearForm();
 	}
-	
+
 	@Override
 	public void init(Document dom) {
 		xml = dom.asXML();
@@ -38,7 +38,7 @@ public class DocwayprocQueryWorkflow  extends DocWayQuery {
 	public QueryFormsAdapter getFormsAdapter() {
 		return formsAdapter;
 	}
-	
+
 	public String getXml() {
 		return xml;
 	}
@@ -102,17 +102,17 @@ public class DocwayprocQueryWorkflow  extends DocWayQuery {
 	public void setNon_abilitati(boolean non_abilitati) {
 		this.non_abilitati = non_abilitati;
 	}
-	
+
 	@Override
 	public String queryPlain() throws Exception {
 		try {
 			String query = createQuery();
-			
+
 			formsAdapter.findplain();
 			XMLDocumento response = super._queryPlain(query, "", "");
-			if (handleErrorResponse(response)) 
+			if (handleErrorResponse(response))
 				return null;
-			
+
 			return navigateResponse(response);
 		}
 		catch (Throwable t) {
@@ -121,12 +121,12 @@ public class DocwayprocQueryWorkflow  extends DocWayQuery {
 			return null;
 		}
 	}
-	
+
 	/**
-	 * Data la response derivante da una ricerca carica la pagina di destinazione 
-	 * corretta: pagina dei titoli in caso di piu' risultati, showdoc in caso di un 
+	 * Data la response derivante da una ricerca carica la pagina di destinazione
+	 * corretta: pagina dei titoli in caso di piu' risultati, showdoc in caso di un
 	 * solo documento restituito
-	 * 
+	 *
 	 * @param response
 	 * @return
 	 * @throws Exception
@@ -150,31 +150,31 @@ public class DocwayprocQueryWorkflow  extends DocWayQuery {
 			return "docwayproc@showtitles@workflow";
 		}
 	}
-	
+
 	/**
 	 * generazione della query di ricerca di workflow
 	 * @return
 	 */
 	private String createQuery() {
 		String query = "[UD,/xw/@UdType]=\"bwf_entity\" AND ";
-		
+
 		query +=  addQueryField("bwf_name", this.escapeQueryValue(this.bwf_name));
 		query +=  addQueryField("xml,/bwf_entity/@version/", this.escapeQueryValue(this.bwf_version));
 		query +=  addQueryField("bwf_label", this.escapeQueryValue(this.bwf_label));
 		query +=  addQueryField("bwf_description", this.escapeQueryValue(this.bwf_description));
-		
+
 		if (abilitati && !non_abilitati) 	query += addQueryField("bwf_active", "true");
 		if (non_abilitati && !abilitati)		query += addQueryField("bwf_active", "false");
-		
+
 		if (subprocess && !subprocess_no) 	query += addQueryField("xml,/bwf_entity/@subprocess/", "true");
 		if (subprocess_no && !subprocess)		query += addQueryField("xml,/bwf_entity/@subprocess/", "false");
-		
+
 		if (query.endsWith(" AND "))
 			query = query.substring(0, query.length()-4);
-		
+
 		return query;
 	}
-	
+
 	/**
 	 * reset del form
 	 * @return
@@ -186,10 +186,10 @@ public class DocwayprocQueryWorkflow  extends DocWayQuery {
 		non_abilitati = false;
 		bwf_label = "";
 		bwf_description = "";
-		
+
 		return null;
 	}
-	
+
 	/**
 	 * apertura vocabolario su nome workflow
 	 * @return
@@ -200,7 +200,7 @@ public class DocwayprocQueryWorkflow  extends DocWayQuery {
 		this.openIndex("bwf_name", this.bwf_name, "0", "", false);
 		return null;
 	}
-	
+
 	/**
 	 * apertura vocabolario su vocabolario workflow
 	 * @return
@@ -211,7 +211,7 @@ public class DocwayprocQueryWorkflow  extends DocWayQuery {
 		this.openIndex("bwf_version", "xml,/bwf_entity/@version/", this.bwf_version, "0", "", false);
 		return null;
 	}
-	
+
 	/**
 	 * apertura vocabolario su label workflow
 	 * @return
@@ -249,5 +249,5 @@ public class DocwayprocQueryWorkflow  extends DocWayQuery {
 	public void setSubprocess_no(boolean subprocess_no) {
 		this.subprocess_no = subprocess_no;
 	}
-	
+
 }

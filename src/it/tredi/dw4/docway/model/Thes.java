@@ -1,17 +1,18 @@
 package it.tredi.dw4.docway.model;
 
-import it.tredi.dw4.model.XmlEntity;
-import it.tredi.dw4.utils.Const;
-import it.tredi.dw4.utils.XMLUtil;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.log4j.Logger;
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
+
+import it.tredi.dw4.model.XmlEntity;
+import it.tredi.dw4.utils.ClassifUtil;
+import it.tredi.dw4.utils.Const;
+import it.tredi.dw4.utils.Logger;
+import it.tredi.dw4.utils.XMLUtil;
 
 public class Thes extends XmlEntity {
 	
@@ -26,6 +27,8 @@ public class Thes extends XmlEntity {
 	private int level = 0; // Livello del nodo all'interno dell'albero
 	
 	private List<Thes> childrens = null; // Figli del nodo corrente del thesauro di classificazione
+	
+	private int thPathLength = 0; // path di navigazione del thesauro
 	
 	public String getChiave() {
 		return chiave;
@@ -91,21 +94,39 @@ public class Thes extends XmlEntity {
 		this.childrens = childs;
 	}
 	
-	@Override
-	public XmlEntity init(Document dom) {
-		return init(dom, 0);
+	public int getThPathLength() {
+		return thPathLength;
 	}
 
+	public void setThPathLength(int thPathLength) {
+		this.thPathLength = thPathLength;
+	}
+	
+	@Override
+	public XmlEntity init(Document dom) {
+		return init(dom, thPathLength);
+	}
+
+	/**
+	 * Inizializzazione del thesauro tramite vista ad albero
+	 * @param dom
+	 * @param livello
+	 * @return
+	 */
 	public XmlEntity init(Document dom, int livello) {
 		this.chiave = 		XMLUtil.parseAttribute(dom, "thes/@chiave", "");
     	this.nome = 		XMLUtil.parseAttribute(dom, "thes/@nome");
     	this.level =		livello;
     	this.childrens = 	this.parseThesThree(dom, "thes/thes", livello);
     	
+    	boolean rootLevel = true;
+    	if (level > 1)
+    		rootLevel = false;
+    	
     	if (this.nome != null && this.nome.length() > 0)
-    		setThesProperties(this.nome);
+    		setThesProperties(this.nome, rootLevel);
     	else
-    		setThesProperties(this.chiave);
+    		setThesProperties(this.chiave, rootLevel);
     	
     	if (this.nome != null && this.nome.equals(Const.TITOLARIO_CLASSIF_NODO_RADICE))
     		this.radice = true;
@@ -129,31 +150,76 @@ public class Thes extends XmlEntity {
             }
         }
         catch(Exception e) {
-            log.error(e, e);
+            Logger.error(e.getMessage(), e);
         }
         return retValue;
     }
 	
-	private void setThesProperties(String nomeCompleto) {
+	/**
+	 * Inizializzazione del thesauro tramite vista a livelli
+	 * @param dom
+	 * @param livello
+	 * @return
+	 */
+	public XmlEntity initByLevel(Document dom) {
+		this.chiave = XMLUtil.parseAttribute(dom, "thes/@chiave", "");
+    	this.nome = XMLUtil.parseAttribute(dom, "thes/@nome");
+
+    	this.childrens =  new ArrayList<Thes>();
+    	List<?> list = dom.selectNodes("thes/thes"); 
+        if ( (null != list) && (list.size() > 0) ) {
+            for (int index = 0; index < list.size(); index++) {
+                Element element = (Element)list.get(index);
+                Thes thes = new Thes();
+                thes.setThPathLength(thPathLength);
+                thes.initByLevel(DocumentHelper.createDocument(element.createCopy()));
+                this.childrens.add(thes);
+            }
+        }
+    	
+    	boolean rootLevel = true;
+    	if (level > 1)
+    		rootLevel = false;
+    	
+    	if (this.nome != null && this.nome.length() > 0)
+    		setThesProperties(this.nome, rootLevel);
+    	else
+    		setThesProperties(this.chiave, rootLevel);
+    	
+    	if (this.nome != null && this.nome.equals(Const.TITOLARIO_CLASSIF_NODO_RADICE))
+    		this.radice = true;
+    	else
+    		this.radice = false;
+    	
+    	return this;
+	}
+	
+	private void setThesProperties(String nomeCompleto, boolean rootLevel) {
 		if (nomeCompleto != null) {
 	    	int spIndex = nomeCompleto.indexOf(" ");
 	    	if (spIndex != -1) {
 	    		this.indice = nomeCompleto.substring(0, spIndex).trim();
 	    		
+	    		String[] classifFormat = ClassifUtil.getSplittedClassifFormat();
+	    		if (classifFormat != null && classifFormat.length == 2) {
+	    			if (rootLevel)
+	    				this.codice = ClassifUtil.classifNumToFormat(this.indice, classifFormat[0]);
+	    			else
+	    				this.codice = ClassifUtil.classifNumToFormat(this.indice, classifFormat[1]);
+	    		}
+	    		
 	    		String tmp = nomeCompleto.substring(spIndex+1).trim();
 	    		int trIndex = tmp.indexOf("-");
-	    		if (trIndex != -1) {
-	    			this.codice = tmp.substring(0, trIndex).trim();
+	    		if (trIndex != -1)
 	    			this.titolo = tmp.substring(trIndex+1).trim();
-	    		}
 	    	}
     	}
 	}
 	
-	public void initThesByChiave(String chiaveValue) {
+	public void initThesByChiave(String chiaveValue, boolean rootLevel) {
 		if (chiaveValue != null && chiaveValue.length() > 0) {
 			this.chiave = chiaveValue;
-			setThesProperties(this.chiave);
+			setThesProperties(this.chiave, rootLevel);
 		}
 	}
 	
@@ -162,6 +228,5 @@ public class Thes extends XmlEntity {
 	public Map<String, String> asFormAdapterParams(String prefix) {
 		return null;
 	}
-
-	protected static Logger log = Logger.getRootLogger();
+	
 }

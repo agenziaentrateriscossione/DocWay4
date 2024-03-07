@@ -15,6 +15,8 @@ import it.tredi.dw4.utils.StringUtil;
 import it.tredi.dw4.utils.XMLUtil;
 
 import java.net.URLEncoder;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.faces.context.FacesContext;
 import javax.faces.event.ComponentSystemEvent;
@@ -33,6 +35,8 @@ public class ShowdocPartenzaFTRPAA extends ShowdocPartenza {
 	
 	private String fileidFattura = "";
 	private String xslVisualizzazioneFattura = ""; // eventuale XSLT da applicare all'XML della fattura (specificato da file di properties)
+	private String fopVisualizzazioneFattura = ""; // eventuale FOP per creazione XSL da applicare all'XML della fattura (specificato da file di properties)
+	Map<String, String> params = new HashMap<String, String>(); // parametri da passare alla Servlet
 	
 	private String statoFattura = ""; // identifica lo stato della fattura (es. '', 'DT', 'SEND', 'AT', ecc.)
 	
@@ -64,6 +68,14 @@ public class ShowdocPartenzaFTRPAA extends ShowdocPartenza {
 		this.xslVisualizzazioneFattura = xslVisualizzazioneFattura;
 	}
 	
+	public String getFopVisualizzazioneFattura() {
+		return fopVisualizzazioneFattura;
+	}
+
+	public void setFopVisualizzazioneFattura(String fopVisualizzazioneFattura) {
+		this.fopVisualizzazioneFattura = fopVisualizzazioneFattura;
+	}
+	
 	public String getStatoFattura() {
 		return statoFattura;
 	}
@@ -80,6 +92,8 @@ public class ShowdocPartenzaFTRPAA extends ShowdocPartenza {
 		
 		// recupero dell'xslt di visualizzazione
 		xslVisualizzazioneFattura = FatturePaUtilis.getXsltFileForPreview(fatturaPA.getVersione());
+		// recupero dell'xsl per il FOP di visualizzazione
+		fopVisualizzazioneFattura = FatturePaUtilis.getXslFopForPreview(fatturaPA.getVersione());
 		
 		// richiesta al service del download del file XML della fattura (in caso di file P7M viene richiesto
 		// il contenuto del file firmato (XML)
@@ -119,6 +133,88 @@ public class ShowdocPartenzaFTRPAA extends ShowdocPartenza {
 				stato = fatturaPA.getState();
 		}
 		statoFattura = stato;
+		
+		// dati canonici per la servlet
+		params.putAll(getServletParams());
+		// dati relativi alla segnatura
+		if (fopVisualizzazioneFattura != null && !fopVisualizzazioneFattura.isEmpty()) 
+			params.putAll(getSignatureParams());
+	}
+	
+	// ottiene tutti i dati necessari alla segnatura dal Doc
+	private Map<String, String> getSignatureParams() {
+		Map <String, String> params = new HashMap<String, String>();
+		// numero protocollo
+		String numProt = this.doc.getNum_prot();
+		if (numProt != null && !numProt.isEmpty() && !numProt.equals("."))
+			params.put("numProt", numProt);
+		// data protocollo
+		String dataProt = this.doc.getData_prot();
+		if (dataProt != null && !dataProt.isEmpty())
+			params.put("dataProt", dataProt);
+		// tipo doc
+		String tipoDoc = this.doc.getTipo();
+		if (tipoDoc != null && !tipoDoc.isEmpty())
+			params.put("tipoDoc", tipoDoc);
+		// classificazione
+		String cassif = this.doc.getClassif().getText();
+		if (cassif != null && !cassif.isEmpty())
+			params.put("cassif", cassif);
+		
+		return params;
+	}
+	
+	private Map<String, String> getServletParams() {
+		Map <String, String> params = new HashMap<String, String>();
+		// nome
+		String name = this.fileidFattura;
+		if (name != null && !name.isEmpty())
+			params.put("name", name);
+		// title
+		String title = this.fatturaPA.getFileNameFattura() + "." + this.fatturaPA.getExtensionFattura();
+		if (title != null && !title.isEmpty())
+			params.put("title", title);
+		// xsltFileName
+		String xsltFileName = xslVisualizzazioneFattura;
+		if (xsltFileName != null && !xsltFileName.isEmpty())
+			params.put("xsltFileName", xsltFileName);
+		String xslFopFileName = fopVisualizzazioneFattura;
+		if (xslFopFileName != null && !xslFopFileName.isEmpty())
+			params.put("xslFopFileName", xslFopFileName);
+		// db
+		String db = this.formsAdapter.getDb();
+		if (db != null && !db.isEmpty())
+			params.put("db", db);
+		// customTupleName
+		String _cd = this.formsAdapter.getCustomTupleName();
+		if (_cd != null && !_cd.isEmpty())
+			params.put("_cd", _cd);
+		
+		return params;
+	}
+
+	// codifica per inserimento in URL
+	private String encodeForUrl(String numProt) {
+		String toEncode = numProt;
+    	try {
+    		toEncode = URLEncoder.encode(toEncode, "UTF-8");
+    	}
+    	catch (Exception e) { 
+    		Logger.error(e.getMessage(), e); 
+    	}
+    	return toEncode;
+	}
+	
+	// crea la stringa URL con tutti i params
+	public String servletParamsAsURL() {
+		String result = "?";
+		for (Map.Entry<String, String> entry : params.entrySet()) {
+			result = result + entry.getKey() + "=" + encodeForUrl(entry.getValue()) + "&amp;";
+		}
+		// rimuove l'ultimo "&"
+		result = result.substring(0, result.length() - 4);
+		
+		return result;
 	}
 	
 	public void reload(ComponentSystemEvent e) throws Exception {
@@ -301,6 +397,22 @@ public class ShowdocPartenzaFTRPAA extends ShowdocPartenza {
     		Logger.error(e.getMessage(), e); 
     	}
     	return encodedXslt;
+	}
+	
+
+	/**
+     * ritorna il nome file xsl FOP di preview della fattura encodato per l'utilizzo in URL
+     * @return
+     */
+	public String getUrlEncodedXslFopFileName() {
+		String encodedXslFop = fopVisualizzazioneFattura;
+    	try {
+    		encodedXslFop = URLEncoder.encode(encodedXslFop, "UTF-8");
+    	}
+    	catch (Exception e) { 
+    		Logger.error(e.getMessage(), e); 
+    	}
+    	return encodedXslFop;
 	}
 
 }

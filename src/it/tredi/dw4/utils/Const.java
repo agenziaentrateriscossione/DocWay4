@@ -21,6 +21,8 @@ public class Const {
 	public final static String DEFAULT_DATE_FORMAT = "dd/MM/yyyy";
 	public final static String DEFUALT_JQUERY_DATEPICKER_FORMAT = "dd/mm/yy";
 	public final static String DEFAULT_DATE_TIME_FORMAT = "dd/MM/yyyy HH.mm";
+	public final static String DOCWAY_DATE_TIME_FORMAT = "dd/MM/yyyy HH:mm:ss";
+	public final static String DATABASE_DATE_FORMAT = "yyyy-MM-dd";
 	
 	// Stringhe di ritorno di errore restituite da DocWay-Service
 	public final static String RITORNO_ESITO_RICERCA_NULLO = "Esito della ricerca nullo.";
@@ -84,5 +86,8 @@ public class Const {
 	
 	// eventuali configurazioni client da utilizzare su componenti inclusi nel browser (es. IWX, applet firma, ecc.)
 	public final static String DOCWAT_CLIENT_CONFIG_OBJECT = "clientConfig";
+	
+	// valore settato sui campi password per evitare di mostrare sul client una password registrata
+	public final static String PWD_SKIP_LABEL = "*PWD_SKIP*";
 	
 }

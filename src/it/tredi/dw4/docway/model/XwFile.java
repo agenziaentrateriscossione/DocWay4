@@ -48,6 +48,9 @@ public class XwFile extends XmlEntity {
 	private String impronta = "";
 	private String tipoImpronta = "";
 	
+	// mbernardini 07/02/2017 : in caso di deleteImagesAfterPDF inibire l'invio telematico fino a conversione completata
+	private boolean agent_delete = false;
+	
 	public XwFile() {}
     
 	public XwFile(String xml) throws Exception {
@@ -117,6 +120,9 @@ public class XwFile extends XmlEntity {
     	
     	this.impronta = 	XMLUtil.parseAttribute(lastVersionDom, "node()[name()='xw:file']/@impronta");
     	this.tipoImpronta =	XMLUtil.parseAttribute(lastVersionDom, "node()[name()='xw:file']/@tipoImpronta");
+    	
+    	// mbernardini 07/02/2017 : in caso di deleteImagesAfterPDF inibire l'invio telematico fino a conversione completata
+    	this.agent_delete =	StringUtil.booleanValue(XMLUtil.parseAttribute(lastVersionDom, "node()[name()='xw:file']/@agent.delete", "false"));
     	
         return this;
     }
@@ -325,6 +331,14 @@ public class XwFile extends XmlEntity {
 
 	public String getAgent_xml() {
 		return agent_xml;
+	}
+	
+	public boolean isAgent_delete() {
+		return agent_delete;
+	}
+
+	public void setAgent_delete(boolean agent_delete) {
+		this.agent_delete = agent_delete;
 	}
 
 	public void setAgent_xml(String agent_xml) {

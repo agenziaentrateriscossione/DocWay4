@@ -9,19 +9,20 @@ import java.util.Map;
 import javax.faces.context.FacesContext;
 import javax.faces.event.ValueChangeEvent;
 
-import it.tredi.dw4.model.XmlEntity;
-import it.tredi.dw4.utils.Const;
-import it.tredi.dw4.utils.StringUtil;
-import it.tredi.dw4.utils.XMLUtil;
-
 import org.apache.commons.jexl2.Expression;
 import org.apache.commons.jexl2.JexlContext;
 import org.apache.commons.jexl2.JexlEngine;
 import org.apache.commons.jexl2.MapContext;
 import org.dom4j.Document;
 
+import it.tredi.dw4.docway.model.Delega;
+import it.tredi.dw4.model.XmlEntity;
+import it.tredi.dw4.utils.Const;
+import it.tredi.dw4.utils.StringUtil;
+import it.tredi.dw4.utils.XMLUtil;
+
 public class PersonaInterna extends XmlEntity {
-	
+
 	private Document response;
 	private String nrecord= ".";
 	private String nome;
@@ -37,35 +38,42 @@ public class PersonaInterna extends XmlEntity {
 	private String titolo_deferenza;
 	private String secondo_nome;
 	private String soprannome;
-	private String profile_name = ""; 
+	private String profile_name = "";
 	private String profile_cod = "";
 	private boolean profile_changed = false;
 	private String multisocieta = "";
 	private String physDoc;
-	
+
 	private Profile profilo = new Profile();
 	private Recapito recapito = new Recapito();
 	private RecapitoPersonale recapito_personale = new RecapitoPersonale();
 	private Qualifica qualifica = new Qualifica();
 	private Competenze competenze = new Competenze();
 	private Note note = new Note();
-	
+
 	private List<Mansione> mansione;
 	private List<Login> login;
 	private List<GruppoAppartenenza> gruppo_appartenenza;
 	private List<Responsabilita> responsabilita;
 	private List<Profile> profili;
 	private List<Right> personal_rights;
-	
+
 	private List<Mailbox> mailboxes; // parametri necessari alla configurazione della mailbox
-	
+
 	private List<Listof_rights> listof_rights;
 	private HashMap<String, Right> rights = new HashMap<String, Right>();
-	
+
 	private List<Modifica> modifiche;
 	private Creazione creazione = new Creazione();
 	private UltimaModifica ultima_modifica = new UltimaModifica();
+
+	//tiommi 25/09/2017 : gestione deleghe
+	private List<Delega> deleghe = new ArrayList<Delega>();
+	private int maxDeleghe = 5;
 	
+	//dpranteda 23/09/2019 - credenziali per firma remota
+	private List<CredenzialeFirmaRemota> firmeRemote = new ArrayList<CredenzialeFirmaRemota>();
+
 	public PersonaInterna() {
 		this.mansione = new ArrayList<Mansione>();
 		this.login = new ArrayList<Login>();
@@ -73,11 +81,11 @@ public class PersonaInterna extends XmlEntity {
 		this.responsabilita = new ArrayList<Responsabilita>();
 		this.mailboxes = new ArrayList<Mailbox>();
 	}
-    
+
     public PersonaInterna(String xmlPersonaInterna) throws Exception {
         this.init(XMLUtil.getDOM(xmlPersonaInterna));
     }
-    
+
     @SuppressWarnings("unchecked")
 	public PersonaInterna init(Document domPersonaInterna) {
     	this.response = domPersonaInterna;
@@ -111,44 +119,56 @@ public class PersonaInterna extends XmlEntity {
     	this.personal_rights = XMLUtil.parseSetOfElement(domPersonaInterna, "//persona_interna/personal_rights/right", new Right());
     	this.creazione.init(XMLUtil.createDocument(domPersonaInterna, "//persona_interna/storia/creazione"));
     	this.ultima_modifica.init(XMLUtil.createDocument(domPersonaInterna, "//persona_interna/storia/ultima_modifica"));
-    	
+
     	this.profile_name = 	XMLUtil.parseAttribute(domPersonaInterna, "persona_interna/profile/@name");
     	this.profile_cod =		XMLUtil.parseAttribute(domPersonaInterna, "persona_interna/profile/@cod");
     	this.profilo.init(XMLUtil.createDocument(domPersonaInterna, "//profilo[@selected='true']"));
     	this.profile_changed =	StringUtil.booleanValue(XMLUtil.parseAttribute(domPersonaInterna, "persona_interna/profile/@changed", ""));
+    	this.deleghe = XMLUtil.parseSetOfElement(domPersonaInterna, "//persona_interna/deleghe/delega", new Delega());
+    	this.maxDeleghe = Integer.parseInt(XMLUtil.parseStrictAttribute(domPersonaInterna, "/response/@maxDeleghe", "5"));
+    	
+    	this.firmeRemote = XMLUtil.parseSetOfElement(domPersonaInterna, "//persona_interna/firmeRemote/credenzialeFirmaRemota", new CredenzialeFirmaRemota());
     	
     	initListOfRights();
-    	
+
         this.profili = XMLUtil.parseSetOfElement(domPersonaInterna, "/response/profilo", new Profile());
         Profile defaultProfile = new Profile();
         defaultProfile.setNome(Const.PROFILE_DEFAULT_NAME);
         defaultProfile.setCodice(Const.PROFILE_DEFAULT_CODE);
         this.profili.add(0, new Profile());
         this.profili.add(1, defaultProfile);
-        
+
         // Da decommentare se si decide di differenziare il codice del profilo di default rispetto a quello
         // custom (attualmente sono entrambi impostati a stringa vuota)
         if (this.profilo == null || (this.profilo.getCodice() == null || this.profilo.getCodice().length() == 0)) {
         	// Caso di modifica con nessun profilo assegnato (caso custom o di default)
-        	if (this.profile_cod != null 
-        			&& this.profile_cod.length() > 0 
+        	if (this.profile_cod != null
+        			&& this.profile_cod.length() > 0
         			&& this.profile_cod.equals(Const.PROFILE_DEFAULT_CODE))
         		this.profilo = (Profile) this.profili.get(1); // Profilo di default
         }
-         
+
         if (personal_rights.size() > 0) fillPersonalRights();
         if (this.login.size() == 0) this.login.add(new Login());
         if (this.mansione.size() == 0) this.mansione.add(new Mansione());
         if (this.mailboxes.size() == 0) this.mailboxes.add(new Mailbox());
         if (this.gruppo_appartenenza.size() == 0) this.gruppo_appartenenza.add(new GruppoAppartenenza());
-        
+
         // mbernardini 03/04/2015 : spostata la valutazione dei disabled perche' non ancora caricati i diritti dell'utente
         evaluateDisabled();
-        
+
         return this;
     }
-    
-    @SuppressWarnings("unchecked")
+
+    public List<CredenzialeFirmaRemota> getFirmeRemote() {
+		return firmeRemote;
+	}
+
+	public void setFirmeRemote(List<CredenzialeFirmaRemota> firmeRemote) {
+		this.firmeRemote = firmeRemote;
+	}
+
+	@SuppressWarnings("unchecked")
 	private void initListOfRights() {
     	this.listof_rights = XMLUtil.parseSetOfElement(response, "//listof_rights", new Listof_rights());
     	resetRights();
@@ -193,11 +213,11 @@ public class PersonaInterna extends XmlEntity {
 			Right right = (Right) iterator.next();
 			this.rights.put(right.getCod(), right);
 		}
-    	
+
     	// mbernardini 03/04/2015 : spostata la valutazione dei disabled perche' non ancora caricati i diritti dell'utente
     	//evaluateDisabled();
     }
-	
+
 	public void changeOpenedGroup(){
 		Group group = (Group) FacesContext.getCurrentInstance().getExternalContext().getRequestMap().get("group");
 		Db dbFather = (Db) FacesContext.getCurrentInstance().getExternalContext().getRequestMap().get("db");
@@ -227,12 +247,12 @@ public class PersonaInterna extends XmlEntity {
 			}
 		}
     }
-	
-	public void profilesValueChange(ValueChangeEvent vce) {  
+
+	public void profilesValueChange(ValueChangeEvent vce) {
         profile_cod = (String)vce.getNewValue();
         profilesChange(profile_cod);
     }
-	
+
     public void fillPersonalRights(){
     	for (Iterator<Right> iterator = personal_rights.iterator(); iterator.hasNext();) {
 			Right right = (Right) iterator.next();
@@ -240,8 +260,8 @@ public class PersonaInterna extends XmlEntity {
 				this.rights.get(right.getCod()).setValue(right.getValue());
 		}
     }
-    
-    public void profilesChange(String codice_profilo) {  
+
+    public void profilesChange(String codice_profilo) {
     	if (null == codice_profilo || codice_profilo.trim().length() == 0) {
     		//profilo = new Profile();
     		profilo = (Profile) this.profili.get(0); // Assegno il profilo vuoto (sempre in posizione 0)
@@ -250,7 +270,7 @@ public class PersonaInterna extends XmlEntity {
     	else {
     		// disattivazione di tutti selezionati per modifica del profilo assegnato alla persona
     		disableAllRepertories();
-    	
+
     		if ( codice_profilo.trim().equals(Const.PROFILE_DEFAULT_CODE)) {
 	    		profilo = (Profile) this.profili.get(1); // Assegno il profilo di default (sempre in posizione 1)
 	    		initListOfRights();
@@ -269,16 +289,16 @@ public class PersonaInterna extends XmlEntity {
 				}
 	        }
     	}
-    	
+
         evaluateDisabled();
-    } 
-    
+    }
+
     /**
      * disattiva tutti i diritti relativi a repertori abilitati
      */
     private void disableAllRepertories() {
     	for (Map.Entry<String, Right> entry : rights.entrySet()) {
-    		if (entry.getKey() != null 
+    		if (entry.getKey() != null
     				&& (entry.getKey().endsWith("-InsRep") || entry.getKey().endsWith("-VisRep") || entry.getKey().endsWith("-CompRep"))) {
     			Right right = entry.getValue();
     			if (right != null) {
@@ -288,16 +308,16 @@ public class PersonaInterna extends XmlEntity {
     		}
     	}
     }
-    
+
     public Map<String, String> asFormAdapterParams(String prefix){
     	if (null == prefix) prefix = "";
     	Map<String, String> params = new HashMap<String, String>();
     	params.put(prefix + ".@nrecord", this.nrecord);
     	params.put(prefix + ".@nome", this.nome);
     	params.put(prefix + ".@cognome", this.cognome);
-    	params.put(prefix + ".@cod_uff", this.cod_uff);
-    	params.put(prefix + ".@cod_amm", this.cod_amm);
-    	params.put(prefix + ".@cod_aoo", this.cod_aoo);
+    	params.put(prefix + ".@cod_uff", (this.cod_uff != null) ? this.cod_uff.trim() : null);
+    	params.put(prefix + ".@cod_amm", (this.cod_amm != null) ? this.cod_amm.trim() : null);
+    	params.put(prefix + ".@cod_aoo", (this.cod_aoo != null) ? this.cod_aoo.trim() : null);
     	params.put(prefix + ".@matricola", (this.matricola.trim().length()> 0) ? this.matricola.trim() : "." );
     	params.put(prefix + ".@sesso", this.sesso);
     	params.put(prefix + ".@titolo", this.titolo);
@@ -332,18 +352,49 @@ public class PersonaInterna extends XmlEntity {
     	params.putAll(qualifica.asFormAdapterParams(".qualifica"));
     	params.putAll(competenze.asFormAdapterParams(".competenze"));
     	params.putAll(note.asFormAdapterParams(".note"));
-    	for ( Iterator<?> i = this.rights.entrySet().iterator() ; i.hasNext() ; ) {  
+    	for ( Iterator<?> i = this.rights.entrySet().iterator() ; i.hasNext() ; ) {
     	    @SuppressWarnings("rawtypes")
-			Map.Entry e = (Map.Entry) i.next();  
+			Map.Entry e = (Map.Entry) i.next();
     	    Right right = (Right) e.getValue();
 			if(right.getType().equals("alfa"))
 				params.put("*tRight_"+right.getCod(), right.getValue());
 			else if(right.getSelected())
 				params.put("*right_"+right.getCod(), "1");
 		}
+
+    	//tiommi 28/09/2017 - gestione deleghe in ACL
+    	cleanBlankDeleghe();
+    	if(deleghe.isEmpty()) {
+    		deleghe.add(new Delega());
+    	}
+    	for (int i = 0; i < deleghe.size(); i++) {
+    		Delega delega = (Delega) deleghe.get(i);
+    		params.putAll(delega.asFormAdapterParams(".deleghe.delega["+i+"]"));
+		}
+    	
+    	//dpranteda 23/09/2019 - gestione deleghe in ACL
+    	cleanBlankFirmeRemote();
+    	if(firmeRemote.isEmpty()) {
+    		firmeRemote.add(new CredenzialeFirmaRemota());
+    	}
+    	for (int i = 0; i < firmeRemote.size(); i++) {
+    		CredenzialeFirmaRemota credenzialeFirmaRemota = (CredenzialeFirmaRemota) firmeRemote.get(i);
+    		params.putAll(credenzialeFirmaRemota.asFormAdapterParams(".firmeRemote.credenzialeFirmaRemota["+i+"]"));
+		}
+
     	return params;
     }
-    
+
+    // toglie le deleghe non valorizzate prima di salvare
+	private void cleanBlankDeleghe() {
+		deleghe.removeIf(delega -> delega.isBlank());
+	}
+
+	// toglie le firme remote non valorizzate prima di salvare
+	private void cleanBlankFirmeRemote() {
+		firmeRemote.removeIf(credenzialeFirmaRemota -> credenzialeFirmaRemota.getUsername().isEmpty());
+	}
+		
 	public String getNome() {
 		return nome;
 	}
@@ -369,7 +420,7 @@ public class PersonaInterna extends XmlEntity {
 	}
 
 	public String getMatricola() {
-		// In caso di matricola pari al punto restituisco la stringa vuota in modo 
+		// In caso di matricola pari al punto restituisco la stringa vuota in modo
 		// da non visualizzare il punto all'interno della scheda di inserimento della persona
 		if (matricola.equals("."))
 			return "";
@@ -460,7 +511,7 @@ public class PersonaInterna extends XmlEntity {
 	public void setMansione(List<Mansione> mansione) {
 		this.mansione = mansione;
 	}
-	
+
 	public List<Mailbox> getMailboxs() {
 		return mailboxes;
 	}
@@ -516,7 +567,7 @@ public class PersonaInterna extends XmlEntity {
 	public List<Responsabilita> getResponsabilita() {
 		return responsabilita;
 	}
-	
+
 	public void setNrecord(String nrecord) {
 		this.nrecord = nrecord;
 	}
@@ -548,7 +599,7 @@ public class PersonaInterna extends XmlEntity {
 	public List<Modifica> getModifiche() {
 		return modifiche;
 	}
-	
+
 	public Creazione getCreazione() {
 		return creazione;
 	}
@@ -572,7 +623,7 @@ public class PersonaInterna extends XmlEntity {
 	public String getNomeufficio() {
 		return nomeufficio;
 	}
-	
+
 	public void clearMansione() {
 		if (mansione != null) {
 			mansione.clear();
@@ -587,17 +638,17 @@ public class PersonaInterna extends XmlEntity {
 		if (mansione.size() == 0) mansione.add(new Mansione());
 		return null;
 	}
-	
+
 	public String addMansione(){
 		Mansione mans = (Mansione) FacesContext.getCurrentInstance().getExternalContext().getRequestMap().get("mansione");
 		int index = mansione.indexOf(mans);
 		if (index == mansione.size()-1)
 			mansione.add(index+1, new Mansione());
-		else 
+		else
 			mansione.add(new Mansione());
 		return null;
 	}
-	
+
 	public void clearMailbox() {
 		if (mailboxes != null) {
 			mailboxes.clear();
@@ -612,17 +663,17 @@ public class PersonaInterna extends XmlEntity {
 		if (mailboxes.size() == 0) mailboxes.add(new Mailbox());
 		return null;
 	}
-	
+
 	public String addMailbox(){
 		Mailbox mail = (Mailbox) FacesContext.getCurrentInstance().getExternalContext().getRequestMap().get("mailbox");
 		int index = mailboxes.indexOf(mail);
 		if (index == mailboxes.size()-1)
 			mailboxes.add(index+1, new Mailbox());
-		else 
+		else
 			mailboxes.add(new Mailbox());
 		return null;
 	}
-	
+
 	public void clearGruppoAppartenenza() {
 		if (gruppo_appartenenza != null) {
 			gruppo_appartenenza.clear();
@@ -637,13 +688,13 @@ public class PersonaInterna extends XmlEntity {
 		if (gruppo_appartenenza.size() == 0 ) gruppo_appartenenza.add(new GruppoAppartenenza());
 		return null;
 	}
-	
+
 	public String addGruppoAppartenenza(){
 		GruppoAppartenenza gruppo = (GruppoAppartenenza) FacesContext.getCurrentInstance().getExternalContext().getRequestMap().get("gruppo_appartenenza");
 		int index = gruppo_appartenenza.indexOf(gruppo);
-		if (index == gruppo_appartenenza.size()-1) 
+		if (index == gruppo_appartenenza.size()-1)
 			gruppo_appartenenza.add(index+1, new GruppoAppartenenza());
-		else 
+		else
 			gruppo_appartenenza.add(new GruppoAppartenenza());
 		return null;
 	}
@@ -655,7 +706,7 @@ public class PersonaInterna extends XmlEntity {
 		if (login.size() == 0) login.add(new Login());
 		return null;
 	}
-	
+
 	public String addLogin(){
 		Login loginname = (Login) FacesContext.getCurrentInstance().getExternalContext().getRequestMap().get("login");
 		int index = login.indexOf(loginname);
@@ -679,22 +730,32 @@ public class PersonaInterna extends XmlEntity {
 	public List<Profile> getProfili() {
 		return profili;
 	}
-	
+
 	/**
 	 * Modifica di un diritto dalla scheda di inserimento/modifica di
-	 * una persona interna 
+	 * una persona interna
 	 * @return
 	 */
 	public String modifyRight(){
 		Right right = (Right) FacesContext.getCurrentInstance().getExternalContext().getRequestMap().get("right");
 		boolean newVal = !right.getSelected();
-		right.setValue(String.valueOf(newVal));
+
+		// mbernardini 04/09/2017 : migliorata la modifica di diritti di tipo 'alfa'
+		if (right.getType() != null && right.getType().equals("alfa")) {
+			if (right.getValue().equals("") || right.getValue().equals("*NHL*"))
+				newVal = false;
+			else
+				newVal = true;
+		}
+		else
+			right.setValue(String.valueOf(newVal));
+
 		if (newVal){
 			List<Oncheck> operation = right.getOnchecks();
 			for (Iterator<Oncheck> iterator = operation.iterator(); iterator.hasNext();) {
 				Oncheck oncheck = (Oncheck) iterator.next();
 				Right changed = this.rights.get(oncheck.getWhat());
-				if( oncheck.getAction().equals("check") ) 
+				if( oncheck.getAction().equals("check") )
 					changed.setValue("true");
 				else if( oncheck.getAction().equals("uncheck") )
 					changed.setValue("false");
@@ -705,40 +766,40 @@ public class PersonaInterna extends XmlEntity {
 			for (Iterator<Onuncheck> iterator = operation.iterator(); iterator.hasNext();) {
 				Onuncheck onuncheck = (Onuncheck) iterator.next();
 				Right changed = this.rights.get(onuncheck.getWhat());
-				if( onuncheck.getAction().equals("check") ) 
+				if( onuncheck.getAction().equals("check") )
 					changed.setValue("true");
 				else if( onuncheck.getAction().equals("uncheck") )
 					changed.setValue("false");
 			}
 		}
-		
-		
+
+
 		// mbernardini 26/06/2015 : in caso di modifica di un diritto non deve essere sganciato il profilo
 		// Nel caso di modifica di un diritto di una persona interna occorre azzerare
 		// l'eventuale profilo agganciato alla persona stessa
 		//profilesChange("");
-		
+
     	evaluateDisabled();
-		
+
 		return null;
 	}
-	
+
 	public String evaluateDisabled(){
-		for ( Iterator<?> i = this.rights.entrySet().iterator() ; i.hasNext() ; ) {  
+		for ( Iterator<?> i = this.rights.entrySet().iterator() ; i.hasNext() ; ) {
     	    @SuppressWarnings("rawtypes")
-			Map.Entry e = (Map.Entry) i.next();  
+			Map.Entry e = (Map.Entry) i.next();
     	    Right right = (Right) e.getValue();
     	    String disabled = right.getDisabled().getIfVar();
     	    if (null != disabled && disabled.trim().length() > 0){
 		        JexlEngine jexl = new JexlEngine();
 		        // Create an expression object
 		        Expression ex = jexl.createExpression( disabled );
-		
+
 		        // Create a context and add data
 		        JexlContext jc = new MapContext();
 		        jc.set("rights", this.rights);
 		        jc.set("this", this);
-		
+
 		        // Now evaluate the expression, getting the result
 		        boolean enabled = (Boolean) ex.evaluate(jc);
 	        	right.setDisable(enabled);
@@ -763,7 +824,7 @@ public class PersonaInterna extends XmlEntity {
 	public String getProfile_name() {
 		return profile_name;
 	}
-	
+
 	public void setProfile_cod(String profile_cod) {
 		this.profile_cod = profile_cod;
 	}
@@ -771,7 +832,7 @@ public class PersonaInterna extends XmlEntity {
 	public String getProfile_cod() {
 		return profile_cod;
 	}
-	
+
 	public boolean isProfile_changed() {
 		return profile_changed;
 	}
@@ -796,6 +857,22 @@ public class PersonaInterna extends XmlEntity {
 		return physDoc;
 	}
 
+	public List<Delega> getDeleghe() {
+		return deleghe;
+	}
+
+	public void setDeleghe(List<Delega> deleghe) {
+		this.deleghe = deleghe;
+	}
+
+	public int getMaxDeleghe() {
+		return maxDeleghe;
+	}
+
+	public void setMaxDeleghe(int maxDeleghe) {
+		this.maxDeleghe = maxDeleghe;
+	}
+
 	public String moveUpMansione(){
 		Mansione mans = (Mansione) FacesContext.getCurrentInstance().getExternalContext().getRequestMap().get("mansione");
 		int index = mansione.indexOf(mans);
@@ -805,7 +882,7 @@ public class PersonaInterna extends XmlEntity {
 		}
 		return null;
 	}
-	
+
 	public String moveDownMansione(){
 		Mansione mans = (Mansione) FacesContext.getCurrentInstance().getExternalContext().getRequestMap().get("mansione");
 		int index = mansione.indexOf(mans);
@@ -815,7 +892,7 @@ public class PersonaInterna extends XmlEntity {
 		}
 		return null;
 	}
-	
+
 	public String moveUpMailbox(){
 		Mailbox mail = (Mailbox) FacesContext.getCurrentInstance().getExternalContext().getRequestMap().get("mailbox");
 		int index = mailboxes.indexOf(mail);
@@ -825,7 +902,7 @@ public class PersonaInterna extends XmlEntity {
 		}
 		return null;
 	}
-	
+
 	public String moveDownMailbox(){
 		Mailbox mail = (Mailbox) FacesContext.getCurrentInstance().getExternalContext().getRequestMap().get("mailbox");
 		int index = mailboxes.indexOf(mail);
@@ -835,7 +912,7 @@ public class PersonaInterna extends XmlEntity {
 		}
 		return null;
 	}
-	
+
 	public String moveUpGruppo(){
 		GruppoAppartenenza gruppo = (GruppoAppartenenza) FacesContext.getCurrentInstance().getExternalContext().getRequestMap().get("gruppo_appartenenza");
 		int index = gruppo_appartenenza.indexOf(gruppo);
@@ -854,7 +931,7 @@ public class PersonaInterna extends XmlEntity {
 		}
 		return null;
 	}
-	
+
 	public String moveUpLogin(){
 		Login loginname = (Login) FacesContext.getCurrentInstance().getExternalContext().getRequestMap().get("login");
 		int index = login.indexOf(loginname);
@@ -873,5 +950,49 @@ public class PersonaInterna extends XmlEntity {
 		}
 		return null;
 	}
+
+	public String removeDelegato() {
+		Delega delega = (Delega) FacesContext.getCurrentInstance().getExternalContext().getRequestMap().get("delega");
+		deleghe.remove(delega);
+		if(deleghe.isEmpty())
+			deleghe.add(new Delega(true));
+		return null;
+	}
+
+	public String addDelegato() {
+		if(this.deleghe.size() >= maxDeleghe) {
+			return null;
+		}
+		Delega delega = (Delega) FacesContext.getCurrentInstance().getExternalContext().getRequestMap().get("delega");
+		int index = deleghe.indexOf(delega);
+		deleghe.add(index+1, new Delega(true));
+		return null;
+	}
+
+	public String copyDelegato() {
+		if(this.deleghe.size() >= maxDeleghe) {
+			return null;
+		}
+		Delega delega = (Delega) FacesContext.getCurrentInstance().getExternalContext().getRequestMap().get("delega");
+		int index = deleghe.indexOf(delega);
+		deleghe.add(index+1, new Delega(delega.getDataInizio(), delega.getDataFine(), delega.isPermanente(), delega.isAttiva(), delega.isSostituto()));
+		return null;
+	}
 	
+	//dpranteda 23/09/2019 - credenziali per firma remota
+	public String removeCredenzialeFirmaRemota() {
+		CredenzialeFirmaRemota credenzialeFirmaRemota = (CredenzialeFirmaRemota) FacesContext.getCurrentInstance().getExternalContext().getRequestMap().get("credenzialeFirmaRemota");
+		firmeRemote.remove(credenzialeFirmaRemota);
+		if(firmeRemote.isEmpty())
+			firmeRemote.add(new CredenzialeFirmaRemota());
+		return null;
+	}
+
+	public String addCredenzialeFirmaRemota() {
+		CredenzialeFirmaRemota credenzialeFirmaRemota = (CredenzialeFirmaRemota) FacesContext.getCurrentInstance().getExternalContext().getRequestMap().get("credenzialeFirmaRemota");
+		int index = firmeRemote.indexOf(credenzialeFirmaRemota);
+		firmeRemote.add(index+1, new CredenzialeFirmaRemota());
+		return null;
+	}
+
 }

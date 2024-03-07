@@ -13,27 +13,36 @@
 				<f:ajax event="action" render="@form"/>
 				<span class="glyphicon glyphicon-play"></span>
 			</h:commandLink>
-			<h:commandLink title="#{i18n['lastPage']}" action="#{bean.ultimaPagina}" styleClass="btn btn-default #{!(bean.formsAdapter.ultimaPaginaEnabled) ? 'disabled' : ''} auto-width openwaitmsg">
+			
+			<h:commandLink rendered="#{!bean.formsAdapter.elasticsearchEnabled}" title="#{i18n['lastPage']}" action="#{bean.ultimaPagina}" styleClass="btn btn-default #{!(bean.formsAdapter.ultimaPaginaEnabled) ? 'disabled' : ''} auto-width openwaitmsg">
 				<f:ajax event="action" render="@form"/>
 				<span class="glyphicon glyphicon-fast-forward"></span>
 			</h:commandLink>
+			<h:commandLink rendered="#{bean.formsAdapter.elasticsearchEnabled}" title="#{i18n['avantiRapido']}" action="#{bean.paginaSpecifica(bean.formsAdapter.current+5)}" styleClass="btn btn-default #{!(bean.formsAdapter.avantiRapidoEnabled) ? 'disabled' : ''} auto-width openwaitmsg">
+				<f:ajax event="action" render="@form"/>
+				<span class="glyphicon glyphicon-forward"></span>
+			</h:commandLink>
 		</div>
 		<div class="titles-navigation inline pull-right">
-			<h:panelGroup rendered="#{bean.formsAdapter.total > 0}" layout="block" styleClass="right page-selector">
-				<h:panelGroup rendered="#{customPage eq 'true' and !empty customPageId}">
-					<h:inputText id="#{customPageId}Pag" value="#{bean.currentPage}" styleClass="form-control submitsingleinput popoveritem" p:data-toggle="popover" p:data-placement="bottom" p:data-trigger="hover" p:data-content="#{i18n['dw4.elenco_risultati']} #{i18n['dw4.from']} #{bean.firstPosition} #{i18n['dw4.to']} #{bean.lastPosition} (#{i18n['dw4.on']} #{bean.count})" />
+			<h:panelGroup rendered="#{bean.formsAdapter.total > 0}" layout="block" styleClass="right page-selector popoveritem" p:data-toggle="popover" p:data-placement="bottom" p:data-trigger="hover" p:data-content="#{i18n['dw4.elenco_risultati']} #{i18n['dw4.from']} #{bean.firstPosition} #{i18n['dw4.to']} #{bean.lastPosition} (#{i18n['dw4.on']} #{bean.count})">
+				<h:panelGroup rendered="#{!bean.formsAdapter.elasticsearchEnabled and customPage eq 'true' and !empty customPageId}">
+					<h:inputText id="#{customPageId}Pag" value="#{bean.currentPage}" styleClass="form-control submitsingleinput" />
 					<h:commandLink id="#{customPageId}PagBtn" action="#{bean.paginaSpecifica}"><f:ajax execute="@form" render="@form" /></h:commandLink>
 				</h:panelGroup>
-				<h:panelGroup rendered="#{customPage ne 'true'}">
+				<h:panelGroup rendered="#{bean.formsAdapter.elasticsearchEnabled or customPage ne 'true'}">
 					#{bean.formsAdapter.current}
 				</h:panelGroup>
 				#{i18n['dw4.of']} #{bean.formsAdapter.total}
 			</h:panelGroup>
 		</div>
 		<div class="btn-group inline pull-right">
-			<h:commandLink action="#{bean.primaPagina}" title="#{i18n['firstPage']}" styleClass="btn btn-default #{!(bean.formsAdapter.primaPaginaEnabled) ? 'disabled' : ''} auto-width openwaitmsg">
+			<h:commandLink rendered="#{!bean.formsAdapter.elasticsearchEnabled}" action="#{bean.primaPagina}" title="#{i18n['firstPage']}" styleClass="btn btn-default #{!(bean.formsAdapter.primaPaginaEnabled) ? 'disabled' : ''} auto-width openwaitmsg">
 				<f:ajax event="action" render="@form"/>
 				<span class="glyphicon glyphicon-fast-backward"></span>
+			</h:commandLink>
+			<h:commandLink rendered="#{bean.formsAdapter.elasticsearchEnabled}" action="#{bean.paginaSpecifica(bean.formsAdapter.current-5)}" title="#{i18n['indietroRapido']}" styleClass="btn btn-default #{!(bean.formsAdapter.indietroRapidoEnabled) ? 'disabled' : ''} auto-width openwaitmsg">
+				<f:ajax event="action" render="@form"/>
+				<span class="glyphicon glyphicon-backward"></span>
 			</h:commandLink> 
 			
 			<h:commandLink title="#{i18n['prevPage']}" action="#{bean.paginaPrecedente}" styleClass="btn btn-default #{!(bean.formsAdapter.paginaPrecedenteEnabled) ? 'disabled' : ''} auto-width openwaitmsg">

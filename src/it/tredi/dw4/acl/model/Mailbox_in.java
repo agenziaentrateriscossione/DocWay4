@@ -3,10 +3,10 @@ package it.tredi.dw4.acl.model;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.dom4j.Document;
+
 import it.tredi.dw4.model.XmlEntity;
 import it.tredi.dw4.utils.XMLUtil;
-
-import org.dom4j.Document;
 
 public class Mailbox_in extends XmlEntity {
 	private String email = "";
@@ -29,7 +29,8 @@ public class Mailbox_in extends XmlEntity {
     	this.password 	= XMLUtil.parseAttribute(domMailbox, "mailbox_in/@password");
     	this.protocol 	= XMLUtil.parseAttribute(domMailbox, "mailbox_in/@protocol");
     	this.port		= XMLUtil.parseAttribute(domMailbox, "mailbox_in/@port");
-        return this;
+        
+    	return this;
     }
     
     public Map<String, String> asFormAdapterParams(String prefix){
@@ -38,7 +39,10 @@ public class Mailbox_in extends XmlEntity {
     	if (null != this.email ) 	params.put(prefix+".@email", this.email.trim());
     	if (null != this.host ) 	params.put(prefix+".@host", this.host.trim());
     	if (null != this.login ) 	params.put(prefix+".@login", this.login.trim());
-    	if (null != this.password ) params.put(prefix+".@password", this.password.trim());
+    	
+    	// mbernardini 06/07/2016 : impossibilita' di svuotare il campo password sulle caselle di posta elettronica
+    	if (this.password != null) params.put("*mailbox_in.password", this.password.trim());
+    	
     	if (null != this.protocol ) params.put(prefix+".@protocol", this.protocol.trim());
     	if (null != this.port ) 	params.put(prefix+".@port", this.port.trim());
     	return params;

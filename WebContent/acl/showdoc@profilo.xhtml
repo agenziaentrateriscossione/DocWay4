@@ -39,6 +39,10 @@
 					<h:commandLink rendered="#{showdocProfilo.formsAdapter.funzionalitaDisponibili['ins_profili']}" action="#{showdocProfilo.ripetiNuovo}" styleClass="btn btn-default openwaitmsg">
 						<span>#{i18n['acl.clone']}</span>
 					</h:commandLink>
+					
+					<ui:include src="../azionimassive/startAzioniMassiveButtons.xhtml">
+	                    <ui:param name="pageBean" value="#{showdocProfilo}" />
+	                </ui:include>
 				</div>
 			</div>
 			<!-- secondo livello toolbar: fine -->
@@ -50,7 +54,7 @@
 
 		<h5 class="sub-header" title="#{showdocProfilo.profilo.nome_profilo}">
 			<span class="profili glyphicons-pro"></span>&#160;
-			<h:outputText value="#{showdocProfilo.profilo.nome_profilo}" escape="false" />
+			<h:outputText value="#{showdocProfilo.profilo.nome_profilo}" />
 		</h5>
 
 		<!-- scheda show: inizio -->

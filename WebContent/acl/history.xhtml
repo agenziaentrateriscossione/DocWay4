@@ -15,7 +15,11 @@
 
 		<dl class="dl-horizontal">
 			<dt>#{i18n['acl.registration']}</dt>
-			<dd>#{bean.creazione.dateLong} <strong>#{bean.creazione.uff_oper}</strong> - #{bean.creazione.oper}</dd>
+			<dd>#{bean.creazione.dateLong}
+			<h:panelGroup rendered="#{not empty bean.creazione.delegato}">
+				<strong>#{fn:substringBefore(fn:substringAfter(bean.creazione.delegato, '('), ')')}</strong>&#160;-&#160;#{fn:substringBefore(bean.creazione.delegato, '(')} #{i18n['dw4.su_delega_di']}
+			</h:panelGroup>
+			 <strong>#{bean.creazione.uff_oper}</strong> - #{bean.creazione.oper}</dd>
 
 			<h:panelGroup rendered="#{fn:length(bean.modifiche)>0}">
 				<dt>#{i18n['acl.storia_modifiche']}</dt>
@@ -35,18 +39,24 @@
 				<ui:repeat var="storia" value="#{bean.modifiche}">
 					<h:panelGroup layout="block" rendered="#{!empty(storia.dateLong)}">
 						<dt>#{i18n['acl.modify']}</dt>
-						<dd>#{storia.dateLong} <strong>#{storia.uff_oper}</strong> - #{storia.oper}</dd>
+						<dd>#{storia.dateLong}
+						<h:panelGroup rendered="#{not empty storia.delegato}">
+							<strong>#{fn:substringBefore(fn:substringAfter(storia.delegato, '('), ')')}</strong>&#160;-&#160;#{fn:substringBefore(storia.delegato, '(')} #{i18n['dw4.su_delega_di']}
+						</h:panelGroup>
+						 <strong>#{storia.uff_oper}</strong> - #{storia.oper}</dd>
 					</h:panelGroup>
 				</ui:repeat>
 			</dl>
 		</div>
 		
-		<h:panelGroup rendered="#{fn:length(bean.modifiche)>0}">
+		<h:panelGroup rendered="#{!empty(bean.ultima_modifica.dateLong)}">
 			<dl class="dl-horizontal">
-				<h:panelGroup layout="block" rendered="#{!empty(bean.ultima_modifica.dateLong)}">
-					<dt>#{i18n['acl.lastmodify']}</dt>
-					<dd>#{bean.ultima_modifica.dateLong} <strong>#{bean.ultima_modifica.uff_oper}</strong> - #{bean.ultima_modifica.oper}</dd>
+				<dt>#{i18n['acl.lastmodify']}</dt>
+				<dd>#{bean.ultima_modifica.dateLong}
+				<h:panelGroup rendered="#{not empty bean.ultima_modifica.delegato}">
+					<strong>#{fn:substringBefore(fn:substringAfter(bean.ultima_modifica.delegato, '('), ')')}</strong>&#160;-&#160;#{fn:substringBefore(bean.ultima_modifica.delegato, '(')} #{i18n['dw4.su_delega_di']}
 				</h:panelGroup>
+				<strong>#{bean.ultima_modifica.uff_oper}</strong> - #{bean.ultima_modifica.oper}</dd>
 			</dl>
 		</h:panelGroup>
 	</div>

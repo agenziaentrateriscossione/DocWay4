@@ -100,6 +100,7 @@
 			<url-pattern>/docway/actalisApplet/*</url-pattern>
 			<url-pattern>/docway/3diSignatureApplet/*</url-pattern>
 			<url-pattern>/docway/fatturepa/xslt/*</url-pattern>
+			<url-pattern>/stacktester</url-pattern>
 		</web-resource-collection>-->
 		<!-- No auth-constraint means everybody has access! -->
 		<!--</security-constraint>-->
@@ -151,6 +152,14 @@
 		<servlet-name>PreviewFatturaPAServlet</servlet-name>
 		<servlet-class>it.tredi.dw4.servlet.fatturepa.PreviewFatturaServlet</servlet-class>
 	</servlet>
+	<servlet>
+		<servlet-name>Doc2AttachmentServlet</servlet-name>
+		<servlet-class>it.tredi.dw4.servlet.Doc2AttachmentServlet</servlet-class>
+	</servlet>
+	<servlet>
+		<servlet-name>StackTesterServlet</servlet-name>
+		<servlet-class>it.tredi.dw4.servlet.StackTesterServlet</servlet-class>
+	</servlet>
     
     <servlet-mapping>
         <servlet-name>Faces Servlet</servlet-name>
@@ -171,6 +180,14 @@
 	<servlet-mapping>
 		<servlet-name>PreviewFatturaPAServlet</servlet-name>
 		<url-pattern>/previewfatturapa</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>Doc2AttachmentServlet</servlet-name>
+		<url-pattern>/doc2attachment</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>StackTesterServlet</servlet-name>
+		<url-pattern>/stacktester</url-pattern>
 	</servlet-mapping>
 	
 	<!--filter>
@@ -222,6 +239,10 @@
         <filter-class>it.tredi.dw4.utils.filters.CheckLoginFilter</filter-class>
     </filter>
     <filter>
+        <filter-name>checkClientIdFilter</filter-name>
+        <filter-class>it.tredi.dw4.utils.filters.CheckClientIdFilter</filter-class>
+    </filter>
+    <filter>
         <filter-name>docwayAdmFilter</filter-name>
         <filter-class>it.tredi.dw4.utils.filters.DocwayAdmFilter</filter-class>
     </filter>
@@ -242,6 +263,11 @@
     </filter-mapping-->
     <filter-mapping>
         <filter-name>checkLoginFilter</filter-name>
+        <url-pattern>*.pf</url-pattern>
+        <servlet-name>Faces Servlet</servlet-name>
+    </filter-mapping>
+    <filter-mapping>
+        <filter-name>checkClientIdFilter</filter-name>
         <url-pattern>*.pf</url-pattern>
         <servlet-name>Faces Servlet</servlet-name>
     </filter-mapping>
@@ -289,6 +315,11 @@
         <param-name>it.treditech.workflow.jsfcomponents.TaskForm.wsdl</param-name>
         <param-value>http://localhost:8080/eXtraWayWorkflowWS/services/Workflow?wsdl</param-value>
     </context-param>
+    <!-- enable cliend window mode -->
+	<context-param>
+    	<param-name>javax.faces.CLIENT_WINDOW_MODE</param-name>
+    	<param-value>url</param-value>
+	</context-param>
     
     <!-- Session Configuration -->
 	<!--session-config>

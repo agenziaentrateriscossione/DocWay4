@@ -54,7 +54,7 @@
 				<h:panelGroup rendered="#{!empty showdocIndiceTitolario.indice_titolario.compilazione_automatica.classif.cod}">
 					<dt>#{i18n['dw4.classif']}</dt>
 					<dd>
-						<h:outputText value="#{showdocIndiceTitolario.indice_titolario.compilazione_automatica.classif.cod.concat(' - ').concat(showdocIndiceTitolario.indice_titolario.compilazione_automatica.classif.text)}" escape="false"><f:converter converterId="ClassifConverter"/></h:outputText>
+						<h:outputText value="#{showdocIndiceTitolario.indice_titolario.compilazione_automatica.classif.cod.concat(' - ').concat(showdocIndiceTitolario.indice_titolario.compilazione_automatica.classif.text)}" ><f:converter converterId="ClassifConverter"/></h:outputText>
 					</dd>
 				</h:panelGroup>
 				<h:panelGroup rendered="#{!empty showdocIndiceTitolario.indice_titolario.compilazione_automatica.scarto.val}">
@@ -155,7 +155,7 @@
 			<!-- workflow automatici: fine -->
 		</h:panelGroup>
 	
-		<h:inputTextarea value="#{showdocIndiceTitolario.xml}" rendered="#{showdocIndiceTitolario.debugMode}" styleClass="form-control" rows="10" />
+		<h:inputTextarea value="#{showdocIndiceTitolario.xml}" rendered="#{showdocIndiceTitolario.debugMode}" styleClass="form-control debug-textarea" rows="10" />
 	</div>
 </ui:define>
 

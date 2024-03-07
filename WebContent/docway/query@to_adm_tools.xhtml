@@ -38,7 +38,7 @@
 								</ui:repeat>
 							</tbody>
 						</table>
-				       	<h:inputTextarea value="#{pageBean.lookupSeduta.xml}" rendered="#{pageBean.debugMode}" styleClass="form-control" rows="10"/>
+				       	<h:inputTextarea value="#{pageBean.lookupSeduta.xml}" rendered="#{pageBean.debugMode}" styleClass="form-control debug-textarea" rows="10"/>
 					</div> <!-- /fieldset -->
 				</div>
 			</div>
@@ -46,7 +46,7 @@
 		<!-- scheda query: fine -->
 	</div>
 	
-	<h:inputTextarea value="#{queryToAdmTools.xml}" rendered="#{queryToAdmTools.debugMode}" styleClass="form-control" rows="10" />	
+	<h:inputTextarea value="#{queryToAdmTools.xml}" rendered="#{queryToAdmTools.debugMode}" styleClass="form-control debug-textarea" rows="10" />
 </ui:define>
     
 </ui:composition>    

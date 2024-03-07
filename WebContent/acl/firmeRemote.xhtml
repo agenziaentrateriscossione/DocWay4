@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" 
+	  xmlns:h="http://java.sun.com/jsf/html" 
+	  xmlns:ui="http://java.sun.com/jsf/facelets" 
+	  xmlns:f="http://java.sun.com/jsf/core">
+<ui:composition>
+	
+	<ui:repeat id="credenzialeFirmaRemota" var="credenzialeFirmaRemota" value="#{pageBean.firmeRemote}" varStatus="indice">
+		<div class="form-group">
+  			
+  			<label for="templateForm:credenzialeFirmaRemota:#{indice.index}:provider" class="col-sm-2 control-label"><span>#{indice.index == 0 ? i18n['acl.firma_provider'] : '&#160;'}</span></label>
+            <div class="col-sm-2">
+				<h:selectOneMenu value="#{credenzialeFirmaRemota.provider}" id="provider" styleClass="form-control">
+					<f:selectItem itemLabel="#{i18n['acl.unimatica']}" itemValue="UNISERV" />
+					<!-- f:selectItem itemLabel="#{i18n['acl.aruba']}" itemValue="ARUBA" /  -->
+				</h:selectOneMenu>
+			</div>
+			<label for="templateForm:credenzialeFirmaRemota:#{indice.index}:username" class="col-sm-2 control-label"><span>#{i18n['acl.firma_username']}</span></label>
+            <div class="col-sm-4">
+                <h:inputText value="#{credenzialeFirmaRemota.username}" styleClass="form-control"/>
+            </div>
+             <div class="col-sm-1 input-group">
+				<div class="btn-group">
+					<h:commandLink
+						action="#{pageBean.removeCredenzialeFirmaRemota}"
+						title="#{i18n['dw4.elimina_istanza']}"
+						styleClass="btn btn-default">
+						<f:param name="credenzialeFirmaRemota" value="credenzialeFirmaRemota" />
+						<f:ajax execute="@form" render="templateForm:firmeRemote" />
+						<span class="glyphicon glyphicon-minus"></span>
+					</h:commandLink>
+					<h:commandLink
+						action="#{pageBean.addCredenzialeFirmaRemota}"
+						title="#{i18n['dw4.aggiungi_istanza']}"
+						styleClass="btn btn-default">
+						<f:param name="credenzialeFirmaRemota" value="#{credenzialeFirmaRemota}" />
+						<f:ajax execute="@form" render="templateForm:firmeRemote" />
+						<span class="glyphicon glyphicon-plus"></span>
+					</h:commandLink>
+				</div>
+			</div>
+  		</div>
+ 	</ui:repeat>
+
+</ui:composition>
+</html>

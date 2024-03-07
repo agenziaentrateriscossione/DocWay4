@@ -7,9 +7,9 @@ import javax.faces.context.FacesContext;
 
 import org.dom4j.Document;
 
-import it.tredi.dw4.utils.XMLDocumento;
 import it.tredi.dw4.adapters.AdaptersConfigurationLocator;
 import it.tredi.dw4.adapters.ErrormsgFormsAdapter;
+import it.tredi.dw4.beans.Page;
 import it.tredi.dw4.docway.doc.adapters.DocDocWayDocumentFormsAdapter;
 import it.tredi.dw4.docway.model.Contenuto_in;
 import it.tredi.dw4.docway.model.History;
@@ -19,6 +19,8 @@ import it.tredi.dw4.docway.model.Storia;
 import it.tredi.dw4.i18n.I18N;
 import it.tredi.dw4.utils.DateConverter;
 import it.tredi.dw4.utils.Logger;
+import it.tredi.dw4.utils.XMLDocumento;
+import it.tredi.dw4.utils.XMLUtil;
 
 public class ShowdocRaccoglitore extends DocWayShowdoc {
 	private DocDocWayDocumentFormsAdapter formsAdapter;
@@ -27,6 +29,8 @@ public class ShowdocRaccoglitore extends DocWayShowdoc {
 	
 	private Raccoglitore raccoglitore;
 	private boolean close;
+	
+	private String action;
 	
 	private String linkToDoc = ""; // url di accesso al documento corrente (per copia in clipboard e invio mail di notifica). ATTUALMENTE NON UTILIZZATO IN RACCOGLITORE
 	
@@ -74,6 +78,14 @@ public class ShowdocRaccoglitore extends DocWayShowdoc {
 		this.linkToDoc = linkToDoc;
 	}
 	
+	public String getAction() {
+		return action;
+	}
+
+	public void setAction(String action) {
+		this.action = action;
+	}
+	
 	public DocDocWayDocumentFormsAdapter getFormsAdapter() {
 		return formsAdapter;
 	}
@@ -95,13 +107,23 @@ public class ShowdocRaccoglitore extends DocWayShowdoc {
 		
 		setCurrentPage(getFormsAdapter().getCurrent()+"");
 		
+		// gestione doc2attachment
+		setDoc2attachment(XMLUtil.parseStrictAttribute(dom, "/response/@doc2attachment", ""));
+		
+		//tiommi 05/03/2018 richiesta di url di accesso per fascicoli (per copia link e invio notifica)
+		if (raccoglitore != null && raccoglitore.getNrecord() != null && !raccoglitore.getNrecord().isEmpty())
+			linkToDoc = FacesContext.getCurrentInstance().getExternalContext().getRequestContextPath() + "/docway/loaddoc.pf?db=" + formsAdapter.getDb() + "&alias=rac_nrecord&value=" + raccoglitore.getNrecord();
+		
 		// inizializzazione del campi custom da caricare nella pagina
 		getCustomfields().init(dom, "raccoglitore");
+		
+		// inizializzazione di componenti common
+		initCommons(dom);
 	}
 	
 	@Override
 	public void reload() throws Exception {
-		super._reload("showdoc@raccoglitore");
+		super._reload(FacesContext.getCurrentInstance().getExternalContext().getRequestContextPath() + "/docway/showdoc@raccoglitore");
 	}
 	
 	@Override
@@ -197,16 +219,37 @@ public class ShowdocRaccoglitore extends DocWayShowdoc {
 		}
 	}
 	
+	public String getData_asseg(){
+		Rif rif = (Rif) FacesContext.getCurrentInstance().getExternalContext().getRequestMap().get("rif");
+		String data = "";
+		List<Storia> storia = raccoglitore.getStoria();
+		for (int i = 0; i < storia.size(); i++) {
+			Storia element = (Storia)storia.get(i);
+			
+			// mbernardini 29/09/2017 : corretto bug in recupero data di assegnazione.
+			// non e' sufficiente verificare il nome della persona, occorre controllare anche l'ufficio (potrebbe essere stata aggiunta in CC
+			// la stessa persona piu' volte con associato l'ufficio di appartenenza o responsabilita')
+			if(element.getTipo().equals("assegnazione_cc") && element.getNome_uff().equals(rif.getNome_uff()) && element.getNome_persona().equals(rif.getNome_persona())){
+				data = element.getData();
+			}
+			
+		}
+		return data;
+	}
+	
 	public String getData_assegRPA(){
 		Rif rif = this.raccoglitore.getAssegnazioneRPA();
 		String diritto = rif.getDiritto();
 		String tipo = getType(diritto);
 		String data = "";
-		String nome_persona = rif.getNome_persona();
 		List<Storia> storia = raccoglitore.getStoria();
 		for (int i = 0; i < storia.size(); i++) {
 			Storia element = (Storia)storia.get(i);
-			if(element.getTipo().equals(tipo) && element.getNome_persona().equals(nome_persona)){
+			
+			// mbernardini 29/09/2017 : corretto bug in recupero data di assegnazione.
+			// non e' sufficiente verificare il nome della persona, occorre controllare anche l'ufficio (potrebbe essere stata aggiunta in CC
+			// la stessa persona piu' volte con associato l'ufficio di appartenenza o responsabilita')
+			if(element.getTipo().equals(tipo) && element.getNome_uff().equals(rif.getNome_uff()) && element.getNome_persona().equals(rif.getNome_persona())){
 				data = element.getData();
 			}
 			
@@ -218,11 +261,14 @@ public class ShowdocRaccoglitore extends DocWayShowdoc {
 		String data = "";
 		String diritto = rif.getDiritto();
 		String tipo = getType(diritto);
-		String nome_persona = rif.getNome_persona();
 		List<Storia> storia = raccoglitore.getStoria();
 		for (int i = 0; i < storia.size(); i++) {
 			Storia element = (Storia)storia.get(i);
-			if(element.getTipo().equals(tipo) && element.getNome_persona().equals(nome_persona)){
+			
+			// mbernardini 29/09/2017 : corretto bug in recupero info di assegnazione.
+			// non e' sufficiente verificare il nome della persona, occorre controllare anche l'ufficio (potrebbe essere stata aggiunta in CC
+			// la stessa persona piu' volte con associato l'ufficio di appartenenza o responsabilita')
+			if(element.getTipo().equals(tipo) && element.getNome_uff().equals(rif.getNome_uff()) && element.getNome_persona().equals(rif.getNome_persona())){
 				data = I18N.mrs("dw4.assegnato_da") + " " + element.getOperatore();
 			}
 			
@@ -230,7 +276,30 @@ public class ShowdocRaccoglitore extends DocWayShowdoc {
 		return data;
 	}
 	
-	public String getInfoAssegnazioneRPA(){
+	public String getInfoAssegnazione() {
+		Rif rif = (Rif) FacesContext.getCurrentInstance().getExternalContext().getRequestMap().get("rif");
+		return getInfoAssegnazione(rif);
+	}
+	
+	public String getInfoAssegnazioneCC(){
+		Rif rif = (Rif) FacesContext.getCurrentInstance().getExternalContext().getRequestMap().get("rif");
+		String data = "";
+		List<Storia> storia = raccoglitore.getStoria();
+		for (int i = 0; i < storia.size(); i++) {
+			Storia element = (Storia)storia.get(i);
+			
+			// mbernardini 29/09/2017 : corretto bug in recupero info di assegnazione.
+			// non e' sufficiente verificare il nome della persona, occorre controllare anche l'ufficio (potrebbe essere stata aggiunta in CC
+			// la stessa persona piu' volte con associato l'ufficio di appartenenza o responsabilita')
+			if(element.getTipo().equals("assegnazione_cc") && element.getNome_uff().equals(rif.getNome_uff()) && element.getNome_persona().equals(rif.getNome_persona())){
+				data = I18N.mrs("dw4.assegnato_da") + " " + element.getOperatore();
+			}
+			
+		}
+		return data;
+	}
+	
+	public String getInfoAssegnazioneRPA() {
 		Rif rif = this.raccoglitore.getAssegnazioneRPA();
 		return getInfoAssegnazione(rif);
 	}
@@ -239,11 +308,14 @@ public class ShowdocRaccoglitore extends DocWayShowdoc {
 		String diritto = rif.getDiritto();
 		String tipo = getType(diritto);
 		String data = "";
-		String nome_persona = rif.getNome_persona();
 		List<Storia> storia = raccoglitore.getStoria();
 		for (int i = 0; i < storia.size(); i++) {
 			Storia element = (Storia)storia.get(i);
-			if(element.getTipo().equals(tipo) && element.getNome_persona().equals(nome_persona) && null!=element.getVisto_da() && element.getVisto_da().trim().length() > 0){
+			
+			// mbernardini 29/09/2017 : corretto bug in recupero info di visto.
+			// non e' sufficiente verificare il nome della persona, occorre controllare anche l'ufficio (potrebbe essere stata aggiunta in CC
+			// la stessa persona piu' volte con associato l'ufficio di appartenenza o responsabilita')
+			if(element.getTipo().equals(tipo) && element.getNome_uff().equals(rif.getNome_uff()) && element.getNome_persona().equals(rif.getNome_persona()) && null!=element.getVisto_da() && element.getVisto_da().trim().length() > 0){
 				data = "Visto da "+element.getVisto_da()+" il "+(new DateConverter().getAsString(null, null, element.getData_visto()))+ " alle "+element.getOra_visto();
 			}
 			
@@ -251,8 +323,13 @@ public class ShowdocRaccoglitore extends DocWayShowdoc {
 		return data;
 	}
 	
-	public String getCheckVistoRPA(){
+	public String getCheckVistoRPA() {
 		Rif rif = this.raccoglitore.getAssegnazioneRPA();
+		return getCheckVisto(rif);
+	}
+	
+	public String getCheckVisto() {
+		Rif rif = (Rif) FacesContext.getCurrentInstance().getExternalContext().getRequestMap().get("rif");
 		return getCheckVisto(rif);
 	}
 	
@@ -304,12 +381,39 @@ public class ShowdocRaccoglitore extends DocWayShowdoc {
 				return null;
 			}
 			formsAdapter.fillFormsFromResponse(formsAdapter.getLastResponse());
-			DocWayDocRifInt rifInt = new DocWayDocRifInt();
+			DocWayRaccRifInt rifInt = new DocWayRaccRifInt();
 			rifInt.getFormsAdapter().fillFormsFromResponse(response);
 			rifInt.init(response.getDocument());
 			rifInt.setViewAddRPA(true);
-			rifInt.setShowdoc(this);
-			setSessionAttribute("rifInt", rifInt);
+			// mbernardini 13/10/2016 : set del bean della pagina per correggere il ritorno dalla loadingbar in caso di raccoglitori di tipo indice
+			rifInt.setShowdoc(getShowdocBean());
+			setSessionAttribute("rifIntRacc", rifInt);
+			return null;
+		}
+		catch (Throwable t) {
+			handleErrorResponse(ErrormsgFormsAdapter.buildErrorResponse(t));
+			formsAdapter.fillFormsFromResponse(formsAdapter.getLastResponse()); //restore delle form
+			return null;			
+		}
+	}
+	
+	public String addCC() throws Exception{
+		try{
+			this.formsAdapter.openRifInt("CC", false);
+			XMLDocumento response = this.formsAdapter.getDefaultForm().executePOST(getUserBean());
+			if (handleErrorResponse(response)) {
+				formsAdapter.fillFormsFromResponse(formsAdapter.getLastResponse()); //restore delle form
+			}
+			formsAdapter.fillFormsFromResponse(formsAdapter.getLastResponse());
+			DocWayRaccRifInt rifInt = new DocWayRaccRifInt();
+			rifInt.getFormsAdapter().fillFormsFromResponse(response);
+			rifInt.init(response.getDocument());
+			rifInt.setViewAddCC(true);
+			// tiommi: rimosso perchè inserito direttamente in raccoglitore se l'array è vuoto
+			// rifInt.getRaccoglitore().addRifintCC(new Rif());
+			// mbernardini 13/10/2016 : set del bean della pagina per correggere il ritorno dalla loadingbar in caso di raccoglitori di tipo indice
+			rifInt.setShowdoc(getShowdocBean());
+			setSessionAttribute("rifIntRacc", rifInt);
 			return null;
 		}
 		catch (Throwable t) {
@@ -320,34 +424,41 @@ public class ShowdocRaccoglitore extends DocWayShowdoc {
 	}
 	
 	/**
-	 * assegnazione di piu' raccoglitori ad un documento/fascicolo (non ad altri raccoglitori)
+	 * assegnazione di piu' raccoglitori ad un documento/fascicolo (non ad altri raccoglitori) 
 	 * @return
 	 * @throws Exception
 	 */
-	public String doAssignRacAll() throws Exception {
+	public String doAssignRacAll() throws Exception{
 		try {
-			String physDoc = this.formsAdapter.getDefaultForm().getParam("physDoc");
-			this.formsAdapter.doAssignRacAll(physDoc);
+			this.formsAdapter.doAssignRacAll(this.formsAdapter.getDefaultForm().getParam("physDoc"));
 			XMLDocumento response = this.formsAdapter.getDefaultForm().executePOST(getUserBean());
 			if (handleErrorResponse(response)) {
 				formsAdapter.fillFormsFromResponse(formsAdapter.getLastResponse()); //restore delle form
-				return null;
 			}
-			getUserBean().setServiceFormParam("klRac", null);
-			getUserBean().setServiceFormParam("keylist", null);
-			getUserBean().setServiceFormParam("selRac", null);
+			formsAdapter.fillFormsFromResponse(formsAdapter.getLastResponse()); //restore delle form
 			
-			if (response.getAttributeValue("/response/@xverb", "").equals("_CLOSE_"))
-				close = true;
-			
+			String verbo = response.getAttributeValue("/response/@verbo");
+			if (verbo.equals("loadingbar")) {
+				DocWayLoadingbar docWayLoadingbar = new DocWayLoadingbar();
+				docWayLoadingbar.getFormsAdapter().fillFormsFromResponse(response);
+				docWayLoadingbar.init(response);
+				docWayLoadingbar.setHolderPageBean(getShowdocBean());
+				setLoadingbar(docWayLoadingbar);
+				docWayLoadingbar.setActive(true);
+				action = "doAssignRacAll";
+				getUserBean().setServiceFormParam("klRac", null);
+				getUserBean().setServiceFormParam("keylist", null);
+				getUserBean().setServiceFormParam("selRac", null);
+			}
 			return null;
+
 		}
 		catch (Throwable t) {
 			handleErrorResponse(ErrormsgFormsAdapter.buildErrorResponse(t));
 			formsAdapter.fillFormsFromResponse(formsAdapter.getLastResponse()); //restore delle form
 			return null;			
 		}
-	}	
+	}
 
 	/**
 	 * assegnazione di un raccoglitore ad un documento/fascicolo/altro raccoglitore
@@ -500,6 +611,167 @@ public class ShowdocRaccoglitore extends DocWayShowdoc {
 		catch (Throwable t) {
 			handleErrorResponse(ErrormsgFormsAdapter.buildErrorResponse(t));
 			formsAdapter.fillFormsFromResponse(formsAdapter.getLastResponse()); //restore delle form
+			return null;			
+		}
+	}
+	
+
+	/**
+	 * eliminazione di un CC dal raccoglitore (prevede l'apertura della
+	 * loadingbar di eliminazione dei cc ereditati dai documenti/fascicoli)
+	 * @return
+	 * @throws Exception
+	 */
+	@Override
+	public String removeRifCC() throws Exception {
+		Rif rif = (Rif) FacesContext.getCurrentInstance().getExternalContext().getRequestMap().get("rif");
+		try {
+			getFormsAdapter().removeRifIntCConRaccoglitore(rif.getCod_persona(), rif.getCod_uff(), rif.getDiritto());
+			XMLDocumento response = this.formsAdapter.getDefaultForm().executePOST(getUserBean());
+			if (handleErrorResponse(response)) {
+				formsAdapter.fillFormsFromResponse(formsAdapter.getLastResponse()); //restore delle form
+				return null;
+			}
+			
+			getFormsAdapter().fillFormsFromResponse(getFormsAdapter().getLastResponse()); //restore delle form
+			
+			String verbo = response.getAttributeValue("/response/@verbo");
+			if (verbo.equals("loadingbar")) {
+				DocWayLoadingbar docWayLoadingbar = new DocWayLoadingbar();
+				docWayLoadingbar.getFormsAdapter().fillFormsFromResponse(response);
+				docWayLoadingbar.init(response);
+				docWayLoadingbar.setHolderPageBean(getShowdocBean());
+				setLoadingbar(docWayLoadingbar);
+				docWayLoadingbar.setActive(true);
+				action = "aggiornamentoCCracc";
+			}
+			else {
+				reload();
+			}
+			
+			return null;
+		}
+		catch (Throwable t) {
+			handleErrorResponse(ErrormsgFormsAdapter.buildErrorResponse(t));
+			getFormsAdapter().fillFormsFromResponse(getFormsAdapter().getLastResponse()); //restore delle form
+			return null;			
+		}
+	}
+	
+	/**
+	 * eliminazione del diritto di intervento ad un rif interno al raccoglitore (prevede l'apertura della
+	 * loadingbar di aggiornamento del diritto di intervento anche sui cc ereditati dai documenti/fascicoli)
+	 * @return
+	 * @throws Exception
+	 */
+	@Override
+	public String rimuoviIntervento() throws Exception {
+		Rif rif = (Rif) FacesContext.getCurrentInstance().getExternalContext().getRequestMap().get("rif");
+		try {
+			if (rif.getDiritto().toLowerCase().equals("cc")) {
+				getFormsAdapter().rimuoviInterventoCConRaccoglitore(rif.getCod_persona(), rif.getCod_uff(), rif.getDiritto());
+				XMLDocumento response = this.formsAdapter.getDefaultForm().executePOST(getUserBean());
+				if (handleErrorResponse(response)) {
+					formsAdapter.fillFormsFromResponse(formsAdapter.getLastResponse()); //restore delle form
+					return null;
+				}
+				
+				getFormsAdapter().fillFormsFromResponse(getFormsAdapter().getLastResponse()); //restore delle form
+				
+				String verbo = response.getAttributeValue("/response/@verbo");
+				if (verbo.equals("loadingbar")) {
+					DocWayLoadingbar docWayLoadingbar = new DocWayLoadingbar();
+					docWayLoadingbar.getFormsAdapter().fillFormsFromResponse(response);
+					docWayLoadingbar.init(response);
+					docWayLoadingbar.setHolderPageBean(getShowdocBean());
+					setLoadingbar(docWayLoadingbar);
+					docWayLoadingbar.setActive(true);
+					action = "aggiornamentoCCracc";
+				}
+				else {
+					reload();
+				}
+			}
+			else {
+				getFormsAdapter().rimuoviIntervento(rif.getCod_persona(), rif.getCod_uff(), rif.getDiritto());
+				XMLDocumento response = getFormsAdapter().getDefaultForm().executePOST(getUserBean());
+				if (handleErrorResponse(response)) {
+					getFormsAdapter().fillFormsFromResponse(getFormsAdapter().getLastResponse()); //restore delle form
+					return null;
+				}
+				
+				getFormsAdapter().fillFormsFromResponse(response);
+				_reloadWithoutNavigationRule();
+			}
+			
+			return null;
+		}
+		catch (Throwable t) {
+			handleErrorResponse(ErrormsgFormsAdapter.buildErrorResponse(t));
+			getFormsAdapter().fillFormsFromResponse(getFormsAdapter().getLastResponse()); //restore delle form
+			return null;			
+		}
+	}
+	
+	/**
+	 * Ritorna il bean della pagina corrente. Metodo utilizzato per ridefinire il bean in caso di repertori personalizzati (personalView)
+	 * @return
+	 */
+	public Page getShowdocBean() {
+		return this;
+	}
+	
+	/**
+	 * assegnazione del diritto di intervento ad un rif interno al raccoglitore (prevede l'apertura della
+	 * loadingbar di aggiornamento del diritto di intervento anche sui cc ereditati dai documenti/fascicoli)
+	 * @return
+	 * @throws Exception
+	 */
+	@Override
+	public String assegnaIntervento() throws Exception {
+		Rif rif = (Rif) FacesContext.getCurrentInstance().getExternalContext().getRequestMap().get("rif");
+		try {
+			if (rif.getDiritto().toLowerCase().equals("cc")) {
+				getFormsAdapter().assegnaInterventoCConRaccoglitore(rif.getCod_persona(), rif.getCod_uff(), rif.getDiritto());
+				XMLDocumento response = this.formsAdapter.getDefaultForm().executePOST(getUserBean());
+				if (handleErrorResponse(response)) {
+					formsAdapter.fillFormsFromResponse(formsAdapter.getLastResponse()); //restore delle form
+					return null;
+				}
+				
+				getFormsAdapter().fillFormsFromResponse(getFormsAdapter().getLastResponse()); //restore delle form
+				
+				String verbo = response.getAttributeValue("/response/@verbo");
+				if (verbo.equals("loadingbar")) {
+					DocWayLoadingbar docWayLoadingbar = new DocWayLoadingbar();
+					docWayLoadingbar.getFormsAdapter().fillFormsFromResponse(response);
+					docWayLoadingbar.init(response);
+					docWayLoadingbar.setHolderPageBean(getShowdocBean());
+					setLoadingbar(docWayLoadingbar);
+					docWayLoadingbar.setActive(true);
+					action = "aggiornamentoCCracc";
+				}
+				else {
+					reload();
+				}
+			}
+			else {
+				getFormsAdapter().assegnaIntervento(rif.getCod_persona(), rif.getCod_uff(), rif.getDiritto());
+				XMLDocumento response = getFormsAdapter().getDefaultForm().executePOST(getUserBean());
+				if (handleErrorResponse(response)) {
+					getFormsAdapter().fillFormsFromResponse(getFormsAdapter().getLastResponse()); //restore delle form
+					return null;
+				}
+				
+				getFormsAdapter().fillFormsFromResponse(response);
+				_reloadWithoutNavigationRule();
+			}
+			
+			return null;
+		}
+		catch (Throwable t) {
+			handleErrorResponse(ErrormsgFormsAdapter.buildErrorResponse(t));
+			getFormsAdapter().fillFormsFromResponse(getFormsAdapter().getLastResponse()); //restore delle form
 			return null;			
 		}
 	}

@@ -24,7 +24,7 @@
 
 			<h5 class="sub-header" title="#{showdocAccount.account.id}">
 				<span class="account glyphicons-pro"></span>&#160;
-				<h:outputText value="#{showdocAccount.account.descrAccount}" escape="false" />
+				<h:outputText value="#{showdocAccount.account.descrAccount}" />
 			</h5>
 
 			<!-- scheda show: inizio -->
@@ -46,6 +46,6 @@
 			<!-- scheda show: fine -->
 		</div>
 
-		<h:inputTextarea value="#{showdocAccount.xml}" rendered="#{showdocAccount.debugMode}" styleClass="form-control" rows="10" />
+		<h:inputTextarea value="#{showdocAccount.xml}" rendered="#{showdocAccount.debugMode}" styleClass="form-control debug-textarea" rows="10" />
 	</ui:define>
 </ui:composition>

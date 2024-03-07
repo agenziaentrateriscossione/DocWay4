@@ -64,14 +64,32 @@
 						<div class="form-group" style="margin-top:20px;">
 							<label class="col-sm-2 control-label">#{i18n['dw4.file']}</label>
 							<div class="col-sm-1">
-								<span id="swfupload-segnatura-control">
-									<span id="swfuploadSegnaturaHolder"></span>
-									<h:commandLink id="swfuploadSegnaturaBtn" onclick="return false;" styleClass="btn btn-default">#{i18n['dw4.sfoglia']}</h:commandLink>
-								</span>
+								<h:commandLink onclick="return addSegnaturaDragAndDrop();" styleClass="btn btn-default">#{i18n['dw4.sfoglia']}</h:commandLink>
+								<script type="text/javascript">
+								<!--
+								function addSegnaturaDragAndDrop() {
+									$('#dropzoneSegnaturas').contents().find('#fileupload').trigger('click');
+									return false;
+								}
+								//-->
+								</script>
+								<div style="display: none;">
+									<iframe id="dropzoneSegnaturas" class="dropzone-iframe dropzone-files form-control" src="#{facesContext.externalContext.requestContextPath}/docway/dropzoneFileUpload.jsf?dadType=Segnatura&amp;dadTempUpload=true"></iframe>
+									<script type="text/javascript">
+									var dadMaxSegnaturas = 1;
+									function updateSegnaturasFromDragAndDrop(dadFilesIds, dadFilesNames) {
+										if (dadFilesIds &amp;&amp; dadFilesNames) {
+											$('#dadSegnatureFileText').html(dadFilesIds.substring(1));
+									    	$('#templateForm\\:dadSegnatureFileHidden').val(dadFilesIds.substring(1));
+										}
+										hideOpenwaitmsg();
+									}
+									</script>
+								</div>
 							</div>
 							<div class="col-sm-7">
-								<p class="form-control-static"><span id="swfuploadSegnatureFileText">#{queryAdmTools.fileNameSegnatura}</span></p>
-								<h:inputHidden id="swfuploadSegnatureFileHidden" value="#{queryAdmTools.fileNameSegnatura}" />
+								<p class="form-control-static"><span id="dadSegnatureFileText">#{queryAdmTools.fileNameSegnatura}</span></p>
+								<h:inputHidden id="dadSegnatureFileHidden" value="#{queryAdmTools.fileNameSegnatura}" />
 							</div>
 							<div class="col-sm-1">
 								<h:commandLink action="#{queryAdmTools.uploadFileSegnatura}" styleClass="btn btn-default" onclick="if (!owmConfirm('#{i18n['dw4.procedere_con_l_upload_del_file_per_la_segnatura_dei_documenti_in_base_ai_parametri_impostati']}')) return false;">
@@ -94,14 +112,32 @@
 						<div class="form-group" style="margin-top:20px;">
 							<label class="col-sm-2 control-label">#{i18n['dw4.file']}</label>
 							<div class="col-sm-1">
-								<span id="swfupload-repertori-control">
-									<span id="swfuploadRepertoriHolder"></span>
-									<h:commandLink id="swfuploadRepertoriBtn" onclick="return false;" styleClass="btn btn-default">#{i18n['dw4.sfoglia']}</h:commandLink>
-								</span>
+								<h:commandLink onclick="return addRepertoriDragAndDrop();" styleClass="btn btn-default">#{i18n['dw4.sfoglia']}</h:commandLink>
+								<script type="text/javascript">
+								<!--
+								function addRepertoriDragAndDrop() {
+									$('#dropzoneRepertoris').contents().find('#fileupload').trigger('click');
+									return false;
+								}
+								//-->
+								</script>
+								<div style="display: none;">
+									<iframe id="dropzoneRepertoris" class="dropzone-iframe dropzone-files form-control" src="#{facesContext.externalContext.requestContextPath}/docway/dropzoneFileUpload.jsf?dadType=Repertori&amp;dadTempUpload=true"></iframe>
+									<script type="text/javascript">
+									var dadMaxRepertoris = 1;
+									function updateRepertorisFromDragAndDrop(dadFilesIds, dadFilesNames) {
+										if (dadFilesIds &amp;&amp; dadFilesNames) {
+											$('#dadRepertoriFileText').html(dadFilesIds.substring(1));
+									    	$('#templateForm\\:dadRepertoriFileHidden').val(dadFilesIds.substring(1));
+										}
+										hideOpenwaitmsg();
+									}
+									</script>
+								</div>
 							</div>
 							<div class="col-sm-7">
-								<p class="form-control-static"><span id="swfuploadRepertoriFileText">#{queryAdmTools.fileNameRepertorio}</span></p>
-								<h:inputHidden id="swfuploadRepertoriFileHidden" value="#{queryAdmTools.fileNameRepertorio}" />
+								<p class="form-control-static"><span id="dadRepertoriFileText">#{queryAdmTools.fileNameRepertorio}</span></p>
+								<h:inputHidden id="dadRepertoriFileHidden" value="#{queryAdmTools.fileNameRepertorio}" />
 							</div>
 							<div class="col-sm-1">
 								<h:commandLink action="#{queryAdmTools.uploadFileDescrizioneRepertori}" styleClass="btn btn-default" onclick="if (!owmConfirm('#{i18n['dw4.procedere_con_l_upload_del_file']}')) return false;">
@@ -129,14 +165,32 @@
 						<div class="form-group">
 							<label class="col-sm-2 control-label">#{i18n['dw4.file']}</label>
 							<div class="col-sm-1">
-								<span id="swfupload-registro-control">
-									<span id="swfuploadRegistroHolder"></span>
-									<h:commandLink id="swfuploadRegistroBtn" onclick="return false;" styleClass="btn btn-default">#{i18n['dw4.sfoglia']}</h:commandLink>
-								</span>
+								<h:commandLink onclick="return addRegistroDragAndDrop();" styleClass="btn btn-default">#{i18n['dw4.sfoglia']}</h:commandLink>
+								<script type="text/javascript">
+								<!--
+								function addRegistroDragAndDrop() {
+									$('#dropzoneRegistros').contents().find('#fileupload').trigger('click');
+									return false;
+								}
+								//-->
+								</script>
+								<div style="display: none;">
+									<iframe id="dropzoneRegistros" class="dropzone-iframe dropzone-files form-control" src="#{facesContext.externalContext.requestContextPath}/docway/dropzoneFileUpload.jsf?dadType=Registro&amp;dadTempUpload=true"></iframe>
+									<script type="text/javascript">
+									var dadMaxRegistros = 1;
+									function updateRegistrosFromDragAndDrop(dadFilesIds, dadFilesNames) {
+										if (dadFilesIds &amp;&amp; dadFilesNames) {
+											$('#dadRegistroFileText').html(dadFilesIds.substring(1));
+									    	$('#templateForm\\:dadRegistroFileHidden').val(dadFilesIds.substring(1));
+										}
+										hideOpenwaitmsg();
+									}
+									</script>
+								</div>
 							</div>
 							<div class="col-sm-7">
-								<p class="form-control-static"><span id="swfuploadRegistroFileText">#{queryAdmTools.fileNameRegistroEmergenza}</span></p>
-								<h:inputHidden id="swfuploadRegistroFileHidden" value="#{queryAdmTools.fileNameRegistroEmergenza}"/>
+								<p class="form-control-static"><span id="dadRegistroFileText">#{queryAdmTools.fileNameRegistroEmergenza}</span></p>
+								<h:inputHidden id="dadRegistroFileHidden" value="#{queryAdmTools.fileNameRegistroEmergenza}"/>
 							</div>
 							<div class="col-sm-1">
 								<h:commandLink action="#{queryAdmTools.importRegistroEmergenza}" styleClass="btn btn-default" onclick="if (!owmConfirm('#{i18n['dw4.procedere_con_l_importazione_del_registro_di_emergenza']}')) return false;">
@@ -169,14 +223,32 @@
 							<div class="form-group">
 								<label class="col-sm-2 control-label">#{i18n['dw4.file']}</label>
 								<div class="col-sm-1">
-									<span id="swfupload-importdoc-control">
-										<span id="swfuploadImportdocHolder"></span>
-										<h:commandLink id="swfuploadImportdocBtn" onclick="return false;" styleClass="btn btn-default">#{i18n['dw4.sfoglia']}</h:commandLink>
-									</span>
+									<h:commandLink onclick="return addImportdocDragAndDrop();" styleClass="btn btn-default">#{i18n['dw4.sfoglia']}</h:commandLink>
+									<script type="text/javascript">
+									<!--
+									function addImportdocDragAndDrop() {
+										$('#dropzoneImportdocs').contents().find('#fileupload').trigger('click');
+										return false;
+									}
+									//-->
+									</script>
+									<div style="display: none;">
+										<iframe id="dropzoneImportdocs" class="dropzone-iframe dropzone-files form-control" src="#{facesContext.externalContext.requestContextPath}/docway/dropzoneFileUpload.jsf?dadType=Importdoc&amp;dadTempUpload=true"></iframe>
+										<script type="text/javascript">
+										var dadMaxImportdocs = 1;
+										function updateImportdocsFromDragAndDrop(dadFilesIds, dadFilesNames) {
+											if (dadFilesIds &amp;&amp; dadFilesNames) {
+												$('#dadImportdocFileText').html(dadFilesIds.substring(1));
+										    	$('#templateForm\\:dadImportdocFileHidden').val(dadFilesIds.substring(1));
+											}
+											hideOpenwaitmsg();
+										}
+										</script>
+									</div>
 								</div>
 								<div class="col-sm-7">
-									<p class="form-control-static"><span id="swfuploadImportdocFileText">#{queryAdmTools.fileNameImportDocumenti}</span></p>
-									<h:inputHidden id="swfuploadImportdocFileHidden" value="#{queryAdmTools.fileNameImportDocumenti}" />
+									<p class="form-control-static"><span id="dadImportdocFileText">#{queryAdmTools.fileNameImportDocumenti}</span></p>
+									<h:inputHidden id="dadImportdocFileHidden" value="#{queryAdmTools.fileNameImportDocumenti}" />
 								</div>
 								<div class="col-sm-1">
 									<h:commandLink action="#{queryAdmTools.importDocs}" styleClass="btn btn-default" onclick="if (!owmConfirm('#{i18n['dw4.procedere_con_l_importazione_dei_documenti']}')) return false;">
@@ -230,6 +302,16 @@
 										<span class="glyphicon glyphicon-list-alt normal-size-icon"></span> #{i18n['dw4.editing_di_tipologia_e_mezzo_di_trasmissione']}
 									</h:commandLink>
 								</div>
+								<h:panelGroup rendered="#{queryAdmTools.formsAdapter.funzionalitaDisponibili['rifiutoBozzeArrivo']}" layout="block" styleClass="adm-command">
+									<h:commandLink action="#{queryAdmTools.selezionaFascicoloRifiuto}">
+										<span class="glyphicon glyphicon-folder-close normal-size-icon"></span> #{i18n['dw4.seleziona_il_fascicolo_all_interno_del_quale_fascicolare_le_bozze_in_arrivo_rifiutate']}
+									</h:commandLink>
+								</h:panelGroup>
+								<h:panelGroup rendered="#{queryAdmTools.formsAdapter.funzionalitaDisponibili['evaluateAssegnatariVociIndice']}" layout="block" styleClass="adm-command">
+									<h:commandLink action="#{queryAdmTools.evaluateAssegnatariVociIndice}">
+										<span class="glyphicons-pro warning_sign normal-size-icon"></span> #{i18n['dw4.individua_errori_su_assegnatari_voci_indice']}
+									</h:commandLink>
+								</h:panelGroup>
 							</div>
 						</div>
 					</div> <!-- /fieldset -->
@@ -237,32 +319,18 @@
 			</div>
 		</div>
 		<!-- scheda query: fine -->
-		
-		<script type="text/javascript">
-		window.loadSWFUpload = function() {
-			initAdmSWFU("swfupload-segnatura-control", "swfuploadSegnaturaHolder", "swfuploadSegnatureFile", "#{facesContext.externalContext.requestContextPath}/fileupload", "#{userBean.login}", "#{userBean.matricola}");
-			initAdmSWFU("swfupload-repertori-control", "swfuploadRepertoriHolder", "swfuploadRepertoriFile", "#{facesContext.externalContext.requestContextPath}/fileupload", "#{userBean.login}", "#{userBean.matricola}");
-			initAdmSWFU("swfupload-registro-control", "swfuploadRegistroHolder", "swfuploadRegistroFile", "#{facesContext.externalContext.requestContextPath}/fileupload", "#{userBean.login}", "#{userBean.matricola}");
-			initAdmSWFU("swfupload-importdoc-control", "swfuploadImportdocHolder", "swfuploadImportdocFile", "#{facesContext.externalContext.requestContextPath}/fileupload", "#{userBean.login}", "#{userBean.matricola}");
-		}
-		
-		$(window).load(function() {
-			jsf.ajax.addOnEvent(function(data) { 
-				if (data.status == 'success') {
-					initAdmSWFU("swfupload-segnatura-control", "swfuploadSegnaturaHolder", "swfuploadSegnatureFile", "#{facesContext.externalContext.requestContextPath}/fileupload", "#{userBean.login}", "#{userBean.matricola}");
-					initAdmSWFU("swfupload-repertori-control", "swfuploadRepertoriHolder", "swfuploadRepertoriFile", "#{facesContext.externalContext.requestContextPath}/fileupload", "#{userBean.login}", "#{userBean.matricola}");
-					initAdmSWFU("swfupload-registro-control", "swfuploadRegistroHolder", "swfuploadRegistroFile", "#{facesContext.externalContext.requestContextPath}/fileupload", "#{userBean.login}", "#{userBean.matricola}");
-					initAdmSWFU("swfupload-importdoc-control", "swfuploadImportdocHolder", "swfuploadImportdocFile", "#{facesContext.externalContext.requestContextPath}/fileupload", "#{userBean.login}", "#{userBean.matricola}");
-				}
-			});
-		});
-		</script>
 	</div>
 	
 	<ui:include src="./thEdit.xhtml"><ui:param name="pageBean" value="#{docwayThEdit}"/></ui:include>
-	<ui:include src="./loadingbar.xhtml"><ui:param name="pageBean" value="#{queryAdmTools}"/></ui:include>
+	<ui:remove>
+		<ui:include src="./loadingbar.xhtml"><ui:param name="pageBean" value="#{queryAdmTools}"/></ui:include>
+	</ui:remove>
+	<ui:include src="./loadingbar@relazioneFascicoli.xhtml"><ui:param name="pageBean" value="#{queryAdmTools}"/></ui:include>
+	<ui:include src="./loadingbar@vociindice.xhtml"><ui:param name="pageBean" value="#{queryAdmTools}"/></ui:include>
+	<ui:include src="./query@changeFascicoloRifiuto.xhtml"><ui:param name="pageBean" value="#{docwayChangeFascicoloRifiuto}"/></ui:include>
+	<ui:include src="./lookup.xhtml"> <ui:param name="pageBean" value="#{docwayChangeFascicoloRifiuto}"/></ui:include>
 
-	<h:inputTextarea value="#{queryAdmTools.xml}" rendered="#{queryAdmTools.debugMode}" styleClass="form-control" rows="10" />	
+	<h:inputTextarea value="#{queryAdmTools.xml}" rendered="#{queryAdmTools.debugMode}" styleClass="form-control debug-textarea" rows="10" />
 </ui:define>
     
 </ui:composition>    

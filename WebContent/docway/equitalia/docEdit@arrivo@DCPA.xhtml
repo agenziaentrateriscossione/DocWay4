@@ -18,7 +18,7 @@
 		
 		<h5 class="sub-header">
 			<span class="doc-tipo-arrivo glyphicons-pro"></span>&#160;
-			<h:outputText value="#{docEditArrivoDCPA.docEditTitle}" escape="false" />
+			<h:outputText value="#{docEditArrivoDCPA.docEditTitle}" />
 		</h5>
 	
 		<!-- messages: inizio -->
@@ -336,6 +336,10 @@
 	        		<ui:param name="beanDoc" value="#{docEditArrivoDCPA.doc}" />
 	        	</ui:include>
 	        	
+	        	<ui:include src="../../customfields/docedit@customfields.xhtml">
+					<ui:param name="bean" value="#{docEditArrivoDCPA}" />
+	        	</ui:include>
+	        	
 	        	<ui:include src="../docEdit@rifinterni@doc.xhtml">
 					<ui:param name="bean" value="#{docEditArrivoDCPA}" />
 	        	</ui:include>
@@ -353,11 +357,19 @@
 		</div>
 		<!-- scheda edit: fine -->
 		
-		<h:inputTextarea value="#{docEditArrivoDCPA.xml}" rendered="#{docEditArrivoDCPA.debugMode}" styleClass="form-control" rows="10" />	
+		<h:inputTextarea value="#{docEditArrivoDCPA.xml}" rendered="#{docEditArrivoDCPA.debugMode}" styleClass="form-control debug-textarea" rows="10" />
 		
 		<ui:include src="../lookup.xhtml"> <ui:param name="pageBean" value="#{docEditArrivoDCPA}"/></ui:include>
 		<ui:include src="../rifintLookup.xhtml"> <ui:param name="pageBean" value="#{docEditArrivoDCPA}"/></ui:include>
 		<ui:include src="../showthes.xhtml"> <ui:param name="pageBean" value="#{docEditArrivoDCPA}"/></ui:include>
+		<!-- template per upload e la decompressione di archivi ZIP -->
+		<ui:param name="currentBean" value="#{docEditArrivoDCPA}" />
+		<ui:include src="../docUploadArchive.xhtml">
+			<ui:param name="bean" value="#{docWayUploadArchive}"/>
+			<ui:param name="beanDoc" value="#{currentBean}" />
+			<ui:param name="doc" value="#{currentBean.doc}" />
+			<ui:param name="enableFiles" value="#{currentBean.docInformaticiEnabled and currentBean.formsAdapter.funzionalitaDisponibili['addFile']}" />
+		</ui:include>
 	</div>
 </ui:define>
 

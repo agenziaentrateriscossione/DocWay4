@@ -116,7 +116,7 @@ public class LookupFormsAdapter extends FormsAdapter {
 			return false;
 		}		
 	}
-
+	
 	public boolean isPaginaSuccessivaEnabled() {
 		int pos = defaultForm.getParamAsInt("pos");
 		int pageCount = defaultForm.getParamAsInt("pageCount");
@@ -154,6 +154,20 @@ public class LookupFormsAdapter extends FormsAdapter {
 			return false;
 	}
 	
+	public int getFirstPosition(){
+		int pos = defaultForm.getParamAsInt("pos");
+		return pos +1;
+	}
+	
+	public int getLastPosition(){
+		int pos = defaultForm.getParamAsInt("pos");
+		int pageCount = defaultForm.getParamAsInt("pageCount");
+		int count = defaultForm.getParamAsInt("count");
+		if (count < pos + pageCount)
+			return count;
+		else return pos + pageCount;
+	}
+	
 	public int getCurrent() {
 		int pos = defaultForm.getParamAsInt("pos") + 1;
 		int pageCount = defaultForm.getParamAsInt("pageCount");
@@ -172,6 +186,39 @@ public class LookupFormsAdapter extends FormsAdapter {
 			return count/pageCount;
 		else
 			return (count/pageCount) + 1;
+	}
+	
+	/**
+	 * Caricamento di una pagina specifica della lista titoli
+	 * @param currentPage
+	 * @return
+	 */
+	public void paginaSpecifica(int currentPage) {
+		int pageCount = defaultForm.getParamAsInt("pageCount");
+		int pos = (currentPage-1) * pageCount;
+		
+		defaultForm.addParam("verbo", "lookup_response");
+		defaultForm.addParam("pos", pos);		
+	}
+	
+	public boolean isIndietroRapidoEnabled() {
+		return isPaginaPrecedenteEnabled();
+	}
+	
+	public boolean isAvantiRapidoEnabled() {
+		return isPaginaSuccessivaEnabled();
+	}
+	
+	/**
+	 * Ritorna true se gli indici sono gestiti tramite elasticsearch, false in caso di gestione tramite extraway
+	 * @return
+	 */
+	public boolean isElasticsearchEnabled() {
+		String elasticsearch = defaultForm.getParam("elasticsearch");
+		if (elasticsearch != null && elasticsearch.toLowerCase().equals("true"))
+			return true;
+		else
+			return false;
 	}
 	
 	/**

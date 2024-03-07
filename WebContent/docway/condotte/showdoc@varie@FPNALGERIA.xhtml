@@ -8,11 +8,11 @@
 
 <ui:define name="content">
 	<div class="varie">
-		
+
 		<ui:remove>
 			<h5 class="sub-header">#{(showdocVarieFPNALGERIA.formsAdapter.funzionalitaDisponibili['nascondiprotocollo']) ? i18n['dw4.view_doc'] : i18n['dw4.view_varie']}</h5>
 		</ui:remove>
-	
+
 		<!-- toolbar: inizio -->
 		<ui:include src="../buttonBar.xhtml">
 			<ui:param name="bean" value="#{showdocVarieFPNALGERIA}"/>
@@ -25,8 +25,9 @@
 			<ui:param name="hideLink" value="true" />
 			<ui:param name="hideArchivio" value="true" />
 			<ui:param name="hideRigetta" value="true" />
+			<ui:param name="hideRestituisci" value="true" />
 		</ui:include>
-		
+
 		<h:panelGroup rendered="#{ (fn:contains(showdocVarieFPNALGERIA.showDivs, 'bottone_ver-app,') or fn:contains(showdocVarieFPNALGERIA.showDivs, 'bottone_rigetta,')) and showdocVarieFPNALGERIA.formsAdapter.funzionalitaDisponibili['modifica'] and !showdocVarieFPNALGERIA.doc.cestino }">
 			<div class="btn-toolbar hidden-print" role="toolbar">
 		        <div class="btn-group">
@@ -44,100 +45,104 @@
 		    </div>
 	    </h:panelGroup>
 		<!-- toolbar: fine -->
-		
+
 		<!-- scheda show: inizio -->
 		<div class="contenuto-doc row clearfix">
 			<h:panelGroup rendered="#{!showdocVarieFPNALGERIA.popupPage}">
 				<div class="col-xs-12 col-sm-2 col-md-2 col-lg-2 col-sm-push-10 col-md-push-10 col-lg-push-10 text-right">
 					<!-- azioni rapide: inizio -->
-					
+
 					<ui:include src="../smartActions.xhtml">
 						<ui:param name="bean" value="#{showdocVarieFPNALGERIA}" />
 						<ui:param name="hideModifica" value="#{ fn:contains(showdocVarieFPNALGERIA.showDivs, 'bottone_modifica,') ? 'false' : 'true' }" />
 						<ui:param name="hideFascicola" value="true" />
 					</ui:include>
-					
+
 					<!-- azioni rapide: fine -->
 				</div>
 			</h:panelGroup>
 			<div class="col-xs-12 #{(showdocVarieFPNALGERIA.popupPage) ? 'col-sm-12 col-md-12 col-lg-12' : 'col-sm-10 col-md-10 col-lg-10 col-sm-pull-2 col-md-pull-2 col-lg-pull-2'}">
 				<!-- contenuto doc: inizio -->
-				
+
 				<h:panelGroup rendered="#{empty showdocVarieFPNALGERIA.doc.non_disponibile.estremi}">
 					<ui:include src="../showdoc@title.xhtml">
 						<ui:param name="doc" value="#{showdocVarieFPNALGERIA.doc}"/>
 					</ui:include>
-					
+
 					<ui:include src="../showdoc@annullato.xhtml"><ui:param name="bean" value="#{showdocVarieFPNALGERIA}"/></ui:include>
 					<ui:include src="../showdoc@conservazione.xhtml"><ui:param name="bean" value="#{showdocVarieFPNALGERIA}"/></ui:include>
-					
+
 					<div id="fixedshowdoc" class="fixed-showdoc">
 						<ui:include src="../showdoc@statidoc.xhtml">
 							<ui:param name="bean" value="#{showdocVarieFPNALGERIA}"/>
 						</ui:include>
-						
+
 						<ui:include src="../showdoc@datidoc.xhtml">
 							<ui:param name="bean" value="#{showdocVarieFPNALGERIA}"/>
 							<ui:param name="hideAllegati" value="true" />
 						</ui:include>
-						
+
 						<ui:include src="./showdoc@datiFattura.xhtml">
 							<ui:param name="bean" value="#{showdocVarieFPNALGERIA}"/>
 						</ui:include>
-						
+
 						<ui:include src="./showdoc@datiApprovazione.xhtml">
 							<ui:param name="bean" value="#{showdocVarieFPNALGERIA}"/>
 						</ui:include>
-						
+
 						<ui:remove>
 							<ui:include src="../showdoc@datiarchivio.xhtml">
 								<ui:param name="bean" value="#{showdocVarieFPNALGERIA}"/>
 							</ui:include>
 						</ui:remove>
-						
+
+						<ui:include src="../../customfields/showdoc@customfields.xhtml">
+							<ui:param name="bean" value="#{showdocVarieFPNALGERIA}"/>
+			        	</ui:include>
+
 						<ui:include src="../showdoc@responsabilita.xhtml">
 							<ui:param name="bean" value="#{showdocVarieFPNALGERIA}"/>
 						</ui:include>
-						
+
 						<ui:include src="../showdoc@xwfiles.xhtml">
 							<ui:param name="bean" value="#{showdocVarieFPNALGERIA}"/>
 						</ui:include>
-						
+
 						<ui:include src="../showdoc@workflow.xhtml">
 							<ui:param name="bean" value="#{showdocVarieFPNALGERIA}"/>
 						</ui:include>
-						
+
 						<ui:include src="../showdoc@postit.xhtml">
 							<ui:param name="bean" value="#{showdocVarieFPNALGERIA}"/>
 						</ui:include>
-						
+
 						<ui:include src="../showdoc@datialtro.xhtml">
 							<ui:param name="bean" value="#{showdocVarieFPNALGERIA}"/>
-						</ui:include>					
-						
+						</ui:include>
+
 						<ui:include src="../history.xhtml">
 							<ui:param name="bean" value="#{showdocVarieFPNALGERIA.doc}"/>
 							<ui:param name="viewbean" value="#{showdocVarieFPNALGERIA}"/>
 							<ui:param name="visible" value="#{showdocVarieFPNALGERIA.formsAdapter.funzionalitaDisponibili['showHistory']}" />
 						</ui:include>
 					</div>
-					
+
 				</h:panelGroup>
 				<h:panelGroup rendered="#{!empty showdocVarieFPNALGERIA.doc.non_disponibile.estremi}">
-				
+
 					<ui:include src="../showdoc@docnondisponibile.xhtml">
 						<ui:param name="bean" value="#{showdocVarieFPNALGERIA}"/>
 					</ui:include>
-					
+
 				</h:panelGroup>
-				
-				<h:inputTextarea value="#{showdocVarieFPNALGERIA.xml}" rendered="#{showdocVarieFPNALGERIA.debugMode}" styleClass="form-control" rows="10" />	
-				
+
+				<h:inputTextarea value="#{showdocVarieFPNALGERIA.xml}" rendered="#{showdocVarieFPNALGERIA.debugMode}" styleClass="form-control debug-textarea" rows="10" />
+
 				<!-- contenuto doc: fine -->
 			</div>
 		</div>
 		<!-- scheda show: fine -->
-		
+
 		<ui:include src="../postit.xhtml"><ui:param name="pageBean" value="#{docwayPostit}"/></ui:include>
 		<ui:include src="../verificaFirma.xhtml"><ui:param name="pageBean" value="#{docwayVerificaFirma}"/></ui:include>
 		<ui:include src="../annullamentoDoc.xhtml"><ui:param name="pageBean" value="#{docwayAnnullamentoDoc}"/></ui:include>
@@ -151,7 +156,10 @@
 		<ui:include src="../rifintLookup.xhtml"> <ui:param name="pageBean" value="#{rifInt}"/></ui:include>
 		<ui:include src="../show@task@vars.xhtml"><ui:param name="bean" value="#{docwayWfTaskVars}"/></ui:include>
 		<ui:include src="../showPersoneRuolo.xhtml"><ui:param name="bean" value="#{docwayShowPersoneRuolo}"/></ui:include>
-		
+		<ui:include src="../modalePresaInCarico.xhtml"><ui:param name="bean" value="#{showdocVarieFPNALGERIA}"/></ui:include>
+		<ui:include src="../modalePersoneIncaricate.xhtml"><ui:param name="bean" value="#{docWayShowPersonePresaInCarico}"/></ui:include>
+		<ui:include src="../../customfields/customFields@editPopup.xhtml"><ui:param name="pageBean" value="#{docEditCustomFields}"/></ui:include>
+
 	</div>
 </ui:define>
 

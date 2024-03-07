@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" 
+	  xmlns:h="http://java.sun.com/jsf/html" 
+	  xmlns:ui="http://java.sun.com/jsf/facelets" 
+	  xmlns:f="http://java.sun.com/jsf/core"
+	  xmlns:p="http://xmlns.jcp.org/jsf/passthrough">
+<ui:composition>
+	
+	<h:panelGroup layout="block" id="rifinterniCC">
+		<h:panelGroup rendered="#{bean.viewAddCC}">
+			<!-- Modal -->
+			<div id="rifinterniCcModal" class="modal fade in" aria-hidden="false" aria-labelledby="rifinterniCcModalLabel" role="dialog" tabindex="-1" style="display: block;">
+			<!--div class="modal fade" id="rifinterniCcModal" role="dialog" aria-labelledby="rifinterniCcModalLabel" aria-hidden="true"-->
+				<div class="modal-dialog modal-lg">
+					<div class="modal-content jsf-modal">
+						<div class="modal-header">
+							<h:commandButton styleClass="close" title="#{i18n['acl.close']}" action="#{bean.closeAddCC}" p:data-dismiss="modal"  value="&#215;" >
+			        			<f:ajax render="rifinterniCC"/>
+			        		</h:commandButton>
+			        		
+							<h4 class="modal-title" id="rifinterniCcModalLabel">#{(!empty customLabel) ? customLabel : i18n['dw4.copia_conoscenza']}</h4>
+
+						</div>
+						<div class="modal-body">
+							
+							<div id="cc_Fields">
+								<h:panelGroup rendered="#{!bean.raccoglitore.sendMailSelectedRifInterni}">
+									<div class="form-group">
+										<label for="templateForm:cc_sendMailRifInterniCheck" class="col-sm-2 control-label">#{i18n['dw4.invia_email_di_notifica']}</label>
+										<div class="col-sm-1">
+											<h:selectBooleanCheckbox value="#{bean.raccoglitore.sendMailRifInterni}" id="cc_sendMailRifInterniCheck" styleClass="#{ component.valid ? '' : 'invalidinput' }" />
+										</div>
+									</div>
+								</h:panelGroup>
+								<ui:repeat id="rifint_cc_list" var="rif" value="#{bean.raccoglitore.assegnazioneCC}" varStatus="indice">
+									<ui:include src="./rifinterni.xhtml">
+							        	<ui:param name="rifintType" value="cc" />
+							        	<ui:param name="indice" value="#{indice.index}" />
+						        		<ui:param name="editable" value="true" />
+						        		<ui:param name="pageBean" value="#{bean}" />
+						        		<ui:param name="rifintBean" value="#{rif}" />
+						        		<ui:param name="refresh" value="@form"/>
+						        		<ui:param name="multiple" value="true"/>
+						        		<ui:param name="popup" value="extraSmallLabel"/>
+						        		<ui:param name="sendMailSelectedRifInterni" value="#{bean.raccoglitore.sendMailSelectedRifInterni}"/>
+						        	</ui:include>
+						        </ui:repeat>
+							</div>
+							
+						</div>
+						<div class="modal-footer">
+							<h:commandButton styleClass="btn btn-primary openwaitmsg" action="#{bean.confirmAddCC}" value="#{i18n['acl.save']}" />
+							
+							<h:commandButton styleClass="btn btn-default" title="#{i18n['acl.close']}" action="#{bean.closeAddCC}" p:data-dismiss="modal"  value="#{i18n['acl.close']}" >
+			        			<f:ajax render="rifinterniCC"/>
+			        		</h:commandButton>
+						</div>
+					</div>
+				</div>
+			</div>
+			<!--script type="text/javascript">
+			$('#rifinterniCcModal').modal('show');
+			</script-->
+		</h:panelGroup>
+	</h:panelGroup>
+		
+</ui:composition>   
+</html>

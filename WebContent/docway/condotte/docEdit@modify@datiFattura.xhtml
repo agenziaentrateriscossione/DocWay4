@@ -35,7 +35,7 @@
 			<div class="form-group">
 				<label class="col-sm-2 control-label"><span>#{i18n['dw4.centro_di_costo']}</span></label>
 				<div class="col-sm-9">
-					<p class="form-control-static"><h:outputText value="#{bean.dati_fattura.centro_costo.name}" escape="false" /></p>
+					<p class="form-control-static"><h:outputText value="#{bean.dati_fattura.centro_costo.name}" /></p>
 				</div>
 			</div>
 		</h:panelGroup>
@@ -84,7 +84,7 @@
 		<h:panelGroup rendered="#{ !empty bean.doc.rif_esterni[0].nome }" layout="block" styleClass="form-group">
 			<label class="col-sm-2 control-label"><span>#{i18n['dw4.ragione_sociale_fornitore']}</span></label>
 			<div class="col-sm-9">
-				<p class="form-control-static"><h:outputText value="#{bean.doc.rif_esterni[0].nome}" escape="false" /></p>
+				<p class="form-control-static"><h:outputText value="#{bean.doc.rif_esterni[0].nome}" /></p>
 			</div>
 		</h:panelGroup>
 	</div>

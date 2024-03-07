@@ -1,14 +1,5 @@
 package it.tredi.dw4.docway.beans;
 
-import it.tredi.dw4.utils.XMLDocumento;
-import it.tredi.dw4.adapters.AdaptersConfigurationLocator;
-import it.tredi.dw4.adapters.ErrormsgFormsAdapter;
-import it.tredi.dw4.docway.doc.adapters.DocDocWayDocEditFormsAdapter;
-import it.tredi.dw4.docway.model.TitoloRepertorio;
-import it.tredi.dw4.utils.Const;
-import it.tredi.dw4.utils.DocWayProperties;
-import it.tredi.dw4.utils.XMLUtil;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -17,6 +8,16 @@ import javax.faces.context.FacesContext;
 import javax.faces.event.ActionEvent;
 
 import org.dom4j.Document;
+
+import it.tredi.dw4.adapters.AdaptersConfigurationLocator;
+import it.tredi.dw4.adapters.ErrormsgFormsAdapter;
+import it.tredi.dw4.docway.doc.adapters.DocDocWayDocEditFormsAdapter;
+import it.tredi.dw4.docway.model.TitoloRepertorio;
+import it.tredi.dw4.model.XmlEntity;
+import it.tredi.dw4.utils.Const;
+import it.tredi.dw4.utils.DocWayProperties;
+import it.tredi.dw4.utils.XMLDocumento;
+import it.tredi.dw4.utils.XMLUtil;
 
 public class DocEditRepertorio extends DocWayDocedit {
 	
@@ -209,6 +210,11 @@ public class DocEditRepertorio extends DocWayDocedit {
 		else if (letterTipoRepertorio.equals("V"))
 			tableName = Const.DOCWAY_TIPOLOGIA_VARIE;
 		return tableName;
+	}
+	
+	@Override
+	public XmlEntity getModel() {
+		return null;
 	}
 	
 }

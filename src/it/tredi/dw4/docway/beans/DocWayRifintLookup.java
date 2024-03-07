@@ -16,6 +16,10 @@ public class DocWayRifintLookup extends RifintLookup {
 	
 	private String xml;
 	
+	//tiommi: sistema per effettuare una callback a Lookup eseguito (tramite reflection)
+	private Object todoOnCompleteLookupObject = null;
+	private String todoOnCompleteLookupMethod = "";
+	
 	private boolean lookupSuRepertorio = false; // true se si tratta di un lookup su repertorio, false altrimenti
 	
 	public String getXml() {
@@ -56,6 +60,22 @@ public class DocWayRifintLookup extends RifintLookup {
 		this.lookupSuRepertorio = lookupSuRepertorio;
 	}
 	
+	public Object getTodoOnCompleteLookupObject() {
+		return todoOnCompleteLookupObject;
+	}
+
+	public void setTodoOnCompleteLookupObject(Object todoOnCompleteLookupObject) {
+		this.todoOnCompleteLookupObject = todoOnCompleteLookupObject;
+	}
+
+	public String getTodoOnCompleteLookupMethod() {
+		return todoOnCompleteLookupMethod;
+	}
+
+	public void setTodoOnCompleteLookupMethod(String todoOnCompleteLookupMethod) {
+		this.todoOnCompleteLookupMethod = todoOnCompleteLookupMethod;
+	}
+	
 	/**
 	 * data l'extraquery del lookup identifica se si tratta di un lookup su repertorio o meno
 	 * @param xq
@@ -67,4 +87,15 @@ public class DocWayRifintLookup extends RifintLookup {
 		}
 	}
 	
+	//tiommi 17/01/2018: necessario override del metodo confirm lookup, per gestione controllo su cod_uff RPA
+	// personalizzato in modo che sia possibile effettuare tramite reflection una qualsiasi chiamata di callback
+	@Override
+	public String confirm(Titolo titolo) throws Exception{
+		return super.confirm(titolo, todoOnCompleteLookupObject, todoOnCompleteLookupMethod);
+	}
+	
+	@Override
+	public String confirm() throws Exception{
+		return super.confirm(todoOnCompleteLookupObject, todoOnCompleteLookupMethod);
+	}
 }

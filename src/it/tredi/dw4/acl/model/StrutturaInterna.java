@@ -33,10 +33,9 @@ public class StrutturaInterna extends XmlEntity {
 	private List<Telefono> telefoni;
 	private List<Email> emails;
 	private List<SitoWeb> siti_web;
-	
+	private List<EmailCertificata> emailCerts;
 	
 	private Indirizzo indirizzo = new Indirizzo();
-	private EmailCertificata email_certificata = new EmailCertificata();
 	private Competenze competenze = new Competenze();
 	private Note note = new Note();
 	
@@ -76,7 +75,7 @@ public class StrutturaInterna extends XmlEntity {
     	this.telefoni = XMLUtil.parseSetOfElement(domStrutturaInterna, "//struttura_interna/telefono", new Telefono());
         this.emails = XMLUtil.parseSetOfElement(domStrutturaInterna, "//struttura_interna/email", new Email());
         this.modifiche = XMLUtil.parseSetOfElement(domStrutturaInterna, "//struttura_interna/storia/modifica", new Modifica());
-        this.email_certificata.init(XMLUtil.createDocument(domStrutturaInterna, "//struttura_interna/email_certificata"));
+        this.emailCerts = XMLUtil.parseSetOfElement(domStrutturaInterna, "//struttura_interna/email_certificata", new EmailCertificata());
         this.siti_web = XMLUtil.parseSetOfElement(domStrutturaInterna, "//struttura_interna/sito_web", new SitoWeb());
     	this.competenze.init(XMLUtil.createDocument(domStrutturaInterna, "//struttura_interna/competenze"));
     	this.note.init(XMLUtil.createDocument(domStrutturaInterna, "//struttura_interna/note"));
@@ -87,6 +86,7 @@ public class StrutturaInterna extends XmlEntity {
     	
     	if ( telefoni.size() == 0 ) telefoni.add(new Telefono());
         if ( emails.size() == 0 ) emails.add(new Email());
+        if ( emailCerts.size() == 0 ) emailCerts.add(new EmailCertificata());
         if ( siti_web.size() == 0 ) siti_web.add(new SitoWeb());
         
         return this;
@@ -97,11 +97,11 @@ public class StrutturaInterna extends XmlEntity {
     	Map<String, String> params = new HashMap<String, String>();
     	params.put(prefix + ".nome", this.nome);
     	params.put(prefix + ".@nrecord", this.nrecord);
-    	params.put(prefix + ".@cod_aoo", this.cod_aoo);
-    	params.put(prefix + ".@cod_amm", this.cod_amm);
-    	params.put(prefix + ".@cod_uff", this.cod_uff);
-    	params.put(prefix + ".@cod_responsabile", this.cod_responsabile);
-    	params.put(prefix + ".@cod_padre", this.cod_padre);
+    	params.put(prefix + ".@cod_aoo", (this.cod_aoo != null) ? this.cod_aoo.trim() : null);
+    	params.put(prefix + ".@cod_amm", (this.cod_amm != null) ? this.cod_amm.trim() : null);
+    	params.put(prefix + ".@cod_uff", (this.cod_uff != null) ? this.cod_uff.trim() : null);
+    	params.put(prefix + ".@cod_responsabile", (this.cod_responsabile != null) ? this.cod_responsabile.trim() : null);
+    	params.put(prefix + ".@cod_padre", (this.cod_padre != null) ? this.cod_padre.trim() : null);
     	params.put(prefix + ".@tipologia", this.tipologia);
     	params.put(prefix + ".multisocieta", this.multisocieta);
     	params.putAll(indirizzo.asFormAdapterParams(".indirizzo"));
@@ -113,7 +113,10 @@ public class StrutturaInterna extends XmlEntity {
     		Email mail = (Email) emails.get(i);
     		params.putAll(mail.asFormAdapterParams(".email["+String.valueOf(i)+"]"));
 		}
-    	params.putAll(email_certificata.asFormAdapterParams(".email_certificata"));
+    	for (int i = 0; i < emailCerts.size(); i++) {
+    		EmailCertificata email = (EmailCertificata) emailCerts.get(i);
+    		params.putAll(email.asFormAdapterParams(".email_certificata["+String.valueOf(i)+"]"));
+		}
     	for (int i = 0; i < siti_web.size(); i++) {
     		SitoWeb web = (SitoWeb) siti_web.get(i);
     		params.putAll(web.asFormAdapterParams(".sito_web["+String.valueOf(i)+"]"));
@@ -238,14 +241,14 @@ public class StrutturaInterna extends XmlEntity {
 		this.siti_web = siti_web;
 	}
 
-	public void setEmail_certificata(EmailCertificata email_certificata) {
-		this.email_certificata = email_certificata;
+	public List<EmailCertificata> getEmailCerts() {
+		return emailCerts;
 	}
 
-	public EmailCertificata getEmail_certificata() {
-		return email_certificata;
+	public void setEmailCerts(List<EmailCertificata> emailCerts) {
+		this.emailCerts = emailCerts;
 	}
-
+	
 	public void setPers_ass_count(String pers_ass_count) {
 		this.pers_ass_count = pers_ass_count;
 	}
@@ -318,6 +321,7 @@ public class StrutturaInterna extends XmlEntity {
 		}
 		return false;
 	}
+	
 	public boolean isRenderSitiWeb(){
 		for (Iterator<SitoWeb> iter = siti_web.iterator(); iter.hasNext();) {
 			SitoWeb sito = (SitoWeb) iter.next();
@@ -326,9 +330,19 @@ public class StrutturaInterna extends XmlEntity {
 		}
 		return false;
 	}
+	
 	public boolean isRenderEmail(){
 		for (Iterator<Email> iter = emails.iterator(); iter.hasNext();) {
 			Email email = (Email) iter.next();
+			if (null != email.getAddr() && !"".equals(email.getAddr().trim()))
+				return true;
+		}
+		return false;
+	}
+	
+	public boolean isRenderEmailCert(){
+		for (Iterator<EmailCertificata> iter = emailCerts.iterator(); iter.hasNext();) {
+			EmailCertificata email = (EmailCertificata) iter.next();
 			if (null != email.getAddr() && !"".equals(email.getAddr().trim()))
 				return true;
 		}
@@ -458,7 +472,44 @@ public class StrutturaInterna extends XmlEntity {
 			this.siti_web.add(index+1, sitoWeb);
 		}
 		return null;
-	}	
+	}
+	
+	public String deleteEmailCert(){
+		EmailCertificata emailCert = (EmailCertificata) FacesContext.getCurrentInstance().getExternalContext().getRequestMap().get("emailCert");
+		emailCerts.remove(emailCert);
+        if ( emailCerts.size() == 0 ) emailCerts.add(new EmailCertificata());
+		return null;
+	}
+	
+	public String addEmailCert(){
+		EmailCertificata emailCert = (EmailCertificata) FacesContext.getCurrentInstance().getExternalContext().getRequestMap().get("emailCert");
+		int index = emailCerts.indexOf(emailCert);
+		if (index == emailCerts.size()-1)
+			emailCerts.add(new EmailCertificata());
+		else
+			emailCerts.add(index+1, new EmailCertificata());
+		return null;
+	}
+	
+	public String moveUpEmailCert(){
+		EmailCertificata emailCert = (EmailCertificata) FacesContext.getCurrentInstance().getExternalContext().getRequestMap().get("emailCert");
+		int index = emailCerts.indexOf(emailCert);
+		if (index > 0 ) {
+			emailCerts.remove(index);
+			this.emailCerts.add(index-1, emailCert);
+		}
+		return null;
+	}
+	
+	public String moveDownEmailCert(){
+		EmailCertificata emailCert = (EmailCertificata) FacesContext.getCurrentInstance().getExternalContext().getRequestMap().get("emailCert");
+		int index = emailCerts.indexOf(emailCert);
+		if (index < emailCerts.size()-1 ) {
+			emailCerts.remove(index);
+			this.emailCerts.add(index+1, emailCert);
+		}
+		return null;
+	}
 	
 }
 

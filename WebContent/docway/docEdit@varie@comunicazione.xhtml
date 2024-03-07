@@ -10,63 +10,63 @@
 
 <ui:define name="content">
 	<div class="varie docedit">
-		
+
 		<!-- toolbar: inizio -->
 		<div class="btn-toolbar" role="toolbar">
 			<div class="btn-group">
-				<h:commandLink id="saveBtn" action="#{docEditVarieComunicazione.saveDocument}" 
+				<h:commandLink id="saveBtn" action="#{docEditVarieComunicazione.saveDocument}"
 							onclick="return customCheckForm();" styleClass="btn btn-primary openwaitmsg">
 					#{i18n['acl.save']}
 				</h:commandLink>
-				
-				<h:commandLink action="#{docEditVarieComunicazione.clearDocument}" 
+
+				<h:commandLink action="#{docEditVarieComunicazione.clearDocument}"
 							onclick="IwxRuntime.Client.resetJobIWX();" styleClass="btn btn-default">
 					#{i18n['acl.clear']}
-				</h:commandLink>	
+				</h:commandLink>
 			</div>
 		</div>
 		<!-- toolbar: fine -->
-		
+
 		<h5 class="sub-header">
 			<span class="doc-tipo-varie glyphicon glyphicon-file"></span>&#160;
-			<h:outputText value="#{docEditVarieComunicazione.doc.proposta.organo} - #{docEditVarieComunicazione.doc.proposta.text} (#{i18n['acl.insert']})" escape="false" />
+			<h:outputText value="#{docEditVarieComunicazione.doc.proposta.organo} - #{docEditVarieComunicazione.doc.proposta.text} (#{i18n['acl.insert']})" />
 		</h5>
-	
+
 		<!-- messages: inizio -->
 		<h:panelGroup rendered="#{not empty facesContext.messageList}" layout="block" styleClass="docedit-messages alert alert-danger">
 			<h:messages styleClass="" id="validationMesseges" />
 		</h:panelGroup>
 		<h:inputHidden id="errorFieldIds" value="#{docEditVarieComunicazione.errorFieldIds}" />
 		<!-- messages: fine -->
-		
+
 		<script type="text/javascript">
 		function customCheckForm() {
 			if (!controlloWarningSeSenzaAllegato(#{docEditVarieComunicazione.warningSeNessunAllegato}, "#{i18n['dw4.non_e_stato_indicato_alcun_documento_informatico_Continuare_con_la_registrazione']}"))
 				return false;
-			
+
 			displayOpenwaitmsg();
 			return true;
 		}
-		
+
 		$(document).ready(function() {
 			setInvalidInputFields();
 		});
 		</script>
-		
+
 		<!-- scheda edit: inizio -->
 		<div class="row-fluid" style="margin-top:10px;">
 			<div id="fixedshowdoc" class="box span12 fixed-showdoc">
 				<div class="box-content">
-				
+
 					<div class="fieldset">
 						<div class="legend">
 							#{i18n['dw4.datidoc']}
-						
+
 							<div class="pull-right">
 								<span class="glyphicon glyphicon-envelope" title="#{i18n['dw4.datidoc']}"></span>
 							</div>
 						</div>
-						
+
 						<div class="form-group">
 							<ui:include src="./dateField.xhtml">
 								<ui:param name="label" value="* #{i18n['dw4.data']}" />
@@ -74,7 +74,7 @@
 								<ui:param name="value" value="#{docEditVarieComunicazione.doc.currDate}" />
 							</ui:include>
 						</div>
-							
+
 						<h:panelGroup>
 							<div class="form-group">
 								<label for="templateForm:docCategoria" class="col-sm-2 control-label"><span>#{docEditVarieComunicazione.categoriaLabel}</span></label>
@@ -85,7 +85,7 @@
 								</div>
 							</div>
 						</h:panelGroup>
-						
+
 						<h:panelGroup rendered="#{!docEditVarieComunicazione.customfields.hiddenFields['voceindice']}">
 							<h:panelGroup rendered="#{docEditVarieComunicazione.copyIfNotRipetiInFascicolo}" layout="block" styleClass="form-group">
 								<label for="templateForm:voceindice_input" class="col-sm-2 control-label"><span>#{i18n['dw4.index']}</span></label>
@@ -103,21 +103,21 @@
 					        	</div>
 							</h:panelGroup>
 						</h:panelGroup>
-						
+
 						<div class="form-group">
 							<label for="templateForm:doc_oggetto" class="col-sm-2 control-label requiredField"><span>* #{i18n['dw4.object']}</span></label>
 							<div class="col-sm-9">
 								<h:inputTextarea id="doc_oggetto" value="#{docEditVarieComunicazione.doc.oggetto}" rows="4" cols="120" styleClass="#{ component.valid ? '' : 'invalidinput' } form-control" />
 							</div>
 						</div>
-						
+
 						<h:panelGroup rendered="#{!docEditVarieComunicazione.customfields.hiddenFields['allegati']}">
 							<ui:include src="./allegatiFields.xhtml">
 								<ui:param name="bean" value="#{docEditVarieComunicazione}" />
 				        		<ui:param name="beanDoc" value="#{docEditVarieComunicazione.doc}" />
 				        	</ui:include>
 			        	</h:panelGroup>
-			        	
+
 			        	<h:panelGroup rendered="#{!docEditVarieComunicazione.customfields.hiddenFields['classificazione']}">
 				        	<h:panelGroup id="classif_holder" layout="block">
 								<ui:include src="./classifFields.xhtml">
@@ -133,12 +133,12 @@
 					        	</ui:include>
 					        </h:panelGroup>
 						</h:panelGroup>
-			        	
+
 			        	<ui:include src="./visibilitaFields.xhtml">
 							<ui:param name="bean" value="#{docEditVarieComunicazione}" />
 			        		<ui:param name="beanDoc" value="#{docEditVarieComunicazione.doc}" />
 			        	</ui:include>
-			        	
+
 			        	<ui:remove>
 				        	<div class="form-group">
 				        		<label for="templateForm:docSensibile" class="col-sm-2 control-label"><span>#{i18n['dw4.dati_sensibili_e_giudiziari']}</span></label>
@@ -148,26 +148,26 @@
 				        	</div>
 			        	</ui:remove>
 					</div> <!-- /fieldset -->
-					
+
 		        	<ui:include src="../customfields/docedit@customfields.xhtml">
 						<ui:param name="bean" value="#{docEditVarieComunicazione}" />
 		        	</ui:include>
-		        	
+
 		        	<ui:include src="./docEdit@rifinterni@doc.xhtml">
 						<ui:param name="bean" value="#{docEditVarieComunicazione}" />
 						<ui:param name="customLabelRPA" value="#{i18n['dw4.proponente']}" />
 		        	</ui:include>
-					
+
 	        		<h:panelGroup rendered="#{!docEditVarieComunicazione.customfields.hiddenSections['altro']}">
 		        		<div class="fieldset">
 		        			<div class="legend">
 		        				#{i18n['dw4.other']}
-		        				
+
 		        				<div class="pull-right">
 									<span class="glyphicon glyphicon-list-alt" title="#{i18n['dw4.other']}"></span>
 								</div>
 		        			</div>
-		        			
+
 		        			<h:panelGroup rendered="#{!docEditVarie.customfields.hiddenFields['riferimenti']}">
 								<div class="form-group">
 					               	<label for="templateForm:riferimentiDoc" class="col-sm-2 control-label">#{i18n['dw4.riferimenti']}</label>
@@ -176,37 +176,37 @@
 					               	</div>
 								</div>
 							</h:panelGroup>
-		        			
+
 							<h:panelGroup rendered="#{!docEditVarieComunicazione.customfields.hiddenFields['note']}">
 								<div class="form-group">
 					               	<label for="templateForm:note" class="col-sm-2 control-label">#{i18n['acl.notes']}</label>
 					               	<div class="col-sm-9">
 					               		<h:inputTextarea id="note" value="#{docEditVarieComunicazione.doc.note.text}" rows="4" cols="120" styleClass="form-control" />
-					               	</div>		
+					               	</div>
 								</div>
 							</h:panelGroup>
-							
+
 							<h:panelGroup rendered="#{!docEditVarieComunicazione.customfields.hiddenFields['parolechiave']}">
 								<div class="form-group">
 									<label for="templateForm:keywordsDoc" class="col-sm-2 control-label">#{i18n['dw4.keywords']}</label>
 									<div class="col-sm-9">
 										<h:inputText id="keywordsDoc" value="#{docEditVarieComunicazione.doc.keywords.text}" styleClass="form-control" />
-									</div>			
+									</div>
 								</div>
 							</h:panelGroup>
 		        		</div> <!-- /fieldset -->
 		        	</h:panelGroup>
-	        		
+
 	        		<ui:include src="./xlinkFields.xhtml">
 						<ui:param name="bean" value="#{docEditVarieComunicazione}" />
 		        		<ui:param name="beanDoc" value="#{docEditVarieComunicazione.doc}" />
 		        	</ui:include>
-		        	
+
 		        	<ui:include src="./docInformaticiFields.xhtml">
 						<ui:param name="bean" value="#{docEditVarieComunicazione}" />
 		        		<ui:param name="beanDoc" value="#{docEditVarieComunicazione.doc}" />
 						<ui:param name="enableFiles" value="#{docEditVarieComunicazione.docInformaticiEnabled and docEditVarieComunicazione.formsAdapter.funzionalitaDisponibili['addFile']}" />
-		        		<ui:param name="enableImages" value="#{docEditVarieComunicazione.docInformaticiEnabled and docEditVarieComunicazione.formsAdapter.funzionalitaDisponibili['addImg']}" />	        		
+		        		<ui:param name="enableImages" value="#{docEditVarieComunicazione.docInformaticiEnabled and docEditVarieComunicazione.formsAdapter.funzionalitaDisponibili['addImg']}" />
 		        		<ui:param name="enableFileAgentPDF" value="true" />
 		        		<ui:param name="enableImageAgentPDF" value="true" />
 		        	</ui:include>
@@ -214,12 +214,20 @@
 			</div>
 		</div>
 		<!-- scheda edit: fine -->
-		
+
 		<ui:include src="./lookup.xhtml"> <ui:param name="pageBean" value="#{docEditVarieComunicazione}"/></ui:include>
 		<ui:include src="./rifintLookup.xhtml"> <ui:param name="pageBean" value="#{docEditVarieComunicazione}"/></ui:include>
 		<ui:include src="./showthes.xhtml"> <ui:param name="pageBean" value="#{docEditVarieComunicazione}"/></ui:include>
-		
-		<h:inputTextarea value="#{docEditVarieComunicazione.xml}" rendered="#{docEditVarieComunicazione.debugMode}" styleClass="form-control" rows="10" />
+		<!-- template per upload e la decompressione di archivi ZIP -->
+		<ui:param name="currentBean" value="#{docEditVarieComunicazione}" />
+		<ui:include src="./docUploadArchive.xhtml">
+			<ui:param name="bean" value="#{docWayUploadArchive}"/>
+			<ui:param name="beanDoc" value="#{currentBean}" />
+			<ui:param name="doc" value="#{currentBean.doc}" />
+			<ui:param name="enableFiles" value="#{currentBean.docInformaticiEnabled and currentBean.formsAdapter.funzionalitaDisponibili['addFile']}" />
+		</ui:include>
+
+		<h:inputTextarea value="#{docEditVarieComunicazione.xml}" rendered="#{docEditVarieComunicazione.debugMode}" styleClass="form-control debug-textarea" rows="10" />
 	</div>
 </ui:define>
 

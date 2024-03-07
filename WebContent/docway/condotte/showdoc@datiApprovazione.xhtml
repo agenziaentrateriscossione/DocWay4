@@ -17,11 +17,11 @@
 		
 			<h:panelGroup rendered="#{!empty bean.dati_approvazione.note}">
 				<dt>#{i18n['dw4.notes']}</dt>
-				<dd><pre><h:outputText value="#{bean.dati_approvazione.note}" escape="false" /></pre></dd>
+				<dd><pre><h:outputText value="#{bean.dati_approvazione.note}" /></pre></dd>
 			</h:panelGroup>
 			<h:panelGroup rendered="#{!empty bean.dati_approvazione.timestamp}">
 				<dt>#{i18n['dw4.timestamp']}</dt>
-				<dd><h:outputText value="#{bean.dati_approvazione.timestamp}" escape="false" /></dd>
+				<dd><h:outputText value="#{bean.dati_approvazione.timestamp}" /></dd>
 			</h:panelGroup>
 			
 		</dl>

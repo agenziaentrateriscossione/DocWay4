@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" 
+	  xmlns:h="http://java.sun.com/jsf/html" 
+	  xmlns:ui="http://java.sun.com/jsf/facelets" 
+	  xmlns:f="http://java.sun.com/jsf/core"
+	  xmlns:c="http://java.sun.com/jsp/jstl/core"
+	  xmlns:p="http://xmlns.jcp.org/jsf/passthrough">
+<ui:composition>
+
+	<h:panelGroup id="tagsHolder" rendered="#{pageBean.formsAdapter.funzionalitaDisponibili['abilitaTagsArchiviazione']}" layout="block" styleClass="form-group">
+		<label class="col-sm-2 control-label">
+			<span class="popoveritem" data-toggle="popover" data-placement="bottom" data-trigger="hover" data-content="#{i18n['dw4.tags_help']}">
+				#{i18n['dw4.tags']}
+				<span class="glyphicon glyphicon-info-sign popoveritem"></span>
+			</span>
+		</label>
+		<div class="col-sm-9">
+			<h:inputText value="#{bean.tagsAsString}" id="tags" styleClass="#{ component.valid ? '' : 'invalidinput' } tag-field form-control" onblur="validateTags();" />
+			<h:commandLink id="validateTagsBtn" style="display:none;" action="#{pageBean.isTagsUnique}">
+				<f:ajax render="templateForm:tagsHolder" execute="@form" />
+			</h:commandLink>
+			<h:panelGroup rendered="#{!empty pageBean.validationTagsErrorMessage}">
+				<span class="text text-danger"><strong>#{pageBean.validationTagsErrorMessage}</strong></span>
+			</h:panelGroup>
+		</div>
+	</h:panelGroup>
+	
+</ui:composition>
+</html>

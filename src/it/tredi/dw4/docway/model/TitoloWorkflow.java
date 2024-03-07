@@ -13,6 +13,7 @@ public class TitoloWorkflow extends XmlEntity {
 	private String label = "";
 	private String version = "";
 	private String nrecord = "";
+	private String bonitaVersion = "";
 
 	@Override
 	public XmlEntity init(Document dom) {
@@ -21,7 +22,7 @@ public class TitoloWorkflow extends XmlEntity {
 		this.version = XMLUtil.parseAttribute(dom, "workflow/@version");
 		
 		this.label = XMLUtil.parseElement(dom, "workflow");
-		
+		this.bonitaVersion = XMLUtil.parseAttribute(dom, "workflow/@bonitaVersion");
 		return this;
 	}
 
@@ -65,6 +66,14 @@ public class TitoloWorkflow extends XmlEntity {
 
 	public void setNrecord(String nrecord) {
 		this.nrecord = nrecord;
+	}
+
+	public String getBonitaVersion() {
+		return bonitaVersion;
+	}
+
+	public void setBonitaVersion(String bonitaVersion) {
+		this.bonitaVersion = bonitaVersion;
 	}
 
 }

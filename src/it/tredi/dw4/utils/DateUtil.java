@@ -40,8 +40,7 @@ public class DateUtil {
 		try {
 			retValue = new SimpleDateFormat("yyyyMMdd").parse(norm);
 		} catch (Exception e) {
-			log.warn(e, e);
-			log.debug(e, e);
+			log.warn(e.getMessage(), e);
 		}
 		return retValue;
 	}
@@ -53,8 +52,7 @@ public class DateUtil {
 		try {
 			retValue = new SimpleDateFormat("dd/MM/yyyy").parse(norm);
 		} catch (Exception e) {
-			log.warn(e, e);
-			log.debug(e, e);
+			log.warn(e.getMessage(), e);
 		}
 		return retValue;
 	}
@@ -79,8 +77,7 @@ public class DateUtil {
 		try {
 			retValue = new SimpleDateFormat("yyyyMMddHH:mm:ss").parse(norm);
 		} catch (Exception e) {
-			log.warn(e, e);
-			log.debug(e, e);
+			log.warn(e.getMessage(), e);
 		}
 		return retValue;
 	}
@@ -156,8 +153,17 @@ public class DateUtil {
 	 * @param format Formato della data da convertire
 	 */
 	public static String formatDate2XW(String inDate, String format) {
-		String xwDate = "";
-		
+		return getDateNorm(fromString(inDate, format));
+	}
+	
+	/**
+	 * Conversione di una stringa in formato Data
+	 * @param inDate stringa da convertire
+	 * @param format formato della data
+	 * @return
+	 */
+	public static Date fromString(String inDate, String format) {
+		Date date = null;
 		if (inDate != null && inDate.length() > 0) {
 			try {
 				if (format == null || format.length() == 0)
@@ -166,14 +172,14 @@ public class DateUtil {
 				SimpleDateFormat dateFormat = new SimpleDateFormat(format);
 				dateFormat.setLenient(false);
 			
-				return getDateNorm(dateFormat.parse(inDate));
+				date = dateFormat.parse(inDate);
 			}
 			catch (Exception e) {
-				log.debug(e, e);
+				log.error(e.getMessage(), e);
 			}
 		}
 		
-		return xwDate;
+		return date;
 	}
 	
 	/**
@@ -260,6 +266,23 @@ public class DateUtil {
 		}
 		
 		return date;
+	}
+	
+	/**
+	 * Aggiunta di giorni ad una data
+	 * @param date
+	 * @param days
+	 * @return
+	 */
+	public static Date addDays(Date date, int days) {
+		if (date == null)
+			date = new Date();
+		
+		Calendar cal = Calendar.getInstance();
+		cal.setTime(date);
+		cal.add(Calendar.DATE, days);
+		
+		return cal.getTime();
 	}
 
 }

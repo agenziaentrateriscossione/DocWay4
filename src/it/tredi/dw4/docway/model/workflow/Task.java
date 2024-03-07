@@ -18,6 +18,7 @@ public class Task extends XmlEntity {
 	private String id = "";
 	private String state = "";
 	private String description = "";
+	private boolean assigned = false;
 	//private String deployedDate = "";
 	
 	public String getName() {
@@ -69,6 +70,7 @@ public class Task extends XmlEntity {
 		this.id 			= XMLUtil.parseStrictAttribute(dom, "Task/@id");
 		this.state 			= XMLUtil.parseStrictAttribute(dom, "Task/@state");
 		this.description 	= XMLUtil.parseStrictElement(dom, "Task/Description");
+		this.assigned 		= Boolean.valueOf(XMLUtil.parseStrictAttribute(dom, "Task/@assigned","false"));
 
 		return this;
 	}
@@ -77,6 +79,14 @@ public class Task extends XmlEntity {
 	public Map<String, String> asFormAdapterParams(String prefix) {
 		// TODO Auto-generated method stub
 		return null;
+	}
+
+	public boolean isAssigned() {
+		return assigned;
+	}
+
+	public void setAssigned(boolean assigned) {
+		this.assigned = assigned;
 	}
 
 }

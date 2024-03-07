@@ -1,15 +1,16 @@
 package it.tredi.dw4.docway.beans;
 
-import it.tredi.dw4.utils.XMLDocumento;
+import org.dom4j.Document;
+
 import it.tredi.dw4.adapters.AdaptersConfigurationLocator;
 import it.tredi.dw4.docway.adapters.DocWayChangeClassifFormsAdapter;
 import it.tredi.dw4.docway.model.Doc;
 import it.tredi.dw4.i18n.I18N;
+import it.tredi.dw4.model.XmlEntity;
+import it.tredi.dw4.utils.AppUtil;
 import it.tredi.dw4.utils.ClassifUtil;
 import it.tredi.dw4.utils.Const;
-import it.tredi.dw4.utils.AppUtil;
-
-import org.dom4j.Document;
+import it.tredi.dw4.utils.XMLDocumento;
 
 public class DocWayChangeClassifDoc extends DocWayDocedit {
 	private DocWayChangeClassifFormsAdapter formsAdapter;
@@ -117,32 +118,40 @@ public class DocWayChangeClassifDoc extends DocWayDocedit {
 	 * @throws Exception
 	 */
 	public String confirmChangeclassif() throws Exception{
-		formsAdapter.getDefaultForm().addParams(this.doc.getClassif().asFormAdapterParams(".classif"));
-		formsAdapter.getDefaultForm().addParams(this.doc.getClassifNV().asFormAdapterParams("classif_nv"));
-		
-		String operation = "@CAMBIA_CLASSIF_DOC";
-		if (isCambioSuMinuta())
-			operation = "@CAMBIA_CLASSIF_DOC_MINUTA"; // TODO da completare
-		
-		this.formsAdapter.newClassifForSel(operation);
-		XMLDocumento response = this.formsAdapter.getDefaultForm().executePOST(getUserBean());
-		if (handleErrorResponse(response)) {
-			formsAdapter.fillFormsFromResponse(formsAdapter.getLastResponse()); //restore delle form
+		if ((this.doc.getClassif().getCod() == null || this.doc.getClassif().getCod().isEmpty()) 
+				&& (this.doc.getClassifNV().getCod() == null || this.doc.getClassifNV().getCod().isEmpty())) {
+			
+			setErroreResponse(I18N.mrs("dw4.classificazione_non_selezionata") + ".<br/>" + I18N.mrs("dw4.probabilmente_non_e_stato_completato_il_lookup_sul_campo_relativo_alla_nuova_classif"), Const.MSG_LEVEL_WARNING);
 			return null;
 		}
-		String verbo = response.getAttributeValue("/response/@verbo");
-		if (verbo.equals("loadingbar")) {
-			DocWayLoadingbar docWayLoadingbar = new DocWayLoadingbar();
-			docWayLoadingbar.getFormsAdapter().fillFormsFromResponse(response);
-			docWayLoadingbar.init(response);
-			setLoadingbar(docWayLoadingbar);
-			docWayLoadingbar.setActive(true);
+		else {
+			formsAdapter.getDefaultForm().addParams(this.doc.getClassif().asFormAdapterParams(".classif"));
+			formsAdapter.getDefaultForm().addParams(this.doc.getClassifNV().asFormAdapterParams("classif_nv"));
+			
+			String operation = "@CAMBIA_CLASSIF_DOC";
+			if (isCambioSuMinuta())
+				operation = "@CAMBIA_CLASSIF_DOC_MINUTA"; // TODO da completare
+			
+			this.formsAdapter.newClassifForSel(operation);
+			XMLDocumento response = this.formsAdapter.getDefaultForm().executePOST(getUserBean());
+			if (handleErrorResponse(response)) {
+				formsAdapter.fillFormsFromResponse(formsAdapter.getLastResponse()); //restore delle form
+				return null;
+			}
+			String verbo = response.getAttributeValue("/response/@verbo");
+			if (verbo.equals("loadingbar")) {
+				DocWayLoadingbar docWayLoadingbar = new DocWayLoadingbar();
+				docWayLoadingbar.getFormsAdapter().fillFormsFromResponse(response);
+				docWayLoadingbar.init(response);
+				setLoadingbar(docWayLoadingbar);
+				docWayLoadingbar.setActive(true);
+			}
+			formsAdapter.fillFormsFromResponse(response); //restore delle form
+			view = false;
+	//		showdoc.reload();
+	//		setSessionAttribute("changeclassifDoc", null);
+			return null;
 		}
-		formsAdapter.fillFormsFromResponse(response); //restore delle form
-		view = false;
-//		showdoc.reload();
-//		setSessionAttribute("changeclassifDoc", null);
-		return null;
 	}
 	
 	/**
@@ -180,7 +189,7 @@ public class DocWayChangeClassifDoc extends DocWayDocedit {
 		String value = (getDoc().getClassif() != null && !"".equals(getDoc().getClassif().getFiltroCod())) ? getDoc().getClassif().getFiltroCod() : "";
 		if (value.length() > 0) {
 			// Devo formattare il valore passato in base alla classificazione
-			value = ClassifUtil.formatClassifCode(value);
+			value = ClassifUtil.formatNumberClassifCode(value);
 			
 			keypath = "CLASSIF_FROM_CODE";
 			startkey = "lookupHierFromClassifCode";
@@ -195,6 +204,11 @@ public class DocWayChangeClassifDoc extends DocWayDocedit {
 		// Azzero il campo nel form
 		getDoc().getClassif().setFiltroCod("");
 		
+		return null;
+	}
+	
+	@Override
+	public XmlEntity getModel() {
 		return null;
 	}
 	

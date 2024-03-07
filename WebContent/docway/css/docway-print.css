@@ -1,0 +1,75 @@
+/* Media query per la stampa dei documenti */
+@media print {
+  html, body {
+    padding: 0;
+    margin: 0;
+  }
+  @page {
+    size: A4 portrait;
+    margin: 2cm 2cm;
+  }
+  .sidebar {
+    display: none;
+  }
+  .debug-textarea {
+    display: none;
+  }
+  .contenuto-doc {
+    margin: 0;
+  }
+  .contenuto-doc > div:first-child {
+    display: none;
+  }
+  .contenuto-doc > div:nth-child(2) {
+    width: 100%;
+    right: auto;
+    left: auto;
+    float: none;
+  }
+  .mitt-btns-email {
+    display: none;
+  }
+  .resp-cmds {
+    display: none;
+  }
+  .resp-vars {
+    display: none;
+  }
+  a.popoveritem {
+    display: none;
+  }
+  .main {
+    margin: 0;
+    width: 100vw;
+  }
+  .fixed-showdoc {
+    height: auto !important;
+  }
+  .showdoc-section .btn.btn-default.btn-xs {
+    display: none
+  }
+  #templateForm\:storiaCommand {
+    display: none;
+  }
+  .dl-horizontal dt {
+    float: left;
+    width: 160px;
+    clear: left;
+    text-align: right;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .dl-horizontal dd {
+    margin-left: 180px;
+  }
+  .table-responsive {
+    overflow-x: hidden;
+    border: 0;
+  }
+  pre, .showdoc-section {
+    max-height: none;
+    overflow: visible;
+    width: 100%;
+  }
+}

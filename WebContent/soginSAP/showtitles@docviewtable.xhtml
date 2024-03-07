@@ -66,9 +66,10 @@
 							</td>
 							<h:panelGroup rendered="#{hidecheckbox != 'true'}">
 								<td class="colcheck essential">
-									<h:selectBooleanCheckbox value="#{title.select}" valueChangeListener="#{beanTitles.selectTitle}">
+									<h:selectBooleanCheckbox value="#{title.select}" readonly="#{(beanTitles.selectAll and beanTitles.formsAdapter.elasticsearchEnabled) ? true : false}" valueChangeListener="#{beanTitles.selectTitle}">
 										<f:ajax execute="@this" render="@form"/>
 									</h:selectBooleanCheckbox>
+									<span class="hidden">PHYSDOC: <h:outputText value="#{title.physdoc}" /></span>
 								</td>
 							</h:panelGroup>
 							<td class="colinfo optional">
@@ -170,9 +171,10 @@
 						</td>
 						<h:panelGroup rendered="#{hidecheckbox != 'true'}">
 							<td class="colcheck essential">
-								<h:selectBooleanCheckbox value="#{title.select}" valueChangeListener="#{beanTitles.selectTitle}">
+								<h:selectBooleanCheckbox value="#{title.select}" readonly="#{(beanTitles.selectAll and beanTitles.formsAdapter.elasticsearchEnabled) ? true : false}" valueChangeListener="#{beanTitles.selectTitle}">
 									<f:ajax execute="@this" render="@form"/>
 								</h:selectBooleanCheckbox>
+								<span class="hidden">PHYSDOC: <h:outputText value="#{title.physdoc}" /></span>
 							</td>
 						</h:panelGroup>
 						<td class="cologgetto essential" colspan="3">

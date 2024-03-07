@@ -19,15 +19,22 @@
 	        
 	        <h5 class="sub-header">
 	            <span class="persone-interne glyphicons-pro"></span>&#160;
-	            <h:outputText value="#{i18n['acl.ins_persint']}" escape="false" />
+	            <h:outputText value="#{i18n['acl.ins_persint']}" />
 	        </h5>
 	   
 		    <!-- messages: inizio -->
 	        <h:panelGroup rendered="#{not empty facesContext.messageList}" layout="block" styleClass="docedit-messages alert alert-danger">
 	            <h:messages styleClass="" id="validationMesseges" />
 	        </h:panelGroup>
+	        <h:inputHidden id="errorFieldIds" value="#{docEditPersonaInterna.errorFieldIds}" />
 	        <!-- messages: fine -->
 	        
+	        <script type="text/javascript">
+			$(document).ready(function() {
+				setInvalidInputFields();
+			});
+			</script>
+
 	        <!-- scheda edit: inizio -->
 	        <div class="row-fluid" style="margin-top:10px;">
 	        	<div id="fixedshowdoc" class="box span12 fixed-showdoc"> 
@@ -444,6 +451,147 @@
 							</div>
 						</div>  <!--  fieldset -->
 						
+						<div class="fieldset">
+						     <div class="legend">#{i18n['dw4.firma_remota']}
+			                     <div class="pull-right">
+			                         <span class="glyphicons-pro pen firma-digitale" title="#{i18n['dw4.firma_remota']}"></span>
+			                     </div>
+			                 </div>
+			                 <h:panelGroup layout="block" id="firmeRemote">
+				                 <ui:include src="./firmeRemote.xhtml">
+									<ui:param name="pageBean"
+										value="#{docEditPersonaInterna.persona_interna}" />
+								</ui:include>
+			                </h:panelGroup>
+						</div>
+						<!--  fieldset -->
+						
+						<h:panelGroup rendered="#{docEditPersonaInterna.formsAdapter.funzionalitaDisponibili['adminDelegheAcl']}">
+							<div class="fieldset">
+							     <div class="legend">#{i18n['dw4.deleghe']}
+				                     <div class="pull-right">
+				                         <span class="glyphicons-pro parents" title="#{i18n['dw4.deleghe']}"></span>
+				                     </div>
+				                 </div>
+				                 <h:panelGroup layout="block" id="deleghe">
+									<ui:repeat var="delega" value="#{docEditPersonaInterna.persona_interna.deleghe}" varStatus="index" id="delega">
+										<div class="form-group">
+											<label class="col-sm-2 control-label"><span>#{i18n['dw4.delegato']}</span></label>
+											<div class="col-sm-3">
+												<ui:include src="./lookupField.xhtml">
+													<ui:param name="id" value="ufficio_delegato" />
+													<ui:param name="field" value="#{delega.nomeUfficio}" />
+													<ui:param name="bean" value="#{docEditPersonaInterna}" />
+													<ui:param name="action" value="lookupUfficioDelegato" />
+													<ui:param name="clearaction" value="clearLookupUfficioDelegato" />
+													<ui:param name="placeholder" value="#{i18n['acl.uff']}" />
+													<ui:param name="title" value="#{i18n['dw4.lookup_ufficio']}" />
+													<ui:param name="styleclass" value="form-control" />
+													<ui:param name="refresh" value="templateForm:deleghe templateForm:rifintLookup templateForm:errormsg" />
+												</ui:include>
+											</div>
+											<div class="col-sm-3">
+												<ui:include src="./lookupField.xhtml">
+													<ui:param name="id" value="nome_delegato" />
+													<ui:param name="field" value="#{delega.nomePersona}" />
+													<ui:param name="bean" value="#{docEditPersonaInterna}" />
+													<ui:param name="action" value="lookupNomeDelegato" />
+													<ui:param name="clearaction" value="clearLookupPersonaDelegato" />
+													<ui:param name="placeholder" value="#{i18n['acl.oper']}" />
+													<ui:param name="title" value="#{i18n['dw4.lookup_persona']}" />
+													<ui:param name="styleclass" value="form-control" />
+													<ui:param name="refresh" value="templateForm:deleghe templateForm:rifintLookup templateForm:errormsg" />
+												</ui:include>
+											</div>
+											<div>
+												<h:inputHidden id="delegato_#{indice}_cod_ufficio_hidden" value="#{delega.codUfficio}" />
+												<h:inputHidden id="delegato_#{indice}_cod_persona_hidden" value="#{delega.codPersona}" />
+											</div>
+											<div class="col-sm-1 input-group">
+												<div class="btn-group">
+													<h:commandLink
+														action="#{docEditPersonaInterna.persona_interna.removeDelegato}"
+														title="#{i18n['dw4.elimina_istanza']}"
+														styleClass="btn btn-default">
+														<f:param name="delega" value="#{delega}" />
+														<f:ajax execute="@form" render="templateForm:deleghe" />
+														<span class="glyphicon glyphicon-minus"></span>
+													</h:commandLink>
+													<h:commandLink
+														action="#{docEditPersonaInterna.persona_interna.addDelegato}"
+														title="#{i18n['dw4.aggiungi_istanza']}"
+														styleClass="btn btn-default">
+														<f:param name="delega" value="#{delega}" />
+														<f:ajax execute="@form" render="templateForm:deleghe" />
+														<span class="glyphicon glyphicon-plus"></span>
+													</h:commandLink>
+													<a class="btn btn-default dropdown-toggle"
+														data-toggle="dropdown"> <span class="caret"></span>
+													</a>
+													<ul class="dropdown-menu">
+														<li><h:commandLink
+																action="#{docEditPersonaInterna.persona_interna.copyDelegato}">
+																<f:param name="delega" value="#{delega}" />
+																<f:ajax execute="@form" render="templateForm:deleghe" />
+														#{i18n['dw4.ripeti_delega']}
+														</h:commandLink></li>
+													</ul>
+												</div>
+											</div>
+										</div>
+										<!-- settando il focus all'input dopo crea il fastidioso effetto di aprire la data, questa input hidden lo impedisce prendendo il focus al suo posto -->
+										<input class="form-control workarounds here-to-catch-the-focus" style="display: none;" />
+										<div class="form-group">
+											<label class="col-sm-2 control-label"><span>#{i18n['dw4.durata']}</span></label>
+											<ui:include src="../docway/rangeField.xhtml">
+												<ui:param name="label" value="#{i18n['dw4.durata']}" />
+												<ui:param name="id" value="durataDelega" />
+												<ui:param name="from_value" value="#{delega.inizio}" />
+												<ui:param name="to_value" value="#{delega.fine}" />
+												<ui:param name="is_date" value="true" />
+												<ui:param name="inputsize" value="2" />
+												<ui:param name="disabled" value="#{delega.permanente}" />
+												<ui:param name="noLabel" value="true" />
+											</ui:include>
+											<label class="col-sm-1 control-label"><span>#{i18n['dw4.permanente']}</span></label>
+											<div class="col-sm-1">
+												<h:selectBooleanCheckbox id="check_permanente" value="#{delega.permanente}">
+													<f:ajax listener="#{delega.updateDataInput}" execute="@form" render="templateForm:deleghe" />
+												</h:selectBooleanCheckbox>
+											</div>
+											<label class="col-sm-1 control-label"><span>#{i18n['dw4.notifiche']}</span></label>
+											<div class="col-sm-1">
+												<h:selectBooleanCheckbox id="check_notifiche" value="#{delega.sostituto}" />
+											</div>
+										</div>
+										<div class="form-group">
+											<label class="col-sm-2 control-label"><span>#{i18n['dw4.attiva']}</span></label>
+											<div class="col-sm-2">
+												<h:selectOneRadio
+													value="#{delega.attiva}"
+													styleClass="radio-selection">
+													<f:selectItem itemLabel="#{i18n['dw4.yes']}" itemValue="true" />
+													<f:selectItem itemLabel="#{i18n['dw4.no']}" itemValue="false" />
+												</h:selectOneRadio>
+											</div>
+											<label class="col-sm-1 control-label"><span>#{i18n['dw4.editabile']}</span></label>
+											<div class="col-sm-2">
+												<h:selectOneRadio
+													value="#{delega.uneditable}"
+													styleClass="radio-selection">
+													<f:selectItem itemLabel="#{i18n['dw4.yes']}" itemValue="false" />
+													<f:selectItem itemLabel="#{i18n['dw4.no']}" itemValue="true" />
+												</h:selectOneRadio>
+											</div>
+										</div>
+										<h:panelGroup rendered="#{not index.last}">
+											<hr/>
+										</h:panelGroup>
+									</ui:repeat>
+								</h:panelGroup>
+							</div>  <!--  fieldset -->
+						</h:panelGroup>
+
 						<ui:include src="./rightsManager.xhtml">
 							<ui:param name="bean" value="#{docEditPersonaInterna.persona_interna}" />
 							<ui:param name="modify" value="true"/>
@@ -454,8 +602,9 @@
 		</div>    
 		
         <ui:include src="./lookup.xhtml"> <ui:param name="pageBean" value="#{docEditPersonaInterna}"/></ui:include>
+		<ui:include src="./rifintLookup.xhtml"> <ui:param name="pageBean" value="#{docEditPersonaInterna}"/></ui:include>
         <ui:include src="./thvincolato.xhtml"> <ui:param name="pageBean" value="#{docEditPersonaInterna}"/></ui:include>
         
-        <h:inputTextarea value="#{docEditPersonaInterna.xml}" rendered="#{docEditPersonaInterna.debugMode}" styleClass="form-control" rows="10" />
+        <h:inputTextarea value="#{docEditPersonaInterna.xml}" rendered="#{docEditPersonaInterna.debugMode}" styleClass="form-control debug-textarea" rows="10" />
     </ui:define>
 </ui:composition>    

@@ -6,6 +6,7 @@ import it.tredi.dw4.adapters.AdaptersConfigurationLocator;
 import it.tredi.dw4.docway.doc.adapters.delibere.SedutaDocDocWayDocEditFormsAdapter;
 import it.tredi.dw4.docway.model.delibere.Seduta;
 import it.tredi.dw4.i18n.I18N;
+import it.tredi.dw4.model.XmlEntity;
 
 public class DocEditModifySeduta extends DocEditDocSeduta {
 
@@ -35,5 +36,10 @@ public class DocEditModifySeduta extends DocEditDocSeduta {
 
 	public String clearDocument() throws Exception {
 		return super.clearDocument();
+	}
+
+	@Override
+	public XmlEntity getModel() {
+		return this.getDoc();
 	}
 }

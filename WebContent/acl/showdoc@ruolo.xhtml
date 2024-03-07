@@ -34,6 +34,10 @@
 					<h:commandLink rendered="#{showdocRuolo.formsAdapter.funzionalitaDisponibili['del_roles']}" action="#{showdocRuolo.remove}" onclick="if (!owmConfirm('#{i18n['acl.deleteconfirm']}')) return false;" styleClass="btn btn-danger">
 						<span>#{i18n['acl.delete']}</span>
 					</h:commandLink>
+					
+					<ui:include src="../azionimassive/startAzioniMassiveButtons.xhtml">
+	                    <ui:param name="pageBean" value="#{showdocRuolo}" />
+	                </ui:include>
 				</div>
 			</div>
 			<!-- secondo livello toolbar: fine -->
@@ -45,7 +49,7 @@
 
 		<h5 class="sub-header" title="#{showdocRuolo.ruolo.nome}">
 			<span class="ruoli glyphicons-pro"></span>&#160;
-			<h:outputText value="#{showdocRuolo.ruolo.nome}" escape="false" />
+			<h:outputText value="#{showdocRuolo.ruolo.nome}" />
 		</h5>
 
 		<!-- scheda show: inizio -->
@@ -77,6 +81,24 @@
 					<h:panelGroup rendered="#{!empty showdocRuolo.ruolo.descrizione}">
 						<dt>#{i18n['acl.description']}</dt>
 						<dd>#{showdocRuolo.ruolo.descrizione}</dd>
+					</h:panelGroup>
+					
+					<h:panelGroup rendered="#{showdocRuolo.ruolo.renderEmail}">
+						<dt>#{i18n['acl.email']}</dt>
+						<dd>
+							<ui:repeat var="email" value="#{showdocRuolo.ruolo.emails}" varStatus="index">
+								<a href="mailto:#{email.addr}">#{email.addr}</a><br/>
+				            </ui:repeat>
+						</dd>
+					</h:panelGroup>
+					
+					<h:panelGroup rendered="#{showdocRuolo.ruolo.renderEmailCert}">
+						<dt>#{i18n['acl.pec']}</dt>
+						<dd>
+							<ui:repeat var="emailCert" value="#{showdocRuolo.ruolo.emailCerts}" varStatus="indexEmailCert">
+								<a href="mailto:#{emailCert.addr}" class="blacklink">#{emailCert.addr}</a><br/>
+				            </ui:repeat>
+						</dd>
 					</h:panelGroup>
 
 					<h:panelGroup rendered="#{! empty showdocRuolo.ruolo.pers_ass_count and showdocRuolo.ruolo.pers_ass_count != '0'}">

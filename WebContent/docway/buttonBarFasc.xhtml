@@ -33,7 +33,7 @@
 			<div class="btn-group">
 				<h:commandLink rendered="#{bean.formsAdapter.funzionalitaDisponibili['showassignfasc']}" action="#{bean.assignFasc}" styleClass="btn btn-primary openwaitmsg">#{i18n['dw4.assegna']}</h:commandLink>
 				<h:commandLink rendered="#{bean.formsAdapter.funzionalitaDisponibili['assegnaFascicoloCollegato']}" action="#{bean.assegnaFascicoloCollegato}" styleClass="btn btn-primary openwaitmsg">#{i18n['dw4.assegna']}</h:commandLink>
-				<h:commandLink rendered="#{bean.formsAdapter.funzionalitaDisponibili['showassignfascall']}" action="#{bean.doAssignFascAll}" styleClass="btn btn-primary openwaitmsg" onclick="if (!confirm('Confermare assegnazione di ' + #{bean.contaDocumentiRaccolti} + ' documenti?')) return false;">#{i18n['dw4.assegnatutti']}</h:commandLink>
+				<h:commandLink rendered="#{bean.formsAdapter.funzionalitaDisponibili['showassignfascall']}" action="#{bean.doAssignFascAll}" styleClass="btn btn-primary" onclick="if (!confirm('Confermare assegnazione di ' + #{bean.contaDocumentiRaccolti} + ' documenti?')) return false;">#{i18n['dw4.assegnatutti']}</h:commandLink>
 				
 				<h:panelGroup rendered="#{!bean.popupPage}">
 					<div class="btn-group">
@@ -51,31 +51,36 @@
 							</h:panelGroup>
 							<li><h:commandLink action="#{bean.reload}">#{i18n['dw4.reload']}</h:commandLink></li>
 							<li><a href="#" onclick="return printPageContent();" onkeypress="return printPageContent();">#{i18n['dw4.stampa_fascicolo']}</a></li>
+							<h:panelGroup rendered="#{showFolderTreeButton}"><li><h:commandLink action="#{bean.showFolderTree(bean.physDoc_infasc)}" styleClass="openwaitmsg">#{i18n['dw4.visualizzaAlberoFsc']}
+								
+							</h:commandLink></li></h:panelGroup>
 						</ul>
 					</div>
+				</h:panelGroup>
 					
-					<h:panelGroup rendered="#{bean.formsAdapter.funzionalitaDisponibili['nuovoinfascicolo'] and ((bean.formsAdapter.funzionalitaDisponibili['fascicoliinserimento']) or (bean.formsAdapter.funzionalitaDisponibili['sottofascicoloinserimento'] and bean.level >= 1))}">
-						<div class="btn-group">
-							<button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
-								#{i18n['dw4.new']} <span class="caret"></span>
-							</button>
-							<ul class="dropdown-menu">
-								<h:panelGroup rendered="#{bean.formsAdapter.funzionalitaDisponibili['fascicoliinserimento']}"><li><h:commandLink value="#{i18n['dw4.new']}" action="#{docwaymenu.insTableDocFascicolo}" /></li></h:panelGroup>
-								<h:panelGroup rendered="#{empty bean.physDoc_infasc and bean.bAssegnaLinkFasc!='true'}">
-									<h:panelGroup rendered="#{bean.formsAdapter.funzionalitaDisponibili['fascicoliinserimento']}"><li><h:commandLink value="#{i18n['dw4.clone']}" action="#{bean.ripetiNuovo}" /></li></h:panelGroup>
+				<h:panelGroup rendered="#{(bean.formsAdapter.funzionalitaDisponibili['nuovoinfascicolo'] or forceInsert) and ((bean.formsAdapter.funzionalitaDisponibili['fascicoliinserimento']) or (bean.formsAdapter.funzionalitaDisponibili['sottofascicoloinserimento'] and bean.level >= 1))}">
+					<div class="btn-group">
+						<button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+							#{i18n['dw4.new']} <span class="caret"></span>
+						</button>
+						<ul class="dropdown-menu">
+							<h:panelGroup rendered="#{!bean.popupPage and bean.formsAdapter.funzionalitaDisponibili['fascicoliinserimento']}"><li><h:commandLink value="#{i18n['dw4.new']}" action="#{bean.insTableDocFascicolo}" /></li></h:panelGroup>
+							<h:panelGroup rendered="#{!bean.popupPage and empty bean.physDoc_infasc and bean.bAssegnaLinkFasc!='true'}">
+								<h:panelGroup rendered="#{bean.formsAdapter.funzionalitaDisponibili['fascicoliinserimento']}"><li><h:commandLink value="#{i18n['dw4.clone']}" action="#{bean.ripetiNuovo}" /></li></h:panelGroup>
+							</h:panelGroup>
+							<h:panelGroup rendered="#{bean.formsAdapter.funzionalitaDisponibili['sottofascicoloinserimento'] and bean.level >= 1}">
+								<h:panelGroup rendered="#{!bean.popupPage and bean.formsAdapter.funzionalitaDisponibili['fascicoliinserimento']}">
+									<li class="divider"></li>
 								</h:panelGroup>
-								<h:panelGroup rendered="#{bean.formsAdapter.funzionalitaDisponibili['sottofascicoloinserimento'] and bean.level >= 1}">
-									<h:panelGroup rendered="#{bean.formsAdapter.funzionalitaDisponibili['fascicoliinserimento']}">
-										<li class="divider"></li>
-									</h:panelGroup>
-									<h:panelGroup rendered="#{bean.level == 1}"><li><h:commandLink value="#{i18n['dw4.sottofascicolo']}" action="#{bean.insSottofascicolo}" /></li></h:panelGroup>
-									<h:panelGroup rendered="#{bean.level == 2}"><li><h:commandLink value="#{i18n['dw4.inserto']}" action="#{bean.insSottofascicolo}" /></li></h:panelGroup>
-									<h:panelGroup rendered="#{bean.level >= 3}"><li><h:commandLink value="#{i18n['dw4.annesso']}" action="#{bean.insSottofascicolo}" /></li></h:panelGroup>
-								</h:panelGroup>
-							</ul>
-						</div>
-					</h:panelGroup>
+								<h:panelGroup rendered="#{bean.level == 1}"><li><h:commandLink value="#{i18n['dw4.sottofascicolo']}" action="#{bean.insSottofascicolo}" /></li></h:panelGroup>
+								<h:panelGroup rendered="#{bean.level == 2}"><li><h:commandLink value="#{i18n['dw4.inserto']}" action="#{bean.insSottofascicolo}" /></li></h:panelGroup>
+								<h:panelGroup rendered="#{bean.level >= 3}"><li><h:commandLink value="#{i18n['dw4.annesso']}" action="#{bean.insSottofascicolo}" /></li></h:panelGroup>
+							</h:panelGroup>
+						</ul>
+					</div>
+				</h:panelGroup>
 					
+				<h:panelGroup rendered="#{!bean.popupPage}">
 					<h:panelGroup rendered="#{empty bean.physDoc_infasc and bean.bAssegnaLinkFasc!='true' and hideNuovoDoc ne 'true'}">
 						<h:panelGroup rendered="#{bean.formsAdapter.funzionalitaDisponibili['nuovoinfascicolo'] and ((bean.formsAdapter.funzionalitaDisponibili['insArrivo']) or (bean.formsAdapter.funzionalitaDisponibili['insPartenza']) or (bean.formsAdapter.funzionalitaDisponibili['insInterno']) or (bean.formsAdapter.funzionalitaDisponibili['insVarie']) or (bean.formsAdapter.funzionalitaDisponibili['insRepertorio']))}">
 							<div class="btn-group">
@@ -108,7 +113,7 @@
 						</div>
 					</h:panelGroup>
 					
-					<h:panelGroup rendered="#{bean.formsAdapter.funzionalitaDisponibili['abilitaCCFascicoli'] or bean.formsAdapter.funzionalitaDisponibili['modifica']}" layout="block" styleClass="btn-group">
+					<h:panelGroup rendered="#{hideAssegnazioni ne 'true' and (bean.formsAdapter.funzionalitaDisponibili['abilitaCCFascicoli'] or bean.formsAdapter.funzionalitaDisponibili['modifica'])}" layout="block" styleClass="btn-group">
 						<button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
 							#{i18n['dw4.assegnazioni']} <span class="caret"></span>
 						</button>
@@ -139,6 +144,10 @@
 							<h:panelGroup rendered="#{bean.formsAdapter.funzionalitaDisponibili['showrestoreclassif']}"><li><h:commandLink action="#{bean.restoreclassif}" onclick="if (!owmConfirm('#{i18n['dw4.confermare_il_ripristino_della_classificazione_per_il_fascicolo_corrente']}')) return false;">#{i18n['dw4.restoreclassif']}</h:commandLink></li></h:panelGroup>
 						</ul>
 					</h:panelGroup>
+					
+					<ui:include src="../azionimassive/startAzioniMassiveButtons.xhtml">
+	                    <ui:param name="pageBean" value="#{bean}" />
+	                </ui:include>
 				</h:panelGroup>
 			</div>
 		</div>

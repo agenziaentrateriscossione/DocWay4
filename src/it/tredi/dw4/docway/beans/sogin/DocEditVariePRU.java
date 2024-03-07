@@ -14,27 +14,29 @@ import it.tredi.dw4.utils.XMLUtil;
 public class DocEditVariePRU extends DocEditVarie {
 
 	private List<Option> select_customSelectSedeArchivio = new ArrayList<Option>();
-	
+
 	public DocEditVariePRU() throws Exception {
 		super();
 	}
-	
+
 	public boolean isDocEditModify() {
 		return false;
 	}
-	
+
 	@Override
 	@SuppressWarnings("unchecked")
 	public void init(Document domDocumento) {
 		super.init(domDocumento);
-		
+
 		// per questo repertorio viene forzata la classificazione
 		getDoc().getClassif().setCod("00/00");
 		getDoc().getClassif().setText("00/00 - non classificato");
-		
+
 		select_customSelectSedeArchivio = XMLUtil.parseSetOfElement(domDocumento, "/response/select_customSelectSedeArchivio/option", new Option());
+
 	}
-	
+
+
 	@Override
 	public String saveDocument() throws Exception {
 		try {
@@ -45,32 +47,32 @@ public class DocEditVariePRU extends DocEditVarie {
 					getDoc().getAllegati().get(0).setText("0 - nessun allegato");
 				}
 			}
-						
+
 			if (checkRequiredField()) return null;
-			
+
 			formsAdapter.getDefaultForm().addParams(getDoc().asFormAdapterParams("", false, true));
 			XMLDocumento response = super._saveDocument("doc", "list_of_doc");
-		
+
 			if (handleErrorResponse(response)) {
 				formsAdapter.fillFormsFromResponse(formsAdapter.getLastResponse()); //restore delle form
 				return null;
 			}
-			
+
 			ShowdocVariePRU showdocVariePRU = new ShowdocVariePRU();
 			showdocVariePRU.getFormsAdapter().fillFormsFromResponse(response);
 			showdocVariePRU.init(response.getDocument());
 			showdocVariePRU.loadAspects("@varie", response, "showdoc");
 			setSessionAttribute("showdocVariePRU", showdocVariePRU);
-			
+
 			return "sogin_showdoc@varie@PRU@reload";
 		}
 		catch (Throwable t) {
 			handleErrorResponse(ErrormsgFormsAdapter.buildErrorResponse(t));
 			formsAdapter.fillFormsFromResponse(formsAdapter.getLastResponse()); //restore delle form
-			return null;			
+			return null;
 		}
 	}
-	
+
 	public List<Option> getSelect_customSelectSedeArchivio() {
 		return select_customSelectSedeArchivio;
 	}

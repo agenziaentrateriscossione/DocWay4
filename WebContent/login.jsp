@@ -18,6 +18,9 @@ String customDir = DocWayProperties.readProperty("docway.custom.dir.css", "");
 String db = "";
 if (request.getParameter("db") != null)
 	db = (String) request.getParameter("db");
+
+// login tramite slider captcha
+String sliderCaptcha = DocWayProperties.readProperty("loginBySliderCaptcha", "no");
 %>
 
 <c:set var="language" value="${not empty param.language ? param.language : not empty language ? language : pageContext.request.locale}" scope="session" />
@@ -37,6 +40,31 @@ if (request.getParameter("db") != null)
 		<script src="<%= request.getContextPath() %>/bootstrap/js/bootstrap.js"></script>
 		<script src="<%= request.getContextPath() %>/common/js/login.js"></script>
 		
+		<% if (sliderCaptcha.equals("si")) { %>
+			<script src="<%= request.getContextPath() %>/common/slidercaptcha/js/jquery-ui.js"></script>
+			<script src="<%= request.getContextPath() %>/common/slidercaptcha/js/jquery.ui.touch-punch-improved.js"></script>
+			<script src="<%= request.getContextPath() %>/common/slidercaptcha/js/slider-captcha.js"></script>
+			<script type="text/javascript">
+				$(document).ready(function() {
+					$('#sliderCaptcha').sliderCaptcha({
+						type: "filled",
+						textFeedbackAnimation: 'swipe_overlap',
+						hintText: "Swipe to Login",
+						hintTextAfterUnlock: 'Login...',
+						face: {
+							icon: 'lock',
+							iconAfterUnlock: 'unlock'
+						}, 
+						events: {
+							submitAfterUnlock: 1
+						}
+					});
+				});
+			</script>
+		<% } %>
+		
+		<link href="<%= request.getContextPath() %>/favicon.ico" type="image/png" rel="icon"/>
+		
 		<!-- styles -->
 		<link href="<%= request.getContextPath() %>/bootstrap/css/bootstrap.css" rel="stylesheet" />
 		<c:if test="${direction eq 'rtl'}">
@@ -44,6 +72,10 @@ if (request.getParameter("db") != null)
 		</c:if>
 		<link href="<%= request.getContextPath() %>/bootstrap/css/bootstrap-theme.css" rel="stylesheet" />
 		<link href="<%= request.getContextPath() %>/common/css/login.css" rel="stylesheet" />
+
+		<% if (sliderCaptcha.equals("si")) { %>
+			<link href="<%= request.getContextPath() %>/common/slidercaptcha/css/slider-captcha.css" rel="stylesheet" />
+		<% } %>
 		
 		<% if (customDir.length() > 0) { %>
         	<link type="text/css" href="<%= request.getContextPath() %>/common/css/<%= customDir %>/login.css" rel="stylesheet" />
@@ -69,7 +101,11 @@ if (request.getParameter("db") != null)
 	    			<label for="password" class="string control-label"><fmt:message key="dw4.password" /></label>
 	    			<input type="password" class="form-control" id="password" placeholder="password" required="required" name="j_password" />
 	    			
-	    			<button type="submit" class="btn btn-lg btn-primary btn-block">
+	    			<% if (sliderCaptcha.equals("si")) { %>
+	    				<div style="margin-top: 20px;" id="sliderCaptcha"></div>
+	    			<% } %>
+	    			
+	    			<button type="submit" class="btn btn-lg btn-primary btn-block" <%= (sliderCaptcha.equals("si")) ? "disabled=\"disabled\"" : "" %>>
 	    				<fmt:message key="dw4.login" />
 	    			</button>
 	    		</div>

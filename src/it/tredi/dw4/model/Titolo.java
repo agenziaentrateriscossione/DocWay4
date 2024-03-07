@@ -46,6 +46,12 @@ public class Titolo extends XmlEntity {
 	private boolean notShowSeduta;
 	private boolean sedutaSospesa;
 	private boolean straordinaria;
+	
+	// comunicazione intra-aoo (protocollazione di un documento su aoo differente tramite chiamata ai 3diWS)
+	private String idIUnit;
+	
+	// integrazione con elasticsearch (numero fisico del documento al quale fa riferimento il titolo)
+	private int physdoc;
     
 	public Titolo() {}
     
@@ -78,6 +84,10 @@ public class Titolo extends XmlEntity {
     		this.selected =	true;
     	else
     		this.selected =	false;
+    	
+    	this.idIUnit =				XMLUtil.parseAttribute(domTitolo, "titolo/@idIUnit");
+    	
+    	this.physdoc =				Integer.parseInt(XMLUtil.parseAttribute(domTitolo, "titolo/@physdoc", "0"));
     	
     	if ( null != valore_campo && !"".equals(valore_campo.trim())){
     		Campo campo = new Campo();
@@ -363,35 +373,48 @@ public class Titolo extends XmlEntity {
 	}
 	
 	//Titolo Seduta
-		public boolean isShowSeduta() {
-			return showSeduta;
-		}
+	public boolean isShowSeduta() {
+		return showSeduta;
+	}
 
-		public void setShowSeduta(boolean showSeduta) {
-			this.showSeduta = showSeduta;
-		}
+	public void setShowSeduta(boolean showSeduta) {
+		this.showSeduta = showSeduta;
+	}
 
-		public boolean isNotShowSeduta() {
-			return notShowSeduta;
-		}
+	public boolean isNotShowSeduta() {
+		return notShowSeduta;
+	}
 
-		public void setNotShowSeduta(boolean notShowSeduta) {
-			this.notShowSeduta = notShowSeduta;
-		}
+	public void setNotShowSeduta(boolean notShowSeduta) {
+		this.notShowSeduta = notShowSeduta;
+	}
 
-		public boolean isSedutaSospesa() {
-			return sedutaSospesa;
-		}
+	public boolean isSedutaSospesa() {
+		return sedutaSospesa;
+	}
 
-		public void setSedutaSospesa(boolean sedutaSospesa) {
-			this.sedutaSospesa = sedutaSospesa;
-		}
+	public void setSedutaSospesa(boolean sedutaSospesa) {
+		this.sedutaSospesa = sedutaSospesa;
+	}
 
-		public boolean isStraordinaria() {
-			return straordinaria;
-		}
+	public boolean isStraordinaria() {
+		return straordinaria;
+	}
 
-		public void setStraordinaria(boolean straordinaria) {
-			this.straordinaria = straordinaria;
-		}
+	public void setStraordinaria(boolean straordinaria) {
+		this.straordinaria = straordinaria;
+	}
+
+	public String getIdIUnit() {
+		return idIUnit;
+	}
+
+	public void setIdIUnit(String idIUnit) {
+		this.idIUnit = idIUnit;
+	}
+	
+	public int getPhysdoc() {
+		return physdoc;
+	}
+
 }

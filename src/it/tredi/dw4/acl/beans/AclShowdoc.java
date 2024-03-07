@@ -1,9 +1,10 @@
 package it.tredi.dw4.acl.beans;
 
-import it.tredi.dw4.utils.XMLDocumento;
 import it.tredi.dw4.beans.Showdoc;
+import it.tredi.dw4.utils.XMLDocumento;
 
 public abstract class AclShowdoc extends Showdoc {
+	
 	public String paginaTitoli() throws Exception {
 		XMLDocumento response = this._paginaTitoli();	
 		

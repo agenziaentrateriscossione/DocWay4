@@ -22,6 +22,7 @@ public class DocWayDelegaWorkflow extends Page {
 	private String selectedTask;
 	private ArrayList<Task> tasks = new ArrayList<Task>();
 	private ArrayList<PersonaInRuolo> users = new ArrayList<PersonaInRuolo>();
+	private String bonitaVersion = "";
 	
 	public DocWayDelegaWorkflow() throws Exception {
 		formsAdapter = new DocDocWayDocumentFormsAdapter(AdaptersConfigurationLocator.getInstance().getAdapterConfiguration("docwayService"));
@@ -32,9 +33,10 @@ public class DocWayDelegaWorkflow extends Page {
 		// TODO Auto-generated method stub
 	}
 	
-	public void init(Map<String, PersonaInRuolo> usersFrom, ArrayList<Task> tasksFrom) {
+	public void init(Map<String, PersonaInRuolo> usersFrom, ArrayList<Task> tasksFrom, String bonitaVersion) {
 		this.setUsers(new ArrayList<PersonaInRuolo>(usersFrom.values()));
 		this.tasks			= tasksFrom;
+		this.bonitaVersion = bonitaVersion;
 	}
 
 	/**
@@ -53,7 +55,7 @@ public class DocWayDelegaWorkflow extends Page {
 	public String delegaTaskWorkflow() throws Exception{
 		PersonaInRuolo selectedUser = (PersonaInRuolo) FacesContext.getCurrentInstance().getExternalContext().getRequestMap().get("persona");
 
-		formsAdapter.delegaWorkflowTask(selectedTask, selectedUser.getMatricola());
+		formsAdapter.delegaWorkflowTask(selectedTask, selectedUser.getMatricola(),bonitaVersion);
 		XMLDocumento response = this.formsAdapter.getDefaultForm().executePOST(getUserBean());
 		if (handleErrorResponse(response)) {
 			formsAdapter.fillFormsFromResponse(formsAdapter.getLastResponse()); //restore delle form
@@ -123,5 +125,13 @@ public class DocWayDelegaWorkflow extends Page {
 
 	public void setUsers(ArrayList<PersonaInRuolo> users) {
 		this.users = users;
+	}
+
+	public String getBonitaVersion() {
+		return bonitaVersion;
+	}
+
+	public void setBonitaVersion(String bonitaVersion) {
+		this.bonitaVersion = bonitaVersion;
 	}
 }

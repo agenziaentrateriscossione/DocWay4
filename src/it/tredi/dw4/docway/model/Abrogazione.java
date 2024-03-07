@@ -18,26 +18,28 @@ public class Abrogazione extends XmlEntity {
 	private Date data;
 	private String ora;
 	private String motivazione;
-    
+	private String delegato;
+
 	public Abrogazione() {}
-    
+
 	public Abrogazione(String xmlCreazione) throws Exception {
         this.init(XMLUtil.getDOM(xmlCreazione));
     }
-    
+
     public Abrogazione init(Document domCreazione) {
     	this.operatore 			= XMLUtil.parseAttribute(domCreazione, "abrogazione/@operatore");
     	this.cod_operatore 		= XMLUtil.parseAttribute(domCreazione, "abrogazione/@cod_operatore");
     	this.motivazione 		= XMLUtil.parseElement(domCreazione, "abrogazione");
     	this.data 				= XMLUtil.parseAttributeDate(domCreazione, "abrogazione/@data");
     	this.ora 				= XMLUtil.parseAttribute(domCreazione, "abrogazione/@ora");
+    	this.delegato			= XMLUtil.parseAttribute(domCreazione, "abrogazione/@delegato");
         return this;
     }
-    
+
     public Map<String, String> asFormAdapterParams(String prefix){
     	return new HashMap<String, String>();
     }
-    
+
     public String getOperatore() {
 		return operatore;
 	}
@@ -69,12 +71,12 @@ public class Abrogazione extends XmlEntity {
 	public Date getData() {
 		return data;
 	}
-	
+
 	public String getDateLong(){
 		if ( null != data ) return DateUtil.getLongDate(data);
 		else				return null;
 	}
-	
+
 
 	public void setOra(String ora) {
 		this.ora = ora;
@@ -90,6 +92,14 @@ public class Abrogazione extends XmlEntity {
 
 	public String getMotivazione() {
 		return motivazione;
+	}
+
+	public String getDelegato() {
+		return delegato;
+	}
+
+	public void setDelegato(String delegato) {
+		this.delegato = delegato;
 	}
 }
 

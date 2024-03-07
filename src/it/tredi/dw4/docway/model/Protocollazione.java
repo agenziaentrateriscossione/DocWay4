@@ -19,13 +19,14 @@ public class Protocollazione extends XmlEntity {
 	private Date data;
 	private String ora;
 	private String uff_oper;
-    
+	private String delegato;
+
 	public Protocollazione() {}
-    
+
 	public Protocollazione(String xmlCreazione) throws Exception {
         this.init(XMLUtil.getDOM(xmlCreazione));
     }
-    
+
     public Protocollazione init(Document domCreazione) {
     	this.oper 			= XMLUtil.parseAttribute(domCreazione, "protocollazione/@oper");
     	this.cod_oper 		= XMLUtil.parseAttribute(domCreazione, "protocollazione/@cod_oper");
@@ -34,13 +35,14 @@ public class Protocollazione extends XmlEntity {
     	this.azione 		= XMLUtil.parseAttribute(domCreazione, "protocollazione/@azione");
     	this.data 			= XMLUtil.parseAttributeDate(domCreazione, "protocollazione/@data");
     	this.ora 			= XMLUtil.parseAttribute(domCreazione, "protocollazione/@ora");
+    	this.delegato       = XMLUtil.parseAttribute(domCreazione, "protocollazione/@delegato");
         return this;
     }
-    
+
     public Map<String, String> asFormAdapterParams(String prefix){
     	return new HashMap<String, String>();
     }
-    
+
     public String getOper() {
 		return oper;
 	}
@@ -80,12 +82,12 @@ public class Protocollazione extends XmlEntity {
 	public Date getData() {
 		return data;
 	}
-	
+
 	public String getDateLong(){
 		if ( null != data ) return DateUtil.getLongDate(data);
 		else				return null;
 	}
-	
+
 
 	public void setOra(String ora) {
 		this.ora = ora;
@@ -101,6 +103,14 @@ public class Protocollazione extends XmlEntity {
 
 	public String getUff_oper() {
 		return uff_oper;
+	}
+
+	public String getDelegato() {
+		return delegato;
+	}
+
+	public void setDelegato(String delegato) {
+		this.delegato = delegato;
 	}
 }
 

@@ -1,7 +1,7 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml" 
-	  xmlns:h="http://java.sun.com/jsf/html" 
-	  xmlns:ui="http://java.sun.com/jsf/facelets" 
+<html xmlns="http://www.w3.org/1999/xhtml"
+	  xmlns:h="http://java.sun.com/jsf/html"
+	  xmlns:ui="http://java.sun.com/jsf/facelets"
 	  xmlns:f="http://java.sun.com/jsf/core">
 <ui:composition>
 
@@ -11,18 +11,23 @@
 				<th class="coltipo essential">
 					<h:commandLink rendered="#{beanTitles.titlesSwitchEnabled}" action="#{beanTitles.changeTitlesMode('table')}" title="#{i18n['dw4.mostra_i_titoli_in_modalita_tabella']}">
 						<f:ajax execute="@form" render="@form" />
-						<span class="title-list-mode-icon glyphicons-pro table"></span>	
-					</h:commandLink> 
+						<span class="title-list-mode-icon glyphicons-pro table"></span>
+					</h:commandLink>
 				</th>
 				<h:panelGroup rendered="#{hidecheckbox != 'true'}">
 					<th class="colcheck essential">
-						<h:selectBooleanCheckbox id="selectAll" title="#{i18n['dw4.seleziona_tutti']}" immediate="true" value="#{beanTitles.selectAll}" valueChangeListener="#{beanTitles.selectAll}">
-							<f:ajax execute="@this" render="@form" />
-						</h:selectBooleanCheckbox>
+						<span class="popoveritem" data-trigger="hover" data-placement="#{(!empty direction) ? direction : 'right'}" data-content="#{i18n['dw4.seleziona_tutti_i_risultati_della_ricerca']}">
+							<h:selectBooleanCheckbox id="selectAll" immediate="true" value="#{beanTitles.selectAll}" valueChangeListener="#{beanTitles.selectAll}">
+								<f:ajax execute="@this" render="@form" />
+							</h:selectBooleanCheckbox>
+						</span>
 					</th>
 				</h:panelGroup>
 					<h:panelGroup rendered="#{!beanTitles.seduta}">
 						<th class="colinfo optional">#{i18n['dw4.info']}</th>
+					</h:panelGroup>
+					<h:panelGroup rendered="#{beanTitles.formsAdapter.funzionalitaDisponibili['multiSocieta']}">
+						<th class="colsocieta optional">#{i18n['acl.society']}</th>
 					</h:panelGroup>
 					<th class="cologgetto essential">
 						<span style="white-space:nowrap;">
@@ -43,7 +48,7 @@
 			</thead>
 			<tbody>
 				<ui:repeat var="title" value="#{beanTitles.titles}" varStatus="varstatus">
-					<h:panelGroup rendered="#{!(fn:startsWith(title.testo, '|||||||'))}">
+					<h:panelGroup rendered="#{empty title.hashSplit['U'] or title.hashSplit['U'] eq 'doc'}">
 						<tr>
 							<h:panelGroup rendered="#{title.visible != 'false'}">
 								<td class="coltipo essential">
@@ -63,9 +68,10 @@
 								</td>
 								<h:panelGroup rendered="#{hidecheckbox != 'true'}">
 									<td class="colcheck essential">
-										<h:selectBooleanCheckbox value="#{title.select}" valueChangeListener="#{beanTitles.selectTitle}" class="title-check" onclick="setFieldAsGlobalFocusFieldId(this);">
+										<h:selectBooleanCheckbox value="#{title.select}" readonly="#{(beanTitles.selectAll and beanTitles.formsAdapter.elasticsearchEnabled) ? true : false}" valueChangeListener="#{beanTitles.selectTitle}" class="title-check" onclick="setFieldAsGlobalFocusFieldId(this);">
 											<f:ajax execute="@this" render="@form"/>
 										</h:selectBooleanCheckbox>
+										<span class="hidden">PHYSDOC: <h:outputText value="#{title.physdoc}" /></span>
 									</td>
 								</h:panelGroup>
 								<td class="colinfo optional">
@@ -76,6 +82,11 @@
 										<ui:param name="direction" value="#{(!empty beanTitles.languageOrientation and beanTitles.languageOrientation eq 'rtl') ? 'top' : 'right'}" />
 						        	</ui:include>
 								</td>
+								<h:panelGroup rendered="#{beanTitles.formsAdapter.funzionalitaDisponibili['multiSocieta']}">
+									<td class="colsocieta optional">
+										#{beanTitles.getSocietaName(title.hashSplit['S'])}
+									</td>
+								</h:panelGroup>
 								<td class="cologgetto essential">
 									<h:panelGroup rendered="#{!empty title.split[4] or (!beanTitles.formsAdapter.funzionalitaDisponibili['nascondiprotocollo'] and (!empty title.split[1] or !empty title.split[2] or !empty title.split[3])) or title.split[10] eq 'bozza=si'}" layout="block" styleClass="first-row-oggetto">
 										<h:panelGroup rendered="#{title.split[10] eq 'bozza=si'}" styleClass="bozza-titolo">
@@ -107,7 +118,7 @@
 													<h:panelGroup rendered="#{!empty subject or !empty title.split[1] or !empty title.split[3]}">
 														<h:outputText value=" - " />
 													</h:panelGroup>
-													#{i18n['dw4.rep']} <em>#{title.split[11]} 
+													#{i18n['dw4.rep']} <em>#{title.split[11]}
 													<h:panelGroup rendered="#{!empty title.split[2]}">
 														(n.
 														<h:outputText value="#{fn:substring(title.split[2], (fn:indexOf(title.split[2], '-')+5), fn:length(title.split[2]))}" >
@@ -126,11 +137,11 @@
 										<ui:param name="object" value="#{(!empty title.split[5] and (beanTitles.lunghezzaMaxOggetto > 0) and (fn:length(title.split[5]) > beanTitles.lunghezzaMaxOggetto)) ? fn:substring(title.split[5], 0, beanTitles.lunghezzaMaxOggetto - 1) : title.split[5]}" />
 										<div class="second-row-oggetto #{(title.hashSplit['TRASH'] eq 'si') ? 'doc-in-cestino' : ''}" title="#{title.split[5]}">
 											<h:panelGroup rendered="#{title.visto == 'true'}">
-												<h:outputText value="#{object}" escape="false" /> <h:outputText value="#{(!empty title.split[5] and (beanTitles.lunghezzaMaxOggetto > 0) and (fn:length(title.split[5]) > beanTitles.lunghezzaMaxOggetto)) ? '...' : ''}" escape="false" />
+												<h:outputText value="#{object}" /> <h:outputText value="#{(!empty title.split[5] and (beanTitles.lunghezzaMaxOggetto > 0) and (fn:length(title.split[5]) > beanTitles.lunghezzaMaxOggetto)) ? '...' : ''}" />
 											</h:panelGroup>
 											<h:panelGroup rendered="#{title.visto != 'true'}">
 												<span class="showtitles-documento-non-visto">
-													<h:outputText value="#{object}" escape="false" /> <h:outputText value="#{(!empty title.split[5] and (beanTitles.lunghezzaMaxOggetto > 0) and (fn:length(title.split[5]) > beanTitles.lunghezzaMaxOggetto)) ? '...' : ''}" escape="false" />
+													<h:outputText value="#{object}" /> <h:outputText value="#{(!empty title.split[5] and (beanTitles.lunghezzaMaxOggetto > 0) and (fn:length(title.split[5]) > beanTitles.lunghezzaMaxOggetto)) ? '...' : ''}" />
 												</span>
 											</h:panelGroup>
 										</div>
@@ -159,9 +170,7 @@
 							</h:panelGroup>
 						</tr>
 					</h:panelGroup>
-					<!-- dpranteda 5/12/2014 -->
-					<!-- Modificata la condizione di rendering per consentire la visualizzazione dei titoli di seduta -->
-					<h:panelGroup rendered="#{fn:startsWith(title.testo, '|||||||') and !fn:startsWith(title.testo, '||||||||||')}">
+					<h:panelGroup rendered="#{title.hashSplit['U'] eq 'fascicolo'}">
 						<tr>
 							<td class="coltipo essential">
 								<h:commandLink action="#{beanTitles.mostraDocumento}" title="#{i18n['dw4.vai_al_fascicolo']}" styleClass="openwaitmsg">
@@ -171,12 +180,13 @@
 							</td>
 							<h:panelGroup rendered="#{hidecheckbox != 'true'}">
 								<td class="colcheck essential">
-									<h:selectBooleanCheckbox value="#{title.select}" valueChangeListener="#{beanTitles.selectTitle}">
+									<h:selectBooleanCheckbox value="#{title.select}" readonly="#{(beanTitles.selectAll and beanTitles.formsAdapter.elasticsearchEnabled) ? true : false}" valueChangeListener="#{beanTitles.selectTitle}">
 										<f:ajax execute="@this" render="@form"/>
 									</h:selectBooleanCheckbox>
+									<span class="hidden">PHYSDOC: <h:outputText value="#{title.physdoc}" /></span>
 								</td>
 							</h:panelGroup>
-							<td class="cologgetto essential" colspan="2">
+							<td class="cologgetto essential" colspan="#{beanTitles.formsAdapter.funzionalitaDisponibili['multiSocieta'] ? 3 : 2}">
 								<h:commandLink action="#{beanTitles.mostraDocumento}" styleClass="openwaitmsg">
 									<div><h:outputText value="#{title.split[7]}"><f:converter converterId="NumFascConverter"/></h:outputText> - «#{title.split[8]}»</div>
 								</h:commandLink>
@@ -184,9 +194,31 @@
 							<td class="optional">&#160;</td>
 						</tr>
 					</h:panelGroup>
-					<!-- dpranteda 5/12/2014 -->
-					<!-- Titolo Seduta Docway Delibere -->
-					<h:panelGroup rendered="#{fn:startsWith(title.testo, '||||||||||')}">
+					<h:panelGroup rendered="#{title.hashSplit['U'] eq 'raccoglitore'}">
+						<tr>
+							<td class="coltipo essential">
+								<h:commandLink action="#{beanTitles.mostraDocumento}" title="#{i18n['dw4.vai_al_raccoglitore']}" styleClass="openwaitmsg">
+									<f:param name="titolo" value="#{title}"></f:param>
+									<span class="doc-tipo-fascicolo glyphicon glyphicon-inbox"></span>
+								</h:commandLink>
+							</td>
+							<h:panelGroup rendered="#{hidecheckbox != 'true'}">
+								<td class="colcheck essential">
+									<h:selectBooleanCheckbox value="#{title.select}" readonly="#{(beanTitles.selectAll and beanTitles.formsAdapter.elasticsearchEnabled) ? true : false}" valueChangeListener="#{beanTitles.selectTitle}">
+										<f:ajax execute="@this" render="@form"/>
+									</h:selectBooleanCheckbox>
+									<span class="hidden">PHYSDOC: <h:outputText value="#{title.physdoc}" /></span>
+								</td>
+							</h:panelGroup>
+							<td class="cologgetto essential" colspan="#{beanTitles.formsAdapter.funzionalitaDisponibili['multiSocieta'] ? 3 : 2}">
+								<h:commandLink action="#{beanTitles.mostraDocumento}" styleClass="openwaitmsg">
+									#{title.split[13]}
+								</h:commandLink>
+							</td>
+							<td class="optional">&#160;</td>
+						</tr>
+					</h:panelGroup>
+					<h:panelGroup rendered="#{title.hashSplit['U'] eq 'seduta'}">
 						<tr>
 							<h:panelGroup rendered="#{title.visible != 'false'}">
 								<td class="coltipo essential">
@@ -205,12 +237,18 @@
 								</td>
 								<h:panelGroup rendered="#{hidecheckbox != 'true'}">
 									<td class="colcheck essential">
-										<h:selectBooleanCheckbox value="#{title.select}" valueChangeListener="#{beanTitles.selectTitle}">
+										<h:selectBooleanCheckbox value="#{title.select}" readonly="#{(beanTitles.selectAll and beanTitles.formsAdapter.elasticsearchEnabled) ? true : false}" valueChangeListener="#{beanTitles.selectTitle}">
 											<f:ajax execute="@this" render="@form"/>
 										</h:selectBooleanCheckbox>
+										<span class="hidden">PHYSDOC: <h:outputText value="#{title.physdoc}" /></span>
 									</td>
 								</h:panelGroup>
 								<td class="colinfo optional"></td>
+								<h:panelGroup rendered="#{beanTitles.formsAdapter.funzionalitaDisponibili['multiSocieta']}">
+									<td class="colsocieta optional">
+										#{beanTitles.getSocietaName(title.hashSplit['S'])}
+									</td>
+								</h:panelGroup>
 								<td class="cologgetto essential vertical-align-middle">
 									<h:panelGroup rendered="#{title.showSeduta}">
 										<h:commandLink action="#{beanTitles.mostraDocumento}" title="#{i18n['dw4.vai_alla_seduta']}" styleClass="openwaitmsg">
@@ -218,29 +256,29 @@
 											<f:param name="titolo" value="#{title}"></f:param>
 											<h:panelGroup rendered="#{!title.sedutaSospesa}">
 												<div>
-													<h:outputText value="#{i18n['dw4.seduta_del']}"></h:outputText> #{title.split[15]} 
+													<h:outputText value="#{i18n['dw4.seduta_del']}"></h:outputText> #{title.split[15]}
 													<em><h:outputText rendered="#{title.straordinaria}" value="(#{i18n['dw4.straordinaria']})"></h:outputText></em>
 												</div>
-											</h:panelGroup>	
+											</h:panelGroup>
 											<h:panelGroup rendered="#{title.sedutaSospesa}">
 												<div>
 													<h:outputText value="#{i18n['dw4.proposte_sospese']}"></h:outputText>
 												</div>
-											</h:panelGroup>	
+											</h:panelGroup>
 										</h:commandLink>
 									</h:panelGroup>
 									<h:panelGroup rendered="#{title.notShowSeduta}" title="#{i18n['dw4.seduta_non_disponibile']}">
 										<h:panelGroup rendered="#{!title.sedutaSospesa}">
 											<div>
-												<h:outputText value="#{i18n['dw4.seduta_del']}"></h:outputText> #{title.split[15]} 
+												<h:outputText value="#{i18n['dw4.seduta_del']}"></h:outputText> #{title.split[15]}
 												<em><h:outputText rendered="#{title.straordinaria}" value="(#{i18n['dw4.straordinaria']})"></h:outputText></em>
 											</div>
-										</h:panelGroup>	
+										</h:panelGroup>
 										<h:panelGroup rendered="#{title.sedutaSospesa}">
 											<div>
 												<h:outputText value="#{i18n['dw4.proposte_sospese']}"></h:outputText>
 											</div>
-										</h:panelGroup>	
+										</h:panelGroup>
 									</h:panelGroup>
 								</td>
 								<td class="colscad optional"></td>
@@ -261,5 +299,5 @@
 			</tbody>
 		</table>
 
-</ui:composition>   
+</ui:composition>
 </html>

@@ -38,6 +38,10 @@
 						<h:commandLink rendered="#{showdocPersonaEsterna.formsAdapter.funzionalitaDisponibili['ins_persest']}" action="#{showdocPersonaEsterna.ripetiNuovo}" styleClass="btn btn-default openwaitmsg">
 							<span>#{i18n['acl.clone']}</span>
 						</h:commandLink>
+						
+						<ui:include src="../azionimassive/startAzioniMassiveButtons.xhtml">
+		                    <ui:param name="pageBean" value="#{showdocPersonaEsterna}" />
+		                </ui:include>
 					</div>
 				</div>
 				<!-- secondo livello toolbar: fine -->
@@ -49,7 +53,7 @@
 
 			<h5 class="sub-header" title="#{showdocPersonaEsterna.persona_esterna.titolo_deferenza} #{showdocPersonaEsterna.persona_esterna.titolo} #{showdocPersonaEsterna.persona_esterna.cognome} #{showdocPersonaEsterna.persona_esterna.nome} #{showdocPersonaEsterna.persona_esterna.secondo_nome}">
 				<span class="persone-esterne glyphicons-pro"></span>&#160;
-				<h:outputText value="#{showdocPersonaEsterna.persona_esterna.titolo_deferenza} #{showdocPersonaEsterna.persona_esterna.titolo} #{showdocPersonaEsterna.persona_esterna.cognome} #{showdocPersonaEsterna.persona_esterna.nome} #{showdocPersonaEsterna.persona_esterna.secondo_nome}" escape="false" />
+				<h:outputText value="#{showdocPersonaEsterna.persona_esterna.titolo_deferenza} #{showdocPersonaEsterna.persona_esterna.titolo} #{showdocPersonaEsterna.persona_esterna.cognome} #{showdocPersonaEsterna.persona_esterna.nome} #{showdocPersonaEsterna.persona_esterna.secondo_nome}" />
 			</h5>
 
 			<!-- scheda show: inizio -->
@@ -144,7 +148,7 @@
 				<h:panelGroup rendered="#{showdocPersonaEsterna.persona_esterna.recapito.indirizzo.renderIndirizzo or showdocPersonaEsterna.persona_esterna.recapito.renderTelefoni or showdocPersonaEsterna.persona_esterna.recapito.renderEmail or showdocPersonaEsterna.persona_esterna.recapito.renderSitiWeb or showdocPersonaEsterna.persona_esterna.recapito.email_certificata.addr ne ''}">
 					<div class="showdoc-section">
 						<div class="title">
-							#{i18n['acl.workdata']}
+							#{(!empty showdocPersonaEsterna.label_dati_attivita) ? showdocPersonaEsterna.label_dati_attivita : i18n['acl.workdata']}
 							<div class="pull-right">
 								<span class="glyphicons-pro building" title="#{i18n['acl.workdata']}"></span>
 							</div>
@@ -159,7 +163,7 @@
 				<h:panelGroup rendered="#{showdocPersonaEsterna.persona_esterna.recapito_personale.indirizzo.renderIndirizzo or showdocPersonaEsterna.persona_esterna.recapito_personale.renderTelefoni or showdocPersonaEsterna.persona_esterna.recapito_personale.renderEmail or showdocPersonaEsterna.persona_esterna.recapito_personale.renderSitiWeb}">
 					<div class="showdoc-section">
 						<div class="title">
-							#{i18n['acl.personaldata']}
+							#{(!empty showdocPersonaEsterna.label_dati_personali) ? showdocPersonaEsterna.label_dati_personali : i18n['acl.personaldata']}
 							<div class="pull-right">
 								<span class="glyphicons-pro home" title="#{i18n['acl.personaldata']}"></span>
 							</div>
@@ -201,7 +205,7 @@
 			</div>
 		</div>
 
-		<h:inputTextarea value="#{showdocPersonaEsterna.xml}" rendered="#{showdocPersonaEsterna.debugMode}" styleClass="form-control" rows="10" />
+		<h:inputTextarea value="#{showdocPersonaEsterna.xml}" rendered="#{showdocPersonaEsterna.debugMode}" styleClass="form-control debug-textarea" rows="10" />
 	</ui:define>
 
 </ui:composition>

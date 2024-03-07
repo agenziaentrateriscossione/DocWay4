@@ -12,7 +12,7 @@
 				data-content="#{i18n['dw4.documento_spostato_nel_cestino']}"></span>
 		</dt>
 		<dd class="label-doc-cestino">
-			<h:outputFormat value="#{i18n['dw4.documento_spostato_nel_cestino_in_data']}" escape="false">
+			<h:outputFormat value="#{i18n['dw4.documento_spostato_nel_cestino_in_data']}" >
 				<f:param value="#{bean.doc.datacestino}" />
 			</h:outputFormat>
 			(#{i18n['dw4.si_veda_la_storia_del_documento_per_maggiori_dettagli']})
@@ -28,12 +28,23 @@
 	</h:panelGroup>
 	<h:panelGroup rendered="#{!empty bean.doc.segnatura.cod_uff_oper}">
 		<dt>
+			<h:panelGroup rendered="#{empty bean.doc.segnatura.delegato}">
 			<span class="glyphicon glyphicon-saved doc-segnatura popoveritem"
 				data-toggle="popover" data-placement="bottom" data-trigger="hover"
 				data-content="#{i18n['dw4.segnatura_applicata']} il #{bean.doc.segnatura.dataFormatted} alle #{bean.doc.segnatura.ora} da #{bean.doc.segnatura.oper} (#{bean.doc.segnatura.uff_oper})"></span>
+			</h:panelGroup>
+			<h:panelGroup rendered="#{not empty bean.doc.segnatura.delegato}">
+				<span class="glyphicon glyphicon-saved doc-segnatura popoveritem"
+					data-toggle="popover" data-placement="bottom" data-trigger="hover"
+					data-content="#{i18n['dw4.segnatura_applicata']} il #{bean.doc.segnatura.dataFormatted} alle #{bean.doc.segnatura.ora} da
+						#{fn:substringBefore(bean.doc.segnatura.delegato, ')')}) #{i18n['dw4.su_delega_di']} #{bean.doc.segnatura.oper} (#{bean.doc.segnatura.uff_oper})"></span>
+			</h:panelGroup>
 		</dt>
 		<dd>#{i18n['dw4.segnatura_applicata']} il
 			#{bean.doc.segnatura.dataFormatted} alle #{bean.doc.segnatura.ora} da
+			<h:panelGroup rendered="#{not empty bean.doc.segnatura.delegato}">
+				#{fn:substringBefore(bean.doc.segnatura.delegato, ')')}) #{i18n['dw4.su_delega_di']}
+			</h:panelGroup>
 			#{bean.doc.segnatura.oper} (#{bean.doc.segnatura.uff_oper})</dd>
 	</h:panelGroup>
 	<h:panelGroup rendered="#{bean.doc.annullato =='si'}">
@@ -64,7 +75,7 @@
 				#{i18n['dw4.clicca_per_maggiori_dettagli']} </a>
 		</dd>
 	</h:panelGroup>
-	<h:panelGroup rendered="#{bean.doc.bozza}">
+	<h:panelGroup rendered="#{bean.doc.bozza and (empty bean.doc.rifiuto or bean.doc.rifiuto.stato ne 'rifiutato')}">
 		<dt>
 			<span class="glyphicons-pro settings doc-bozza popoveritem"
 				data-toggle="popover" data-placement="bottom" data-trigger="hover"
@@ -72,6 +83,42 @@
 		</dt>
 		<dd>#{i18n['dw4.bozza']} #{i18n['dw4.del']}
 			#{bean.doc.creazione.dateLong}</dd>
+	</h:panelGroup>
+	<h:panelGroup rendered="#{!empty bean.doc.rifiuto}">
+		<ui:repeat var="actionRifiuto" value="#{bean.doc.rifiuto.actions}">
+			<h:panelGroup rendered="#{bean.doc.rifiuto.stato eq 'da_rifiutare' and actionRifiuto.tipo_azione eq 'set_da_rifiutare'}">
+				<dt>
+					<span class="glyphicons-pro ban doc-attesa-rifiuto popoveritem"
+						data-toggle="popover" data-placement="bottom" data-trigger="hover"
+						data-content="#{i18n['dw4.attesa_di_rifiuto']}"></span>
+				</dt>
+				<dd>
+					#{i18n['dw4.in_atteda_di_rifiuto_dal']}
+					<strong>
+						<h:outputText value="#{actionRifiuto.data}"><f:converter converterId="DateConverter"/></h:outputText>
+						#{actionRifiuto.ora}
+					</strong>
+					#{i18n['dw4.from']}
+					<strong>#{actionRifiuto.operatore}</strong>
+				</dd>
+			</h:panelGroup>
+			<h:panelGroup rendered="#{bean.doc.rifiuto.stato eq 'rifiutato' and  (empty actionRifiuto.tipo_azione or actionRifiuto.tipo_azione eq 'rifiuto')}">
+				<dt>
+					<span class="glyphicons-pro ban doc-bozza-rifiuto popoveritem"
+						data-toggle="popover" data-placement="bottom" data-trigger="hover"
+						data-content="#{i18n['dw4.bozza_rifiutata']}"></span>
+				</dt>
+				<dd>
+					#{i18n['dw4.bozza_rifiutata_il']}
+					<strong>
+						<h:outputText value="#{actionRifiuto.data}"><f:converter converterId="DateConverter"/></h:outputText>
+						#{actionRifiuto.ora}
+					</strong>
+					#{i18n['dw4.from']}
+					<strong>#{actionRifiuto.operatore}</strong>
+				</dd>
+			</h:panelGroup>
+		</ui:repeat>
 	</h:panelGroup>
 	<h:panelGroup rendered="#{bean.doc.personale}">
 		<dt>
@@ -133,7 +180,7 @@
 			#{i18n['dw4.il_documento_e_in_revisione_uno_dei_file_e_stato_prenotato']}
 		</dd>
 	</h:panelGroup>
-	
+
 	<h:panelGroup rendered="#{!empty bean.doc.extra.stato_deposito and bean.doc.extra.stato_deposito eq 'deposito'}">
 		<dt>
 			<span class="glyphicons-pro package archivio-deposito popoveritem"
@@ -154,7 +201,7 @@
 			#{i18n['dw4.minuta_versata_in_archivio_di_deposito']}
 		</dd>
 	</h:panelGroup>
-	
+
 	<h:panelGroup rendered="#{!empty bean.doc.messageId and !empty bean.doc.emailAttachmentIndex}">
 		<dt>
 			<span class="glyphicons-pro git_merge split-email-doc popoveritem"
@@ -165,6 +212,127 @@
 			#{i18n['dw4.derivante_da_suddivisione_email_in_piu_documenti_in_base_agli_allegati_contenuti']}
 		</dd>
 	</h:panelGroup>
+
+	<h:panelGroup rendered="#{!empty bean.intraAoo and fn:length(bean.intraAoo.from) > 0}">
+		<ui:repeat var="aooFrom" value="#{bean.intraAoo.from}">
+			<dt>
+				<span class="glyphicon glyphicon-import intraaoo-from-doc popoveritem"
+					data-toggle="popover" data-placement="bottom" data-trigger="hover"
+					data-content="#{i18n['dw4.protocollazione_remota_da']} #{aooFrom.aoo}"></span>
+			</dt>
+			<dd>
+				#{i18n['dw4.protocollazione_remota_da']} <strong>#{aooFrom.aoo}</strong>
+				<h:panelGroup rendered="#{!empty aooFrom.ufficioOperatore or !empty aooFrom.nomeOperatore}">
+					#{i18n['dw4.a_cura_di']}
+					<strong>#{aooFrom.ufficioOperatore}</strong>
+					<h:panelGroup rendered="#{!empty aooFrom.ufficioOperatore and !empty aooFrom.nomeOperatore}"> - </h:panelGroup>
+					<strong>#{aooFrom.nomeOperatore}</strong>
+				</h:panelGroup>
+				:
+				<h:panelGroup rendered="#{!empty aooFrom.numProt}">
+					#{i18n['dw4.prot_n']}
+					<strong><h:outputText value="#{fn:substringAfter(fn:substringAfter(aooFrom.numProt, '-'), '-')}"><f:converter converterId="NumConverter"/></h:outputText></strong>
+				</h:panelGroup>
+				<h:panelGroup rendered="#{!empty aooFrom.dataProt}">
+					#{i18n['dw4.del']}
+					<strong><h:outputText value="#{aooFrom.dataProt}"><f:converter converterId="DateConverter"/></h:outputText></strong>
+				</h:panelGroup>
+			</dd>
+		</ui:repeat>
+	</h:panelGroup>
+
+	<h:panelGroup rendered="#{!empty bean.intraAoo and fn:length(bean.intraAoo.to) > 0}">
+		<ui:repeat var="aooTo" value="#{bean.intraAoo.to}">
+			<dt>
+				<span class="glyphicon glyphicon-export intraaoo-to-doc popoveritem"
+					data-toggle="popover" data-placement="bottom" data-trigger="hover"
+					data-content="#{i18n['dw4.protocollazione_remota_su']} #{aooTo.aoo}"></span>
+			</dt>
+			<dd>
+				#{i18n['dw4.protocollazione_remota_su']} <strong>#{aooTo.aoo}</strong>
+				<h:panelGroup rendered="#{!empty aooTo.ufficioOperatore or !empty aooTo.nomeOperatore}">
+					#{i18n['dw4.a_cura_di']}
+					<strong>#{aooTo.ufficioOperatore}</strong>
+					<h:panelGroup rendered="#{!empty aooTo.ufficioOperatore and !empty aooTo.nomeOperatore}"> - </h:panelGroup>
+					<strong>#{aooTo.nomeOperatore}</strong>
+				</h:panelGroup>
+				:
+				<h:panelGroup rendered="#{!empty aooTo.numProt}">
+					#{i18n['dw4.prot_n']}
+					<strong><h:outputText value="#{fn:substringAfter(fn:substringAfter(aooTo.numProt, '-'), '-')}"><f:converter converterId="NumConverter"/></h:outputText></strong>
+				</h:panelGroup>
+				<h:panelGroup rendered="#{!empty aooTo.dataProt}">
+					#{i18n['dw4.del']}
+					<strong><h:outputText value="#{aooTo.dataProt}"><f:converter converterId="DateConverter"/></h:outputText></strong>
+				</h:panelGroup>
+			</dd>
+		</ui:repeat>
+	</h:panelGroup>
+
+	<h:panelGroup rendered="#{bean.formsAdapter.funzionalitaDisponibili['presaInCaricoAbilitata'] and bean.doc.richiestaPresaInCarico}">
+		<h:panelGroup rendered="#{bean.doc.effettuataPresaInCarico}">
+			<dt>
+				<span class="glyphicons-pro crown split-email-doc popoveritem"
+					data-toggle="popover" data-placement="bottom" data-trigger="hover"
+					data-content="#{i18n['dw4.doc_effettuata_presa_in_carico']}"></span>
+			</dt>
+			<dd>
+				<span>#{i18n['dw4.doc_effettuata_presa_in_carico_da']}</span>:
+				<ui:repeat var="incaricato" value="#{bean.doc.incaricatiPresaInCarico}">
+						<div>
+							<span class="nome-persona">#{incaricato.nome_persona}</span> - <span class="nome-ufficio">#{incaricato.nome_uff}</span>
+							<h:panelGroup rendered="#{bean.formsAdapter.funzionalitaDisponibili['presaInCaricoModalitaGruppo'] and not empty incaricato.getUfficiRuoliSoddifatti()}">
+								(#{incaricato.getUfficiRuoliSoddifatti()}) 
+							</h:panelGroup>
+						</div>
+				</ui:repeat>
+				<div>
+					<h:commandLink id="openPopupToTake1" action="#{bean.showPersonePresaInCarico}">
+						<f:ajax execute="@form" render="templateForm:modalePersoneIncaricate templateForm:errormsg" />
+						<h:panelGroup rendered="#{not bean.formsAdapter.funzionalitaDisponibili['presaInCaricoModalitaGruppo']}">
+							#{i18n['dw4.visualizza_incaricati']} 
+						</h:panelGroup>
+						<h:panelGroup rendered="#{bean.formsAdapter.funzionalitaDisponibili['presaInCaricoModalitaGruppo']}">
+							#{i18n['dw4.visualizza_incaricati_mancanti']} 
+						</h:panelGroup>
+					</h:commandLink>
+				</div>
+			</dd>
+		</h:panelGroup>
+		<h:panelGroup rendered="#{not bean.doc.effettuataPresaInCarico}">
+			<dt>
+				<span class="glyphicons-pro share split-email-doc popoveritem"
+					data-toggle="popover" data-placement="bottom" data-trigger="hover"
+					data-content="#{i18n['dw4.doc_richiesta_presa_in_carico']}"></span>
+			</dt>
+			<dd>
+				<span>#{i18n['dw4.doc_richiesta_presa_in_carico']}</span>
+				<div>
+					<h:commandLink id="openPopupToTake2" action="#{bean.showPersonePresaInCarico}">
+						<f:ajax execute="@form" render="templateForm:modalePersoneIncaricate templateForm:errormsg" />
+						#{i18n['dw4.visualizza_incaricati']}</h:commandLink>
+				</div>
+			</dd>
+		</h:panelGroup>
+	</h:panelGroup>
 	
+	<h:panelGroup rendered="#{bean.doc.verificaVirus.status eq 'clean'}">
+		<dt>
+			<span class="glyphicons-pro shield verifica-virus-#{bean.doc.verificaVirus.status} popoveritem"
+				data-toggle="popover" data-placement="bottom" data-trigger="hover"
+				data-content="#{i18n['dw4.verifica_virus']}: #{fn:toUpperCase(bean.doc.verificaVirus.status)}"></span>
+		</dt>
+		<dd>
+			#{i18n['dw4.nessun_virus_individuato_sul_documento_corrente']}. 
+			<h:panelGroup rendered="#{!empty bean.doc.verificaVirus.esecutore.operatore}">
+				#{i18n['dw4.analisi_a_cura_di']}
+				<strong>#{bean.doc.verificaVirus.esecutore.operatore}</strong>
+				<h:panelGroup rendered="#{!empty !empty bean.doc.verificaVirus.esecutore.data}"> - </h:panelGroup>
+				<h:outputText value="#{bean.doc.verificaVirus.esecutore.data}"><f:converter converterId="DateConverter"/></h:outputText>
+				&#160;<h:outputText value="#{bean.doc.verificaVirus.esecutore.ora}" />
+			</h:panelGroup>
+		</dd>
+	</h:panelGroup>
+
 </ui:composition>
 </html>

@@ -28,6 +28,10 @@
 					<div class="btn-group">
 						<h:commandLink rendered="#{showdocGruppo.formsAdapter.funzionalitaDisponibili['ins_gruppi']}" action="#{showdocGruppo.modifyTableDoc}" styleClass="btn btn-primary openwaitmsg"><span>#{i18n['acl.modify']}</span></h:commandLink>
 	                    <h:commandLink rendered="#{showdocGruppo.formsAdapter.funzionalitaDisponibili['canc_gruppi']}" action="#{showdocGruppo.remove}" onclick="if (!owmConfirm('#{i18n['acl.deleteconfirm']}')) return false;" styleClass="btn btn-danger"><span>#{i18n['acl.delete']}</span></h:commandLink>
+	                    
+	                    <ui:include src="../azionimassive/startAzioniMassiveButtons.xhtml">
+		                    <ui:param name="pageBean" value="#{showdocGruppo}" />
+		                </ui:include>
 					</div>
 				</div>
 				<!-- secondo livello toolbar: fine -->
@@ -39,7 +43,7 @@
             
              <h5 class="sub-header" title="#{showdocGruppo.gruppo.nome}">
                 <span class="gruppi glyphicons-pro"></span>&#160;
-                <h:outputText value="#{showdocGruppo.gruppo.nome}" escape="false" />
+                <h:outputText value="#{showdocGruppo.gruppo.nome}" />
             </h5>
             
             <!-- scheda show: inizio -->

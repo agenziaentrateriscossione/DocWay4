@@ -9,12 +9,19 @@
 		#{(required eq 'true') ? '* ' : ''}#{label}
 	</label>
 	<div class="col-sm-#{(!empty valuesize) ? valuesize : '2' }">
-		<div class="input-group date" data-date-format="dd/mm/yyyy">
-			<h:inputText id="#{id}" value="#{value}" styleClass="#{ component.valid ? '' : 'invalidinput' } form-control datepicker" onblur="#{ (!empty onblur) ? onblur : ''}">
+		<h:panelGroup rendered="#{!readonly}">
+			<div class="input-group date #{(fromToday eq 'true') ? 'fromToday' : 'free'}" data-date-format="dd/mm/yyyy">
+				<h:inputText id="#{id}" value="#{value}" styleClass="#{ component.valid ? '' : 'invalidinput' } form-control datepicker" onblur="#{ (!empty onblur) ? onblur : ''}">
+					<f:converter converterId="DateConverter"/>
+				</h:inputText>
+				<span class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></span>
+			</div>
+		</h:panelGroup>
+		<h:panelGroup rendered="#{readonly}">
+			<h:inputText id="#{id}_readonly" value="#{value}" styleClass="#{ component.valid ? '' : 'invalidinput' } readonlyinput form-control" readonly="true">
 				<f:converter converterId="DateConverter"/>
 			</h:inputText>
-			<span class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></span>
-		</div>
+		</h:panelGroup>
 	</div>
 
 </ui:composition>

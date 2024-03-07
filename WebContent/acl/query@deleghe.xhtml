@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+    template="#{queryProfiloPersonale.pageTemplate}"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:f="http://java.sun.com/jsf/core">
+
+<ui:define name="content">
+
+	<div id="advancedSearch" class="queryDeleghe struint submitEnterKey">
+	
+		<!-- toolbar: inizio -->
+		<div class="btn-toolbar docway-toolbar margin-bottom" role="toolbar">
+			<div class="btn-group">
+				<h:commandLink id="advancedSearchBtn" action="#{queryDeleghe.queryPlain}" styleClass="btn btn-primary openwaitmsg" value="#{i18n['acl.search']}" />
+				<h:commandLink action="#{queryDeleghe.resetQuery}" styleClass="btn btn-default" value="#{i18n['acl.clear']}"></h:commandLink>
+			</div>
+		</div>
+		<!-- toolbar: fine -->
+		
+		<!-- messages: inizio -->
+		<h:panelGroup rendered="#{not empty facesContext.messageList}" layout="block" styleClass="docedit-messages alert alert-info">
+			<h:messages styleClass="" id="validationMesseges" />
+		</h:panelGroup>
+		<!-- messages: fine -->
+		
+		<!-- scheda query: inizio -->
+		<div class="row-fluid" style="margin-top:10px;">
+			<div id="fixedshowdoc" class="box span12 fixed-showdoc">
+				<div class="box-content">
+					<div class="fieldset">
+						<div class="legend">#{i18n['acl.deleghe_ricerca']}</div>
+						<div class="form-group">
+							<label for="templateForm:query_cod_delegante" class="col-sm-2 control-label">#{i18n['acl.code_delegante']}</label>
+							<div class="col-sm-3">
+								<div class="input-group">
+									<h:inputText id="query_cod_delegante" value="#{queryDeleghe.cod_delegante}" styleClass="form-control" />
+									<div class="input-group-btn">
+										<h:commandLink title="#{i18n['acl.vocabulary']}" action="#{queryDeleghe.openIndexCodiceDelegante}" styleClass="btn btn-default">
+											<f:ajax execute="@form" render="@form"/>
+											<span class="glyphicon glyphicon-search"></span>
+								        </h:commandLink>
+							        </div>
+						        </div>
+							</div>
+						</div>
+						<div class="form-group">
+							<label for="templateForm:query_nome_delegante" class="col-sm-2 control-label">#{i18n['acl.cogn_nome_delegante']}</label>
+							<div class="col-sm-9">
+								<div class="input-group">
+									<h:inputText id="query_nome_delegante" value="#{queryDeleghe.cogn_nome_delegante}" styleClass="form-control" />
+									<div class="input-group-btn">
+										<h:commandLink title="#{i18n['acl.vocabulary']}" action="#{queryDeleghe.openIndexNomeDelegante}" styleClass="btn btn-default">
+											<f:ajax execute="@form" render="@form"/>
+											<span class="glyphicon glyphicon-search"></span>
+								        </h:commandLink>
+							        </div>
+						        </div>
+							</div>
+						</div>
+						<div class="form-group">
+							<label for="templateForm:query_cod_delegato" class="col-sm-2 control-label">#{i18n['acl.code_delegato']}</label>
+							<div class="col-sm-3">
+								<div class="input-group">
+									<h:inputText id="query_cod_delegato" value="#{queryDeleghe.cod_delegato}" styleClass="form-control" />
+									<div class="input-group-btn">
+										<h:commandLink title="#{i18n['acl.vocabulary']}" action="#{queryDeleghe.openIndexCodiceDelegato}" styleClass="btn btn-default">
+											<f:ajax execute="@form" render="@form"/>
+											<span class="glyphicon glyphicon-search"></span>
+								        </h:commandLink>
+							        </div>
+						        </div>
+							</div>
+						</div>
+						<div class="form-group">
+							<label for="templateForm:query_nome_delegato" class="col-sm-2 control-label">#{i18n['acl.cogn_nome_delegato']}</label>
+							<div class="col-sm-9">
+								<div class="input-group">
+									<h:inputText id="query_nome_delegato" value="#{queryDeleghe.cogn_nome_delegato}" styleClass="form-control" />
+									<div class="input-group-btn">
+										<h:commandLink title="#{i18n['acl.vocabulary']}" action="#{queryDeleghe.openIndexNomeDelegato}" styleClass="btn btn-default">
+											<f:ajax execute="@form" render="@form"/>
+											<span class="glyphicon glyphicon-search"></span>
+								        </h:commandLink>
+							        </div>
+						        </div>
+							</div>
+						</div>
+						<div class="form-group">
+							<ui:include src="../docway/rangeField.xhtml">
+								<ui:param name="label" value="#{i18n['dw4.durata_inizio']}" />
+								<ui:param name="id" value="query_durata_inizio" />
+								<ui:param name="from_value" value="#{queryDeleghe.durata_inizio_from}" />
+								<ui:param name="to_value" value="#{queryDeleghe.durata_inizio_to}" />
+								<ui:param name="is_date" value="true" />
+								<ui:param name="offset" value="" />
+								<ui:param name="disabled" value="#{queryDeleghe.permanente}" />
+							</ui:include>
+						</div>
+						<div class="form-group">
+							<ui:include src="../docway/rangeField.xhtml">
+								<ui:param name="label" value="#{i18n['dw4.durata_fine']}" />
+								<ui:param name="id" value="query_durata_fine" />
+								<ui:param name="from_value" value="#{queryDeleghe.durata_fine_from}" />
+								<ui:param name="to_value" value="#{queryDeleghe.durata_fine_to}" />
+								<ui:param name="is_date" value="true" />
+								<ui:param name="offset" value="" />
+								<ui:param name="disabled" value="#{queryDeleghe.permanente}" />
+							</ui:include>
+							<span class="col-xs-2" style="white-space:nowrap;">
+								<h:selectBooleanCheckbox value="#{queryDeleghe.permanente}" id="query_permanente">
+									<f:ajax execute="@form" 
+											render="templateForm:query_durata_inizio_from templateForm:query_durata_inizio_to templateForm:query_durata_fine_from templateForm:query_durata_fine_to" 
+											listener="#{queryDeleghe.cleanDurata}" 
+											event="click" />
+								</h:selectBooleanCheckbox>
+								<label for="templateForm:query_permanente" class="normal-weight-text">#{i18n['dw4.permanente']}</label>
+							</span>
+						</div>
+						<div class="form-group">
+							<label for="templateForm:query_attiva" class="col-sm-1 col-sm-offset-1 control-label">#{i18n['dw4.attiva']}</label>
+							<div class="col-sm-2">
+								<span class="margin-right-10" style="white-space:nowrap;">
+									<h:selectBooleanCheckbox value="#{queryDeleghe.attiva}" id="query_attiva"></h:selectBooleanCheckbox>
+									<label for="templateForm:query_attiva" class="normal-weight-text">#{i18n['dw4.yes']}</label>
+								</span>
+								<span class="margin-right-10" style="white-space:nowrap;">
+									<h:selectBooleanCheckbox value="#{queryDeleghe.nonattiva}" id="query_non_attiva"></h:selectBooleanCheckbox>
+									<label for="templateForm:query_non_attiva" class="normal-weight-text">#{i18n['dw4.no']}</label>
+								</span>
+							</div>
+							<label for="templateForm:query_sostituto" class="col-sm-1 control-label">#{i18n['dw4.sostituto']}</label>
+							<div class="col-sm-2">
+								<span class="margin-right-10" style="white-space:nowrap;">
+									<h:selectBooleanCheckbox value="#{queryDeleghe.sostituto}" id="query_sostituto"></h:selectBooleanCheckbox>
+									<label for="templateForm:query_sostituto" class="normal-weight-text">#{i18n['dw4.yes']}</label>
+								</span>
+								<span class="margin-right-10" style="white-space:nowrap;">
+									<h:selectBooleanCheckbox value="#{queryDeleghe.nonsostituto}" id="query_non_sostituto"></h:selectBooleanCheckbox>
+									<label for="templateForm:query_non_sostituto" class="normal-weight-text">#{i18n['dw4.no']}</label>
+								</span>
+							</div>
+							<label for="templateForm:query_uneditable" class="col-sm-1 control-label">#{i18n['dw4.editabile']}</label>
+							<div class="col-sm-2">
+								<span class="margin-right-10" style="white-space:nowrap;">
+									<h:selectBooleanCheckbox value="#{queryDeleghe.nonuneditable}" id="query_nonuneditable"></h:selectBooleanCheckbox>
+									<label for="templateForm:query_nonuneditable" class="normal-weight-text">#{i18n['dw4.yes']}</label>
+								</span>
+								<span class="margin-right-10" style="white-space:nowrap;">
+									<h:selectBooleanCheckbox value="#{queryDeleghe.uneditable}" id="query_uneditable"></h:selectBooleanCheckbox>
+									<label for="templateForm:query_uneditable" class="normal-weight-text">#{i18n['dw4.no']}</label>
+								</span>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+	</div>
+
+	<ui:include src="./showindex.xhtml"> <ui:param name="pageBean" value="#{queryDeleghe}"/></ui:include>
+</ui:define>
+
+</ui:composition>

@@ -20,7 +20,7 @@
 
 			<h5 class="sub-header">
 				<span class="persone-esterne glyphicons-pro"></span>&#160;
-				<h:outputText value="#{i18n['acl.mod_persest']}" escape="false" />
+				<h:outputText value="#{i18n['acl.mod_persest']}" />
 			</h5>
 
 			<!-- messages: inizio -->
@@ -129,6 +129,10 @@
 									<h:inputText
 										value="#{docEditModifyPersonaEsterna.persona_esterna.codice_fiscale}"
 										styleClass="form-control" />
+								</div>
+								<label for="templateForm:persest_piva" class="col-sm-1 control-label">#{i18n['acl.piva']}</label>
+								<div class="col-sm-4">
+									<h:inputText id="persest_piva" value="#{docEditModifyPersonaEsterna.persona_esterna.partita_iva}" styleClass="form-control" />
 								</div>
 							</div>
 							<div class="form-group">

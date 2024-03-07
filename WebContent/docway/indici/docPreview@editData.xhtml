@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	  xmlns:h="http://java.sun.com/jsf/html"
+	  xmlns:ui="http://java.sun.com/jsf/facelets"
+	  xmlns:f="http://java.sun.com/jsf/core"
+	  xmlns:c="http://java.sun.com/jsp/jstl/core"
+	  xmlns:p="http://xmlns.jcp.org/jsf/passthrough">
+<ui:composition>
+
+	<h:panelGroup layout="block" id="editPreviewDocPopup">
+		<h:panelGroup rendered="#{pageBean.visible}">
+			<!-- Modal -->
+			<div id="editPreviewDocModal" class="modal fade in" aria-hidden="false" aria-labelledby="editPreviewDocModalLabel" role="dialog" tabindex="-1" style="display: block;">
+			<!--div class="modal fade" id="editPreviewDocModal" tabindex="-1" role="dialog" aria-labelledby="editPreviewDocModalLabel" aria-hidden="true"-->
+				<div class="modal-dialog modal-lg docedit">
+					<div class="modal-content jsf-modal">
+						<div class="modal-header">
+							<div class="pull-right">
+								<h:commandLink onclick="saveScrollbarPosition()" action="#{pageBean.saveDocument}" styleClass="btn btn-primary openwaitmsg" value="#{i18n['acl.save']}">
+									<f:ajax execute="@form" render="@form" />
+								</h:commandLink>
+
+								<h:commandLink onclick="saveScrollbarPosition()" action="#{pageBean.saveDocumentPerStampa}" styleClass="btn btn-primary openwaitmsg margin-left-5" value="#{i18n['dw4.salva_e_completa_stampa']}">
+									<f:ajax execute="@form" render="@form" />
+								</h:commandLink>
+
+								<h:commandLink onclick="saveScrollbarPosition()" styleClass="btn btn-default  margin-left-5" action="#{pageBean.clearDocument}" value="#{i18n['acl.close']}">
+									<f:ajax execute="@form" render="@form" />
+								</h:commandLink>
+							</div>
+
+							<h4 class="modal-title" id="editPreviewDocModalLabel">#{i18n['dw4.modifica_documento']}</h4>
+						</div>
+						<div class="modal-body">
+
+							<h:panelGroup rendered="#{not empty facesContext.messageList}" layout="block" styleClass="alert alert-danger">
+								<h:messages styleClass="" id="editPreviewDocValidationMesseges" />
+							</h:panelGroup>
+
+							<div class="fieldset">
+								<div class="legend">
+									#{i18n['dw4.datidoc']}
+
+									<div class="pull-right">
+										<span class="glyphicon glyphicon-envelope" title="#{i18n['dw4.datidoc']}"></span>
+									</div>
+								</div>
+
+								<div class="form-group">
+									<label for="templateForm:doc_oggetto" class="col-sm-2 control-label requiredField"><span>* #{i18n['dw4.object']}</span></label>
+									<div class="col-sm-9">
+										<h:inputTextarea id="doc_oggetto" value="#{pageBean.doc.oggetto}" rows="4" cols="120" styleClass="#{ component.valid ? '' : 'invalidinput' } form-control" />
+									</div>
+								</div>
+
+								<!-- campo oggetto per la stampa | attivato da property -->
+								<h:panelGroup rendered="#{pageBean.showOggettoStampa}">
+									<div class="form-group">
+										<label for="templateForm:doc_oggetto_stampa" class="col-sm-2 control-label requiredField"><span>#{i18n['dw4.object_per_la_stampa']}</span></label>
+										<div class="col-sm-9">
+											<h:inputTextarea id="doc_oggetto_stampa" value="#{pageBean.doc.oggetto_stampa}" rows="4" cols="120" styleClass="#{ component.valid ? '' : 'invalidinput' } form-control html-field" />
+										</div>
+									</div>
+								</h:panelGroup>
+
+								<div class="form-group">
+									<label for="templateForm:doc_statoRaccIndice" class="col-sm-2 control-label"><span>#{i18n['dw4.stato_doc_in_indice']}</span></label>
+									<div class="col-sm-3">
+										<h:selectOneMenu id="doc_statoRaccIndice" value="#{pageBean.doc.statoRaccIndice}" styleClass="form-control">
+											<f:selectItem itemValue="" itemLabel="" />
+											<f:selectItem itemValue="lavorazione" itemLabel="#{i18n['dw4.in_lavorazione']}" />
+											<f:selectItem itemValue="completato" itemLabel="#{i18n['dw4.completato_per_la_stampa']}" />
+										</h:selectOneMenu>
+									</div>
+								</div>
+							</div>
+
+							<ui:include src="../../customfields/docedit@customfields.xhtml">
+								<ui:param name="bean" value="#{pageBean}" />
+				        	</ui:include>
+
+				        	<ui:include src="../docInformaticiFields.xhtml">
+								<ui:param name="bean" value="#{pageBean}" />
+				        		<ui:param name="beanDoc" value="#{pageBean.doc}" />
+								<ui:param name="enableFiles" value="#{pageBean.docInformaticiEnabled and pageBean.formsAdapter.funzionalitaDisponibili['addFile']}" />
+				        		<ui:param name="enableImages" value="false" />
+				        		<ui:param name="enableFileAgentPDF" value="true" />
+				        		<ui:param name="enableImageAgentPDF" value="true" />
+				        		<ui:param name="fileFieldSize" value="9" />
+				        		<ui:param name="forceDisableIWX" value="true" />
+				        	</ui:include>
+				        	<!-- template per upload e la decompressione di archivi ZIP -->
+							<ui:param name="currentBean" value="#{pageBean}" />
+							<ui:include src="../docUploadArchive.xhtml">
+								<ui:param name="bean" value="#{docWayUploadArchive}"/>
+								<ui:param name="beanDoc" value="#{currentBean}" />
+								<ui:param name="doc" value="#{currentBean.doc}" />
+								<ui:param name="enableFiles" value="#{currentBean.docInformaticiEnabled and currentBean.formsAdapter.funzionalitaDisponibili['addFile']}" />
+							</ui:include>
+
+				        	<script type="text/javascript">
+							$(document).ready(function() {
+								var urlToLoad = '#{pageBean.urlToLoad}';
+								if (urlToLoad) {
+									var win = window.open(urlToLoad /*, '_editPreviewUrlToLoad'*/);
+									$(win).focus();
+								}
+							});
+							</script>
+
+							<h:inputTextarea styleClass="form-control" rows="10" value="#{pageBean.xml}" rendered="#{pageBean.debugMode}"/>
+
+						</div>
+						<div class="modal-footer">
+							<h:commandLink onclick="saveScrollbarPosition()" action="#{pageBean.saveDocument}" styleClass="btn btn-primary openwaitmsg" value="#{i18n['acl.save']}">
+								<f:ajax execute="@form" render="@form" />
+							</h:commandLink>
+
+							<h:commandLink onclick="saveScrollbarPosition()" action="#{pageBean.saveDocumentPerStampa}" styleClass="btn btn-primary openwaitmsg" value="#{i18n['dw4.salva_e_completa_stampa']}">
+								<f:ajax execute="@form" render="@form" />
+							</h:commandLink>
+
+							<h:commandLink onclick="saveScrollbarPosition()" styleClass="btn btn-default" action="#{pageBean.clearDocument}" value="#{i18n['acl.close']}">
+								<f:ajax execute="@form" render="@form" />
+							</h:commandLink>
+						</div>
+					</div>
+				</div>
+			</div>
+			<!--h:outputScript>
+				$('#editPreviewDocModal').modal('show');
+			</h:outputScript-->
+
+
+		</h:panelGroup>
+	</h:panelGroup>
+
+</ui:composition>
+</html>

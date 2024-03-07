@@ -18,7 +18,7 @@
 		
 		<h5 class="sub-header">
 			<span class="glyphicons-pro coins"></span>&#160;
-			<h:outputText value="#{docEditArrivoFTRPAP.docEditTitle}" escape="false" />
+			<h:outputText value="#{docEditArrivoFTRPAP.docEditTitle}" />
 		</h5>
 	
 		<!-- messages: inizio -->
@@ -368,6 +368,10 @@
 					<ui:param name="fatturapassiva" value="true" />
 	        	</ui:include>
 	        	
+	        	<ui:include src="../../customfields/docedit@customfields.xhtml">
+					<ui:param name="bean" value="#{docEditArrivoFTRPAP}" />
+	        	</ui:include>
+	        	
 	        	<ui:include src="../docEdit@rifinterni@doc.xhtml">
 					<ui:param name="bean" value="#{docEditArrivoFTRPAP}" />
 	        	</ui:include>
@@ -471,11 +475,19 @@
 		</div>
 		<!-- scheda edit: fine -->
 		
-		<h:inputTextarea value="#{docEditArrivoFTRPAP.xml}" rendered="#{docEditArrivoFTRPAP.debugMode}" styleClass="form-control" rows="10" />	
+		<h:inputTextarea value="#{docEditArrivoFTRPAP.xml}" rendered="#{docEditArrivoFTRPAP.debugMode}" styleClass="form-control debug-textarea" rows="10" />
 		
 		<ui:include src="../lookup.xhtml"> <ui:param name="pageBean" value="#{docEditArrivoFTRPAP}"/></ui:include>
 		<ui:include src="../rifintLookup.xhtml"> <ui:param name="pageBean" value="#{docEditArrivoFTRPAP}"/></ui:include>
 		<ui:include src="../showthes.xhtml"> <ui:param name="pageBean" value="#{docEditArrivoFTRPAP}"/></ui:include>
+		<!-- template per upload e la decompressione di archivi ZIP -->
+		<ui:param name="currentBean" value="#{docEditArrivoFTRPAP}" />
+		<ui:include src="../docUploadArchive.xhtml">
+			<ui:param name="bean" value="#{docWayUploadArchive}"/>
+			<ui:param name="beanDoc" value="#{currentBean}" />
+			<ui:param name="doc" value="#{currentBean.doc}" />
+			<ui:param name="enableFiles" value="#{currentBean.docInformaticiEnabled and currentBean.formsAdapter.funzionalitaDisponibili['addFile']}" />
+		</ui:include>
 	</div>
 </ui:define>
 

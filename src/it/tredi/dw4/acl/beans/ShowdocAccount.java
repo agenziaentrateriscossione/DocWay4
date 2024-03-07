@@ -5,6 +5,8 @@ import it.tredi.dw4.acl.model.Account;
 import it.tredi.dw4.adapters.AdaptersConfigurationLocator;
 import it.tredi.dw4.adapters.DocumentFormsAdapter;
 
+import javax.faces.context.FacesContext;
+
 import org.dom4j.Document;
 
 public class ShowdocAccount extends AclShowdoc{
@@ -20,6 +22,9 @@ public class ShowdocAccount extends AclShowdoc{
 	public void init(Document dom) {
 		this.setXml(dom.asXML());
 		this.account.init(dom);
+		
+		// inizializzazione di componenti common
+		initCommons(dom);
 	}
 
 	@Override
@@ -29,7 +34,7 @@ public class ShowdocAccount extends AclShowdoc{
 
 	@Override
 	public void reload() throws Exception {
-		super._reload("showdoc@account");
+		super._reload(FacesContext.getCurrentInstance().getExternalContext().getRequestContextPath() + "/acl/showdoc@account");
 	}
 	
 	//getter / setter

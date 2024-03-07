@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" 
+	  xmlns:h="http://java.sun.com/jsf/html" 
+	  xmlns:ui="http://java.sun.com/jsf/facelets" 
+	  xmlns:f="http://java.sun.com/jsf/core">
+<ui:composition>
+	
+	<h:panelGroup id="autoclosemsg">
+		<h:panelGroup rendered="#{autoclosemsg.active}">
+		
+			<!-- Modal -->
+			<div id="autoclosemsgModal" class="modal fade in autoclosemsg" aria-hidden="false" aria-labelledby="autoclosemsgModalLabel" role="dialog" tabindex="-1" style="display: block;">
+			<!--div class="modal fade" id="autoclosemsgModal" tabindex="-1" role="dialog" aria-labelledby="autoclosemsgModalLabel" aria-hidden="true"-->
+				<div class="modal-dialog">
+					<div class="modal-content jsf-modal">
+						<div class="modal-body">
+						
+							<div class="jumbotron #{(autoclosemsg.level eq '' or mgs.type eq 'info') ? 'jumbotron-info' : ''} #{(autoclosemsg.level eq 'success') ? 'jumbotron-success' : ''} #{(autoclosemsg.level eq 'warning') ? 'jumbotron-warning' : ''} #{(autoclosemsg.level eq 'error' or mgs.type eq 'fatal') ? 'jumbotron-danger' : ''}">
+								<p><h:outputText value="#{autoclosemsg.message}" escape="false" /></p>
+							</div>
+							
+							<h:commandLink id="autocloseCloseBtn" style="display:none;" action="#{autoclosemsg.close}" value="#{i18n['acl.close']}"><f:ajax render="templateForm:autoclosemsg"/></h:commandLink>
+		                   	<h:outputScript>
+							setTimeout(function () {
+								$('#templateForm\\:autocloseCloseBtn').trigger('click');
+							}, 1500);
+		                   	</h:outputScript>
+							
+							<h:inputTextarea value="#{autoclosemsg.xml}" rendered="#{autoclosemsg.debugMode}" styleClass="form-control debug-textarea" rows="10"/>
+							
+						</div>
+					</div>
+				</div>
+			</div>
+			<!--h:outputScript>
+				$('#autoclosemsgModal').modal('show');
+			</h:outputScript-->
+		</h:panelGroup>
+	</h:panelGroup>
+
+</ui:composition>	
+</html>

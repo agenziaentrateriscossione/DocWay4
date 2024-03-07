@@ -28,13 +28,15 @@ String customDir = DocWayProperties.readProperty("docway.custom.dir.css", "");
 <html xmlns="http://www.w3.org/1999/xhtml" lang="${language}"><!--manifest="cache.manifest">-->
     <head>
         <title><fmt:message key="dw4.richiesta_non_valida" /></title>
-        
+
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        
+
         <!-- javascript -->
 		<script src="<%= request.getContextPath() %>/common/js/jquery.js"></script>
 		<script src="<%= request.getContextPath() %>/bootstrap/js/bootstrap.js"></script>
 		
+		<link href="<%= request.getContextPath() %>/favicon.ico" type="image/png" rel="icon"/>
+
 		<!-- styles -->
 		<link href="<%= request.getContextPath() %>/bootstrap/css/bootstrap.css" rel="stylesheet" />
 		<c:if test="${direction eq 'rtl'}">
@@ -42,28 +44,29 @@ String customDir = DocWayProperties.readProperty("docway.custom.dir.css", "");
 		</c:if>
 		<link href="<%= request.getContextPath() %>/bootstrap/css/bootstrap-theme.css" rel="stylesheet" />
 		<link href="<%= request.getContextPath() %>/common/css/login.css" rel="stylesheet" />
-		
+
 		<% if (customDir.length() > 0) { %>
         	<link type="text/css" href="<%= request.getContextPath() %>/common/css/<%= customDir %>/login.css" rel="stylesheet" />
         <% } %>
     </head>
     <body class="${direction}">
-    
+
     	<div class="container">
     		<form id="loginForm" action="" method="post" class="form-signin">
     			<div class="row" style="text-align:center;"><img src='<%= request.getContextPath() %>/common/css/<%= (customDir.length() > 0) ? customDir+"/" : "" %>images/logo/docway-big.png' alt="DocWay" /></div>
-    			
+
     			<% if (request.getParameter("loginError") != null && request.getParameter("loginError").equals("true")) { %>
     				<div class="alert alert-danger"><fmt:message key="dw4.username_o_password_non_corretti" /></div>
     			<% } %>
-    			
+
     			<div class="alert alert-warning">
     				<div><fmt:message key="dw4.e_stata_rilevata_una_richiesta_non_valida_da_parte_del_client" /></div>
     				<h3><fmt:message key="dw4.si_prega_di_rieffetturare_il_login" />: <a class="loginLinkBlack" href="<%= request.getContextPath() %>/docway/home.jsf">DocWay Login</a></h3>
     			</div>
-    			
+
     			<div class="well">
 		  			<strong><fmt:message key="dw4.dettagli" />:</strong><br/>
+		  			remote_addr: <%= request.getRemoteAddr() %><br/>
 		  			request_uri: <%= request.getAttribute("javax.servlet.error.request_uri") %><br/>
 					status_code: <%= request.getAttribute("javax.servlet.error.status_code") %><br/>
 					<!-- servlet_name: <%= request.getAttribute("javax.servlet.error.servlet_name") %> <br/>-->
@@ -72,7 +75,7 @@ String customDir = DocWayProperties.readProperty("docway.custom.dir.css", "");
 		  			<% exception.printStackTrace(); %>
 					-->
 				</div>
-    		</form> 
+    		</form>
     	</div>
 
 	</body>

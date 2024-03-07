@@ -13,14 +13,14 @@
 				<div class="modal-content jsf-modal">
 					<div class="modal-header">
 						<h:commandButton rendered="#{pageBean.loadingbarstampe.completed}" 
-								class="close" action="#{pageBean.loadingbarstampe.close}" value="&#215;" />
+								styleClass="close" action="#{pageBean.loadingbarstampe.close}" value="&#215;" />
 						
 						<h4 class="modal-title" id="loagingbarStampeModalLabel">#{i18n['dw4.loadingbar_stampe']}</h4>
 					</div>
 					<div class="modal-body">
 						
 	        			<div class="well">					
-		        			<div class="loadingbar-message loadingbar-title"><h:outputText value="#{pageBean.loadingbarstampe.title}" escape="false"/></div>
+		        			<div class="loadingbar-message loadingbar-title"><h:outputText value="#{pageBean.loadingbarstampe.title}" /></div>
 		        			<div class="loadingbar-message loadingbar-startdate"><h:outputText rendered="#{pageBean.loadingbarstampe.startDate ne ''}" value="job started at #{pageBean.loadingbarstampe.startDate}"/></div>
 		        			<div class="loadingbar-message loadingbar-status"><h:outputText value="#{pageBean.loadingbarstampe.status}"/></div>
 		        			<div class="loadingbar-message loadingbar-exceptions"><h:outputText value="#{pageBean.loadingbarstampe.exceptions}"/></div>
@@ -68,7 +68,7 @@
 					</div>
 					<div class="modal-footer">
 						<h:commandButton rendered="#{pageBean.loadingbarstampe.completed}" 
-								class="btn btn-default"
+								styleClass="btn btn-default"
 								action="#{pageBean.loadingbarstampe.close}" value="#{i18n['acl.close']}" />
 					</div>
 				</div>

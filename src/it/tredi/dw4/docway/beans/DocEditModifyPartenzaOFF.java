@@ -2,7 +2,8 @@ package it.tredi.dw4.docway.beans;
 
 import javax.faces.context.FacesContext;
 
-import it.tredi.dw4.utils.XMLDocumento;
+import org.dom4j.Document;
+
 import it.tredi.dw4.adapters.AdaptersConfigurationLocator;
 import it.tredi.dw4.adapters.ErrormsgFormsAdapter;
 import it.tredi.dw4.docway.doc.adapters.DocDocWayDocEditFormsAdapter;
@@ -13,11 +14,7 @@ import it.tredi.dw4.docway.model.custom.Offerta;
 import it.tredi.dw4.docway.model.custom.Servizio;
 import it.tredi.dw4.docway.model.custom.Tipologia_Ordine;
 import it.tredi.dw4.i18n.I18N;
-import it.tredi.dw4.utils.AppStringPreferenceUtil;
-import it.tredi.dw4.utils.Const;
-import it.tredi.dw4.utils.DateUtil;
-
-import org.dom4j.Document;
+import it.tredi.dw4.utils.XMLDocumento;
 
 public class DocEditModifyPartenzaOFF extends DocEditModifyPartenza {
 	private Offerta doc = new Offerta();
@@ -49,7 +46,7 @@ public class DocEditModifyPartenzaOFF extends DocEditModifyPartenza {
 		initCommon(domDocumento);
 		
 		// Imposto il titolo della pagina di creazione del documento
-		docEditTitle = descrizioneRepertorio + " - " + I18N.mrs("acl.modify");
+		docEditTitle = descrizioneRepertorio + " - " + (getFormsAdapter().checkBooleanFunzionalitaDisponibile("trasformaByDocEdit", false) ? I18N.mrs("dw4.trasformazioneRepertorio") : I18N.mrs("acl.modify"));
 	}
 	
 	@Override
@@ -320,54 +317,7 @@ public class DocEditModifyPartenzaOFF extends DocEditModifyPartenza {
 	 * @return false se tutti i campo obbligatori sono stati compilati, true se anche un solo campo obbligatorio non e' compilato
 	 */
 	public boolean checkRequiredField() {
-		String formatoData = Const.DEFAULT_DATE_FORMAT; // TODO Dovrebbe essere caricato dal file di properties dell'applicazione
-		boolean result = false;
-		
-		result = super.checkRequiredFieldCommon(true); // controlli comuni a tutte le tipologie di documenti
-		
-		// Controllo se almeno un destinatario del documento e' valorizzato
-		if (doc.getRepertorio() == null || doc.getRepertorio().getCod() == null || doc.getRepertorio().getCod().length() == 0) { // eseguo il controllo solo se non si tratta di un repertorio
-			if (doc.getRif_esterni().get(0).getNome() == null || doc.getRif_esterni().get(0).getNome().length() == 0) {
-				this.setErrorMessage("templateForm:docEditDestinatari:0:nomeDestinatario_input", I18N.mrs("acl.requiredfield") + " '" + I18N.mrs("dw4.destinatario") + "'");
-				result = true;
-			}
-		}
-		
-		// Imposto lo scarto automatico se non impostato
-		if (doc.getScarto() == null || doc.getScarto().length() == 0)
-			doc.setScarto(AppStringPreferenceUtil.getAppStringPreference(this.getAppStringPreferences(), AppStringPreferenceUtil.decodeAppStringPreference("ScartoAutomatico")));
-		
-		// controllo su tutti i campi data (verifica del formato)
-		if (doc.getData_reale() != null && doc.getData_reale().length() > 0) {
-			if (!DateUtil.isValidDate(doc.getData_reale(), formatoData)) {
-				this.setErrorMessage("templateForm:dataRealeDoc", I18N.mrs("acl.inserire_una_data_valida_nel_campo") + " '" + I18N.mrs("dw4.data_doc") + "': " + formatoData.toLowerCase());
-				result = true;
-			}
-			else {
-				int dataReale = new Integer(DateUtil.formatDate2XW(doc.getData_reale(), formatoData)).intValue();
-				
-				if (doc.getData_prot() != null && !doc.getData_prot().equals("") && !doc.getData_prot().equals(".")) {
-					// Controllo che la data specificata sia antecedente alla data di protocollo
-					String dataProtDocumento = doc.getData_prot();
-					if (!DateUtil.checkNumericDate(dataProtDocumento))
-						dataProtDocumento = DateUtil.formatDate2XW(dataProtDocumento, formatoData);
-					if (dataReale > new Integer(dataProtDocumento).intValue()) {
-						this.setErrorMessage("templateForm:dataRealeDoc", I18N.mrs("dw4.la_data_del_documento_non_puo_essere_superiore_alla_data_di_protocollazione"));
-						result = true;
-					}
-				}
-				else {
-					// Controllo che la data specificata sia antecedente alla data corerente
-					int dataCur = new Integer(DateUtil.getCurrentDateNorm()).intValue();
-					if (dataReale > dataCur) {
-						this.setErrorMessage("templateForm:dataRealeDoc", I18N.mrs("dw4.la_data_del_documento_non_puo_essere_superiore_alla_data_odierna"));
-						result = true;
-					}
-				}
-			}
-		}
-				
-		return result;
+		return super.checkRequiredField(true);
 	}
 	
 }

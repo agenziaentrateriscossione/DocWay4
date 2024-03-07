@@ -204,7 +204,7 @@ public class QueryPartenza extends DocWayQuery {
 		}
 		if (annullati) 		query +=  addQueryField("doc_annullato", "si");
 		if (nonannullati) 	query +=  addQueryField("doc_annullato", "no");
-		if (interoperabilita) 	query +=  addQueryField("/doc/rif_esterni/rif/interoperabilita/@title", "\"Segnatura.xml\"");
+		if (interoperabilita) 	query += "("+partialQueryField("/doc/rif_esterni/rif/interoperabilita/@title", "\"Segnatura.xml\"")+" OR "+partialQueryField("/doc/rif_esterni/interoperabilita_multipla/interoperabilita/@title", "\"Segnatura.xml\"")+") AND ";
 		if (differito) 		query +=  addQueryField("doc_protdifferito", "\"¦\"");
 		if (bozze || nonbozze){
 			if (bozze && nonbozze)	query +=  "("+addQueryField("doc_bozza", "si", "OR") +"(not([doc_bozza]=\"si\")))";

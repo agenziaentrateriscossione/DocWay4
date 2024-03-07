@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" 
+	  xmlns:h="http://java.sun.com/jsf/html" 
+	  xmlns:ui="http://java.sun.com/jsf/facelets" 
+	  xmlns:f="http://java.sun.com/jsf/core"
+	  xmlns:p="http://xmlns.jcp.org/jsf/passthrough">
+<ui:composition>
+
+	<h:panelGroup layout="block" id="loadingbarExportFolderTree">
+		<!--  span>#{pageBean.loadingbarActive}.....#{pageBean.action}</span>  -->
+		<h:panelGroup rendered="#{pageBean.loadingbarActive and pageBean.action =='exportFolderTree'}">
+			<!-- Modal -->
+			<div id="loadingbarExportFolderTreeModal" class="modal fade in" aria-hidden="false" aria-labelledby="loadingbarExportFolderTreeModalLabel" role="dialog" tabindex="-1" style="display: block;">
+				<div class="modal-dialog">
+					<div class="modal-content jsf-modal">
+						<div class="modal-header">
+							<h:commandButton rendered="#{pageBean.loadingbar.completed}" styleClass="close" action="#{pageBean.loadingbar.close}" value="&#215;" />
+							
+							<h4 class="modal-title" id="loadingbarExportFolderTreeModalLabel">Esportazione</h4>
+						</div>
+						<div class="modal-body">
+							
+		        			<div class="well">
+		        				<div class="loadingbar-message loadingbar-title"><b><h:outputText value="#{pageBean.loadingbar.title}" /></b></div>
+			        			<div class="loadingbar-message loadingbar-startdate"><h:outputText rendered="#{pageBean.loadingbar.startDate ne ''}" value="Inizio operazione #{pageBean.loadingbar.startDate}"/></div>
+			        			<div class="loadingbar-message loadingbar-status">Fase&#160;:&#160;<b><h:outputText value="#{i18n[pageBean.loadingbar.status]}"/></b></div>
+			        			<div class="loadingbar-message loadingbar-progress">Progresso totale&#160;:&#160;<b><h:outputText value="#{pageBean.loadingbar.percentage}"/>%</b></div>
+			        			<div class="loadingbar-message loadingbar-stopdate"><h:outputText rendered="#{pageBean.loadingbar.stopDate ne ''}" value="Fine operazione #{pageBean.loadingbar.stopDate}"/></div>
+			        			<div class="loadingbar-message loadingbar-exceptions"><h:outputText value="#{pageBean.loadingbar.exceptions}"/></div>
+		        			</div>
+				        	
+		        			<h:panelGroup rendered="#{pageBean.loadingbar.stopDate ne '' and pageBean.loadingbar.exportLoadingBar}" display="block">
+		        				<div>
+		        					<h:commandLink immediate="true" 
+		        						actionListener="#{pageBean.loadingbar.downloadFile}" 
+		        						styleClass="btn btn-primary">#{i18n['dw4.download_del_file']}</h:commandLink>
+			        			</div>
+		        			</h:panelGroup>
+		        			
+		        			<h:panelGroup rendered="#{pageBean.loadingbar.stopDate ne '' and pageBean.loadingbar.sharedFile and pageBean.loadingbar.fileTooBig}" display="block">
+		        				<div class="well">
+		        					<span>#{i18n['dw4.file_troppo_grande_per_download']}</span><br/><span><b>#{pageBean.loadingbar.sharedFolderName}#{pageBean.loadingbar.sharedFileName}</b></span>
+			        			</div>
+		        			</h:panelGroup>
+		        			
+				        	<div style="margin-top:20px;" class="progress">
+	  							<div class="progress-bar" role="progressbar" aria-valuenow="#{(pageBean.loadingbar.completed) ? '100' : pageBean.loadingbar.percentage}" aria-valuemin="0" aria-valuemax="100" style="width: #{(pageBean.loadingbar.completed) ? '100' : pageBean.loadingbar.percentage}%;">
+	    							<span class="sr-only">#{(pageBean.loadingbar.completed) ? '100' : pageBean.loadingbar.percentage}% Complete</span>
+	  							</div>
+							</div>
+							
+							<h:commandLink style="display:none;" id="refreshExportFolderTree" action="#{pageBean.loadingbar.refresh}" >
+		        				<f:ajax execute="@form" render="@form" />
+		        			</h:commandLink>
+							<script type="text/javascript">
+							function refreshExportFolderTree() {
+								if (document.getElementById("templateForm:refreshExportFolderTree")!=null)
+									$("#templateForm\\:refreshExportFolderTree").trigger("click");
+								if (document.getElementById("leftsideContentForm:refreshExportFolderTree")!=null)
+									$("#leftsideContentForm\\:refreshExportFolderTree").trigger("click");
+							}
+							
+							var completed = #{pageBean.loadingbar.completed};
+							if (!completed) {
+								window.setTimeout('refreshExportFolderTree()',750);
+							}	
+							</script>
+							
+							<h:inputTextarea value="#{pageBean.loadingbar.xml}" rendered="#{pageBean.debugMode}" styleClass="form-control debug-textarea" rows="10" />
+						</div>
+						<div class="modal-footer">
+							<h:commandButton rendered="#{pageBean.loadingbar.completed}" styleClass="btn btn-default" action="#{pageBean.loadingbar.close}" value="#{i18n['acl.close']}" />
+						</div>
+					</div>
+				</div>
+			</div>
+			
+		</h:panelGroup>
+	</h:panelGroup>
+
+</ui:composition>   
+</html>

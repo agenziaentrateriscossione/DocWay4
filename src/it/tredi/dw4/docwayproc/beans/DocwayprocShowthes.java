@@ -12,11 +12,14 @@ import it.tredi.dw4.utils.StringUtil;
 import it.tredi.dw4.utils.XMLUtil;
 
 import java.util.HashMap;
+import java.util.List;
 
 import javax.faces.context.FacesContext;
 import javax.faces.event.ActionEvent;
 
 import org.dom4j.Document;
+import org.dom4j.DocumentHelper;
+import org.dom4j.Element;
 
 public class DocwayprocShowthes extends Showthes {
 	private DocWayShowthesFormsAdapter formsAdapter;
@@ -93,9 +96,23 @@ public class DocwayprocShowthes extends Showthes {
 	public void init(Document dom) {
 		this.xml = dom.asXML();
 		this.vista_gerarchica = new Boolean(XMLUtil.parseAttribute(dom, "response/thes/@vista_gerarchica", "false")).booleanValue();
-		this.thes_node =		(Thes) XMLUtil.parseElement(dom, "response/thes", new Thes());
-		this.startkey = 		XMLUtil.parseAttribute(dom, "@startkey");
-		this.cPath = 			XMLUtil.parseAttribute(dom, "@cPath");
+		this.startkey = XMLUtil.parseAttribute(dom, "@startkey");
+		this.cPath = XMLUtil.parseAttribute(dom, "@cPath");
+		
+		Element el = (Element) dom.selectSingleNode("response/thes");
+		if (el != null) {
+			int thPathLength = 0;
+			List<?> thPath = dom.selectNodes("response/thPath/thnode");
+			if (thPath != null)
+				thPathLength = thPath.size();
+			this.thes_node = new Thes();
+			this.thes_node.setThPathLength((thPathLength > 0) ? thPathLength-1 : thPathLength);
+			this.thes_node.init(DocumentHelper.createDocument(el.createCopy()));
+		}
+		else {
+			this.thes_node = null;
+		}
+		//this.thes_node = (Thes) XMLUtil.parseElement(dom, "response/thes", new Thes());
 	}
 	
 	@Override
@@ -127,7 +144,7 @@ public class DocwayprocShowthes extends Showthes {
 				classifCod = this.codBreadcrumbs;
 			
 			String classif = classifCod + " - " + this.thesNome;
-			String classifRo = ClassifUtil.formatClassif(classif);
+			String classifRo = ClassifUtil.formatClassif(classif, getClassifFormat());
 			
 			// Assegno i valori all'oggetto Classif
 			HashMap<String, String> campiThes = new HashMap<String, String>();
@@ -227,7 +244,7 @@ public class DocwayprocShowthes extends Showthes {
 				if (selezione != null && selezione.length > 0) {
 					for (int i=0; i<selezione.length; i++) {
 						Thes thes = new Thes();
-						thes.initThesByChiave(selezione[i]);
+						thes.initThesByChiave(selezione[i], (i==0) ? true : false);
 						
 						classifRo = classifRo + thes.getCodice();
 						classifCod = classifCod + thes.getIndice();

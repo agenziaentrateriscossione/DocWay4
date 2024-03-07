@@ -28,15 +28,24 @@
 				</ui:repeat>
 			</div>
 			
-			<h:inputTextarea value="#{docwayFirmaDigitale.xml}" rendered="#{docwayFirmaDigitale.debugMode}" styleClass="form-control" rows="10" />
+			<h:inputTextarea value="#{docwayFirmaDigitale.xml}" rendered="#{docwayFirmaDigitale.debugMode}" styleClass="form-control debug-textarea" rows="10" />
 			
 		</h:panelGroup>
 		<h:panelGroup rendered="#{!docwayFirmaDigitale.configFirmaDigitale.abilitaFirmaSuDerTo or !empty docwayFirmaDigitale.fileDaFirmare}" layout="block">
 			
-			<iframe 
+		<!-- 	<iframe 
 				src="#{facesContext.externalContext.requestContextPath}/docway/firmadigitale@3di@applet.jsf" 
 				style="margin:0; padding:0; border:none; width:100%; height:250px;"
-			></iframe>
+			></iframe> -->
+		
+			<ui:include src="./firmadigitale@3di@applet.xhtml"></ui:include>
+			
+			<script type="text/javascript">
+				$(document).ready(function() {
+					startFirma();
+					}
+				);
+			</script> 
 			
 		</h:panelGroup>
 	</ui:define>

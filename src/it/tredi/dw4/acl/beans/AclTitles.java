@@ -14,11 +14,13 @@ import it.tredi.dw4.utils.XMLUtil;
 import javax.faces.context.FacesContext;
 
 import org.dom4j.Document;
+import org.dom4j.Element;
 
 public class AclTitles extends Titles {
 	
 	private AclTitlesFormsAdapter formsAdapter;
 	private String xml;
+	private String dbTable;
 	
 	public AclTitles() throws Exception {
 		this.formsAdapter = new AclTitlesFormsAdapter(AdaptersConfigurationLocator.getInstance().getAdapterConfiguration("aclService"));
@@ -28,6 +30,12 @@ public class AclTitles extends Titles {
 	public void init(Document domTitoli) {
     	super.titoli = XMLUtil.parseSetOfElement(domTitoli, "//titolo", new Titolo());
     	this.xml = domTitoli.asXML();
+    	
+    	Element root = domTitoli.getRootElement();
+		this.dbTable = root.attributeValue("dbTable", "");
+		
+		// inizializzazione delle azioni massive su lista titoli
+		initAzioniMassive(domTitoli);
     }
 	
 	public AclTitlesFormsAdapter getFormsAdapter() {
@@ -52,6 +60,14 @@ public class AclTitles extends Titles {
 
 	public String getXml() {
 		return xml;
+	}
+	
+	public void setDbTable(String dbTable) {
+		this.dbTable = dbTable;
+	}
+
+	public String getDbTable() {
+		return dbTable;
 	}
 
 	/**

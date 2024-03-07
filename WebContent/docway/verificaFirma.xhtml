@@ -1,98 +1,250 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" 
-	  xmlns:h="http://java.sun.com/jsf/html" 
-	  xmlns:ui="http://java.sun.com/jsf/facelets" 
-	  xmlns:f="http://java.sun.com/jsf/core">
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:p="http://xmlns.jcp.org/jsf/passthrough"
+>
 
-	<ui:composition>
-		<h:panelGroup layout="block" id="verificaFirma">
-			<h:panelGroup layout="block" rendered="#{pageBean.visible}" styleClass="QTPopup">	
-				<div class="popupGrayBg"></div>
-		    	<div class="QTPopupCntnr actions" style="width:950px;">
-		        	<div class="gpBdrLeftTop"></div>
-		            <div class="gpBdrRightTop"></div>
-		            <div class="gpBdrTop"></div>
-		            <div class="gpBdrLeft">
-		            	<div class="gpBdrRight">
-		                	<div class="caption">#{i18n['dw4.verifica_firma']} #{pageBean.fileName}</div>
-		                    <h:commandLink class="closeBtn" title="#{i18n['acl.close']}" action="#{pageBean.close}" >
-		        				<f:ajax render="verificaFirma"/>
-		        			</h:commandLink>
-		                   	
-		                   	<div class="contentPopup">
-								<div class="pageContent">
-									<div class="rightSidePageContent">
-					                <div class="fieldset">
-					                    <div class="formRow Floats_holder">
-					                        <table style="border:none; width:100%;" summary="verifica firma">
-					                            <thead><tr>
-					                                <th class="verificaFirmaTdBoldTable" style="width:25%;">#{i18n['dw4.esito_verifica']}</th>
-					                                <th class="verificaFirmaTdBoldTable" style="width:35%;">#{i18n['dw4.algoritmo_digest']}</th>
-					                                <th class="verificaFirmaTdBoldTable" style="width:55%;">#{i18n['dw4.firmatario']}</th>
-					                                <th class="verificaFirmaTdBoldTable" style="width:55%;">#{i18n['dw4.entecertificatore']}</th>
-					                                <th class="verificaFirmaTdBoldTable" style="width:55%;">#{i18n['dw4.codicefiscale']}</th>
-					                                <th class="verificaFirmaTdBoldTable" style="width:55%;">#{i18n['dw4.statofirmatario']}</th>
-					                                <th class="verificaFirmaTdBoldTable" style="width:55%;">#{i18n['dw4.organizzazione']}</th>
-					                                <th class="verificaFirmaTdBoldTable" style="width:55%;">#{i18n['dw4.datafirma']}</th>
-					                                <th class="verificaFirmaTdBoldTable" style="width:55%;">#{i18n['dw4.scadenzafirma']}</th>
-					                                <th class="verificaFirmaTdBoldTable" style="width:55%;">#{i18n['dw4.firmaannullata']}</th>
-					                            </tr></thead>
-												<tbody>
-													<ui:repeat var="signer" value="#{pageBean.signers}"	varStatus="indice">
-														<h:panelGroup>
-															<tr>
-																<td style="border-top: 1px solid white; padding: 5px 0; margin-top: 5px;" class="verificaFirmaTd">
-																<h:graphicImage url="/docway/css/images/icons/check.png" styleClass="infoicon" title="#{i18n['dw4.firmavalida']}" rendered="#{signer.valid}"/>
-																<h:graphicImage url="/docway/css/images/cancelicon.png" styleClass="infoicon" title="#{i18n['dw4.firmainvalida']}" rendered="#{not signer.valid}"/>
-																</td>
-																<td style="border-top: 1px solid white; padding: 5px 0; margin-top: 5px;" class="verificaFirmaTd">
-																#{signer.alg}
-																</td>
-																<td style="border-top: 1px solid white; padding: 5px 0; margin-top: 5px;" class="verificaFirmaTd">
-																#{signer.name}
-																</td>
-																<td style="border-top: 1px solid white; padding: 5px 0; margin-top: 5px;" class="verificaFirmaTd">
-																#{signer.issuer}
-                                                                </td>
-                                                                <td style="border-top: 1px solid white; padding: 5px 0; margin-top: 5px;" class="verificaFirmaTd">
-                                                                #{signer.cf}
-                                                                </td>
-                                                                <td style="border-top: 1px solid white; padding: 5px 0; margin-top: 5px;" class="verificaFirmaTd">
-                                                                #{signer.country}
-                                                                </td>
-                                                                <td style="border-top: 1px solid white; padding: 5px 0; margin-top: 5px;" class="verificaFirmaTd">
-                                                                #{signer.organization}
-                                                                </td>
-                                                                <td style="border-top: 1px solid white; padding: 5px 0; margin-top: 5px;" class="verificaFirmaTd">
-                                                                <h:outputText value="#{signer.signatureDate}" ><f:converter converterId="DateTimeConverter"/></h:outputText>
-                                                                </td>
-                                                                <td style="border-top: 1px solid white; padding: 5px 0; margin-top: 5px;" class="verificaFirmaTd">
-                                                                <h:outputText value="#{signer.until}" ><f:converter converterId="DateTimeConverter"/></h:outputText>
-                                                                </td>
-                                                                <td style="border-top: 1px solid white; padding: 5px 0; margin-top: 5px;" class="verificaFirmaTd">
-                                                                <h:outputText value="Si" rendered="#{signer.revoked}"/>
-                                                                <h:outputText value="No" rendered="#{not signer.revoked}"/>
-                                                                </td>
-															</tr>
-															<tr>
-															     <td colspan="10" style="border-top: 1px solid white; padding: 5px 0; margin-top: 5px;"></td>
-															</tr>
-														</h:panelGroup>
-													</ui:repeat>
-												</tbody>
-											</table>
-					                    </div>
-					                </div>
-					            </div>
-								</div>
-							</div>
-		                </div>
-		            </div>
-		            <div class="gpBdrLeftBottom"></div>
-		            <div class="gpBdrRightBottom"></div>
-		            <div class="gpBdrBottom"></div>
-		    	</div>
-		    </h:panelGroup>	
-		</h:panelGroup> 
-	</ui:composition>   
+<ui:composition>
+    <h:panelGroup layout="block" id="verificaFirma">
+        <h:panelGroup id="verificaFirmaPopup" layout="block" rendered="#{pageBean.visible}">
+            <!-- Modal -->
+            <div id="verificaFirmaModal" class="modal fade in" aria-hidden="false" aria-labelledby="verificaFirmaLabel"
+                 role="dialog" tabindex="-1" style="display: block;">
+                <!--div class="modal fade" id="loadingbarammModal" tabindex="-1" role="dialog" aria-labelledby="loadingbarammModalLabel" aria-hidden="true"-->
+                <div class="modal-dialog modal-lg">
+                    <div class="modal-content jsf-modal">
+                        <div class="modal-header">
+                            <h:commandButton styleClass="close" action="#{pageBean.close}" value="&#215;">
+                                <f:ajax execute="@form" render="@form"/>
+                            </h:commandButton>
+                            <h4 class="modal-title"
+                                id="verificaFirmaModalLabel">#{i18n['dw4.verifica_firma']} #{pageBean.fileName}</h4>
+                        </div>
+                        <div class="modal-body">
+
+                            <h:panelGroup rendered="#{!empty pageBean.errorMessage}" layout="block"
+                                          styleClass="alert alert-danger">
+                                <h:outputText value="#{pageBean.errorMessage}"/>
+                            </h:panelGroup>
+
+                            <h:panelGroup rendered="#{fn:length(pageBean.signers) == 0 and empty pageBean.errorMessage}"
+                                          layout="block" styleClass="alert alert-info">
+                                <h:outputText
+                                        value="#{i18n['dw4.il_file_richiesto_risulta_privo_di_firma_o_impossibile_recuperare_le_informazioni_di_firma']}"/>
+                            </h:panelGroup>
+
+                            <h:panelGroup rendered="#{empty pageBean.errorMessage and fn:length(pageBean.signers) > 0}">
+                                <ui:repeat var="signer" value="#{pageBean.signers}" varStatus="indice">
+                                    <div class="well">
+                                        <h:panelGroup rendered="#{not signer.dssValidation}">
+                                            <div class="row clearfix" id="volume-fees-row">
+                                                <h:panelGroup rendered="#{pageBean.validityEnabled}">
+                                                    <div class="col-xs-12 col-sm-2 col-md-2 col-lg-2 col-sm-push-10 col-md-push-10 col-lg-push-10 text-right">
+
+                                                        <h:panelGroup rendered="#{!signer.valid}"
+                                                                      styleClass="glyphicon glyphicon-ok sign-validity-icon"/>
+                                                        <h:panelGroup rendered="#{signer.valid}"
+                                                                      styleClass="glyphicon glyphicon-remove sign-validity-icon"/>
+
+                                                    </div>
+                                                </h:panelGroup>
+                                                <div class="#{(pageBean.validityEnabled) ? 'col-xs-12 col-sm-10 col-md-10 col-lg-10 col-sm-pull-2 col-md-pull-2 col-lg-pull-2' : ''}">
+
+                                                    <dl class="dl-horizontal">
+                                                        <dt>#{i18n['dw4.firmatario']}</dt>
+                                                        <dd>
+                                                            <h:panelGroup rendered="#{!empty signer.stato}">
+                                                                <span class="flag-icon flag-icon-#{fn:toLowerCase(signer.stato)}"
+                                                                      title="#{signer.stato}"></span>&#160;
+                                                            </h:panelGroup>
+                                                            #{signer.firmatario}
+                                                            <h:panelGroup rendered="#{!empty signer.codiceFiscale}">
+                                                                (#{i18n['dw4.cf']}: #{signer.codiceFiscale})
+                                                            </h:panelGroup>
+                                                        </dd>
+                                                        <h:panelGroup rendered="#{!empty signer.organizzazione}">
+                                                            <dt>#{i18n['dw4.organizzazione']}</dt>
+                                                            <dd>#{signer.organizzazione}</dd>
+                                                        </h:panelGroup>
+                                                        <dt>#{i18n['dw4.entecertificatore']}</dt>
+                                                        <dd>#{signer.enteCertificatore}</dd>
+                                                        <dt>#{i18n['dw4.datafirma']}</dt>
+                                                        <dd>
+                                                            <strong>#{signer.signatureDate}</strong>
+                                                            <h:panelGroup rendered="#{!empty signer.algoritmoDigest}">
+                                                                (#{i18n['dw4.algoritmo_digest']}: #{signer.algoritmoDigest})
+                                                            </h:panelGroup>
+                                                        </dd>
+                                                        <h:panelGroup rendered="#{!empty signer.certTo}">
+                                                            <dt>#{i18n['dw4.scadenzafirma']}</dt>
+                                                            <dd>#{signer.certTo}</dd>
+                                                        </h:panelGroup>
+                                                        <h:panelGroup rendered="#{pageBean.validityEnabled}">
+                                                            <dt>#{i18n['dw4.firmaannullata']}</dt>
+                                                            <dd>
+                                                                <h:outputText value="#{i18n['dw4.yes']}"
+                                                                              rendered="#{signer.revoked}"/>
+                                                                <h:outputText value="#{i18n['dw4.no']}"
+                                                                              rendered="#{not signer.revoked}"/>
+                                                            </dd>
+                                                        </h:panelGroup>
+                                                    </dl>
+
+                                                </div>
+                                            </div>
+                                        </h:panelGroup>
+                                        <h:panelGroup rendered="#{signer.dssValidation}">
+                                            <div class="row clearfix" id="volume-fees-row">
+                                                <div class="col-xs-12 col-sm-2 col-md-2 col-lg-2 col-sm-push-10 col-md-push-10 col-lg-push-10 text-right">
+                                                    <h:panelGroup rendered="#{signer.validOverall eq 'true'}"
+                                                                  styleClass="glyphicon glyphicon-ok sign-validity-icon"
+                                                                  p:title="#{i18n['dw4.valido']}"/>
+                                                    <h:panelGroup rendered="#{signer.validOverall eq 'false'}"
+                                                                  styleClass="glyphicon glyphicon-remove sign-validity-icon"
+                                                                  p:title="#{i18n['dw4.non_valido']}"/>
+                                                    <h:panelGroup rendered="#{signer.validOverall eq 'indeterminate'}"
+                                                                  styleClass="glyphicon glyphicon-warning-sign sign-validity-icon"
+                                                                  p:title="#{i18n['dw4.indeterminato']}"/>
+                                                </div>
+                                                <div class="'col-xs-12 col-sm-10 col-md-10 col-lg-10 col-sm-pull-2 col-md-pull-2 col-lg-pull-2'">
+
+                                                    <dl class="dl-horizontal">
+                                                        <!-- nome firmatario + cofice fiscale -->
+                                                        <dt>#{i18n['dw4.firmatario']}</dt>
+                                                        <dd>
+                                                            <h:panelGroup rendered="#{!empty signer.stato}">
+                                                                <span class="flag-icon flag-icon-#{fn:toLowerCase(signer.stato)}"
+                                                                      title="#{signer.stato}"></span>&#160;
+                                                            </h:panelGroup>
+                                                            #{signer.firmatario}
+                                                            <h:panelGroup rendered="#{!empty signer.codiceFiscale}">
+                                                                (#{i18n['dw4.cf']}: #{signer.codiceFiscale})
+                                                            </h:panelGroup>
+                                                        </dd>
+                                                        <!-- località -->
+                                                        <h:panelGroup
+                                                                rendered="#{not (empty signer.locality and empty signer.state)}">
+                                                            <dt>#{i18n['dw4.localita']}</dt>
+                                                            <dd>#{signer.locality} #{signer.state} (#{signer.stato})</dd>
+                                                        </h:panelGroup>
+                                                        <!-- email -->
+                                                        <h:panelGroup rendered="#{not empty signer.email}">
+                                                            <dt>#{i18n['dw4.email']}</dt>
+                                                            <dd>#{signer.email}</dd>
+                                                        </h:panelGroup>
+                                                        <!-- organizzazione -->
+                                                        <h:panelGroup rendered="#{!empty signer.organizzazione}">
+                                                            <dt>#{i18n['dw4.organizzazione']}</dt>
+                                                            <dd>#{signer.organizzazione}</dd>
+                                                        </h:panelGroup>
+                                                        <!-- ente certificatore -->
+                                                        <dt>#{i18n['dw4.entecertificatore']}</dt>
+                                                        <dd>#{signer.enteCertificatore}</dd>
+                                                        <!-- data firma + algoritmo -->
+                                                        <dt>#{i18n['dw4.datafirma']}</dt>
+                                                        <dd>
+                                                            <strong>#{signer.signatureDate}</strong>
+                                                            <h:panelGroup rendered="#{!empty signer.algoritmoDigest}">
+                                                                (#{i18n['dw4.algoritmo_digest']}: #{signer.algoritmoDigest})
+                                                            </h:panelGroup>
+                                                        </dd>
+                                                        <!-- id segnatura -->
+                                                        <h:panelGroup rendered="#{not empty signer.signatureId}">
+                                                            <dt>#{i18n['dw4.id_firma']}</dt>
+                                                            <dd>#{signer.signatureId}</dd>
+                                                        </h:panelGroup>
+                                                        <!-- id certificato -->
+                                                        <h:panelGroup rendered="#{not empty signer.certificateId}">
+                                                            <dt>#{i18n['dw4.id_certificato']}</dt>
+                                                            <dd>#{signer.certificateId}</dd>
+                                                        </h:panelGroup>
+                                                        <dt>#{i18n['dw4.valido_dal']}</dt>
+                                                        <dd>#{signer.certFrom}</dd>
+                                                        <dt>#{i18n['dw4.valido_fino_al']}</dt>
+                                                        <dd>#{signer.certTo}</dd>
+                                                        <dt>#{i18n['dw4.digest_test']}</dt>
+                                                        <dd>
+                                                            <h:panelGroup rendered="#{signer.digestValid eq 'true'}"
+                                                                          styleClass="glyphicon glyphicon-ok sign-validity-icon-detail"
+                                                                          p:title="#{i18n['dw4.valido']}"/>
+                                                            <h:panelGroup rendered="#{signer.digestValid eq 'false'}"
+                                                                          styleClass="glyphicon glyphicon-remove sign-validity-icon-detail"
+                                                                          p:title="#{i18n['dw4.non_valido']}"/>
+                                                            <h:panelGroup
+                                                                    rendered="#{signer.digestValid eq 'indeterminate'}"
+                                                                    styleClass="glyphicon glyphicon-warning-sign sign-validity-icon-detail"
+                                                                    p:title="#{i18n['dw4.indeterminato']}"/>
+                                                        </dd>
+                                                        <dt>#{i18n['dw4.integrita_firma']}</dt>
+                                                        <dd>
+                                                            <h:panelGroup rendered="#{signer.signatureIntact eq 'true'}"
+                                                                          styleClass="glyphicon glyphicon-ok sign-validity-icon-detail"
+                                                                          p:title="#{i18n['dw4.valido']}"/>
+                                                            <h:panelGroup
+                                                                    rendered="#{signer.signatureIntact eq 'false'}"
+                                                                    styleClass="glyphicon glyphicon-remove sign-validity-icon-detail"
+                                                                    p:title="#{i18n['dw4.non_valido']}"/>
+                                                            <h:panelGroup
+                                                                    rendered="#{signer.signatureIntact eq 'indeterminate'}"
+                                                                    styleClass="glyphicon glyphicon-warning-sign sign-validity-icon-detail"
+                                                                    p:title="#{i18n['dw4.indeterminato']}"/>
+                                                        </dd>
+                                                        <dt>#{i18n['dw4.controllo_date']}</dt>
+                                                        <dd>
+                                                            <h:panelGroup rendered="#{signer.validTimeTest eq 'true'}"
+                                                                          styleClass="glyphicon glyphicon-ok sign-validity-icon-detail"
+                                                                          p:title="#{i18n['dw4.valido']}"/>
+                                                            <h:panelGroup rendered="#{signer.validTimeTest eq 'false'}"
+                                                                          styleClass="glyphicon glyphicon-remove sign-validity-icon-detail"
+                                                                          p:title="#{i18n['dw4.non_valido']}"/>
+                                                            <h:panelGroup
+                                                                    rendered="#{signer.validTimeTest eq 'indeterminate'}"
+                                                                    styleClass="glyphicon glyphicon-warning-sign sign-validity-icon-detail"
+                                                                    p:title="#{i18n['dw4.indeterminato']}"/>
+                                                        </dd>
+                                                        <dt>#{i18n['dw4.controllo_revoca']}</dt>
+                                                        <dd>
+                                                            <h:panelGroup rendered="#{signer.revocationTest eq 'true'}"
+                                                                          styleClass="glyphicon glyphicon-ok sign-validity-icon-detail"
+                                                                          p:title="#{i18n['dw4.valido']}"/>
+                                                            <h:panelGroup rendered="#{signer.revocationTest eq 'false'}"
+                                                                          styleClass="glyphicon glyphicon-remove sign-validity-icon-detail"
+                                                                          p:title="#{i18n['dw4.non_valido']}"/>
+                                                            <h:panelGroup
+                                                                    rendered="#{signer.revocationTest eq 'indeterminate'}"
+                                                                    styleClass="glyphicon glyphicon-warning-sign sign-validity-icon-detail"
+                                                                    p:title="#{i18n['dw4.indeterminato']}"/>
+
+                                                        </dd>
+                                                        <h:panelGroup rendered="#{signer.certificateRevoked eq 'true'}">
+                                                            <dt>#{i18n['dw4.data_revoca']}</dt>
+                                                            <dd>#{signer.revocationDate}</dd>
+                                                            <dt>#{i18n['dw4.motivazione']}</dt>
+                                                            <dd>#{signer.revocationReason}</dd>
+                                                        </h:panelGroup>
+                                                    </dl>
+
+                                                </div>
+                                            </div>
+                                        </h:panelGroup>
+
+                                    </div>
+                                </ui:repeat>
+                            </h:panelGroup>
+
+                        </div>
+                        <div class="modal-footer">
+                            <h:commandButton styleClass="btn btn-default" action="#{pageBean.close}"
+                                             value="#{i18n['acl.close']}">
+                                <f:ajax execute="@form" render="@form"/>
+                            </h:commandButton>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </h:panelGroup>
+    </h:panelGroup>
+</ui:composition>
 </html>

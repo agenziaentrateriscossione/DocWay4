@@ -44,6 +44,7 @@ public class QueryVarieDSITO extends QueryGlobale {
 	private void forzaRepertorio() {
 		setRepertori_multipli(true);
 		forceRepertorioSelected("DSITO", "V");
+		setCurrentCustomFieldSection("varie_DSITO");
 		setVarie(true);
 	}
 	

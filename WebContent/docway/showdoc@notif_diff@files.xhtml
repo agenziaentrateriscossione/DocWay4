@@ -21,7 +21,7 @@
 						<div style="padding-bottom:10px;">
 							<h:commandLink action="#{bean.downloadFile}" title="#{i18n['dw4.scarica_il_file']}" styleClass="outputField blacklink #{xwfile.name}_btn">
 								<span class="glyphicon glyphicon-floppy-save normal-size-icon"></span>&#160;
-								<h:outputText value="#{xwfile.title}" escape="false" />
+								<h:outputText value="#{xwfile.title}" />
 							</h:commandLink>
 						</div>
 					</h:panelGroup>
@@ -45,7 +45,7 @@
 						<div style="padding-bottom:10px;">
 							<h:commandLink action="#{bean.downloadImage}" title="#{i18n['dw4.scarica_il_file']}" styleClass="outputField blacklink #{image.name}_btn">
 								<span class="glyphicon glyphicon-floppy-save normal-size-icon"></span>&#160;
-								<h:outputText value="#{image.title}" escape="false" />
+								<h:outputText value="#{image.title}" />
 							</h:commandLink>
 						</div>
 					</h:panelGroup>

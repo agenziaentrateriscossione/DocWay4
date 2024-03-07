@@ -32,7 +32,7 @@
 						<tr>
 							<td>
 								<h:commandLink action="#{showdocHistory.downloadFileVersion}" title="#{i18n['dw4.scarica_il_file']}" styleClass="outputField blacklink">
-									<h:outputText value="#{xwfile.title}" escape="false" />
+									<h:outputText value="#{xwfile.title}" />
 								</h:commandLink>
 								<h:panelGroup rendered="#{not empty xwfile.metadata and not empty xwfile.metadata.pageCount or not empty xwfile.metadata.fileSize}">
 									&#160;<h:outputText value="(" />
@@ -113,7 +113,7 @@
 		</table>
 	</div>
 	
-	<h:inputTextarea value="#{showdocHistory.xml}" rendered="#{showdocHistory.debugMode}" styleClass="form-control" rows="10" />
+	<h:inputTextarea value="#{showdocHistory.xml}" rendered="#{showdocHistory.debugMode}" styleClass="form-control debug-textarea" rows="10" />
 </ui:define>
 	
 </ui:composition>

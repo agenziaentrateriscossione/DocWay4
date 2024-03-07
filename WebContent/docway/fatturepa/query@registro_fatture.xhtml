@@ -153,7 +153,7 @@
 		<ui:include src="../loadingbar@ctrl_gestione.xhtml"><ui:param name="pageBean" value="#{queryRegistroFatture}"/></ui:include>
 		<ui:include src="../lookup.xhtml"><ui:param name="pageBean" value="#{queryRegistroFatture}"/></ui:include>
 		
-		<h:inputTextarea value="#{queryRegistroFatture.xml}" rendered="#{queryRegistroFatture.debugMode}" styleClass="form-control" rows="10" />
+		<h:inputTextarea value="#{queryRegistroFatture.xml}" rendered="#{queryRegistroFatture.debugMode}" styleClass="form-control debug-textarea" rows="10" />
 	</div>
 </ui:define>
     

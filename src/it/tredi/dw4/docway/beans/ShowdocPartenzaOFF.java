@@ -1,6 +1,7 @@
 package it.tredi.dw4.docway.beans;
 
 
+import javax.faces.context.FacesContext;
 import javax.faces.event.ComponentSystemEvent;
 
 import it.tredi.dw4.utils.XMLDocumento;
@@ -33,7 +34,7 @@ public class ShowdocPartenzaOFF extends ShowdocDoc {
 	
 	@Override
 	public void reload() throws Exception {
-		super._reload("showdoc@partenza@OFF");
+		super._reload(FacesContext.getCurrentInstance().getExternalContext().getRequestContextPath() + "/docway/showdoc@partenza@OFF");
 	}
 	
 	@Override

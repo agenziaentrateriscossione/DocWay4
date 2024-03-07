@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" 
+		xmlns:h="http://java.sun.com/jsf/html" 
+		xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+		xmlns:ui="http://java.sun.com/jsf/facelets">
+<h:head>
+	<title>#{i18n['dw4.console_di_audit']}</title>
+	
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+	
+	<!-- javascript -->
+	<script type="text/javascript" src="#{facesContext.externalContext.requestContextPath}/common/js/jquery.js"></script>
+	<script type="text/javascript" src="#{facesContext.externalContext.requestContextPath}/common/js/jquery.formatCurrency-1.4.0.js"></script>
+	<script type="text/javascript" src="#{facesContext.externalContext.requestContextPath}/bootstrap/js/bootstrap.js"></script>
+	<script type="text/javascript" src="#{facesContext.externalContext.requestContextPath}/common/js/bootstrap-datepicker.js"></script>
+	<script type="text/javascript" src="#{facesContext.externalContext.requestContextPath}/common/js/docs.js"></script>
+	<script type="text/javascript" src="#{facesContext.externalContext.requestContextPath}/common/js/common.js"></script>
+	<script type="text/javascript" src="#{facesContext.externalContext.requestContextPath}/docway/js/docway.js"></script>
+
+	<!-- styles -->
+	<link href="#{facesContext.externalContext.requestContextPath}/bootstrap/css/bootstrap.css" rel="stylesheet" type="text/css" />
+	<link href="#{facesContext.externalContext.requestContextPath}/common/css/dashboard.css" rel="stylesheet" type="text/css" />
+	<link href="#{facesContext.externalContext.requestContextPath}/common/css/datepicker.css" rel="stylesheet" type="text/css" />
+	<link href="#{facesContext.externalContext.requestContextPath}/common/css/common.css" rel="stylesheet" type="text/css" />
+	<link href="#{facesContext.externalContext.requestContextPath}/docway/css/docway.css" rel="stylesheet" type="text/css" />
+	<link href="#{facesContext.externalContext.requestContextPath}/docway/taskFormCss/taskform.css" rel="stylesheet" type="text/css" />
+	<link href="#{facesContext.externalContext.requestContextPath}/docway/taskFormCss/skin/jqueryuiskin.css" rel="stylesheet" type="text/css" />
+</h:head>
+<h:body styleClass="dw-popup-page console-audit">
+
+	<div class="container">
+		<div class="row clearfix">
+			<div class="col-md-12 main">
+				<div class="row">
+					
+					<div class="text-center" style="margin-top:15%;">#{i18n['dw4.inizializzazione_della_console_di_audit_in_corso_Si_prega_di_attendere']}</div>
+					<script type="text/javascript">
+					$(document).ready(function() {
+						// location.href = "#{auditLogin.url}?authkey=#{auditLogin.urlEncodedToken}";
+						$("#auditLoginFm").submit();
+					});
+					</script>
+					
+					<form id="auditLoginFm" action="#{auditLogin.url}" method="get">
+						<input type="hidden" name="authkey" value="#{auditLogin.authToken}" />
+					</form>
+				</div>
+			</div>
+		</div>
+	</div><!--/.container-->
+
+</h:body>
+</html>

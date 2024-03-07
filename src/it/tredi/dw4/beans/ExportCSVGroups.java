@@ -13,13 +13,17 @@ public class ExportCSVGroups {
 	private String type;
 	private List<ExportGroup> groups = new ArrayList<ExportGroup>();
 
-	@SuppressWarnings("unchecked")
 	public ExportCSVGroups(Element exportDefinition) {
+		this(exportDefinition, null);
+	}
+	
+	@SuppressWarnings("unchecked")
+	public ExportCSVGroups(Element exportDefinition, String exportType) {
 		this.name = exportDefinition.attributeValue("name");
 		this.type = exportDefinition.attributeValue("type");
 		List<Element> groups = exportDefinition.selectNodes("./groups/group");
 		for (Element group : groups) {
-			this.groups.add(new ExportGroup(group, type));
+			this.groups.add(new ExportGroup(group, type, exportType));
 		}
 	}
 
@@ -34,4 +38,5 @@ public class ExportCSVGroups {
 	public String getType() {
 		return type;
 	}
+	
 }

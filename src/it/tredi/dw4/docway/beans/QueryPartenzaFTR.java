@@ -37,6 +37,7 @@ private boolean dati_repertorio = true;
 	private void forzaRepertorio() {
 		setRepertori_multipli(true);
 		forceRepertorioSelected("FTR", "P");
+		setCurrentCustomFieldSection("partenza_FTR");
 		setPartenza(true);
 	}
 	

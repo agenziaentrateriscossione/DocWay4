@@ -4,6 +4,7 @@
 	  xmlns:fn="http://java.sun.com/jsp/jstl/functions"
 	  xmlns:ui="http://java.sun.com/jsf/facelets" 
 	  xmlns:f="http://java.sun.com/jsf/core"
+	  xmlns:c="http://java.sun.com/jsp/jstl/core"
 	  xmlns:p="http://xmlns.jcp.org/jsf/passthrough">
 <ui:composition>
 
@@ -42,6 +43,13 @@
 										<f:selectItem itemValue="giorno" itemLabel="#{i18n['dw4.del_giorno']}" />
 										<f:selectItem itemValue="settimana" itemLabel="#{i18n['dw4.ultima_settimana']}" />
 										<f:selectItem itemValue="mese" itemLabel="#{i18n['dw4.ultimo_mese']}" />
+										<c:if test="#{pageBean.formsAdapter.funzionalitaDisponibili['enableFiltriDocNonLettiNonScartati'] and pageBean.dbTable ne '@fascicolo' and pageBean.dbTable ne '@raccoglitore'}">
+											<f:selectItem p:disabled="disabled" itemValue="" itemLabel="----------" />
+											<f:selectItem itemValue="docletti" itemLabel="#{i18n['dw4.documenti_letti']}" />
+											<f:selectItem itemValue="docnonletti" itemLabel="#{i18n['dw4.documenti_non_letti']}" />
+											<f:selectItem itemValue="docscartati" itemLabel="#{i18n['dw4.documenti_scartati']}" />
+											<f:selectItem itemValue="docnonscartati" itemLabel="#{i18n['dw4.documenti_non_scartati']}" />
+										</c:if>
 									</h:selectOneMenu>
 								</div>
 							</div>

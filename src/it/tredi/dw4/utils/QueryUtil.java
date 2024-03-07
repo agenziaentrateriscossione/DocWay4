@@ -17,7 +17,16 @@ public class QueryUtil {
 		String query = "";
 		if (searchTerms.length() > 0) {
 			String escapedSearchTerms = escapeQueryValue(searchTerms);
-			query = (!estremi) ? "([@]=" + escapedSearchTerms + " OR [doc_filesfiletesto]=" + escapedSearchTerms + ") AND ([UD,/xw/@UdType/]=\"doc\")" : "[XML,/doc/oggetto]=" + escapedSearchTerms + " OR [XML,/doc/rif_esterni/rif/nome]=" + escapedSearchTerms + " OR [XML,/doc/rif_esterni/rif/referente/@nominativo]=" + escapedSearchTerms + " OR [docnumprot]=" + getNumProtFromSearchTerms(escapedSearchTerms);
+			if (!estremi) {
+				query = "([@]=" + escapedSearchTerms + " OR [doc_filesfiletesto]=" + escapedSearchTerms + ") AND ([UD,/xw/@UdType/]=\"doc\")";
+			}
+			else {
+				String numProtSearchTerms = getNumProtFromSearchTerms(escapedSearchTerms);
+				if (numProtSearchTerms != null && !numProtSearchTerms.isEmpty())
+					query = "[docnumprot]=\"" + numProtSearchTerms + "\"";
+				else
+					query = "[XML,/doc/oggetto]=" + escapedSearchTerms + " OR [XML,/doc/rif_esterni/rif/nome]=" + escapedSearchTerms + " OR [XML,/doc/rif_esterni/rif/referente/@nominativo]=" + escapedSearchTerms;
+			}
 		}
 		
 		if (numProt.length() > 0) {
@@ -78,9 +87,10 @@ public class QueryUtil {
 	/**
 	 * dati i termini di ricerca globali verifica (analizzando il formato dei termini) se si tratta di un 
 	 * numero di protocollo e in caso affermativo restituisce il corretto formato per poter ricercare il protocollo
-	 * specificato
+	 * specificato.
+	 * Ritorna NULL in caso di mancato riconoscimento di un numero di protocollo
 	 */
-	public static String getNumProtFromSearchTerms(String terms) {
+	private static String getNumProtFromSearchTerms(String terms) {
 		if (terms != null && terms.length() > 0 && !terms.trim().contains(" ")) {
 			int index = terms.indexOf("/");
 			if (index != -1) {
@@ -90,7 +100,7 @@ public class QueryUtil {
 					return anno  + "-_CODSEDE_-" + StringUtil.fillString(numprot, "0", Const.DOCWAY_NUM_PROT_LENGTH);
 			}
 		}
-		return terms;
+		return null;
 	}
 	
 }

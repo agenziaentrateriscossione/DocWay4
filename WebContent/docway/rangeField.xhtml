@@ -5,12 +5,14 @@
 	  xmlns:f="http://java.sun.com/jsf/core">
 <ui:composition>
 
+	<h:panelGroup rendered="#{not noLabel}">
 	<label for="templateForm:#{id}_from" class="#{(!empty offset) ? 'col-sm-offset-' : '' }#{(!empty offset) ? offset : '' } col-sm-#{(!empty labelsize) ? labelsize : '2' } control-label">#{label}</label>
-	<div class="col-sm-3">
-		<div class="input-group #{(is_date eq 'true') ? 'input-daterange date' : ''}" data-date-format="#{(is_date eq 'true') ? 'dd/mm/yyyy' : ''}">
-			<h:inputText styleClass="#{ component.valid ? '' : 'invalidinput' } form-control" value="#{from_value}" id="#{id}_from"/>
+	</h:panelGroup>
+	<div class="col-sm-#{(!empty inputsize ? inputsize : '3')}">
+		<div class="input-group #{(is_date eq 'true') ? 'input-daterange date free' : ''}" data-date-format="#{(is_date eq 'true') ? 'dd/mm/yyyy' : ''}">
+			<h:inputText styleClass="#{ component.valid ? '' : 'invalidinput' } form-control" value="#{from_value}" id="#{id}_from" disabled="#{disabled}"/>
 			<span class="input-group-addon">#{i18n['dw4.a']}</span>
-			<h:inputText styleClass="#{ component.valid ? '' : 'invalidinput' } form-control" value="#{to_value}" id="#{id}_to"/>
+			<h:inputText styleClass="#{ component.valid ? '' : 'invalidinput' } form-control" value="#{to_value}" id="#{id}_to" disabled="#{disabled}" />
 		</div>
 	</div>
 

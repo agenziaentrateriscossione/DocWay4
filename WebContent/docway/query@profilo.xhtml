@@ -8,11 +8,11 @@
 
 <ui:define name="content">
 	<div class="profilo-personale">
-	
+
 		<ui:remove>
 			<h5 class="sub-header">#{i18n['dw4.profilo_personale']}</h5>
 		</ui:remove>
-	
+
 		<!-- toolbar: inizio -->
 		<div class="btn-toolbar" role="toolbar">
 			<div class="btn-group">
@@ -24,7 +24,7 @@
 			</div>
 		</div>
 		<!-- toolbar: fine -->
-	
+
 		<!-- messages: inizio -->
 		<h:panelGroup rendered="#{not empty facesContext.messageList}" layout="block" styleClass="docedit-messages alert alert-danger">
 			<h:messages styleClass="" id="validationMesseges" />
@@ -36,15 +36,15 @@
 		});
 		</script>
 		<!-- messages: fine -->
-	
+
 		<!-- scheda query: inizio -->
 		<div class="row-fluid" style="margin-top:10px;">
 			<div id="fixedshowdoc" class="box span12 fixed-showdoc">
 				<div class="box-content">
-				
+
 					<div class="fieldset">
 						<div class="legend">#{i18n['dw4.profilo_personale']}</div>
-						
+
 						<div class="form-group">
 							<label for="templateForm:ppr0048" class="col-sm-4 control-label">#{i18n['dw4.giorni_di_preavviso_prima_della_scadenza']}</label>
 							<div class="col-sm-1">
@@ -91,12 +91,72 @@
 								<h:selectBooleanCheckbox id="ppriwx01" value="#{queryProfiloPersonale.r_iwx01}" />
 							</div>
 						</div>
+
+						<h:panelGroup rendered="#{queryProfiloPersonale.titlesSwitchEnabled}" layout="block" styleClass="form-group">
+							<label for="templateForm:titlesMode" class="col-sm-4 control-label">#{i18n['dw4.formato_titoli_documenti']}</label>
+							<div class="col-sm-3">
+								<h:selectOneMenu id="titlesMode" value="#{queryProfiloPersonale.titlesMode}" styleClass="form-control">
+									<f:selectItem itemValue="list" itemLabel="#{i18n['dw4.modalita_lista']}" />
+									<f:selectItem itemValue="table" itemLabel="#{i18n['dw4.modalita_tabella']}" />
+								</h:selectOneMenu>
+							</div>
+						</h:panelGroup>
 					</div> <!-- /fieldset -->
-					
+
+					<h:panelGroup rendered="#{ queryProfiloPersonale.formsAdapter.funzionalitaDisponibili['abilitaHomePageDocWayCustom'] }">
+						<div class="fieldset">
+							<div class="legend">#{i18n['dw4.personalizzazione_homepage']}</div>
+
+							<div class="form-group">
+								<label for="templateForm:homepageList" class="col-sm-2 control-label">#{i18n['dw4.lista_titoli']}</label>
+								<div class="col-sm-5">
+									<h:selectOneMenu id="homepageList" value="#{queryProfiloPersonale.homeContent.type}" styleClass="form-control" onchange="showHideHomeCustomQuery()">
+										<f:selectItem itemValue="recenti" itemLabel="#{i18n['dw4.documenti_recenti']}" />
+										<f:selectItem itemValue="ccdocs" itemLabel="#{i18n['dw4.documenti_in_cc']}" />
+										<f:selectItem itemValue="nonfascdocs" itemLabel="#{i18n['dw4.doc_non_fascicolati']}" />
+										<f:selectItem itemValue="vuota" itemLabel="#{i18n['dw4.nessuna_lista']}" />
+										<f:selectItem itemValue="customq" itemLabel="#{i18n['dw4.query_custom']}" />
+									</h:selectOneMenu>
+									<script type="text/javascript">
+									function showHideHomeCustomQuery() {
+										// imposta un titolo di default in base alla sezione dell'utente
+										if ($("#templateForm\\:homepageList option:selected").val() != "customq"
+												&amp;&amp; $("#templateForm\\:homepageList option:selected").val() != "vuota")
+											$("#templateForm\\:homepageTitle").val($("#templateForm\\:homepageList option:selected").text());
+										else
+											$("#templateForm\\:homepageTitle").val("");
+
+										// mostra/nasconde il campo query custom in base alla selezione dell'utente
+										if ($("#templateForm\\:homepageList option:selected").val() == "customq") {
+											$("#homeCustomQueryHolder").show();
+										}
+										else {
+											$("#homeCustomQueryHolder").hide();
+											$("#templateForm\\:homepageQueryCustom").val("");
+										}
+									}
+									</script>
+								</div>
+							</div>
+							<div class="form-group">
+								<label for="templateForm:homepageTitle" class="col-sm-2 control-label">#{i18n['dw4.titolo_sezione']}</label>
+								<div class="col-sm-9">
+									<h:inputText id="homepageTitle" value="#{queryProfiloPersonale.homeContent.title}" styleClass="form-control" />
+								</div>
+							</div>
+							<div id="homeCustomQueryHolder" class="form-group" style="#{(queryProfiloPersonale.homeContent.type ne 'customq') ? 'display:none;' : ''}">
+								<label for="templateForm:homepageQueryCustom" class="col-sm-2 control-label">#{i18n['dw4.query_custom']}</label>
+								<div class="col-sm-9">
+									<h:inputTextarea id="homepageQueryCustom" value="#{queryProfiloPersonale.homeContent.customQuery}" rows="4" cols="120" styleClass="form-control" />
+								</div>
+							</div>
+						</div>
+					</h:panelGroup>
+
 					<h:panelGroup rendered="#{ queryProfiloPersonale.formsAdapter.funzionalitaDisponibili['abilitaConfigurazioneMailboxPersonali'] }">
 						<div class="fieldset">
 							<div class="legend">#{i18n['dw4.configurazione_mailbox']}</div>
-							
+
 							<ui:repeat id="mailboxes" var="mailbox" value="#{ queryProfiloPersonale.mailboxes }" varStatus="status">
 								<div class="mailbox-definition" style="padding:10px 0;">
 									<div class="form-group">
@@ -162,18 +222,18 @@
 							</ui:repeat>
 						</div> <!-- /fieldset -->
 					</h:panelGroup>
-					
+
 					<h:panelGroup rendered="#{ fn:length(queryProfiloPersonale.vaschetteCustom) > 0 }">
 						<div class="fieldset">
 							<div class="legend">#{i18n['dw4.vaschette_utente']}</div>
-							
+
 							<ui:repeat id="vaschetteCustom" var="vaschetta" value="#{ queryProfiloPersonale.vaschetteCustom }" varStatus="status">
 								<div class="form-group">
 									<label class="col-sm-2 control-label">#{i18n['acl.title']}</label>
 									<div class="col-sm-9">
 										<div class="input-group">
 											<h:inputText id="titoloVaschetta" value="#{vaschetta.title}" styleClass="#{ component.valid ? '' : 'invalidinput' } form-control" />
-											
+
 											<div class="input-group-btn">
 												<h:commandLink onclick="return showHideQuery(#{status.index});" title="#{i18n['dw4.modifica_query']}" styleClass="btn btn-default">
 										 			<span class="glyphicon glyphicon-pencil"></span>
@@ -206,24 +266,24 @@
 									$("#queryVaschettaHolder_"+index).show();
 								else
 									$("#queryVaschettaHolder_"+index).hide();
-								
-								return false;	
+
+								return false;
 							}
 							</script>
 						</div> <!-- /fieldset -->
 					</h:panelGroup>
-					
+
 					<h:panelGroup rendered="#{ fn:length(queryProfiloPersonale.esportazioni) > 0 }">
                         <div class="fieldset">
                             <div class="legend">#{i18n['dw4.esportazioni']}</div>
-                            
+
                             <ui:repeat id="esportazioniCustom" var="esportazione" value="#{ queryProfiloPersonale.esportazioni }" varStatus="status">
                                 <div class="form-group">
                                     <label class="col-sm-2 control-label">#{i18n['acl.title']}</label>
                                     <div class="col-sm-9">
                                         <div class="input-group">
                                             <h:inputText id="titoloEsportazione" value="#{esportazione.title}" styleClass="#{ component.valid ? '' : 'invalidinput' } form-control" />
-                                            
+
                                             <div class="input-group-btn">
                                                 <h:commandLink onclick="return showHideQueryEsportazione(#{status.index});" title="#{i18n['dw4.modifica_query']}" styleClass="btn btn-default">
                                                     <span class="glyphicon glyphicon-pencil"></span>
@@ -256,16 +316,16 @@
 		                            $("#queryEsportazioneHolder_"+index).show();
 		                        else
 		                            $("#queryEsportazioneHolder_"+index).hide();
-		                        
-		                        return false;   
+
+		                        return false;
 		                    }
 		                    </script>
                         </div> <!-- /fieldset -->
                     </h:panelGroup>
-					
+
 					<div class="fieldset">
 						<div class="legend">#{i18n['dw4.segnatura']}</div>
-						
+
 						<h:panelGroup rendered="#{!queryProfiloPersonale.enableIW}">
 							<div class="form-group">
 								<div class="col-sm-offset-2 col-sm-9">
@@ -357,13 +417,13 @@
 									</div>
 								</div>
 							</h:panelGroup>
-							
+
 							<div style="margin-top:13px;">
 								<ui:include src="./showdoc@empty@iwx.xhtml"><ui:param name="bean" value="#{queryProfiloPersonale}"/></ui:include>
 							</div>
 						</h:panelGroup>
 					</div>
-					
+
 				</div>
 			</div>
 		</div>
@@ -371,8 +431,8 @@
 	</div>
 
 	<ui:include src="./query@pwd.xhtml"><ui:param name="pageBean" value="#{docwayChangePassword}"/></ui:include>
-	
-	<h:inputTextarea value="#{queryProfiloPersonale.xml}" rendered="#{queryProfiloPersonale.debugMode}" styleClass="form-control" rows="10" />
+
+	<h:inputTextarea value="#{queryProfiloPersonale.xml}" rendered="#{queryProfiloPersonale.debugMode}" styleClass="form-control debug-textarea" rows="10" />
 </ui:define>
-    
-</ui:composition>    
+
+</ui:composition>

@@ -5,14 +5,17 @@ package it.tredi.dw4.utils;
 public class RomanConversion {
 
 	// Parallel arrays used in the conversion process.
-	private static final String[] RCODE = { "M", "CM", "D", "CD", "C", "XC",
-			"L", "XL", "X", "IX", "V", "IV", "I" };
-	private static final int[] BVAL = { 1000, 900, 500, 400, 100, 90, 50, 40,
-			10, 9, 5, 4, 1 };
+	private static final String[] RCODE = { "M", "CM", "D", "CD", "C", "XC", "L", "XL", "X", "IX", "V", "IV", "I" };
+	private static final int[] BVAL = { 1000, 900, 500, 400, 100, 90, 50, 40, 10, 9, 5, 4, 1 };
 
-	// =========================================================== binaryToRoman
+	/**
+	 * Conversione da numero intero a stringa che rappresenta il numero in formato romano
+	 * @param binary
+	 * @return
+	 */
 	public static String binaryToRoman(int binary) {
-		if (binary == 0) return "0";
+		if (binary == 0)
+			return "0";
 		if (binary <= 0 || binary >= 4000) {
 			throw new NumberFormatException("Value outside roman numeral range.");
 		}
@@ -28,13 +31,22 @@ public class RomanConversion {
 		}
 		return roman;
 	}
+
+	/**
+	 * Conversione da stringa che rappresenta un numero romano in intero
+	 * @param roman
+	 * @return
+	 */
 	public static int valueOf(String roman) {
 		roman = roman.toUpperCase();
-		if(roman.length() == 0) return 0;
-		for(int i = 0; i < RCODE.length; i++) {
-			int pos = roman.indexOf(RCODE[i]) ;
-			if(pos >= 0) return BVAL[i] - valueOf(roman.substring(0,pos)) + valueOf(roman.substring(pos+1));
+		if (roman.length() == 0)
+			return 0;
+		for (int i = 0; i < RCODE.length; i++) {
+			int pos = roman.indexOf(RCODE[i]);
+			if (pos >= 0)
+				return BVAL[i] - valueOf(roman.substring(0, pos)) + valueOf(roman.substring(pos + 1));
 		}
 		throw new IllegalArgumentException("Invalid Roman Symbol.");
 	}
+
 }

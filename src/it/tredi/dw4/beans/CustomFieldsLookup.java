@@ -1,5 +1,12 @@
 package it.tredi.dw4.beans;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.SortedMap;
+import java.util.TreeMap;
+
+import org.dom4j.Document;
+
 import it.tredi.dw4.adapters.AdaptersConfigurationLocator;
 import it.tredi.dw4.docway.adapters.DocWayLookupFormsAdapter;
 import it.tredi.dw4.model.Campo;
@@ -11,20 +18,18 @@ import it.tredi.dw4.model.customfields.FieldInstance;
 import it.tredi.dw4.utils.Logger;
 import it.tredi.dw4.utils.XMLUtil;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.SortedMap;
-import java.util.TreeMap;
-
-import org.dom4j.Document;
-
 public class CustomFieldsLookup extends Lookup {
+	
+	private static final String XPATH_CUSTOM_FIELDS_IDENTIFIER = "section_";
+	
 	private DocWayLookupFormsAdapter formsAdapter;
 	private ArrayList<Titolo> titoli;
 	private ArrayList<TitoloComposto> titoliComposti;
 	
 	private Field field = null;
 	private FieldInstance instance = null;
+	
+	private CustomFields customFieldsModel; 
 	
 	public CustomFieldsLookup() throws Exception {
 		this.formsAdapter = new DocWayLookupFormsAdapter(AdaptersConfigurationLocator.getInstance().getAdapterConfiguration("docwayService"));
@@ -109,25 +114,55 @@ public class CustomFieldsLookup extends Lookup {
 		this.instance = instance;
 	}
 	
+	public Object getCustomFieldsModel() {
+		return customFieldsModel;
+	}
+
+	public void setCustomFieldsModel(CustomFields customFieldsModel) {
+		this.customFieldsModel = customFieldsModel;
+	}
+	
 	/**
 	 * Ripulisce i campi di lookup
 	 */
 	public void cleanFields(String campi) throws Exception {
 		if (campi != null && campi.length() > 0) {
-		String []campiArr = campi.split(" ; ");
-			CustomFields customFields = (CustomFields) model;
+			// mbernardini 08/07/2019 : lookup misti fra campi custome campi specifici del documento
+			List<Campo> campiL = new ArrayList<Campo>();
+			Titolo titolo = new Titolo();
 			
+			String []campiArr = campi.split(" ; ");
 			for (int i = 0; i < campiArr.length; i++) {
 				try {
-					String campo = campiArr[i].trim();
-					campo = campo.substring(0, campo.indexOf("="));
-					
-					customFields.setFieldValueFromLookup(campo, "");
+					String nomeCampo = campiArr[i].trim();
+					nomeCampo = nomeCampo.substring(0, nomeCampo.indexOf("="));
+					if (nomeCampo.startsWith(XPATH_CUSTOM_FIELDS_IDENTIFIER)) {
+						// campo di destinazione -> campo custom
+						this.customFieldsModel.setFieldValueFromLookup(nomeCampo, "");
+					}
+					else {
+						// campo di destinazione -> campo specifico del documento
+						if (this.model != null) {
+							Campo campo = new Campo();
+							campo.setNome(nomeCampo);
+							if (!nomeCampo.equals(".oggetto")) // il campo oggetto (voce di indice) non deve essere svuotato
+								campo.setText("");
+							campiL.add(campo);
+						}
+						else {
+							Logger.error("Unable to crean lookup field " + nomeCampo + "... Model is NULL!");
+						}
+					}
 				}
 				catch (Exception ex) {
 					// campo di lookup che non fa riferimento ad un campo custom
 					Logger.error(ex.getMessage(), ex);
 				}
+			}
+			
+			if (!campiL.isEmpty()) {
+				titolo.setCampi(campiL);
+				fillFields(titolo.getCampi(), false);
 			}
 		}
 	}
@@ -150,7 +185,8 @@ public class CustomFieldsLookup extends Lookup {
 	 */
 	private void fillCustomFields(List<Campo> campiL) throws Exception {
 		if (campiL != null && campiL.size() > 0) {
-			CustomFields customFields = (CustomFields) model;
+			// mbernardini 08/07/2019 : lookup misti fra campi custome campi specifici del documento
+			List<Campo> notCustom = new ArrayList<Campo>();
 			
 			for (int campiLIndex = 0; campiLIndex < campiL.size(); campiLIndex++) {
 				try {
@@ -158,18 +194,35 @@ public class CustomFieldsLookup extends Lookup {
 					String value = campiL.get(campiLIndex).getText();		
 										
 					if (xpath != null && !xpath.equals("")) {
-						if (value == null)
-							value = "";
-						
-						// assegnazione del/i valore/i selezionato/i tramite lookup al/i campo/i custom
-						customFields.setFieldValueFromLookup(xpath, value); 
+						if (xpath.startsWith(XPATH_CUSTOM_FIELDS_IDENTIFIER)) {
+							// campo di destinazione -> campo custom
+							
+							if (value == null)
+								value = "";
+							
+							// assegnazione del/i valore/i selezionato/i tramite lookup al/i campo/i custom
+							this.customFieldsModel.setFieldValueFromLookup(xpath, value); 
+						}
+						else {
+							// campo di destinazione -> campo specifico del documento
+							
+							if (this.model != null)
+								notCustom.add(campiL.get(campiLIndex));
+							else {
+								Logger.error("Unable to manage lookup field " + xpath + " [value = '" + value + "']... Model is NULL!");
+							}
+						}
 					}
 				}
 				catch (Exception ex) {
 					// campo di lookup che non fa riferimento ad un campo custom
 					Logger.error(ex.getMessage(), ex);
 				}
-			}	
+			}
+			
+			if (!notCustom.isEmpty()) {
+				this.fillFields(notCustom, true); // set di eventuali campi sepcifici del model (documento/fascicolo/etc.)
+			}
 		}
 	}
 	

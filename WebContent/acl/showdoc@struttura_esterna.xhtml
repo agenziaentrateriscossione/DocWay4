@@ -32,6 +32,10 @@
 					<h:panelGroup rendered="#{showdocStrutturaEsterna.formsAdapter.funzionalitaDisponibili['ins_struest']}">
 						<h:commandLink action="#{showdocStrutturaEsterna.ripetiNuovo}" styleClass="btn btn-default openwaitmsg">#{i18n['acl.clone']}</h:commandLink>
 					</h:panelGroup>
+					
+					<ui:include src="../azionimassive/startAzioniMassiveButtons.xhtml">
+	                    <ui:param name="pageBean" value="#{showdocStrutturaEsterna}" />
+	                </ui:include>
 
 					<h:panelGroup layout="block" styleClass="btn-group">
 						<button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
@@ -47,7 +51,7 @@
 
 			<h5 class="sub-header" title="#{showdocStrutturaEsterna.struttura_esterna.nome}">
 				<span class="strutture-esterne glyphicons-pro"></span>&#160;
-				<h:outputText value="#{showdocStrutturaEsterna.struttura_esterna.nome}" escape="false" />
+				<h:outputText value="#{showdocStrutturaEsterna.struttura_esterna.nome}" />
 			</h5>
 
 			<!-- scheda show: inizio -->

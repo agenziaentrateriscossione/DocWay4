@@ -1,6 +1,13 @@
 package it.tredi.dw4.docway.beans;
 
-import it.tredi.dw4.utils.XMLDocumento;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+
+import javax.faces.context.FacesContext;
+
+import org.dom4j.Document;
+
 import it.tredi.dw4.adapters.AdaptersConfigurationLocator;
 import it.tredi.dw4.adapters.ErrormsgFormsAdapter;
 import it.tredi.dw4.docway.doc.adapters.DocDocWayDocumentFormsAdapter;
@@ -11,16 +18,10 @@ import it.tredi.dw4.docway.model.History;
 import it.tredi.dw4.docway.model.Rif;
 import it.tredi.dw4.docway.model.Storia;
 import it.tredi.dw4.i18n.I18N;
+import it.tredi.dw4.utils.Const;
 import it.tredi.dw4.utils.DateConverter;
+import it.tredi.dw4.utils.XMLDocumento;
 import it.tredi.dw4.utils.XMLUtil;
-
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-
-import javax.faces.context.FacesContext;
-
-import org.dom4j.Document;
 
 public class ShowdocFascicolo extends DocWayShowdoc {
 	
@@ -98,13 +99,23 @@ public class ShowdocFascicolo extends DocWayShowdoc {
 		
 		setCurrentPage(getFormsAdapter().getCurrent()+"");
 		
+		//tiommi 05/03/2018 richiesta di url di accesso per fascicoli (per copia link e invio notifica)
+		if (fascicolo != null && fascicolo.getNrecord() != null && !fascicolo.getNrecord().isEmpty())
+			linkToDoc = FacesContext.getCurrentInstance().getExternalContext().getRequestContextPath() + "/docway/loaddoc.pf?db=" + formsAdapter.getDb() + "&alias=fasc_nrecord&value=" + fascicolo.getNrecord();
+		
 		// porzione di template personalizzato per il cliente
 		personalDirCliente = XMLUtil.parseStrictAttribute(dom, "/response/@personalDirCliente");
+		
+		// gestione doc2attachment
+		setDoc2attachment(XMLUtil.parseStrictAttribute(dom, "/response/@doc2attachment", ""));
 		
 		// inizializzazione del campi custom da caricare nella pagina
 		getCustomfields().init(dom, "fascicolo");
 		
 		archivioDepositoUrl = XMLUtil.parseStrictAttribute(dom, "/response/funzionalita_disponibili/@depositoUrl", "");
+		
+		// inizializzazione di componenti common
+		initCommons(dom);
 	}
 	
 	@Override
@@ -115,7 +126,7 @@ public class ShowdocFascicolo extends DocWayShowdoc {
 	@Override
 	public void reload() throws Exception {
 		try{
-			super._reload("showdoc@fascicolo");
+			super._reload(FacesContext.getCurrentInstance().getExternalContext().getRequestContextPath() + "/docway/showdoc@fascicolo");
 		}
 		catch (Throwable t) {
 			handleErrorResponse(ErrormsgFormsAdapter.buildErrorResponse(t));
@@ -129,6 +140,10 @@ public class ShowdocFascicolo extends DocWayShowdoc {
 			// fcappelli 20150109 - aggiunta la gestione della tipologia fascicoli anche in modifica
 			formsAdapter.getDefaultForm().addParam("codice_fasc", fascicolo.getCodiceFascicoloCustom());
 			formsAdapter.getDefaultForm().addParam("descrizione_fasc", fascicolo.getDescrizioneFascicoloCustom());
+			
+			// mbernardini 21/05/2018 : aggiunta del parametro 'fasc_numero_sottofasc' per correggere il template di modifica di fascicoli custom
+			if (fascicolo.getNumero() != null && !fascicolo.getNumero().isEmpty())
+				formsAdapter.getDefaultForm().addParam("fasc_numero_sottofasc", fascicolo.getNumero());
 			
 			XMLDocumento response = super._modifyTableDoc();
 			return buildSpecificDocEditModifyPageAndReturnNavigationRule(response.getAttributeValue("/response/@dbTable"), response, isPopupPage());
@@ -181,11 +196,14 @@ public class ShowdocFascicolo extends DocWayShowdoc {
 	public String getData_asseg_cc(){
 		Rif rif = (Rif) FacesContext.getCurrentInstance().getExternalContext().getRequestMap().get("rif");
 		String data = "";
-		String nome_persona = rif.getNome_persona();
 		List<Storia> storia = fascicolo.getStoria();
 		for (int i = 0; i < storia.size(); i++) {
 			Storia element = (Storia)storia.get(i);
-			if(element.getTipo().equals("assegnazione_cc") && element.getNome_persona().equals(nome_persona)){
+			
+			// mbernardini 29/09/2017 : corretto bug in recupero info di assegnazione.
+			// non e' sufficiente verificare il nome della persona, occorre controllare anche l'ufficio (potrebbe essere stata aggiunta in CC
+			// la stessa persona piu' volte con associato l'ufficio di appartenenza o responsabilita')
+			if(element.getTipo().equals("assegnazione_cc") && element.getNome_uff().equals(rif.getNome_uff()) && element.getNome_persona().equals(rif.getNome_persona())){
 				data = element.getData();
 			}
 			
@@ -197,29 +215,19 @@ public class ShowdocFascicolo extends DocWayShowdoc {
 		Rif rif = (Rif) FacesContext.getCurrentInstance().getExternalContext().getRequestMap().get("rif");
 		return getInfoAssegnazione(rif);
 	}
+	
 	public String getInfoAssegnazione(Rif rif){
 		String data = "";
 		String diritto = rif.getDiritto();
 		String tipo = getType(diritto);
-		String nome_persona = rif.getNome_persona();
 		List<Storia> storia = fascicolo.getStoria();
 		for (int i = 0; i < storia.size(); i++) {
 			Storia element = (Storia)storia.get(i);
-			if(element.getTipo().equals(tipo) && element.getNome_persona().equals(nome_persona)){
-				data = I18N.mrs("dw4.assegnato_da") + " " + element.getOperatore();
-			}
 			
-		}
-		return data;
-	}
-	public String getInfoAssegnazioneCC(){
-		Rif rif = (Rif) FacesContext.getCurrentInstance().getExternalContext().getRequestMap().get("rif");
-		String data = "";
-		String nome_persona = rif.getNome_persona();
-		List<Storia> storia = fascicolo.getStoria();
-		for (int i = 0; i < storia.size(); i++) {
-			Storia element = (Storia)storia.get(i);
-			if(element.getTipo().equals("assegnazione_cc") && element.getNome_persona().equals(nome_persona)){
+			// mbernardini 29/09/2017 : corretto bug in recupero info di assegnazione.
+			// non e' sufficiente verificare il nome della persona, occorre controllare anche l'ufficio (potrebbe essere stata aggiunta in CC
+			// la stessa persona piu' volte con associato l'ufficio di appartenenza o responsabilita')
+			if(element.getTipo().equals(tipo) && element.getNome_uff().equals(rif.getNome_uff()) && element.getNome_persona().equals(rif.getNome_persona())){
 				data = I18N.mrs("dw4.assegnato_da") + " " + element.getOperatore();
 			}
 			
@@ -227,14 +235,35 @@ public class ShowdocFascicolo extends DocWayShowdoc {
 		return data;
 	}
 	
-	public String getInfoAssegnazioneITF(){
-		Rif rif = this.fascicolo.getAssegnazioneITF();
+	public String getInfoAssegnazioneCC() {
+		Rif rif = (Rif) FacesContext.getCurrentInstance().getExternalContext().getRequestMap().get("rif");
 		String data = "";
-		String nome_persona = rif.getNome_persona();
 		List<Storia> storia = fascicolo.getStoria();
 		for (int i = 0; i < storia.size(); i++) {
 			Storia element = (Storia)storia.get(i);
-			if(element.getTipo().equals("incaricato_tenuta_fascicolo") && element.getNome_persona().equals(nome_persona)){
+			
+			// mbernardini 29/09/2017 : corretto bug in recupero info di assegnazione.
+			// non e' sufficiente verificare il nome della persona, occorre controllare anche l'ufficio (potrebbe essere stata aggiunta in CC
+			// la stessa persona piu' volte con associato l'ufficio di appartenenza o responsabilita')
+			if(element.getTipo().equals("assegnazione_cc") && element.getNome_uff().equals(rif.getNome_uff()) && element.getNome_persona().equals(rif.getNome_persona())){
+				data = I18N.mrs("dw4.assegnato_da") + " " + element.getOperatore();
+			}
+			
+		}
+		return data;
+	}
+	
+	public String getInfoAssegnazioneITF() {
+		Rif rif = this.fascicolo.getAssegnazioneITF();
+		String data = "";
+		List<Storia> storia = fascicolo.getStoria();
+		for (int i = 0; i < storia.size(); i++) {
+			Storia element = (Storia)storia.get(i);
+			
+			// mbernardini 29/09/2017 : corretto bug in recupero info di assegnazione.
+			// non e' sufficiente verificare il nome della persona, occorre controllare anche l'ufficio (potrebbe essere stata aggiunta in CC
+			// la stessa persona piu' volte con associato l'ufficio di appartenenza o responsabilita')
+			if(element.getTipo().equals("incaricato_tenuta_fascicolo") && element.getNome_uff().equals(rif.getNome_uff()) && element.getNome_persona().equals(rif.getNome_persona())){
 				data = I18N.mrs("dw4.assegnato_da") + " " + element.getOperatore();
 			}
 			
@@ -357,11 +386,14 @@ public class ShowdocFascicolo extends DocWayShowdoc {
 		String diritto = rif.getDiritto();
 		String tipo = getType(diritto);
 		String data = "";
-		String nome_persona = rif.getNome_persona();
 		List<Storia> storia = fascicolo.getStoria();
 		for (int i = 0; i < storia.size(); i++) {
 			Storia element = (Storia)storia.get(i);
-			if(element.getTipo().equals(tipo) && element.getNome_persona().equals(nome_persona)){
+			
+			// mbernardini 29/09/2017 : corretto bug in recupero data di assegnazione.
+			// non e' sufficiente verificare il nome della persona, occorre controllare anche l'ufficio (potrebbe essere stata aggiunta in CC
+			// la stessa persona piu' volte con associato l'ufficio di appartenenza o responsabilita')
+			if(element.getTipo().equals(tipo) && element.getNome_uff().equals(rif.getNome_uff()) && element.getNome_persona().equals(rif.getNome_persona())){
 				data = element.getData();
 			}
 			
@@ -378,11 +410,14 @@ public class ShowdocFascicolo extends DocWayShowdoc {
 		String diritto = rif.getDiritto();
 		String tipo = getType(diritto);
 		String data = "";
-		String nome_persona = rif.getNome_persona();
 		List<Storia> storia = fascicolo.getStoria();
 		for (int i = 0; i < storia.size(); i++) {
 			Storia element = (Storia)storia.get(i);
-			if(element.getTipo().equals(tipo) && element.getNome_persona().equals(nome_persona) && null!=element.getVisto_da() && element.getVisto_da().trim().length() > 0){
+			
+			// mbernardini 29/09/2017 : corretto bug in recupero info di visto.
+			// non e' sufficiente verificare il nome della persona, occorre controllare anche l'ufficio (potrebbe essere stata aggiunta in CC
+			// la stessa persona piu' volte con associato l'ufficio di appartenenza o responsabilita')
+			if(element.getTipo().equals(tipo) && element.getNome_uff().equals(rif.getNome_uff()) && element.getNome_persona().equals(rif.getNome_persona()) && null!=element.getVisto_da() && element.getVisto_da().trim().length() > 0){
 				data = "Visto da "+element.getVisto_da()+" il "+(new DateConverter().getAsString(null, null, element.getData_visto()))+ " alle "+element.getOra_visto();
 			}
 			
@@ -453,7 +488,8 @@ public class ShowdocFascicolo extends DocWayShowdoc {
 			rifInt.getFormsAdapter().fillFormsFromResponse(response);
 			rifInt.init(response.getDocument());
 			rifInt.setViewAddCC(true);
-			rifInt.getFascicolo().addRifintCC(new Rif());
+			// tiommi: rimosso perchè inserito direttamente in fascicolo se l'array è vuoto
+			// rifInt.getFascicolo().addRifintCC(new Rif());
 			rifInt.setShowdoc(this);
 			setSessionAttribute("rifIntFasc", rifInt);
 			return null;
@@ -474,7 +510,11 @@ public class ShowdocFascicolo extends DocWayShowdoc {
 				formsAdapter.fillFormsFromResponse(formsAdapter.getLastResponse()); //restore delle form
 				return null;
 			}
-			return new QueryFascicolo().navigateResponse(response);
+			
+			QueryFascicolo queryFascicolo = new QueryFascicolo();
+			// mbernardini 08/02/2019 : mantenimento dello stato 'popup' in caso di navigazione gerarchia fascicolo in popup di fascicolazione di un documento
+			queryFascicolo.setPopupPage(this.isPopupPage()); 
+			return queryFascicolo.navigateResponse(response);
 		}
 		catch (Throwable t) {
 			handleErrorResponse(ErrormsgFormsAdapter.buildErrorResponse(t));
@@ -545,7 +585,7 @@ public class ShowdocFascicolo extends DocWayShowdoc {
 				formsAdapter.fillFormsFromResponse(formsAdapter.getLastResponse()); //restore delle form
 			}
 			formsAdapter.fillFormsFromResponse(formsAdapter.getLastResponse()); //restore delle form
-			
+
 			String verbo = response.getAttributeValue("/response/@verbo");
 			if (verbo.equals("loadingbar")) {
 				DocWayLoadingbar docWayLoadingbar = new DocWayLoadingbar();
@@ -564,7 +604,7 @@ public class ShowdocFascicolo extends DocWayShowdoc {
 		catch (Throwable t) {
 			handleErrorResponse(ErrormsgFormsAdapter.buildErrorResponse(t));
 			formsAdapter.fillFormsFromResponse(formsAdapter.getLastResponse()); //restore delle form
-			return null;			
+			return null;
 		}
 	}
 	
@@ -669,12 +709,43 @@ public class ShowdocFascicolo extends DocWayShowdoc {
 	}
 	
 	/**
+	 * Inserimento di un nuovo fascicolo del personale
+	 * @return
+	 * @throws Exception
+	 */
+	public String insTableDocFascicolo() throws Exception {
+		try {
+			// mbernardini 20/12/2016 : corretta ridirezione della pagina di inserimento in caso di fascicoli personalizzati
+			if (fascicolo.getCodiceFascicoloCustom() != null && !fascicolo.getCodiceFascicoloCustom().isEmpty())
+				formsAdapter.insTableFascicoloCustom(Const.DOCWAY_TIPOLOGIA_FASCICOLO, fascicolo.getCodiceFascicoloCustom(), fascicolo.getDescrizioneFascicoloCustom());
+			else
+				formsAdapter.insTableDoc(Const.DOCWAY_TIPOLOGIA_FASCICOLO); 
+			XMLDocumento response = formsAdapter.getDefaultForm().executePOST(getUserBean());
+			if (handleErrorResponse(response)) {
+				getFormsAdapter().fillFormsFromResponse(getFormsAdapter().getLastResponse()); //restore delle form
+				return null;
+			}
+			return buildSpecificDocEditPageAndReturnNavigationRule(Const.DOCWAY_TIPOLOGIA_FASCICOLO, response, false);
+		}
+		catch (Throwable t) {
+			handleErrorResponse(ErrormsgFormsAdapter.buildErrorResponse(t));
+			getFormsAdapter().fillFormsFromResponse(getFormsAdapter().getLastResponse()); //restore delle form
+			return null;	
+		}
+	}
+	
+	/**
 	 * inserimento di un nuovo sottofascicolo
 	 * @return
 	 * @throws Exception
 	 */
 	public String insSottofascicolo() throws Exception{
 		try {
+			if (fascicolo.getCodiceFascicoloCustom() != null && !fascicolo.getCodiceFascicoloCustom().isEmpty())
+				this.formsAdapter.getDefaultForm().addParam("codice_fasc", fascicolo.getCodiceFascicoloCustom());
+			if (fascicolo.getDescrizioneFascicoloCustom() != null && !fascicolo.getDescrizioneFascicoloCustom().isEmpty())
+				this.formsAdapter.getDefaultForm().addParam("descrizione_fasc", fascicolo.getDescrizioneFascicoloCustom());
+			
 			this.formsAdapter.insertSottoFasc(fascicolo.getNumero(), this.getFormsAdapter().getDefaultForm().getParam("physDoc"), this.fascicolo.getAssegnazioneRPA().getNome_persona(), this.fascicolo.getAssegnazioneRPA().getNome_uff(), this.fascicolo.getAssegnazioneRPA().getCod_persona(), this.fascicolo.getAssegnazioneRPA().getCod_uff(), this.fascicolo.getClassif().getText(), this.fascicolo.getClassif().getCod(), this.fascicolo.getAssegnazioneRPA().getTipo_uff(), fascicolo.getCodiceFascicoloCustom(), fascicolo.getDescrizioneFascicoloCustom());
 			XMLDocumento response = this.formsAdapter.getDefaultForm().executePOST(getUserBean());
 			if (handleErrorResponse(response)) {
@@ -698,7 +769,12 @@ public class ShowdocFascicolo extends DocWayShowdoc {
 	 */
 	public String ripetiNuovo() throws Exception{
 		try {
-			this.formsAdapter.ripetiNuovoSottoFasc("fascicolo", fascicolo.getNumero(), -1, this.fascicolo.getAssegnazioneRPA().getNome_persona(), this.fascicolo.getAssegnazioneRPA().getNome_uff(), this.fascicolo.getAssegnazioneRPA().getCod_persona(), this.fascicolo.getAssegnazioneRPA().getCod_uff(), this.fascicolo.getClassif().getText(), this.fascicolo.getClassif().getCod(), this.fascicolo.getAssegnazioneRPA().getTipo_uff());
+			// mbernardini 20/12/2016 : corretta ridirezione della pagina di inserimento in caso di fascicoli personalizzati
+			if (fascicolo.getCodiceFascicoloCustom() != null && !fascicolo.getCodiceFascicoloCustom().isEmpty())
+				formsAdapter.ripetiNuovoSottoFasc("fascicolo", fascicolo.getNumero(), -1, this.fascicolo.getAssegnazioneRPA().getNome_persona(), this.fascicolo.getAssegnazioneRPA().getNome_uff(), this.fascicolo.getAssegnazioneRPA().getCod_persona(), this.fascicolo.getAssegnazioneRPA().getCod_uff(), this.fascicolo.getClassif().getText(), this.fascicolo.getClassif().getCod(), this.fascicolo.getAssegnazioneRPA().getTipo_uff(), fascicolo.getCodiceFascicoloCustom(), fascicolo.getDescrizioneFascicoloCustom());
+			else
+				formsAdapter.ripetiNuovoSottoFasc("fascicolo", fascicolo.getNumero(), -1, this.fascicolo.getAssegnazioneRPA().getNome_persona(), this.fascicolo.getAssegnazioneRPA().getNome_uff(), this.fascicolo.getAssegnazioneRPA().getCod_persona(), this.fascicolo.getAssegnazioneRPA().getCod_uff(), this.fascicolo.getClassif().getText(), this.fascicolo.getClassif().getCod(), this.fascicolo.getAssegnazioneRPA().getTipo_uff());
+			
 			XMLDocumento response = this.formsAdapter.getDefaultForm().executePOST(getUserBean());
 			if (handleErrorResponse(response)) {
 				formsAdapter.fillFormsFromResponse(formsAdapter.getLastResponse()); //restore delle form

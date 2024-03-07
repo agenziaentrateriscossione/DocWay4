@@ -11,11 +11,13 @@ import it.tredi.dw4.utils.XMLUtil;
 public class TitoloWorkflowOrgano extends XmlEntity {
 	private String name = "";
 	private String label = "";
+	private String bonitaVersion = "";
 
 	@Override
 	public XmlEntity init(Document dom) {
 		this.name = XMLUtil.parseAttribute(dom, "workflow/@id");
 		this.label = XMLUtil.parseElement(dom, "workflow");
+		this.bonitaVersion = XMLUtil.parseStrictAttribute(dom, "workflow/@bonitaVersion");
 		
 		return this;
 	}
@@ -27,6 +29,7 @@ public class TitoloWorkflowOrgano extends XmlEntity {
     	
      	params.put(prefix + ".@id", this.name);
     	params.put(prefix, this.label);
+    	params.put(prefix + ".@bonitaVersion", this.bonitaVersion);
     	
     	return params;
 	}
@@ -45,5 +48,13 @@ public class TitoloWorkflowOrgano extends XmlEntity {
 
 	public void setLabel(String label) {
 		this.label = label;
+	}
+
+	public String getBonitaVersion() {
+		return bonitaVersion;
+	}
+
+	public void setBonitaVersion(String bonitaVersion) {
+		this.bonitaVersion = bonitaVersion;
 	}
 }

@@ -22,7 +22,7 @@
 					<div class="showdoc-first-row-title">
 						<h:panelGroup rendered="#{fn:length(doc.rif_esterni) != 0 and doc.rif_esterni[0].nome ne ''}">
 							<span class="showdoc-title-soggetto">
-								<h:outputText value="#{doc.rif_esterni[0].nome}" escape="false" />
+								<h:outputText value="#{doc.rif_esterni[0].nome}" />
 								<h:panelGroup rendered="#{fn:length(doc.rif_esterni) > 1}">
 									<h:outputText value=", ..." />
 								</h:panelGroup>
@@ -57,7 +57,7 @@
 						<h:panelGroup rendered="#{!empty doc.repertorio.cod}">
 							<h:outputText value=" - " />
 							<span class="showdoc-title-repertorio">
-								#{i18n['dw4.rep']} <h:outputText value="#{doc.repertorio.text}" escape="false" />
+								#{i18n['dw4.rep']} <h:outputText value="#{doc.repertorio.text}" />
 								<h:panelGroup rendered="#{!empty doc.repertorio.numero and doc.repertorio.numero ne '.'}">
 									(n. <h:outputText value="#{doc.repertorio.numero}"><f:converter converterId="NumRepConverter"/></h:outputText>)
 								</h:panelGroup>
@@ -65,7 +65,7 @@
 						</h:panelGroup>
 					</div>
 					<div class="showdoc-second-row-title" title="#{doc.oggetto}">
-						<h:outputText value="#{doc.oggetto}" escape="false" />
+						<h:outputText value="#{doc.oggetto}" /> 
 					</div>
 				</h:panelGroup>
 				<h:panelGroup rendered="#{!empty doc.non_disponibile.estremi}">

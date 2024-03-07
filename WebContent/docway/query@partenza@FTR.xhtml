@@ -162,6 +162,14 @@
 									</div>
 								</div>
 							</div>
+							
+							<c:if test="#{!empty queryPartenzaFTR.currentCustomFieldSection and queryPartenzaFTR.currentCustomFieldSection.contains('_')}">
+								<hr/>
+								<ui:include src="../customfields/query@customfields.xhtml">
+									<ui:param name="key" value="#{queryPartenzaFTR.currentCustomFieldSection}" />
+									<ui:param name="bean" value="#{queryPartenzaFTR}"/>
+					        	</ui:include>
+							</c:if>
 						</h:panelGroup>
 					</div>
 				</h:panelGroup>
@@ -310,7 +318,7 @@
 		});
 		</script>
 
-		<h:inputTextarea value="#{queryPartenzaFTR.xml}" rendered="#{queryPartenzaFTR.debugMode}" styleClass="form-control" rows="10" />
+		<h:inputTextarea value="#{queryPartenzaFTR.xml}" rendered="#{queryPartenzaFTR.debugMode}" styleClass="form-control debug-textarea" rows="10" />
 	</div>
 	
 	<ui:include src="./showindex.xhtml"><ui:param name="pageBean" value="#{queryPartenzaFTR}"/></ui:include>

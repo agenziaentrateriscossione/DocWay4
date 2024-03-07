@@ -27,7 +27,7 @@
 		
 		<h5 class="sub-header">
 			<span class="doc-tipo-seduta glyphicons-pro"></span>&#160;
-			<h:outputText value="#{docEditModifySeduta.docEditTitle}" escape="false" />
+			<h:outputText value="#{docEditModifySeduta.docEditTitle}" />
 		</h5>
 	
 		<!-- messages: inizio -->
@@ -152,7 +152,7 @@
 		</div>
 		<!-- scheda edit: fine -->
 		
-		<h:inputTextarea value="#{docEditModifySeduta.xml}" rendered="#{docEditModifySeduta.debugMode}" styleClass="form-control" rows="10" />
+		<h:inputTextarea value="#{docEditModifySeduta.xml}" rendered="#{docEditModifySeduta.debugMode}" styleClass="form-control debug-textarea" rows="10" />
 	</div>
 </ui:define>
 

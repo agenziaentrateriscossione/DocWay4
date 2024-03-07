@@ -173,6 +173,31 @@
 						        </div>
 							</div>
 						</div>
+						<h:panelGroup rendered="#{queryPersonaInterna.formsAdapter.funzionalitaDisponibili['adminDelegheAcl']}" layout="block" styleClass="form-group">
+							<label for="templateForm:query_persint_deleganti" class="col-sm-2 control-label">#{i18n['dw4.delegante_di']}</label>
+							<div class="col-sm-5">
+								<div class="input-group">
+									<h:inputText id="query_persint_delegante_nome" value="#{queryPersonaInterna.persint_delegante}" styleClass="form-control" p:placeholder="#{i18n['acl.oper']}" title="#{i18n['acl.oper']}" />
+									<div class="input-group-btn">
+										<h:commandLink title="#{i18n['acl.vocabulary']}" action="#{queryPersonaInterna.openIndexDelegante}" styleClass="btn btn-default">
+											<f:ajax execute="@form" render="@form"/>
+											<span class="glyphicon glyphicon-search"></span>
+								        </h:commandLink>
+							        </div>
+						        </div>
+							</div>
+							<div class="col-sm-4">
+								<div class="input-group">
+									<h:inputText id="query_persint_delegante_ufficio" value="#{queryPersonaInterna.persint_uffdelegante}" styleClass="form-control" p:placeholder="#{i18n['acl.uff']}" title="#{i18n['acl.uff']}" />
+									<div class="input-group-btn">
+										<h:commandLink title="#{i18n['acl.vocabulary']}" action="#{queryPersonaInterna.openIndexUffDelegante}" styleClass="btn btn-default">
+											<f:ajax execute="@form" render="@form"/>
+											<span class="glyphicon glyphicon-search"></span>
+								        </h:commandLink>
+							        </div>
+						        </div>
+							</div>
+						</h:panelGroup>
 						<h:panelGroup rendered="#{queryPersonaInterna.formsAdapter.funzionalitaDisponibili['abilitaConfrontoDiritti']}" layout="block" styleClass="form-group">
 							<label for="templateForm:query_persint_dirittipersonalizzati" class="col-sm-2 control-label">
 								<span class="popoveritem" data-toggle="popover" data-placement="top" data-trigger="hover" data-content="#{i18n['acl.cerca_le_sole_persone_interne_con_diritti_personalizzati_rispetto_al_profilo_di_appartenenza']}">
@@ -201,7 +226,7 @@
 		<!-- scheda query: fine -->
 	</div>
 	
-	<h:inputTextarea value="#{queryPersonaInterna.xml}" rendered="#{queryPersonaInterna.debugMode}" styleClass="form-control" rows="10" />
+	<h:inputTextarea value="#{queryPersonaInterna.xml}" rendered="#{queryPersonaInterna.debugMode}" styleClass="form-control debug-textarea" rows="10" />
 
 	<ui:include src="./showindex.xhtml"> <ui:param name="pageBean" value="#{queryPersonaInterna}"/></ui:include>
 </ui:define>

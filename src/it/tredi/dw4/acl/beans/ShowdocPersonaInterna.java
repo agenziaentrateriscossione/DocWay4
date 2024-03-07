@@ -70,6 +70,9 @@ public class ShowdocPersonaInterna extends AclShowdoc {
     	
     	// mbernardini 09/07/2015 : verifico se e' stata selezionata una persona interna per il confronto dei diritti
     	matricolaPersonaSelezionata = getMatricolaFromPersIntPerConfronto();
+    	
+    	// inizializzazione di componenti common
+    	initCommons(domDocumento);
     }	
 	
 	public AclDocumentFormsAdapter getFormsAdapter() {

@@ -89,7 +89,7 @@
 	
 	<ui:include src="./loadingbar@trasferimento.xhtml"><ui:param name="pageBean" value="#{queryTrasferimento}"/></ui:include>
 	
-	<h:inputTextarea value="#{queryTrasferimento.xml}" rendered="#{queryTrasferimento.debugMode}" styleClass="form-control" rows="10" />
+	<h:inputTextarea value="#{queryTrasferimento.xml}" rendered="#{queryTrasferimento.debugMode}" styleClass="form-control debug-textarea" rows="10" />
 </ui:define>
     
 </ui:composition>    

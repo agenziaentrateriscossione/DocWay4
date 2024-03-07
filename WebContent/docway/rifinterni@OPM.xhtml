@@ -23,12 +23,14 @@
 						<div class="modal-body">
 							
 							<div id="opm_Fields">
-								<div class="form-group">
-									<label for="templateForm:opm_sendMailRifInterniCheck" class="col-sm-2 control-label">#{i18n['dw4.invia_email_di_notifica']}</label>
-									<div class="col-sm-1">
-										<h:selectBooleanCheckbox value="#{bean.doc.sendMailRifInterni}" id="opm_sendMailRifInterniCheck" styleClass="#{ component.valid ? '' : 'invalidinput' }" />
+								<h:panelGroup rendered="#{!bean.doc.sendMailSelectedRifInterni}">
+									<div class="form-group">
+										<label for="templateForm:opm_sendMailRifInterniCheck" class="col-sm-2 control-label">#{i18n['dw4.invia_email_di_notifica']}</label>
+										<div class="col-sm-1">
+											<h:selectBooleanCheckbox value="#{bean.doc.sendMailRifInterni}" id="opm_sendMailRifInterniCheck" styleClass="#{ component.valid ? '' : 'invalidinput' }" />
+										</div>
 									</div>
-								</div>
+								</h:panelGroup>
 								<ui:include src="./rifinterni.xhtml">
 									<ui:param name="rifintType" value="opm" />
 									<ui:param name="customLabel" value="#{customLabel}" />
@@ -36,6 +38,7 @@
 					        		<ui:param name="pageBean" value="#{bean}" />
 					        		<ui:param name="rifintBean" value="#{bean.doc.assegnazioneOPM}" />
 					        		<ui:param name="refresh" value="@form"/>
+					        		<ui:param name="sendMailSelectedRifInterni" value="#{bean.doc.sendMailSelectedRifInterni}"/>
 					        	</ui:include>
 							</div>
 							

@@ -13,9 +13,9 @@
 				<div class="modal-content jsf-modal">
 					<div class="modal-header">
 						<h:commandButton rendered="#{pageBean.loadingbar.completed and !pageBean.loadingbar.exportLoadingBar}"
-								class="close" action="#{pageBean.loadingbar.queryPage}" data-dismiss="modal" value="&#215;" />
+								styleClass="close" action="#{pageBean.loadingbar.queryPage}" data-dismiss="modal" value="&#215;" />
 						<h:commandButton rendered="#{pageBean.loadingbar.completed and pageBean.loadingbar.exportLoadingBar}"
-								class="close"
+								styleClass="close"
 								action="#{pageBean.loadingbar.close}" data-dismiss="modal" value="&#215;" />
 						
 						<h4 class="modal-title" id="loadingbarModalLabel">Loadingbar</h4>
@@ -23,7 +23,7 @@
 					<div class="modal-body">
 					
 						<div class="well">
-							<div class="loadingbar-message loadingbar-title"><h:outputText value="#{pageBean.loadingbar.title}" escape="false"/></div>
+							<div class="loadingbar-message loadingbar-title"><h:outputText value="#{pageBean.loadingbar.title}" /></div>
 				        	<div class="loadingbar-message loadingbar-startdate"><h:outputText rendered="#{pageBean.loadingbar.startDate ne ''}" value="job started at #{pageBean.loadingbar.startDate}"/></div>
 				        	<div class="loadingbar-message loadingbar-status"><h:outputText value="#{pageBean.loadingbar.status}"/></div>
 				        	<div class="loadingbar-message loadingbar-exceptions"><h:outputText value="#{pageBean.loadingbar.exceptions}"/></div>
@@ -65,9 +65,9 @@
 					</div>
 					<div class="modal-footer">
 						<h:commandButton rendered="#{pageBean.loadingbar.completed and !pageBean.loadingbar.exportLoadingBar}"
-								class="btn btn-default" action="#{pageBean.loadingbar.queryPage}" data-dismiss="modal" value="#{i18n['acl.close']}" />
+								styleClass="btn btn-default" action="#{pageBean.loadingbar.queryPage}" data-dismiss="modal" value="#{i18n['acl.close']}" />
 						<h:commandButton rendered="#{pageBean.loadingbar.completed and pageBean.loadingbar.exportLoadingBar}"
-								class="btn btn-default"
+								styleClass="btn btn-default"
 								action="#{pageBean.loadingbar.close}" data-dismiss="modal" value="#{i18n['acl.close']}" />
 					</div>
 				</div>

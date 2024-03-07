@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" 
+	  xmlns:h="http://java.sun.com/jsf/html" 
+	  xmlns:ui="http://java.sun.com/jsf/facelets" 
+	  xmlns:f="http://java.sun.com/jsf/core"
+	  xmlns:c="http://java.sun.com/jsp/jstl/core"
+	  xmlns:p="http://xmlns.jcp.org/jsf/passthrough">
+<ui:composition>
+
+	<h:panelGroup layout="block" id="printAttachmentsPopup">
+		<h:panelGroup rendered="#{pageBean.visible}">
+			<!-- Modal -->
+			<div id="printAttachmentsModal" class="modal fade in" aria-hidden="false" aria-labelledby="printAttachmentsModalLabel" role="dialog" tabindex="-1" style="display: block;">
+			<!--div class="modal fade" id="printAttachmentsModal" tabindex="-1" role="dialog" aria-labelledby="printAttachmentsModalLabel" aria-hidden="true"-->
+				<div class="modal-dialog modal-lg">
+					<div class="modal-content jsf-modal">
+						<div class="modal-header">
+							<h:commandLink styleClass="close" action="#{pageBean.close}" value="&#215;">
+		                    	<f:ajax render="printAttachmentsPopup"/>
+		                   	</h:commandLink>
+		                   	
+							<h4 class="modal-title" id="printAttachmentsModalLabel">#{i18n['dw4.stampa-allegati']}</h4>
+						</div>
+						<div class="modal-body" style="padding-bottom: 0px !important;">
+						
+							<h:panelGroup layout="block" rendered="#{pageBean.attachmentsToPrint.numDocs == 0}" class="alert alert-danger">
+								#{i18n['dw4.nessun-allegato-da-stampare-sui-documenti-selezionati']}
+							</h:panelGroup>
+						
+							<h:panelGroup rendered="#{pageBean.attachmentsToPrint.numDocs > 0}" >
+								<div class="alert alert-warning" style="margin-bottom:0px !important;">
+									<!-- 
+									<div class="alert alert-warning">
+										<strong>TODO INTEGRAZIONE IWX</strong><br/><br/>
+	
+										<c:forEach var="doc" items="#{pageBean.attachmentsToPrint.docs}">
+											<c:forEach var="attach" items="#{doc.attachments}">
+												<div><strong>#{attach.title}</strong> [#{attach.name}]</div>
+											</c:forEach>
+										</c:forEach>
+									</div>
+									-->
+								
+									<!-- IWX -->
+									<!--<p class="doc-selezionati">#{i18n['dw4.num-doc-selezionati']} = <strong>#{pageBean.attachmentsToPrint.numDocs}</strong></p>-->
+									
+									<p class="doc-selezionati">Avanzamento di stampa massiva:</p>
+									<div id="iwx_error_messages" class="iwx-error-logs"></div>
+									<div id="iwx_bulk_messages" class="iwx-bulk-logs"></div>
+									<div id="iwx_holder" style="display:none;"></div>
+									<script type="text/javascript">
+										window.filesForPrint = [
+											<c:forEach var="doc" items="#{pageBean.attachmentsToPrint.docs}">
+												<c:forEach var="attach" items="#{doc.attachments}">
+													{name:"#{attach.name}", title:"#{attach.title}", guid:''},
+												</c:forEach>
+											</c:forEach>
+										].filter(function(e){
+											return e.name.match(/([^\s]+(\.(jpg|png|gif|bmp|tif|tiff))$)/i);
+										});
+										
+										window.loadIWX = function() {
+											// inizializzazione di iwx con apertura in visualizzazione dell'immagine selezionata
+											initIwxForBulkAfterReload(
+													"#{facesContext.externalContext.requestContextPath}/fileupload", 
+													"#{cookie.JSESSIONID.value}", 
+													"#{userBean.login}", 
+													"#{userBean.matricola}", 
+													"#{pageBean.formsAdapter.customTupleName}", 
+													"#{pageBean.formsAdapter.db}", 
+													true, // reset job 
+													"doBulkPrint", // next action, nessuna 
+													0, // width
+													-1,
+													window.filesForPrint
+											);
+										}
+										
+										/*
+										$(window).load(function() {
+											jsf.ajax.addOnEvent(function(data) {
+												if (data.status == 'success' &amp;&amp; #{pageBean.visible}) {
+													window.console.log('init iwx after ajax!');
+													// inizializzazione di iwx con apertura in visualizzazione dell'immagine selezionata
+													initIwxAfterAjax(
+															"#{facesContext.externalContext.requestContextPath}/fileupload", 
+															"#{cookie.JSESSIONID.value}", 
+															"#{userBean.login}", 
+															"#{userBean.matricola}", 
+															"#{pageBean.formsAdapter.customTupleName}", 
+															"#{pageBean.formsAdapter.db}", 
+															"DoMassivePrint", // next action, nessuna 
+															0, // width
+															-1, // height
+															null, // iwxFileTypes 
+															null, // iwxImageTypes 
+															null, // sizeMaxFile 
+															null  // sizeMaxImg
+													);
+												}
+											});
+										});
+										*/
+									</script>
+									<!-- /IWX -->
+								
+								</div>
+								
+								<!-- IWX -->
+								<div class="iwx-button-bar iwx-button-bar-showdoc clearfix">
+									<div class="iwx-version pull-right">
+										<input type="hidden" id="iwx_required_version" value="#{pageBean.requiredVersionIWX}" />
+										<input type="hidden" id="iwx_current_version" value="#{pageBean.currentVersionIWX}" />
+										#{i18n['dw4.iwx_version']}: <span id="iwx_version" style="font-weight:bold;"></span>
+									</div>
+									<div style="clear:both; display:none; height:0px; width:0px;"></div>
+								</div>
+								<!-- /IWX -->
+							
+							</h:panelGroup>
+							
+							
+							
+						</div>
+						
+						<div class="modal-footer" style="margin-top:0px !important;">
+							<h:commandLink styleClass="btn btn-default" action="#{pageBean.close}"  value="#{i18n['acl.close']}">
+		                    	<f:ajax render="printAttachmentsPopup"/>
+		                   	</h:commandLink>
+						</div>
+						
+					</div>
+				</div>
+			</div>
+			<!--h:outputScript>
+				$('#printAttachmentsModal').modal('show');
+			</h:outputScript-->
+		</h:panelGroup>
+		
+		
+	</h:panelGroup>
+	
+</ui:composition>
+</html>

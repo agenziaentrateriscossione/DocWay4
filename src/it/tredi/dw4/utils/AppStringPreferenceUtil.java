@@ -98,6 +98,10 @@ public class AppStringPreferenceUtil {
 				//RW0052224 - fcossu - Numero ripetizione caratteri inusuali
 				posizione = 13;
 			}
+			else if (val.equals("CheckboxEmailNotificaCapillare")) {
+				//rtirabassi 11/09/2019 - ERM012596 - Notifica ad utenti selezionati.
+				posizione = 14;
+			}
 		}
 		
 		return posizione;

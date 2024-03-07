@@ -3,6 +3,8 @@ package it.tredi.dw4.utils;
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
+
+import it.tredi.dw4.beans.ClassifFormatManager;
  
 public class ClassifConverter implements Converter{
  
@@ -11,15 +13,20 @@ public class ClassifConverter implements Converter{
 		//Correzione bug eccezione in visualizzazione classificazione: "08/05 - Verifica veicoli commerciali circolanti nella comunita' (direttiva n 2000/3/CEE)"
 		String result = "";
 		try {
+			Logger.debug("ClassifConverter.getAsObject(): input value = " + value);
+			
 			String classifFormat = (String) component.getAttributes().get("classifFormat");
-			if (classifFormat == null || classifFormat.equals(""))
-				classifFormat = ""; // TODO valore di default (R/D?)
+			Logger.debug("ClassifConverter.getAsObject(): classifFormat by attribute = " + classifFormat);
 			
-			// TODO da completare la gestione del formato della classificazione
+			// in caso di classificazione non specificata da attributo viene caricata quella globale definita a livello di applicazione
+			if (classifFormat == null || classifFormat.isEmpty()) 
+				classifFormat = ClassifFormatManager.getInstance().getClassifFormat();
 			
-			result = ClassifUtil.formatClassif(value);
+			result = ClassifUtil.formatClassif(value, classifFormat);
 		}
-		catch(Exception ex){
+		catch (Exception e) {
+			Logger.warn("ClassifConverter.getAsObject(): conversion failed (" + e.getMessage() + ")... use " + value);
+			
 			//lo mostro com'e'
 			result = value;
 		}

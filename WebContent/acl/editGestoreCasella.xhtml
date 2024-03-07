@@ -5,9 +5,9 @@
 	  xmlns:f="http://java.sun.com/jsf/core">
 <ui:composition>
 	
-	<ui:repeat id="gestore" var="gestore" value="#{mailbox.gestoriMailbox}" varStatus="indiceGestori">
+	<ui:repeat id="gestore" var="gestore" value="#{casellaPostaElettronica.gestoriMailbox}" varStatus="indiceGestori">
 		<div class="form-group">
-			<label class="col-sm-2 control-label">#{indice.index == 0 ? i18n['acl.gestore'] : '&#160;'}</label>
+			<label class="col-sm-2 control-label">#{i18n['acl.gestore']}</label>
 
 			<div class="col-sm-2">
 				<h:selectOneMenu value="#{gestore.livello}" styleClass="form-control">
@@ -21,21 +21,21 @@
         			<ui:param name="field" value="#{gestore.nome_pers}" />
 	        		<ui:param name="element" value="#{gestore}" />
 	        		<ui:param name="bean" value="#{page}" />
-	        		<ui:param name="action" value="lookupGestore#{(holderName eq 'interop') ? 'Interoperabilita' : 'Archiviazione'}"/>
-	        		<ui:param name="clearaction" value="clearLookupGestore#{(holderName eq 'interop') ? 'Interoperabilita' : 'Archiviazione'}"/>
-	        		<ui:param name="title" value="#{i18n['acl.lookup_gestore']}"/>
-	        		<ui:param name="styleclass" value="#{ component.valid ? '' : 'invalidinput' } form-control"/>
-	        		<ui:param name="refresh" value="@form"/>
+	        		<ui:param name="action" value="lookupGestore" />
+	        		<ui:param name="clearaction" value="clearLookupGestore" />
+	        		<ui:param name="title" value="#{i18n['acl.lookup_gestore']}" />
+	        		<ui:param name="styleclass" value="#{ component.valid ? '' : 'invalidinput' } form-control" />
+	        		<ui:param name="refresh" value="@form" />
 	        	</ui:include>
 	        </div>
 	        <div class="col-sm-1 input-group">
 				<div class="btn-group">
-					<h:commandLink action="#{mailbox.removeGestore}" styleClass="btn btn-default" title="#{i18n['acl.rimuovi_gestore']}" onclick="setGlobalFocusFieldId('templateForm:#{holderName}:#{holderIndex}:gestore:#{(indiceGestori.index > 0) ? indiceGestori.index-1 : '0' }:nomeGestore_input');" onkeypress="setGlobalFocusFieldId('templateForm:#{holderName}:#{holderIndex}:gestore:#{(indiceGestori.index > 0) ? indiceGestori.index-1 : '0' }:nomeGestore_input');" >
-		 				<f:ajax execute="@form" render="@form" /> 
+					<h:commandLink action="#{casellaPostaElettronica.removeGestore}" styleClass="btn btn-default" title="#{i18n['acl.rimuovi_gestore']}">
+		 				<f:ajax execute="@form" render="templateForm:gestori" /> 
 		 				<span class="glyphicon glyphicon-minus"></span>
 					</h:commandLink>
-					<h:commandLink action="#{mailbox.addGestore}" styleClass="btn btn-default" title="#{i18n['acl.aggiungi_gestore']}" onclick="setGlobalFocusFieldId('templateForm:#{holderName}:#{holderIndex}:gestore:#{indiceGestori.index}:nomeGestore_input');" onkeypress="setGlobalFocusFieldId('templateForm:#{holderName}:#{holderIndex}:gestore:#{indiceGestori.index}:nomeGestore_input');" >
-		 				<f:ajax execute="@form" render="@form" />
+					<h:commandLink action="#{casellaPostaElettronica.addGestore}" styleClass="btn btn-default" title="#{i18n['acl.aggiungi_gestore']}">
+		 				<f:ajax execute="@form" render="templateForm:gestori" />
 			 			<span class="glyphicon glyphicon-plus"></span>
 					</h:commandLink>
   				</div>

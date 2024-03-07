@@ -12,7 +12,7 @@
 	<!-- toolbar: inizio -->
 	<div class="btn-toolbar margin-bottom" role="toolbar">
 		<div class="btn-group">
-			<h:link outcome="firmadigitale@3di@applet" styleClass="btn btn-default">#{i18n['torna']}</h:link>
+			<h:link outcome="firmadigitale@3di" styleClass="btn btn-default">#{i18n['torna']}</h:link>
 		</div>
 	</div>
 	<!-- toolbar: fine -->
@@ -23,7 +23,7 @@
 		<a href="http://www.java.com/it/download/">JAVA JRE DOWNLOAD</a>
 	</div>
 	
-	<h:inputTextarea value="#{docwayFirmaDigitale.xml}" rendered="#{docwayFirmaDigitale.debugMode}" styleClass="form-control" rows="10" />
+	<h:inputTextarea value="#{docwayFirmaDigitale.xml}" rendered="#{docwayFirmaDigitale.debugMode}" styleClass="form-control debug-textarea" rows="10" />
 </ui:define>
 	
 </ui:composition>

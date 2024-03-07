@@ -21,13 +21,13 @@
 	</div>	
 	<script type="text/javascript">
 	window.loadIWX = function() {
-		initIwxAfterReload('#{facesContext.externalContext.requestContextPath}/fileupload', '#{cookie.JSESSIONID.value}', '#{userBean.login}', '#{userBean.matricola}', '#{bean.formsAdapter.customTupleName}', '#{bean.formsAdapter.db}', resetJobsIwx, '', '0px', '0px', '#{bean.iwxFileTypes}', '#{bean.iwxImageTypes}');
+		initIwxAfterReload("#{facesContext.externalContext.requestContextPath}/fileupload", "#{cookie.JSESSIONID.value}", "#{userBean.login}", "#{userBean.matricola}", "#{bean.formsAdapter.customTupleName}", "#{bean.formsAdapter.db}", resetJobsIwx, "", "0px", "0px", "#{bean.iwxFileTypes}", "#{bean.iwxImageTypes}", #{bean.formsAdapter.sizeMaxFile}, #{bean.formsAdapter.sizeMaxImg});
 	}
 	
 	$(window).load(function() {
 		jsf.ajax.addOnEvent(function(data) {
 			if (data.status == 'success') {
-				initIwxAfterReload('#{facesContext.externalContext.requestContextPath}/fileupload', '#{cookie.JSESSIONID.value}', '#{userBean.login}', '#{userBean.matricola}', '#{bean.formsAdapter.customTupleName}', '#{bean.formsAdapter.db}', '', '0px', '0px', '#{bean.iwxFileTypes}', '#{bean.iwxImageTypes}');
+				initIwxAfterReload("#{facesContext.externalContext.requestContextPath}/fileupload", "#{cookie.JSESSIONID.value}", "#{userBean.login}", "#{userBean.matricola}", "#{bean.formsAdapter.customTupleName}", "#{bean.formsAdapter.db}", "", "0px", "0px", "#{bean.iwxFileTypes}", "#{bean.iwxImageTypes}", #{bean.formsAdapter.sizeMaxFile}, #{bean.formsAdapter.sizeMaxImg});
 			}
 		});
 	});

@@ -7,27 +7,75 @@
 	xmlns:f="http://java.sun.com/jsf/core">
 
 <ui:define name="content">
-
-	<ui:remove>
-		<h5 class="sub-header">#{i18n['dw4.documenti_recenti']}</h5>
-	</ui:remove>
 	
-	<h:panelGroup rendered="#{fn:length(docwayHome.docRecenti.titoli) == 0}">
-		<div class="alert alert-info">#{i18n['dw4.nessun_documento_assegnato_negli_ultimi']} <strong>#{docwayHome.docRecenti.numGiorniDocRecenti}</strong> #{i18n['dw4.giorni']}</div>
+	<h:panelGroup rendered="#{docwayHome.formsAdapter.funzionalitaDisponibili['insVarie'] and docwayHome.formsAdapter.funzionalitaDisponibili['enableDragAndDropUploadFiles'] and docwayHome.formsAdapter.funzionalitaDisponibili['enableDragAndDropCreateDocVarie']}">
+		<div class="sub-header">
+			<span class="glyphicons-pro magic"></span>&#160;
+			#{i18n['dw4.nuovo_documento_non_protocollato_da_drag_and_drop_di_files']}
+		</div>
+		
+		<h:inputHidden id="dadDocNewFileId" value="#{docwayHome.dadxwFileIdsAttached}" />
+		<h:inputHidden id="dadDocNewFileTitle" value="#{docwayHome.dadxwFileTitlesAttached}" />
+		<h:commandLink id="dadDocAddFilesButton" action="#{docwayHome.creaDocByDragAndDrop}" style="display:none;" />
+		<h:commandLink id="dadDocResetButton" action="#{docwaymenu.loadDocWayMainPage}" style="display:none;" />
+		
+		<div class="form-group" style="margin-bottom:40px;">
+			<div class="col-sm-12">
+				<iframe class="dropzone-iframe draganddrop-createdoc form-control" src="#{facesContext.externalContext.requestContextPath}/docway/dropzoneFileUpload.jsf"></iframe>
+				<script type="text/javascript">
+				var dadFilesTypes = "#{bean.docInformaticiFileTypes}";
+				
+				function updateFilesFromDragAndDrop(dadFilesIds, dadFilesNames) {
+					if (dadFilesIds &amp;&amp; dadFilesNames) {
+						$('#templateForm\\:dadDocNewFileId').val(dadFilesIds);
+						$('#templateForm\\:dadDocNewFileTitle').val(dadFilesNames);
+						
+						if (confirm("#{i18n['dw4.procedere_con_la_creazione_di_un_doc_non_protocollato_contenente_i_file_caricati']}"))
+							$('#templateForm\\:dadDocAddFilesButton').trigger('click');
+						else 
+							$('#templateForm\\:dadDocResetButton').trigger('click');
+					}
+					else {
+						hideOpenwaitmsg();
+					}
+				}
+				</script>
+			</div>
+		</div>
 	</h:panelGroup>
-	<h:panelGroup rendered="#{fn:length(docwayHome.docRecenti.titoli) > 0}">
-		<ui:include src="./home@showtitles.xhtml">
-			<ui:param name="bean" value="#{docwayHome}"/>
-			<ui:param name="action" value="caricaDocRecente"/>
-			<ui:param name="titles" value="#{docwayHome.docRecenti.titoli}"/>
-		</ui:include>
+	
+	<h:panelGroup rendered="#{docwayHome.homeContent.type ne 'vuota'}">
+	
+		<h:panelGroup rendered="#{fn:length(docwayHome.homeContent.titoli) == 0}">
+			<div class="alert alert-info">
+				<h:panelGroup rendered="#{docwayHome.homeContent.type eq 'recenti'}"> 
+					#{i18n['dw4.nessun_documento_assegnato_negli_ultimi']} <strong>#{docwayHome.homeContent.numGiorniDocRecenti}</strong> #{i18n['dw4.giorni']}
+				</h:panelGroup>
+				<h:panelGroup rendered="#{docwayHome.homeContent.type ne 'recenti'}">
+					#{i18n['dw4.nessun_documento_trovato_per_la_sezione']} <strong>#{docwayHome.homeContent.title}</strong>
+				</h:panelGroup>
+			</div>
+		</h:panelGroup>
+		<h:panelGroup rendered="#{fn:length(docwayHome.homeContent.titoli) > 0}">
+			<h:panelGroup rendered="#{!empty docwayHome.homeContent.title}" layout="block" styleClass="sub-header">
+				<span class="glyphicons-pro sort"></span>&#160;
+				#{docwayHome.homeContent.title}
+			</h:panelGroup>
+		
+			<ui:include src="./home@showtitles@#{docwayHome.titlesMode}.xhtml">
+				<ui:param name="bean" value="#{docwayHome}"/>
+				<ui:param name="action" value="caricaDocHomeContent"/>
+				<ui:param name="titles" value="#{docwayHome.homeContent.titoli}"/>
+			</ui:include>
+		</h:panelGroup>
+		
 	</h:panelGroup>
 	
 	<script type="text/javascript">
 	$('#menuForm\\:globalSearchInput').focus();
 	</script>
 
-	<h:inputTextarea value="#{docwayHome.xml}" rendered="#{docwayHome.debugMode}" styleClass="form-control" rows="10" />
+	<h:inputTextarea value="#{docwayHome.xml}" rendered="#{docwayHome.debugMode}" styleClass="form-control debug-textarea" rows="10" />
 </ui:define>
 
 </ui:composition>

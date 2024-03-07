@@ -87,11 +87,11 @@ public class PersonaEsterna extends XmlEntity {
     	params.put(prefix + ".@cognome", this.cognome);
     	params.put(prefix + ".@data_nascita", this.data_nascita);
     	params.put(prefix + ".@luogo_nascita", this.luogo_nascita);
-    	params.put(prefix + ".@cod_amm", this.cod_amm);
-    	params.put(prefix + ".@cod_aoo", this.cod_aoo);
+    	params.put(prefix + ".@cod_amm", (this.cod_amm != null) ? this.cod_amm.trim() : null);
+    	params.put(prefix + ".@cod_aoo", (this.cod_aoo != null) ? this.cod_aoo.trim() : null);
     	params.put(prefix + ".@codice_fiscale", this.codice_fiscale);
     	params.put(prefix + ".@partita_iva", this.partita_iva);
-    	params.put(prefix + ".@matricola", this.matricola);
+    	params.put(prefix + ".@matricola", (this.matricola != null) ? this.matricola.trim() : null);
     	params.put(prefix + ".@sesso", this.sesso);
     	params.put(prefix + ".@titolo", this.titolo);
     	params.put(prefix + ".@titolo_deferenza", this.titolo_deferenza);

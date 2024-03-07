@@ -1,11 +1,5 @@
 package it.tredi.dw4.adapters;
 
-import it.tredi.dw4.utils.XMLDocumento;
-import it.tredi.utils.string.Text;
-import it.tredi.dw4.utils.Const;
-import it.tredi.dw4.utils.Logger;
-import it.tredi.dw4.utils.StringUtil;
-
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -18,6 +12,12 @@ import javax.servlet.http.HttpSession;
 import org.dom4j.Attribute;
 import org.dom4j.DocumentException;
 import org.dom4j.Element;
+
+import it.tredi.dw4.utils.Const;
+import it.tredi.dw4.utils.Logger;
+import it.tredi.dw4.utils.StringUtil;
+import it.tredi.dw4.utils.XMLDocumento;
+import it.tredi.utils.string.Text;
 
 public class FormsAdapter {
 	protected XMLDocumento lastResponse;
@@ -184,6 +184,14 @@ public class FormsAdapter {
 		
 		//dpranteda 10/12/2014 : parametro per settare template personalizzati per applicazioni incluse (es. Docway Delibere)
 		form.addParam("dw4customTemplate", this.customTemplate);
+		
+		// mbernardini 20/04/2017 : identifica se gli indici sono gestiti tramite elasticsearch (true) o extraway (false)
+		form.addParam("elasticsearch", root.attributeValue("elasticsearch", ""));
+
+		//tiommi gestione deleghe
+		form.addParam("delegato", root.attributeValue("delegato", ""));
+		form.addParam("delegatoLogin", root.attributeValue("delegatoLogin", ""));
+		form.addParam("delegatoMatricola", root.attributeValue("delegatoMatricola", ""));
 	}
 	
 	public void addBeforeEndEmbedded(FormAdapter form, XMLDocumento response) throws DocumentException {

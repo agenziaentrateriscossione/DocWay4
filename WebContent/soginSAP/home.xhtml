@@ -409,14 +409,15 @@
 									<div class="form-group">
 										<label for="templateForm:doc_oggetto" class="col-sm-2 control-label">#{i18n['dw4.object']}</label>
 										<div class="col-sm-9">
-											<div class="input-group">
+											<div class="#{!soginSAPQuery.formsAdapter.elasticsearchEnabled ? 'input-group' : ''}">
 												<h:inputText styleClass="form-control" value="#{soginSAPQuery.doc_oggetto}" id="doc_oggetto" />
-												<div class="input-group-btn">
+												
+												<h:panelGroup rendered="#{!soginSAPQuery.formsAdapter.elasticsearchEnabled}" layout="block" styleClass="input-group-btn">
 													<h:commandLink title="#{i18n['acl.vocabulary']}" action="#{soginSAPQuery.openIndexOggettoDoc}" onclick="return soginSAPJS.checkRepertoriBeforeSearching();" styleClass="btn btn-default">
 														<f:ajax execute="@form" render="@form"/>
 														<span class="glyphicon glyphicon-search"></span>
 													</h:commandLink>
-												</div>
+												</h:panelGroup>
 											</div>
 										</div>
 									</div>
@@ -457,26 +458,28 @@
 									<div class="form-group">
 										<label for="templateForm:doc_allegato" class="col-sm-2 control-label">#{i18n['dw4.attachments']}</label>
 										<div class="col-sm-3">
-											<div class="input-group">
+											<div class="#{!soginSAPQuery.formsAdapter.elasticsearchEnabled ? 'input-group' : ''}">
 												<h:inputText styleClass="form-control" value="#{soginSAPQuery.doc_allegato}" id="doc_allegato"/>
-												<div class="input-group-btn">
+												
+												<h:panelGroup rendered="#{!soginSAPQuery.formsAdapter.elasticsearchEnabled}" layout="block" styleClass="input-group-btn">
 													<h:commandLink title="#{i18n['acl.vocabulary']}" action="#{soginSAPQuery.openIndexAllegatoDoc}" onclick="return soginSAPJS.checkRepertoriBeforeSearching();" styleClass="btn btn-default">
 														<f:ajax execute="@form" render="@form"/>
 														<span class="glyphicon glyphicon-search"></span>
 													</h:commandLink>
-												</div>
+												</h:panelGroup>
 											</div>
 										</div>
 										<label for="templateForm:doc_postit" class="col-sm-offset-1 col-sm-2 control-label">#{i18n['dw4.annotazioni']}</label>
 										<div class="col-sm-3">
-											<div class="input-group">
+											<div class="#{!soginSAPQuery.formsAdapter.elasticsearchEnabled ? 'input-group' : ''}">
 												<h:inputText styleClass="form-control" value="#{soginSAPQuery.doc_postit}" id="doc_postit"/>
-												<div class="input-group-btn">
+												
+												<h:panelGroup rendered="#{!soginSAPQuery.formsAdapter.elasticsearchEnabled}" layout="block" styleClass="input-group-btn">
 													<h:commandLink title="#{i18n['acl.vocabulary']}" action="#{soginSAPQuery.openIndexPostitDoc}" onclick="return soginSAPJS.checkRepertoriBeforeSearching();" styleClass="btn btn-default">
 														<f:ajax execute="@form" render="@form"/>
 														<span class="glyphicon glyphicon-search"></span>
 													</h:commandLink>
-												</div>
+												</h:panelGroup>
 											</div>
 										</div>
 									</div>
@@ -484,26 +487,28 @@
 									<div class="form-group">
 										<label for="templateForm:doc_note" class="col-sm-2 control-label">#{i18n['dw4.notes']}</label>
 										<div class="col-sm-3">
-											<div class="input-group">
+											<div class="#{!soginSAPQuery.formsAdapter.elasticsearchEnabled ? 'input-group' : ''}">
 												<h:inputText styleClass="form-control" value="#{soginSAPQuery.doc_note}" id="doc_note"/>
-												<div class="input-group-btn">
+												
+												<h:panelGroup rendered="#{!soginSAPQuery.formsAdapter.elasticsearchEnabled}" layout="block" styleClass="input-group-btn">
 													<h:commandLink title="#{i18n['acl.vocabulary']}" action="#{soginSAPQuery.openIndexNoteDoc}" onclick="return soginSAPJS.checkRepertoriBeforeSearching();" styleClass="btn btn-default">
 														<f:ajax execute="@form" render="@form"/>
 														<span class="glyphicon glyphicon-search"></span>
 													</h:commandLink>
-												</div>
+												</h:panelGroup>
 											</div>
 										</div>
 										<label for="templateForm:doc_keywords" class="col-sm-offset-1 col-sm-2 control-label">#{i18n['dw4.keywords']}</label>
 										<div class="col-sm-3">
-											<div class="input-group">
+											<div class="#{!soginSAPQuery.formsAdapter.elasticsearchEnabled ? 'input-group' : ''}">
 												<h:inputText styleClass="form-control" value="#{soginSAPQuery.doc_keywords}" id="doc_keywords"/>
-												<div class="input-group-btn">
+												
+												<h:panelGroup rendered="#{!soginSAPQuery.formsAdapter.elasticsearchEnabled}" layout="block" styleClass="input-group-btn">
 													<h:commandLink title="#{i18n['acl.vocabulary']}" action="#{soginSAPQuery.openIndexKeywordsDoc}" onclick="return soginSAPJS.checkRepertoriBeforeSearching();" styleClass="btn btn-default">
 														<f:ajax execute="@form" render="@form"/>
 														<span class="glyphicon glyphicon-search"></span>
 													</h:commandLink>
-												</div>
+												</h:panelGroup>
 											</div>
 										</div>
 									</div>
@@ -771,7 +776,7 @@
 		
 	</h:panelGroup>
 	
-	<h:inputTextarea value="#{soginSAPQuery.xml}" rendered="#{soginSAPQuery.debugMode}" styleClass="form-control" rows="10" />
+	<h:inputTextarea value="#{soginSAPQuery.xml}" rendered="#{soginSAPQuery.debugMode}" styleClass="form-control debug-textarea" rows="10" />
 </ui:define>
 
 </ui:composition>

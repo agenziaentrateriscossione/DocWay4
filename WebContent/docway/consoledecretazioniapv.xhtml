@@ -31,7 +31,7 @@
 		<ui:include src="./consoledecretazioniapv@showatto.xhtml"><ui:param name="pageBean" value="#{docwayConsoleDecretazioniApv}"/></ui:include>
 		<ui:include src="./consoleapvinviosollecitomsg.xhtml"><ui:param name="pageBean" value="#{docwayConsoleDecretazioniApv}"/></ui:include>
 
-		<h:inputTextarea value="#{docwayConsoleDecretazioniApv.xml}" rendered="#{docwayConsoleDecretazioniApv.debugMode}" styleClass="form-control" rows="10" />
+		<h:inputTextarea value="#{docwayConsoleDecretazioniApv.xml}" rendered="#{docwayConsoleDecretazioniApv.debugMode}" styleClass="form-control debug-textarea" rows="10" />
 	</div>
 </ui:define>
 

@@ -1,21 +1,22 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml"
-	xmlns:ui="http://java.sun.com/jsf/facelets"
-	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
-	xmlns:h="http://java.sun.com/jsf/html"
-	xmlns:f="http://java.sun.com/jsf/core"
-	xmlns:c="http://java.sun.com/jsp/jstl/core">
+	  xmlns:ui="http://java.sun.com/jsf/facelets"
+	  xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	  xmlns:h="http://java.sun.com/jsf/html"
+	  xmlns:f="http://java.sun.com/jsf/core"
+	  xmlns:c="http://java.sun.com/jsp/jstl/core"
+	  xmlns:p="http://xmlns.jcp.org/jsf/passthrough">
 <ui:composition>
-	
+
 	<h:panelGroup rendered="#{field.type eq 'calendar'}">
-		<div class="input-group date" data-date-format="dd/mm/yyyy">
+		<div class="input-group date custom" data-date-format="dd/mm/yyyy" data-min-value="#{field.validator.minValue}" data-max-value="#{field.validator.maxValue}">
 			<h:inputText id="calendarfield" value="#{fieldInstance.value}" readonly="#{(field.readonly) ? true : false}" styleClass="#{ component.valid ? '' : 'invalidinput' } form-control datepicker #{(field.readonly) ? 'readonly' : ''}" onblur="#{ (!empty onblur) ? onblur : ''}">
 				<f:converter converterId="DateConverter"/>
 			</h:inputText>
 			<span class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></span>
 		</div>
 	</h:panelGroup>
-	
+
 	<h:panelGroup rendered="#{field.type eq 'checkbox'}">
 		<ui:repeat id="itemInstance" var="item" value="#{fieldInstance.items}" varStatus="itemStatus">
 			<span class="margin-right-20" style="white-space:nowrap;">
@@ -25,43 +26,90 @@
 			</span>
 		</ui:repeat>
 	</h:panelGroup>
-	
+
 	<h:panelGroup rendered="#{field.type eq 'radio'}">
-		<h:selectOneRadio id="radiofield" value="#{fieldInstance.value}" readonly="#{(field.readonly) ? true : false}" styleClass="#{ component.valid ? '' : 'invalidinput' } radio-selection #{(field.readonly) ? 'readonly' : ''}">
+		<h:selectOneRadio id="radiofield" value="#{fieldInstance.value}" readonly="#{(field.readonly) ? true : false}" styleClass="#{ component.valid ? '' : 'invalidinput' } radio-selection #{(field.readonly) ? 'readonly' : ''}" onchange="evaluateCustomFieldsRelationships()">
 			<f:selectItems value="#{fieldInstance.items}" var="item" itemValue="#{item.value}" itemLabel="#{item.label}"></f:selectItems>
 		</h:selectOneRadio>
 	</h:panelGroup>
-	
+
 	<h:panelGroup rendered="#{field.type eq 'select'}">
-		<h:selectOneMenu id="selectfield" value="#{fieldInstance.value}" readonly="#{(field.readonly) ? true : false}" styleClass="#{ component.valid ? '' : 'invalidinput' } form-control #{(field.readonly) ? 'readonly' : ''}">
+		<h:panelGroup rendered="#{fieldInstance.actionOnItems}">
+			<script type="text/javascript">
+			function #{fn:replace(groupfieldId, ':', '_')}_actions(element) {
+				evaluateCustomFieldsRelationships();
+				
+				if (element) {
+					var selectedValue = element.options[element.selectedIndex].value; 
+					
+					// ricerca di tutte le azioni di aggiornamento classificazione
+					var classif = '';
+					var itemActions = #{fieldInstance.itemsActionsAsJson};
+					for (var i in itemActions) {
+						if (itemActions[i] &amp;&amp; itemActions[i].type == 'change-classif') {
+							if (itemActions[i].item == selectedValue) {
+								classif = itemActions[i].value;
+							}
+						}
+					}
+					if (classif != '') {
+						$('#templateForm\\:classif_input').val(classif);
+						$('#templateForm\\:classif_button').trigger('click');
+					}
+				}
+			}
+			</script>
+		</h:panelGroup>
+		<h:selectOneMenu id="selectfield" value="#{fieldInstance.value}" readonly="#{(field.readonly) ? true : false}" styleClass="#{ component.valid ? '' : 'invalidinput' } form-control #{(field.readonly) ? 'readonly' : ''}" onchange="#{ (fieldInstance.actionOnItems) ? fn:replace(groupfieldId, ':', '_').concat('_actions(this)') : 'evaluateCustomFieldsRelationships()' }">
 			<f:selectItems value="#{fieldInstance.items}" var="item" itemValue="#{item.value}" itemLabel="#{item.label}"></f:selectItems>
 		</h:selectOneMenu>
 	</h:panelGroup>
-	
+
 	<h:panelGroup rendered="#{field.type eq 'textarea'}">
 		<h:inputTextarea id="textareafield" value="#{fieldInstance.value}" rows="4" cols="120" readonly="#{(field.readonly) ? true : false}" styleClass="#{ component.valid ? '' : 'invalidinput' } form-control #{(field.readonly) ? 'readonly' : ''}" />
 	</h:panelGroup>
-	
+
 	<h:panelGroup rendered="#{field.type eq 'text'}">
-		<h:inputText id="textfield" value="#{fieldInstance.value}" readonly="#{(field.readonly) ? true : false}" styleClass="#{ component.valid ? '' : 'invalidinput' } form-control #{(field.readonly) ? 'readonly' : ''}" />
-	</h:panelGroup>	
-	
+		<div class="#{(!empty field.prepend.value) ? 'prepend-field' : ''}" data-prepend-value="#{field.prepend.value}" data-prepend-fill="#{field.prepend.fill}">
+			<h:panelGroup rendered="#{empty field.validator.maxLength or field.validator.maxLength == 0}">
+				<h:inputText id="textfield" value="#{fieldInstance.value}" readonly="#{(field.readonly) ? true : false}" styleClass="#{ component.valid ? '' : 'invalidinput' } form-control #{(field.readonly) ? 'readonly' : ''}" />
+			</h:panelGroup>
+			<h:panelGroup rendered="#{!empty field.validator.maxLength and field.validator.maxLength > 0}">
+				<h:inputText id="textfield_maxLength" value="#{fieldInstance.value}" readonly="#{(field.readonly) ? true : false}" styleClass="#{ component.valid ? '' : 'invalidinput' } form-control #{(field.readonly) ? 'readonly' : ''}" maxlength="#{field.validator.maxLength}" />
+			</h:panelGroup>
+		</div>
+	</h:panelGroup>
+
+	<h:panelGroup rendered="#{field.type eq 'html'}">
+		<h:inputTextarea id="htmlfield" value="#{fieldInstance.value}" rows="20" cols="120" readonly="#{(field.readonly) ? true : false}" styleClass="#{ component.valid ? '' : 'invalidinput' } form-control #{(field.readonly) ? 'readonly' : ''} html-field" />
+	</h:panelGroup>
+
 	<h:panelGroup rendered="#{field.type eq 'lookup'}">
 		<div class="input-group">
 			<h:inputText id="lookup_input" value="#{fieldInstance.value}" onblur="executeAction(this);" onfocus="setDefaultValue(this);" styleClass="#{ component.valid ? '' : 'invalidinput' } lookup-field form-control">
-				<f:ajax execute="@form" render="templateForm:customFieldsHolder templateForm:lookup templateForm:errormsg" />
+				<f:ajax execute="@form" render="templateForm:customFieldsHolder templateForm:lookup templateForm:errormsg templateForm:rpa_Fields" />
 			</h:inputText>
-			
+
 			<div class="input-group-btn">
 				<h:commandLink style="display:none;" action="#{bean.clearLookupCustomField(instancesId)}" id="lookup_clear">
-		  			<f:ajax execute="@form" render="templateForm:customFieldsHolder templateForm:lookup templateForm:errormsg"/>
+					<f:ajax execute="@form" render="templateForm:customFieldsHolder templateForm:lookup templateForm:errormsg"/>
 				</h:commandLink>
 				<h:commandLink title="Lookup" id="lookup_button" action="#{bean.lookupCustomField(instancesId)}" onclick="setFocusLookup(this);" styleClass="btn btn-default">
-		   			<f:ajax execute="@form" render="templateForm:customFieldsHolder templateForm:lookup templateForm:errormsg"/>
-		   			<span class="glyphicon glyphicon-search"></span>
-		   		</h:commandLink>
-	  		</div>
+					<f:ajax execute="@form" render="templateForm:customFieldsHolder templateForm:lookup templateForm:errormsg templateForm:rpa_Fields"/>
+					<span class="glyphicon glyphicon-search"></span>
+				</h:commandLink>
+			</div>
 		</div>
+	</h:panelGroup>
+
+	<h:panelGroup rendered="#{field.type eq 'numero_anno'}">
+		<h:panelGroup>
+			<div class="input-group">
+				<h:inputText id="numero_annofield_numero" value="#{fieldInstance.numero}" readonly="#{(field.readonly) ? true : false}" styleClass="#{ component.valid ? '' : 'invalidinput' } form-control #{(field.readonly) ? 'readonly' : ''}" p:title="#{i18n['dw4.numero']}" p:placeholder="#{i18n['dw4.numero']}" />
+				<span class="input-group-addon">/</span>
+				<h:inputText id="numero_annofield_anno" value="#{fieldInstance.anno}" readonly="#{(field.readonly) ? true : false}" styleClass="#{ component.valid ? '' : 'invalidinput' } form-control #{(field.readonly) ? 'readonly' : ''}" maxlength="4" p:title="#{i18n['dw4.anno']}" p:placeholder="#{i18n['dw4.anno']}" />
+			</div>
+		</h:panelGroup>
 	</h:panelGroup>
 
 </ui:composition>

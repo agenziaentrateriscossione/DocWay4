@@ -64,7 +64,7 @@ public class AppUtil {
 	 */
 	public static String getAppName(HttpServletRequest req) {
 		String appName = "";
-		if (req != null)
+		if (req != null && req.getServletPath() != null)
 			appName = getAppName(req.getServletPath().substring(1));
 		
 		return appName;
@@ -173,7 +173,7 @@ public class AppUtil {
 			// ad una cartella personalizzata di un cliente (file non presente)
 			String[] parts = uri.split("\\/");
 			if (parts != null && parts.length > 2)
-				if (fileToRedirect.equals("login.jsp"))
+				if (fileToRedirect.equals("login.jsp") || fileToRedirect.equals("wrongClientId.jsp"))
 					return "/" + parts[1] + "/" + fileToRedirect;
 				else			
 					return "/" + parts[1] + "/" + parts[2] + "/" + fileToRedirect;
@@ -220,6 +220,11 @@ public class AppUtil {
 		if (admLogin != null && admLogin.length() > 0 && session.getAttribute("userBean") != null && ((UserBean) session.getAttribute("userBean")).getLogin().equals(admLogin))
 			user = admLogin;
 		
+		// gestione deleghe
+		String delegaLogin = (String) session.getAttribute("delegaLogin");
+		if (delegaLogin != null && delegaLogin.length() > 0 && session.getAttribute("userBean") != null && ((UserBean) session.getAttribute("userBean")).getLogin().equals(delegaLogin))
+			user = delegaLogin;
+
 		return user;
 	}
 	

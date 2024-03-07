@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml"
-	xmlns:ui="http://java.sun.com/jsf/facelets"
-    xmlns:fn="http://java.sun.com/jsp/jstl/functions"
-    xmlns:h="http://java.sun.com/jsf/html"
-    xmlns:f="http://java.sun.com/jsf/core">
+	  xmlns:ui="http://java.sun.com/jsf/facelets"
+	  xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	  xmlns:h="http://java.sun.com/jsf/html"
+	  xmlns:f="http://java.sun.com/jsf/core">
 <ui:composition>
 
 	<div class="hidden-print">
@@ -12,84 +12,174 @@
 			<div class="btn-group pull-right">
 				<ui:include src="./navigationBar.xhtml"><ui:param name="bean" value="#{bean}"/><ui:param name="customPage" value="true"/><ui:param name="customPageId" value="showdocId"/></ui:include>
 			</div>
-			
+
 			<div class="btn-group">
 				<h:commandLink rendered="#{bean.formsAdapter.paginaTitoliEnabled}" action="#{bean.paginaTitoli}"  styleClass="btn btn-default openwaitmsg">#{i18n['acl.titles']}</h:commandLink>
 				<h:commandLink rendered="#{!empty bean.physDoc_infasc or bean.bAssegnaLinkFasc=='true'}" action="#{bean.closeWindow}" styleClass="btn btn-default">#{i18n['torna']}</h:commandLink>
-			</div>
-		</div>
-		<!-- primo livello toolbar: fine -->
-		
-		<!-- secondo livello toolbar: inizio -->
-		<div class="btn-toolbar" role="toolbar">
-			<div class="btn-group">
-				<h:commandLink rendered="#{bean.formsAdapter.funzionalitaDisponibili['showassignracall']}" action="#{bean.doAssignRacAll}"  styleClass="btn btn-primary openwaitmsg">#{i18n['dw4.assegnatutti']}</h:commandLink>
-				<h:commandLink rendered="#{bean.formsAdapter.funzionalitaDisponibili['showassignrac']}" action="#{bean.doAssignRac}"  styleClass="btn btn-default">#{i18n['dw4.assegna']}</h:commandLink>
-			
-				<h:panelGroup rendered="#{!bean.popupPage}">
-					<div class="btn-group">
-						<button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
-							#{i18n['dw4.azioni_sul_rac']} <span class="caret"></span>
-						</button>
-						<ul class="dropdown-menu">
-							<h:panelGroup rendered="#{empty bean.physDoc_infasc and bean.bAssegnaLinkFasc!='true' and bean.formsAdapter.funzionalitaDisponibili['modifica']}">
-									<li><h:commandLink action="#{bean.modifyTableDoc}">#{i18n['acl.modify']}</h:commandLink></li>
-									<li><h:commandLink action="#{bean.remove}" onclick="if (!owmConfirm('#{i18n['dw4.deleteconfirm_raccoglitore']}')) return false;">#{i18n['acl.delete']}</h:commandLink></li>
-									<li class="divider"></li>
-							</h:panelGroup>
-							<li><h:commandLink action="#{bean.reload}">#{i18n['dw4.reload']}</h:commandLink></li>
-							<li><a href="#" onclick="return printPageContent();" onkeypress="return printPageContent();">#{i18n['dw4.stampa_raccoglitore']}</a></li>
-						</ul>
-					</div>
-					
-					<h:panelGroup rendered="#{bean.formsAdapter.funzionalitaDisponibili['raccoglitorigestione'] and (bean.formsAdapter.funzionalitaDisponibili['nuovo'] or bean.formsAdapter.funzionalitaDisponibili['ripetinuovo'])}">
+
+				<h:panelGroup rendered="#{bean.formsAdapter.funzionalitaDisponibili['buttonBarRaccSingleLevel']}">
+
+					<h:commandLink rendered="#{bean.formsAdapter.funzionalitaDisponibili['showassignracall']}" action="#{bean.doAssignRacAll}"  styleClass="btn btn-primary openwaitmsg">#{i18n['dw4.assegnatutti']}</h:commandLink>
+					<h:commandLink rendered="#{bean.formsAdapter.funzionalitaDisponibili['showassignrac']}" action="#{bean.doAssignRac}"  styleClass="btn btn-default">#{i18n['dw4.assegna']}</h:commandLink>
+
+					<h:panelGroup rendered="#{!bean.popupPage}">
 						<div class="btn-group">
 							<button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
-								#{i18n['dw4.new']} <span class="caret"></span>
+								#{i18n['dw4.azioni_sul_rac']} <span class="caret"></span>
 							</button>
 							<ul class="dropdown-menu">
-								<h:panelGroup rendered="#{bean.formsAdapter.funzionalitaDisponibili['nuovo']}"><li><h:commandLink value="#{i18n['dw4.new']}" action="#{bean.nuovoRaccoglitore}" /></li></h:panelGroup>
-								<h:panelGroup rendered="#{bean.formsAdapter.funzionalitaDisponibili['ripetinuovo']}"><li><h:commandLink value="#{i18n['dw4.clone']}" action="#{bean.ripetiNuovoRaccoglitore}" /></li></h:panelGroup>
+								<h:panelGroup rendered="#{empty bean.physDoc_infasc and bean.bAssegnaLinkFasc!='true' and bean.formsAdapter.funzionalitaDisponibili['modifica']}">
+									<h:panelGroup rendered="#{bean.raccoglitore.stato ne 'chiuso'}"><li><h:commandLink action="#{bean.modifyTableDoc}">#{i18n['acl.modify']}</h:commandLink></li></h:panelGroup>
+                                    <h:panelGroup rendered="#{bean.formsAdapter.funzionalitaDisponibili['rimuoviraccoglitore']}"><li><h:commandLink action="#{bean.remove}" onclick="if (!owmConfirm('#{empty bean.raccoglitore.rif_contenuto ? i18n['dw4.deleteconfirm_raccoglitore'] : i18n['dw4.deleteconfirm_raccoglitore_e_documenti']}')) return false;">#{i18n['acl.delete']}</h:commandLink></li></h:panelGroup>
+									<li class="divider"></li>
+								</h:panelGroup>
+								<li><h:commandLink action="#{bean.reload}">#{i18n['dw4.reload']}</h:commandLink></li>
+								<li><a href="#" onclick="return printPageContent();" onkeypress="return printPageContent();">#{i18n['dw4.stampa_raccoglitore']}</a></li>
 							</ul>
 						</div>
+
+						<h:panelGroup rendered="#{bean.formsAdapter.funzionalitaDisponibili['raccoglitorigestione'] and (bean.formsAdapter.funzionalitaDisponibili['nuovo'] or bean.formsAdapter.funzionalitaDisponibili['ripetinuovo'])}">
+							<div class="btn-group">
+								<button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+									#{i18n['dw4.new']} <span class="caret"></span>
+								</button>
+								<ul class="dropdown-menu">
+									<h:panelGroup rendered="#{bean.formsAdapter.funzionalitaDisponibili['nuovo']}"><li><h:commandLink value="#{i18n['dw4.new']}" action="#{bean.nuovoRaccoglitore}" /></li></h:panelGroup>
+									<h:panelGroup rendered="#{bean.formsAdapter.funzionalitaDisponibili['ripetinuovo']}"><li><h:commandLink value="#{i18n['dw4.clone']}" action="#{bean.ripetiNuovoRaccoglitore}" /></li></h:panelGroup>
+									<h:panelGroup rendered="#{bean.formsAdapter.funzionalitaDisponibili['duplicaricerca']}"><li><h:commandLink value="#{i18n['dw4.duplica_ricerca']}" action="#{bean.duplicaRicerca}" /></li></h:panelGroup>
+								</ul>
+							</div>
+						</h:panelGroup>
+
+						<h:panelGroup rendered="#{!bean.formsAdapter.funzionalitaDisponibili['removeLinkButton']}">
+							<div class="btn-group">
+								<button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+									#{i18n['dw4.link']} <span class="caret"></span>
+								</button>
+								<ul class="dropdown-menu">
+									<li><h:commandLink action="#{bean.copyLink}">#{i18n['dw4.copylink']}</h:commandLink></li>
+									<h:panelGroup rendered="#{bean.formsAdapter.funzionalitaDisponibili['pasteLink']}"><li><h:commandLink action="#{bean.pasteLink}" onclick="if (!owmConfirm('#{i18n['dw4.incolla_collegamento_procedere_con_l_operazione']}')) return false;">#{i18n['dw4.pastelink']}</h:commandLink></li></h:panelGroup>
+								</ul>
+							</div>
+						</h:panelGroup>
+
+						<h:panelGroup rendered="#{bean.formsAdapter.funzionalitaDisponibili['modifica'] or bean.formsAdapter.funzionalitaDisponibili['abilitaCCRaccoglitori']}" layout="block" styleClass="btn-group">
+							<button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+								#{i18n['dw4.assegnazioni']} <span class="caret"></span>
+							</button>
+							<ul class="dropdown-menu">
+								<h:panelGroup rendered="#{bean.formsAdapter.funzionalitaDisponibili['abilitaCCRaccoglitori']}"><li><h:commandLink action="#{bean.addCC}">#{i18n['dw4.nuovocc']}</h:commandLink></li></h:panelGroup>
+								<h:panelGroup rendered="#{bean.formsAdapter.funzionalitaDisponibili['modifica']}"><li><h:commandLink action="#{bean.addRPA}">#{i18n['dw4.trasferisci']}</h:commandLink></li></h:panelGroup>
+							</ul>
+						</h:panelGroup>
+
+						<div class="btn-group">
+							<button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+								#{i18n['dw4.archivio']} <span class="caret"></span>
+							</button>
+							<ul class="dropdown-menu">
+								<li><h:commandLink action="#{bean.raccontent}">#{i18n['dw4.mostra_contenuto']}</h:commandLink></li>
+								<h:panelGroup rendered="#{bean.formsAdapter.funzionalitaDisponibili['modifica'] or bean.formsAdapter.funzionalitaDisponibili['raccoglitorigestione']}">
+									<li class="divider"></li>
+								</h:panelGroup>
+								<h:panelGroup rendered="#{bean.raccoglitore.stato=='aperto' and bean.formsAdapter.funzionalitaDisponibili['modifica']}"><li><h:commandLink action="#{bean.archiviaRaccoglitore}">#{i18n['dw4.chiudi_raccoglitore']}</h:commandLink></li></h:panelGroup>
+								<h:panelGroup rendered="#{bean.raccoglitore.stato=='chiuso'}">
+									<h:panelGroup rendered="#{bean.formsAdapter.funzionalitaDisponibili['modifica'] and not bean.formsAdapter.funzionalitaDisponibili['ripristinaraccindice']}"><li><h:commandLink action="#{bean.apriRaccoglitore}">#{i18n['dw4.apri_raccoglitore']}</h:commandLink></li></h:panelGroup>
+									<h:panelGroup rendered="#{bean.formsAdapter.funzionalitaDisponibili['ripristinaraccindice']}"><li><h:commandLink action="#{bean.ripristinaRicerca}">#{i18n['dw4.ripristina_ricerca']}</h:commandLink></li></h:panelGroup>
+								</h:panelGroup>
+								<h:panelGroup rendered="#{bean.formsAdapter.funzionalitaDisponibili['raccoglitorigestione']}"><li><h:commandLink action="#{bean.insInRaccoglitore}" onclick="openCenterPopup('', 'insInRac')" target="insInRac">#{i18n['dw4.inserisci_in_raccoglitore']}</h:commandLink></li></h:panelGroup>
+							</ul>
+						</div>
+
+						<ui:include src="../azionimassive/startAzioniMassiveButtons.xhtml">
+							<ui:param name="pageBean" value="#{bean}" />
+						</ui:include>
 					</h:panelGroup>
-									
-					<div class="btn-group">
-						<button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
-							#{i18n['dw4.link']} <span class="caret"></span>
-						</button>
-						<ul class="dropdown-menu">
-							<li><h:commandLink action="#{bean.copyLink}">#{i18n['dw4.copylink']}</h:commandLink></li>
-							<h:panelGroup rendered="#{bean.formsAdapter.funzionalitaDisponibili['pasteLink']}"><li><h:commandLink action="#{bean.pasteLink}" onclick="if (!owmConfirm('#{i18n['dw4.incolla_collegamento_procedere_con_l_operazione']}')) return false;">#{i18n['dw4.pastelink']}</h:commandLink></li></h:panelGroup>
-						</ul>
-					</div>
-					
-					<h:panelGroup rendered="#{bean.formsAdapter.funzionalitaDisponibili['modifica']}" layout="block" styleClass="btn-group">
-						<button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
-							#{i18n['dw4.assegnazioni']} <span class="caret"></span>
-						</button>
-						<ul class="dropdown-menu">
-							<li><h:commandLink action="#{bean.addRPA}">#{i18n['dw4.trasferisci']}</h:commandLink></li>
-						</ul>
-					</h:panelGroup>
-					
-					<div class="btn-group">
-						<button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
-							#{i18n['dw4.archivio']} <span class="caret"></span>
-						</button>
-						<ul class="dropdown-menu">
-							<li><h:commandLink action="#{bean.raccontent}">#{i18n['dw4.mostra_contenuto']}</h:commandLink></li>
-							<h:panelGroup rendered="#{bean.formsAdapter.funzionalitaDisponibili['modifica'] or bean.formsAdapter.funzionalitaDisponibili['raccoglitorigestione']}">
-								<li class="divider"></li>
-							</h:panelGroup>
-							<h:panelGroup rendered="#{bean.raccoglitore.stato=='aperto' and bean.formsAdapter.funzionalitaDisponibili['modifica']}"><li><h:commandLink action="#{bean.archiviaRaccoglitore}">#{i18n['dw4.chiudi_raccoglitore']}</h:commandLink></li></h:panelGroup>
-							<h:panelGroup rendered="#{bean.raccoglitore.stato=='chiuso' and bean.formsAdapter.funzionalitaDisponibili['modifica']}"><li><h:commandLink action="#{bean.apriRaccoglitore}">#{i18n['dw4.apri_raccoglitore']}</h:commandLink></li></h:panelGroup>
-							<h:panelGroup rendered="#{bean.formsAdapter.funzionalitaDisponibili['raccoglitorigestione']}"><li><h:commandLink action="#{bean.insInRaccoglitore}" onclick="openCenterPopup('', 'insInRac')" target="insInRac">#{i18n['dw4.inserisci_in_raccoglitore']}</h:commandLink></li></h:panelGroup>
-						</ul>
-					</div>
 				</h:panelGroup>
 			</div>
+
 		</div>
+		<!-- primo livello toolbar: fine -->
+
+		<!-- secondo livello toolbar: inizio -->
+		<h:panelGroup rendered="#{!bean.formsAdapter.funzionalitaDisponibili['buttonBarRaccSingleLevel']}">
+			<div class="btn-toolbar" role="toolbar">
+				<div class="btn-group">
+					<h:commandLink rendered="#{bean.formsAdapter.funzionalitaDisponibili['showassignracall']}" action="#{bean.doAssignRacAll}"  styleClass="btn btn-primary openwaitmsg">#{i18n['dw4.assegnatutti']}</h:commandLink>
+					<h:commandLink rendered="#{bean.formsAdapter.funzionalitaDisponibili['showassignrac']}" action="#{bean.doAssignRac}"  styleClass="btn btn-default">#{i18n['dw4.assegna']}</h:commandLink>
+
+					<h:panelGroup rendered="#{!bean.popupPage}">
+						<div class="btn-group">
+							<button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+								#{i18n['dw4.azioni_sul_rac']} <span class="caret"></span>
+							</button>
+							<ul class="dropdown-menu">
+                                <h:panelGroup rendered="#{empty bean.physDoc_infasc and bean.bAssegnaLinkFasc!='true' and bean.formsAdapter.funzionalitaDisponibili['modifica']}">
+                                    <h:panelGroup rendered="#{bean.raccoglitore.stato ne 'chiuso'}"><li><h:commandLink action="#{bean.modifyTableDoc}">#{i18n['acl.modify']}</h:commandLink></li></h:panelGroup>
+									<h:panelGroup rendered="#{bean.formsAdapter.funzionalitaDisponibili['rimuoviraccoglitore']}"><li><h:commandLink action="#{bean.remove}" onclick="if (!owmConfirm('#{empty bean.raccoglitore.rif_contenuto ? i18n['dw4.deleteconfirm_raccoglitore'] : i18n['dw4.deleteconfirm_raccoglitore_e_documenti']}')) return false;">#{i18n['acl.delete']}</h:commandLink></li></h:panelGroup>
+									<li class="divider"></li>
+								</h:panelGroup>
+								<li><h:commandLink action="#{bean.reload}">#{i18n['dw4.reload']}</h:commandLink></li>
+								<li><a href="#" onclick="return printPageContent();" onkeypress="return printPageContent();">#{i18n['dw4.stampa_raccoglitore']}</a></li>
+							</ul>
+						</div>
+
+						<h:panelGroup rendered="#{bean.formsAdapter.funzionalitaDisponibili['raccoglitorigestione'] and (bean.formsAdapter.funzionalitaDisponibili['nuovo'] or bean.formsAdapter.funzionalitaDisponibili['ripetinuovo'])}">
+							<div class="btn-group">
+								<button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+									#{i18n['dw4.new']} <span class="caret"></span>
+								</button>
+								<ul class="dropdown-menu">
+									<h:panelGroup rendered="#{bean.formsAdapter.funzionalitaDisponibili['nuovo']}"><li><h:commandLink value="#{i18n['dw4.new']}" action="#{bean.nuovoRaccoglitore}" /></li></h:panelGroup>
+									<h:panelGroup rendered="#{bean.formsAdapter.funzionalitaDisponibili['ripetinuovo']}"><li><h:commandLink value="#{i18n['dw4.clone']}" action="#{bean.ripetiNuovoRaccoglitore}" /></li></h:panelGroup>
+								</ul>
+							</div>
+						</h:panelGroup>
+
+						<h:panelGroup rendered="#{!bean.formsAdapter.funzionalitaDisponibili['removeLinkButton']}">
+							<div class="btn-group">
+								<button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+									#{i18n['dw4.link']} <span class="caret"></span>
+								</button>
+								<ul class="dropdown-menu">
+									<li><h:commandLink action="#{bean.copyLink}">#{i18n['dw4.copylink']}</h:commandLink></li>
+									<h:panelGroup rendered="#{bean.formsAdapter.funzionalitaDisponibili['pasteLink']}"><li><h:commandLink action="#{bean.pasteLink}" onclick="if (!owmConfirm('#{i18n['dw4.incolla_collegamento_procedere_con_l_operazione']}')) return false;">#{i18n['dw4.pastelink']}</h:commandLink></li></h:panelGroup>
+								</ul>
+							</div>
+						</h:panelGroup>
+
+						<h:panelGroup rendered="#{bean.formsAdapter.funzionalitaDisponibili['modifica'] or bean.formsAdapter.funzionalitaDisponibili['abilitaCCRaccoglitori']}" layout="block" styleClass="btn-group">
+							<button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+								#{i18n['dw4.assegnazioni']} <span class="caret"></span>
+							</button>
+							<ul class="dropdown-menu">
+								<h:panelGroup rendered="#{bean.formsAdapter.funzionalitaDisponibili['abilitaCCRaccoglitori']}"><li><h:commandLink action="#{bean.addCC}">#{i18n['dw4.nuovocc']}</h:commandLink></li></h:panelGroup>
+								<h:panelGroup rendered="#{bean.formsAdapter.funzionalitaDisponibili['modifica']}"><li><h:commandLink action="#{bean.addRPA}">#{i18n['dw4.trasferisci']}</h:commandLink></li></h:panelGroup>
+							</ul>
+						</h:panelGroup>
+
+						<div class="btn-group">
+							<button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+								#{i18n['dw4.archivio']} <span class="caret"></span>
+							</button>
+							<ul class="dropdown-menu">
+								<li><h:commandLink action="#{bean.raccontent}">#{i18n['dw4.mostra_contenuto']}</h:commandLink></li>
+								<h:panelGroup rendered="#{bean.formsAdapter.funzionalitaDisponibili['modifica'] or bean.formsAdapter.funzionalitaDisponibili['raccoglitorigestione']}">
+									<li class="divider"></li>
+								</h:panelGroup>
+								<h:panelGroup rendered="#{bean.raccoglitore.stato=='aperto' and bean.formsAdapter.funzionalitaDisponibili['modifica']}"><li><h:commandLink action="#{bean.archiviaRaccoglitore}">#{i18n['dw4.chiudi_raccoglitore']}</h:commandLink></li></h:panelGroup>
+								<h:panelGroup rendered="#{bean.raccoglitore.stato=='chiuso' and bean.formsAdapter.funzionalitaDisponibili['modifica']}"><li><h:commandLink action="#{bean.apriRaccoglitore}">#{i18n['dw4.apri_raccoglitore']}</h:commandLink></li></h:panelGroup>
+								<h:panelGroup rendered="#{bean.formsAdapter.funzionalitaDisponibili['raccoglitorigestione']}"><li><h:commandLink action="#{bean.insInRaccoglitore}" onclick="openCenterPopup('', 'insInRac')" target="insInRac">#{i18n['dw4.inserisci_in_raccoglitore']}</h:commandLink></li></h:panelGroup>
+							</ul>
+						</div>
+
+						<ui:include src="../azionimassive/startAzioniMassiveButtons.xhtml">
+							<ui:param name="pageBean" value="#{bean}" />
+						</ui:include>
+					</h:panelGroup>
+				</div>
+			</div>
+		</h:panelGroup>
 		<!-- secondo livello toolbar: fine -->
 	</div>
 

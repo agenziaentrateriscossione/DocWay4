@@ -1,6 +1,10 @@
 package it.tredi.dw4.docway.beans.fatturepa;
 
-import it.tredi.dw4.utils.XMLDocumento;
+import java.util.ArrayList;
+import java.util.List;
+
+import org.dom4j.Document;
+
 import it.tredi.dw4.adapters.ErrormsgFormsAdapter;
 import it.tredi.dw4.docway.beans.DocEditPartenza;
 import it.tredi.dw4.docway.model.Option;
@@ -12,12 +16,8 @@ import it.tredi.dw4.docway.model.fatturepa.LineaBeniServizi;
 import it.tredi.dw4.docway.model.fatturepa.RiepilogoBeniServizi;
 import it.tredi.dw4.i18n.I18N;
 import it.tredi.dw4.utils.DocWayProperties;
+import it.tredi.dw4.utils.XMLDocumento;
 import it.tredi.dw4.utils.XMLUtil;
-
-import java.util.ArrayList;
-import java.util.List;
-
-import org.dom4j.Document;
 
 public class DocEditPartenzaFTRPAA extends DocEditPartenza {
 	
@@ -210,9 +210,8 @@ public class DocEditPartenzaFTRPAA extends DocEditPartenza {
 	 * 
 	 * @return false se tutti i campo obbligatori sono stati compilati, true se anche un solo campo obbligatorio non e' compilato
 	 */
-	@Override
 	public boolean checkRequiredField() {
-		boolean result = super.checkRequiredField();
+		boolean result = super.checkRequiredField(false);
 		
 		// controllo sui campi specifici della fattura
 		

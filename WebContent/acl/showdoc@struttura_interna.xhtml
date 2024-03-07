@@ -38,6 +38,10 @@
 						<h:panelGroup rendered="#{showdocStrutturaInterna.formsAdapter.funzionalitaDisponibili['ins_struint']}">
 							<h:commandLink action="#{showdocStrutturaInterna.ripetiNuovo}" styleClass="btn btn-default openwaitmsg">#{i18n['acl.clone']}</h:commandLink>
 						</h:panelGroup>
+						
+						<ui:include src="../azionimassive/startAzioniMassiveButtons.xhtml">
+		                    <ui:param name="pageBean" value="#{showdocStrutturaInterna}" />
+		                </ui:include>
 
 						<h:panelGroup layout="block" styleClass="btn-group">
 							<button type="button" class="btn btn-default dropdown-toggle"
@@ -74,7 +78,7 @@
             <h:panelGroup rendered="#{!empty(showdocStrutturaInterna.struttura_interna.nrecord) and showdocStrutturaInterna.struttura_interna.nrecord ne '.'}">
 				<h5 class="sub-header" title="#{showdocStrutturaInterna.struttura_interna.nome}">
 					<span class="strutture-interne glyphicons-pro"></span>&#160;
-					<h:outputText value="#{showdocStrutturaInterna.struttura_interna.nome}" escape="false" />
+					<h:outputText value="#{showdocStrutturaInterna.struttura_interna.nome}" />
 				</h5>
 				
 				<!-- scheda show: inizio -->
@@ -126,9 +130,9 @@
 		                       <dd>#{showdocStrutturaInterna.struttura_interna.emailSdI}</dd>
 	                       </h:panelGroup>
 						</dl>
-					</div>
-	                
-	                <h:panelGroup rendered="#{showdocStrutturaInterna.struttura_interna.indirizzo.renderIndirizzo or showdocStrutturaInterna.struttura_interna.renderTelefoni or showdocStrutturaInterna.struttura_interna.renderSitiWeb or showdocStrutturaInterna.struttura_interna.renderEmail or !empty showdocStrutturaInterna.struttura_interna.email_certificata.addr}">
+					</div> 
+					
+	                <h:panelGroup rendered="#{showdocStrutturaInterna.struttura_interna.indirizzo.renderIndirizzo or showdocStrutturaInterna.struttura_interna.renderTelefoni or showdocStrutturaInterna.struttura_interna.renderSitiWeb or showdocStrutturaInterna.struttura_interna.renderEmail or showdocStrutturaInterna.struttura_interna.renderEmailCert}">
 	                    <div class="showdoc-section">
 	                        <div class="title">#{i18n['acl.recapito']}
 	                            <div class="pull-right">
@@ -138,7 +142,19 @@
 	
 	                        <ui:include src="./recapito.xhtml">
 	                            <ui:param name="bean" value="#{showdocStrutturaInterna.struttura_interna}"/>
+	                            <ui:param name="hidecertificata" value="true" />
 	                        </ui:include>
+	                        
+	                        <h:panelGroup rendered="#{showdocStrutturaInterna.struttura_interna.renderEmailCert}">
+					            <dl class="dl-horizontal">
+						            <dt>#{i18n['acl.pec']}</dt>
+									<dd>
+										<ui:repeat var="emailCert" value="#{showdocStrutturaInterna.struttura_interna.emailCerts}" varStatus="indexEmailCert">
+											<a href="mailto:#{emailCert.addr}" class="blacklink">#{emailCert.addr}</a><br/>
+							            </ui:repeat>
+									</dd>
+								</dl>
+							</h:panelGroup>
 	                    </div>
 	                </h:panelGroup>    
 	

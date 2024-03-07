@@ -72,9 +72,9 @@ public class Profilo extends XmlEntity {
     	params.put(prefix+".@nrecord", this.nrecord);
     	params.put(prefix+".@nome_profilo", this.nome_profilo);
     	params.put(prefix+".@tipo", "profilo");
-    	params.put(prefix+".@matricola_profilo", this.matricola_profilo);
-    	params.put(prefix+".@cod_amm", this.cod_amm);
-    	params.put(prefix+".@cod_aoo", this.cod_aoo);
+    	params.put(prefix+".@matricola_profilo", (this.matricola_profilo != null) ? this.matricola_profilo.trim() : null);
+    	params.put(prefix+".@cod_amm", (this.cod_amm != null) ? this.cod_amm.trim() : null);
+    	params.put(prefix+".@cod_aoo", (this.cod_aoo != null) ? this.cod_aoo.trim() : null);
     	params.put(prefix+".descrizione", this.descrizione);
     	for ( Iterator<?> i = this.rights.entrySet().iterator() ; i.hasNext() ; ) {  
     	    @SuppressWarnings("rawtypes")
@@ -310,7 +310,17 @@ public class Profilo extends XmlEntity {
 	public String modifyRight(){
 		Right right = (Right) FacesContext.getCurrentInstance().getExternalContext().getRequestMap().get("right");
 		boolean newVal = !right.getSelected();
-		right.setValue(String.valueOf(newVal));
+		
+		// mbernardini 04/09/2017 : migliorata la modifica di diritti di tipo 'alfa'
+		if (right.getType() != null && right.getType().equals("alfa")) {
+			if (right.getValue().equals("") || right.getValue().equals("*NHL*"))
+				newVal = false;
+			else
+				newVal = true;
+		}
+		else
+			right.setValue(String.valueOf(newVal));
+		
 		if (newVal){
 			List<Oncheck> operation = right.getOnchecks();
 			for (Iterator<Oncheck> iterator = operation.iterator(); iterator.hasNext();) {

@@ -69,6 +69,53 @@
 					<ui:include src="../customfields/docedit@customfields.xhtml">
 						<ui:param name="bean" value="#{docEditRaccoglitore}" />
 		        	</ui:include>
+		        	
+		        	<div class="fieldset">
+	        			<div class="legend">
+	        				#{i18n['dw4.assegnatari']}
+	        				
+	        				<div class="pull-right">
+								<span class="glyphicon glyphicon-user" title="#{i18n['dw4.assegnatari']}"></span>
+							</div>
+	        			</div>
+	        			
+	        			<h:panelGroup rendered="#{!docEditRaccoglitore.raccoglitore.sendMailSelectedRifInterni and docEditRaccoglitore.formsAdapter.funzionalitaDisponibili['abilitaCCRaccoglitori']}" layout="block" styleClass="form-group">
+	        				<label for="templateForm:sendMailRifInterniCheck" class="col-sm-2 control-label">#{i18n['dw4.invia_email_di_notifica']}</label>
+							<div class="col-sm-1">
+								<h:selectBooleanCheckbox value="#{docEditRaccoglitore.raccoglitore.sendMailRifInterni}" id="sendMailRifInterniCheck" />
+							</div>
+	        			</h:panelGroup>
+	        			
+	        			<h:panelGroup id="rpa_Fields" layout="block">
+							<ui:include src="./rifinterni.xhtml">
+					        	<ui:param name="rifintType" value="rpa" />
+				        		<ui:param name="editable" value="false" />
+				        		<ui:param name="pageBean" value="#{docEditRaccoglitore}" />
+				        		<ui:param name="rifintBean" value="#{docEditRaccoglitore.raccoglitore.assegnazioneRPA}" />
+				        		<ui:param name="refresh" value="templateForm:rpa_Fields templateForm:rifintLookup templateForm:lookup templateForm:errormsg"/>
+				        		<ui:param name="sendMailSelectedRifInterni" value="#{docEditRaccoglitore.raccoglitore.sendMailSelectedRifInterni}"/>
+				        	</ui:include>
+			        	</h:panelGroup>
+			        	
+				        <h:panelGroup rendered="#{docEditRaccoglitore.formsAdapter.funzionalitaDisponibili['abilitaCCRaccoglitori']}">
+							<h:panelGroup id="cc_Fields" layout="block">
+								<h:inputHidden value="#{docEditRaccoglitore.alertForTutti}" id="cc_alertForTutti" />
+								
+								<ui:repeat id="rifint_cc_list" var="rif" value="#{docEditRaccoglitore.raccoglitore.assegnazioneCC}" varStatus="indice">
+									<ui:include src="./rifinterni.xhtml">
+							        	<ui:param name="rifintType" value="cc" />
+							        	<ui:param name="indice" value="#{indice.index}" />
+						        		<ui:param name="editable" value="true" />
+						        		<ui:param name="pageBean" value="#{docEditRaccoglitore}" />
+						        		<ui:param name="rifintBean" value="#{rif}" />
+						        		<ui:param name="refresh" value=":templateForm:cc_Fields :templateForm:rifintLookup :templateForm:lookup :templateForm:errormsg"/>
+						        		<ui:param name="multiple" value="true"/>
+						        		<ui:param name="sendMailSelectedRifInterni" value="#{docEditRaccoglitore.raccoglitore.sendMailSelectedRifInterni}"/>
+						        	</ui:include>
+						        </ui:repeat>
+							</h:panelGroup>
+						</h:panelGroup>
+	        		</div> <!-- /fieldset -->
 					
 					<div class="fieldset">
 	        			<div class="legend">
@@ -92,7 +139,10 @@
 		<!-- scheda edit: fine -->
 	</div>
 	
-	<h:inputTextarea value="#{docEditRaccoglitore.xml}" rendered="#{docEditRaccoglitore.debugMode}" styleClass="form-control" rows="10" />
+	<ui:include src="./lookup.xhtml"> <ui:param name="pageBean" value="#{docEditRaccoglitore}"/></ui:include>
+	<ui:include src="./rifintLookup.xhtml"> <ui:param name="pageBean" value="#{docEditRaccoglitore}"/></ui:include>
+	
+	<h:inputTextarea value="#{docEditRaccoglitore.xml}" rendered="#{docEditRaccoglitore.debugMode}" styleClass="form-control debug-textarea" rows="10" />
 	
 	<ui:fragment rendered="#{docEditRaccoglitore.formsAdapter.assignAndClose != null and docEditRaccoglitore.formsAdapter.assignAndClose == 'true'}">
 		<script type="text/javascript">

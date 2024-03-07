@@ -2,7 +2,6 @@ package it.tredi.dw4.soginSAP;
 
 import java.util.Properties;
 
-import it.tredi.dw4.acl.beans.UserBean;
 import it.tredi.dw4.beans.Init;
 import it.tredi.dw4.docway.beans.DocWayHome;
 import it.tredi.dw4.docway.beans.Menu;
@@ -25,13 +24,7 @@ public class SoginSAPInit extends Init {
 	}
 	
 	protected void initDocWayHomeFromResponse(XMLDocumento response) throws Exception {
-		UserBean userbean = getUserBean();
-		if (null != userbean && null == userbean.getUserInfo()) {
-			if (userbean.getMatricola() == null || userbean.getMatricola().equals(""))
-				userbean.setMatricola(response.getRootElement().attributeValue("matricola", "")); // assegnazione della matricola
-			userbean.setUserInfo(response.getRootElement().attributeValue("userInfo", null));
-			setSessionAttribute("userBean", userbean);
-		}
+		initUserBeanData(getUserBean(), response);
 		
 		boolean enableIWX = isEnabledIWX(); // abilitazione o meno di IWX
 		

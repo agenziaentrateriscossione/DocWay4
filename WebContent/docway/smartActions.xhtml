@@ -12,10 +12,12 @@
 			<h3 class="panel-title text-left">#{i18n['dw4.azioni_rapide']}</h3>
 		</div>
 		<div class="panel-body text-left">
-			
+
 			<ul class="list-inline smartactions-list">
 				<h:panelGroup rendered="#{!bean.doc.cestino}">
-					<h:panelGroup rendered="#{hideModifica ne 'true' and !bean.formsAdapter.funzionalitaDisponibili['docConservato'] and bean.formsAdapter.funzionalitaDisponibili['modifica']}">
+						<ui:param name="isBozzaProtocollabile" value="#{(bean.doc.bozza and bean.doc.protocollabile and bean.formsAdapter.funzionalitaDisponibili['protocollaRight'])}"></ui:param>
+						<ui:param name="isModificabile" value="#{bean.formsAdapter.funzionalitaDisponibili['modifica'] and (!bean.doc.bozza or (!bean.formsAdapter.funzionalitaDisponibili['disabilitaBozzeInModifica']) or bean.doc.tipo eq 'varie')}"></ui:param>
+					<h:panelGroup rendered="#{hideModifica ne 'true' and !bean.formsAdapter.funzionalitaDisponibili['docConservato'] and bean.formsAdapter.funzionalitaDisponibili['modifica'] and (isBozzaProtocollabile or isModificabile)}">
 						<li>
 							<h:commandLink styleClass="smartactions-link" action="#{bean.modifyTableDoc}" title="#{i18n['dw4.modify']}">
 								<span class="glyphicons-pro edit smartaction-image" title="#{i18n['dw4.modify']}"></span>
@@ -24,6 +26,15 @@
 						</li>
 					</h:panelGroup>
 					
+					<h:panelGroup rendered="#{bean.formsAdapter.funzionalitaDisponibili['readOnlyAccessMode'] and bean.formsAdapter.funzionalitaDisponibili['campiCustomEditableOnReadOnly']}">
+						<li>
+							<h:commandLink styleClass="smartactions-link" action="#{bean.modifyCustomFieldsDoc}" title="#{i18n['dw4.modify_campi_custom']}">
+								<span class="glyphicons-pro edit smartaction-image" title="#{i18n['dw4.modify_campi_custom']}"></span>
+								<p>#{i18n['dw4.mod_campi_custom']}</p>
+							</h:commandLink>
+						</li>
+					</h:panelGroup>
+
 					<h:panelGroup rendered="#{bean.formsAdapter.funzionalitaDisponibili['postitaggiunta']}">
 						<li>
 							<h:commandLink styleClass="smartactions-link" action="#{bean.addPostit}" title="#{i18n['dw4.annotazione']}">
@@ -33,8 +44,8 @@
 							</h:commandLink>
 						</li>
 					</h:panelGroup>
-					
-					<h:panelGroup rendered="#{bean.formsAdapter.funzionalitaDisponibili['rpaadd']}">
+
+					<h:panelGroup rendered="#{empty bean.doc.fasc_rpa.num and bean.formsAdapter.funzionalitaDisponibili['rpaadd']}">
 						<li>
 							<h:commandLink styleClass="smartactions-link" action="#{bean.addRPA}" title="#{i18n['dw4.proprietarioadd']}">
 								<f:ajax execute="@form" render="@form" />
@@ -43,7 +54,7 @@
 							</h:commandLink>
 						</li>
 					</h:panelGroup>
-					
+
 					<h:panelGroup rendered="#{bean.formsAdapter.funzionalitaDisponibili['ccadd']}">
 						<li>
 							<h:commandLink styleClass="smartactions-link" action="#{bean.addCC}" title="#{i18n['dw4.nuovocc']}">
@@ -53,17 +64,39 @@
 							</h:commandLink>
 						</li>
 					</h:panelGroup>
-					
-					<h:panelGroup rendered="#{hideFascicola ne 'true' and !bean.formsAdapter.funzionalitaDisponibili['nascondifascicoli'] and bean.formsAdapter.funzionalitaDisponibili['insdocinfascicolo'] and empty bean.doc.assegnazioneRPA.cod_fasc}">
+
+					<h:panelGroup rendered="#{bean.formsAdapter.funzionalitaDisponibili['protocolla'] and bean.formsAdapter.funzionalitaDisponibili['modifica'] and bean.doc.protocollabile}">
+						<li>
+							<h:commandLink styleClass="smartactions-link" action="#{bean.protocolla}" title="#{i18n['dw4.protocolla']}">
+								<span class="glyphicons-pro certificate smartaction-image" title="#{i18n['dw4.protocolla']}"></span>
+								<p>#{i18n['dw4.protocolla']}</p>
+							</h:commandLink>
+						</li>
+					</h:panelGroup>
+
+					<h:panelGroup rendered="#{bean.formsAdapter.funzionalitaDisponibili['repertoria'] and bean.formsAdapter.funzionalitaDisponibili['modifica'] and bean.doc.repertoriabile}">
+						<li>
+							<h:commandLink styleClass="smartactions-link" action="#{bean.assegnaNumRepertorio}" title="#{i18n['dw4.assegna_num_repertorio']}">
+								<span class="glyphicons-pro log_book smartaction-image" title="#{i18n['dw4.assegna_num_repertorio']}"></span>
+								<p>#{i18n['dw4.num_repertorio']}</p>
+							</h:commandLink>
+						</li>
+					</h:panelGroup>
+
+					<h:panelGroup rendered="#{hideFascicola ne 'true' 
+						and !bean.formsAdapter.funzionalitaDisponibili['nascondifascicoli'] 
+						and bean.formsAdapter.funzionalitaDisponibili['insdocinfascicolo'] 
+						and empty bean.doc.assegnazioneRPA.cod_fasc
+						and !bean.formsAdapter.funzionalitaDisponibili['notFascicolabile']}">
 						<li>
 							<h:commandLink styleClass="smartactions-link" action="#{bean.insInFasc}" onclick="openCenterPopup('', 'insInFasc')" target="insInFasc">
 								<span class="glyphicons-pro folder_plus smartaction-image" title="#{i18n['dw4.fascicola']}"></span>
 								<p>#{i18n['dw4.fascicola']}</p>
 							</h:commandLink>
 						</li>
-					</h:panelGroup>	
+					</h:panelGroup>
 				</h:panelGroup>
-				
+
 				<h:panelGroup rendered="#{bean.doc.cestino and bean.formsAdapter.funzionalitaDisponibili['ripristinoDaCestino']}">
 					<li>
 						<h:commandLink styleClass="smartactions-link" action="#{bean.ripristinaDaCestino}">
@@ -72,15 +105,44 @@
 						</h:commandLink>
 					</li>
 				</h:panelGroup>
-				
+
 				<li>
 					<h:commandLink styleClass="smartactions-link" onclick="return printPageContent();">
 						<span class="glyphicons-pro print smartaction-image" title="#{i18n['dw4.print']}"></span>
 						<p>#{i18n['dw4.print']}</p>
 					</h:commandLink>
 				</li>
+
+				<h:panelGroup rendered="#{bean.doc.verificaVirus.status ne 'progress' and ((fn:length(bean.doc.files) > 0 and !empty bean.doc.files[0].title) or (fn:length(bean.doc.immagini) > 0 and !empty bean.doc.immagini[0].title))}">
+					<li>
+						<h:commandLink styleClass="smartactions-link" action="#{bean.zipFiles}">
+							<span class="filetype zip smartaction-image" title="#{i18n['dw4.scarica_allegati_in_formato_zip']}"></span>
+							<p>#{i18n['dw4.zip_allegati']}</p>
+						</h:commandLink>
+					</li>
+				</h:panelGroup>
+
+				<ui:remove>
+					<h:panelGroup rendered="#{!bean.doc.richiestaPresaInCarico and bean.formsAdapter.funzionalitaDisponibili['presaInCaricoAbilitata']}">
+						<li>
+							<h:commandLink styleClass="smartactions-link" action="#{bean.richiediPresaInCarico}">
+								<span class="glyphicon glyphicon-hand-right smartaction-image" title="#{i18n['dw4.richiedi_presa_in_carico']}"></span>
+								<p>#{i18n['dw4.richiedi_presa_in_carico']}</p>
+							</h:commandLink>
+						</li>
+					</h:panelGroup>
+				</ui:remove>
+
+				<h:panelGroup rendered="#{bean.formsAdapter.funzionalitaDisponibili['docInfetti'] and ((fn:length(bean.doc.files) > 0 and !empty bean.doc.files[0].title) or (fn:length(bean.doc.immagini) > 0 and !empty bean.doc.immagini[0].title))}">
+					<li>
+						<h:commandLink styleClass="smartactions-link" action="#{bean.richiediVerificaVirus}" onclick="if (!owmConfirm('#{i18n['dw4.verifica_virus_procedere_con_l_operazione']}')) return false;">
+							<span class="glyphicons-pro shield smartaction-image" title="#{i18n['dw4.richiedi_verifica_virus']}"></span>
+							<p>#{i18n['dw4.verifica_virus']}</p>
+						</h:commandLink>
+					</li>
+				</h:panelGroup>
 			</ul>
-			
+
 		</div>
 	</div>
 

@@ -221,7 +221,7 @@ public class QueryFascicolo extends it.tredi.dw4.docway.beans.QueryFascicolo {
 	 */
 	public String openIndexFascFornitore() throws Exception {
 		setFocusElement("fasc_fornitore");
-		this.openIndex("fasc_fornitore", this.fasc_fornitore, "0", " ", false);
+		this.openIndex("fasc_fornitore", "xml,/fascicolo/extra/fornitori/fornitore", this.fasc_fornitore, "0", "", false);
 		return null;
 	}
 	
@@ -232,7 +232,7 @@ public class QueryFascicolo extends it.tredi.dw4.docway.beans.QueryFascicolo {
 	 */
 	public String openIndexFascFornitoreCodice() throws Exception {
 		setFocusElement("fasc_fornitore_codice");
-		this.openIndex("fasc_fornitore_codice", this.fasc_fornitore_codice, "0", "", false);
+		this.openIndex("fasc_fornitore_codice", "xml,/fascicolo/extra/fornitori/fornitore/@codice", this.fasc_fornitore_codice, "0", "", false);
 		return null;
 	}
 

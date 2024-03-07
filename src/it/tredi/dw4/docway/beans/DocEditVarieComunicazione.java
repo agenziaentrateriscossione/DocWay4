@@ -24,7 +24,6 @@ public class DocEditVarieComunicazione extends DocEditVarie {
 	
 	public DocEditVarieComunicazione() throws Exception {
 		super();
-		// TODO Auto-generated constructor stub
 	}
 	
 	@SuppressWarnings("unchecked")
@@ -36,7 +35,12 @@ public class DocEditVarieComunicazione extends DocEditVarie {
 		
 		// inizializzazione common per tutte le tipologie di documenti di DocWay
 		initCommon(dom);
-				
+		
+		// TODO non capisco perche' in questa classe non ci sia la chiamata a super.init()... riporto la modifica sul corpo mail anche su questo metodo
+		// mbernardini 13/01/2017 : in caso di "genera non protocollato" da doc in partenza con corpo mail viene erroneamente registrato il corpo della mail anche nel doc varie generato
+		setCorpoEmailVisibile(false);
+		getDoc().setCorpoEmail("");
+
 		this.listof_categorie		=	XMLUtil.parseSetOfElement(dom, "/response/doc/categoria_select", new Categoria_select());
 		this.personalViewToUse		= 	XMLUtil.parseStrictAttribute(dom, "/response/@personalViewToUse");
 		

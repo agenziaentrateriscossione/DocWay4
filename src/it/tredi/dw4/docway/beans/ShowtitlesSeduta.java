@@ -16,7 +16,7 @@ public class ShowtitlesSeduta extends DocWayTitles {
 	}
 	
 	@Override
-	public void init(Document domTitoli) {
+	public void init(Document domTitoli) throws Exception {
 		super.init(domTitoli);
 		this.stpTitle = XMLUtil.parseStrictAttribute(domTitoli,"/response/@stpTitle","");
 		if(stpTitle != null && !stpTitle.equals(""))

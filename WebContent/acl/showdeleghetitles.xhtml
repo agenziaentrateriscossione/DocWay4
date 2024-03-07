@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+    template="template.xhtml"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:f="http://java.sun.com/jsf/core">
+
+<ui:define name="content">
+
+	<!-- toolbar: inizio -->
+	<div class="btn-toolbar" role="toolbar">
+		<div class="pull-right">
+			<ui:include src="./ajaxNavigationBar.xhtml"><ui:param name="bean" value="#{delegheTitles}"/><ui:param name="customPage" value="false"/><ui:param name="customPageId" value="delegheTitlesId"/></ui:include>
+		</div>
+		<div class="btn-group">
+            
+            <h:commandLink action="#{delegheTitles.gotoQueryDeleghe}" styleClass="btn btn-primary">
+				<div>#{i18n['dw4.filtra']}</div>
+			</h:commandLink>
+			<ui:remove>
+				<h:commandLink action="#{delegheTitles.newDelega}" styleClass="btn btn-default">
+					<div>#{i18n['acl.nuova_delega']}</div>
+				</h:commandLink>
+			</ui:remove>
+			<ui:include src="../azionimassive/startAzioniMassiveButtons.xhtml">
+				<ui:param name="pageBean" value="#{delegheTitles}" />
+				<ui:param name="delegheTitlesCount" value="#{delegheTitles.count}" />
+			</ui:include>
+            
+		</div>
+	</div>
+	<ui:include src="./buttons.xhtml">
+		<ui:param name="bean" value="#{delegheTitles}" />
+	</ui:include>
+	<!-- toolbar: fine -->
+	
+	<div style="margin-top:15px;">
+		<div id="fixedshowdoc" class="showtitles fixed-showdoc">
+			<table class="table table-hover acl-titles-table">
+				<thead>
+					<tr>
+						<th class="coltipo optional">#{i18n['acl.type']}</th>
+						<th class="coltipo optional">#{i18n['acl.numero_deleghe']}</th>
+						<th class="cologgetto essential">#{i18n['acl.delegante']}</th>
+						<th class="cologgetto essential">#{i18n['acl.delegati']}</th>
+					</tr>
+				</thead>
+				<tbody>
+					<ui:repeat var="title" value="#{delegheTitles.titoliDelega}" varStatus="status">
+						<tr>      
+							<td class="coltipo optional">
+								<h:commandLink action="#{delegheTitles.mostraDocumento}"  title="#{i18n['dw4.delega']}" styleClass="openwaitmsg">
+									<span class="acl-tipo glyphicons-pro parents"></span>
+								</h:commandLink>
+							</td>
+							<td class="coltipo optional">
+								<h:commandLink action="#{delegheTitles.mostraDocumento}" styleClass="openwaitmsg">
+									<div>(<strong>#{title.deleghe.size()}</strong>)</div>
+								</h:commandLink>
+							</td>
+							<td class="cologgetto optional">
+								<h:commandLink action="#{delegheTitles.mostraDocumento}" styleClass="openwaitmsg">
+									<div>#{title.cogn_delegante} #{title.nome_delegante}</div>
+								</h:commandLink>
+							</td>
+							<td class="cologgetto essential">
+								<div>
+									<ui:repeat var="delega" value="#{title.deleghe}" varStatus="statusName">
+										<h:commandLink action="#{delegheTitles.mostraDelegato}" styleClass="openwaitmsg">
+											<span>#{delega.nomePersona}</span>
+										</h:commandLink>
+										<h:panelGroup rendered="#{not statusName.last}">, </h:panelGroup> 
+									</ui:repeat>
+								</div>
+							</td>
+						</tr>
+					</ui:repeat>
+				</tbody>
+			</table>
+		</div>
+	</div>
+
+	<h:inputTextarea value="#{delegheTitles.xml}" rendered="#{delegheTitles.debugMode}" styleClass="form-control debug-textarea" rows="10" />
+		
+	<ui:include src="./loadingbar.xhtml"><ui:param name="pageBean" value="#{delegheTitles}"/></ui:include>
+</ui:define>
+
+</ui:composition>

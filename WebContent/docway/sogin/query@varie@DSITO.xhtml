@@ -140,6 +140,14 @@
 									<h:inputText styleClass="form-control" value="#{queryVarieDSITO.custom_numeri_rep}" id="custom_numeri_rep" p:placeholder="#{i18n['dw4.separare_i_valori_da_virgola']}" title="#{i18n['dw4.separare_i_valori_da_virgola']}" />
 								</div>
 							</div>
+							
+							<c:if test="#{!empty queryVarieDSITO.currentCustomFieldSection and queryVarieDSITO.currentCustomFieldSection.contains('_')}">
+								<hr/>
+								<ui:include src="../../customfields/query@customfields.xhtml">
+									<ui:param name="key" value="#{queryVarieDSITO.currentCustomFieldSection}" />
+									<ui:param name="bean" value="#{queryVarieDSITO}"/>
+					        	</ui:include>
+							</c:if>
 						</h:panelGroup>
 					</div>
 				</h:panelGroup>
@@ -160,14 +168,15 @@
 							<div class="form-group">
 								<label for="templateForm:doc_oggetto" class="col-sm-2 control-label">#{i18n['dw4.object']}</label>
 								<div class="col-sm-9">
-									<div class="input-group">
+									<div class="#{!queryVarieDSITO.formsAdapter.elasticsearchEnabled ? 'input-group' : ''}">
 										<h:inputText styleClass="form-control" value="#{queryVarieDSITO.doc_oggetto}" id="doc_oggetto" />
-										<div class="input-group-btn">
+										
+										<h:panelGroup rendered="#{!queryVarieDSITO.formsAdapter.elasticsearchEnabled}" layout="block" styleClass="input-group-btn">
 											<h:commandLink title="#{i18n['acl.vocabulary']}" action="#{queryVarieDSITO.openIndexOggettoDoc}" styleClass="btn btn-default">
 												<f:ajax execute="@form" render="@form"/>
 												<span class="glyphicon glyphicon-search"></span>
 											</h:commandLink>
-										</div>
+										</h:panelGroup>
 									</div>
 								</div>
 							</div>
@@ -219,52 +228,56 @@
 							<div class="form-group">
 								<label for="templateForm:doc_allegato" class="col-sm-2 control-label">#{i18n['dw4.attachments']}</label>
 								<div class="col-sm-3">
-									<div class="input-group">
+									<div class="#{!queryVarieDSITO.formsAdapter.elasticsearchEnabled ? 'input-group' : ''}">
 										<h:inputText styleClass="form-control" value="#{queryVarieDSITO.doc_allegato}" id="doc_allegato"/>
-										<div class="input-group-btn">
+										
+										<h:panelGroup rendered="#{!queryVarieDSITO.formsAdapter.elasticsearchEnabled}" layout="block" styleClass="input-group-btn">
 											<h:commandLink title="#{i18n['acl.vocabulary']}" action="#{queryVarieDSITO.openIndexAllegatoDoc}" styleClass="btn btn-default">
 												<f:ajax execute="@form" render="@form"/>
 												<span class="glyphicon glyphicon-search"></span>
 											</h:commandLink>
-										</div>
+										</h:panelGroup>
 									</div>
 								</div>
 								<label for="templateForm:doc_postit" class="col-sm-offset-1 col-sm-2 control-label">#{i18n['dw4.annotazioni']}</label>
 								<div class="col-sm-3">
-									<div class="input-group">
+									<div class="#{!queryVarieDSITO.formsAdapter.elasticsearchEnabled ? 'input-group' : ''}">
 										<h:inputText styleClass="form-control" value="#{queryVarieDSITO.doc_postit}" id="doc_postit"/>
-										<div class="input-group-btn">
+										
+										<h:panelGroup rendered="#{!queryVarieDSITO.formsAdapter.elasticsearchEnabled}" layout="block" styleClass="input-group-btn">
 											<h:commandLink title="#{i18n['acl.vocabulary']}" action="#{queryVarieDSITO.openIndexPostitDoc}" styleClass="btn btn-default">
 												<f:ajax execute="@form" render="@form"/>
 												<span class="glyphicon glyphicon-search"></span>
 											</h:commandLink>
-										</div>
+										</h:panelGroup>
 									</div>
 								</div>
 							</div>
 							<div class="form-group">
 								<label for="templateForm:doc_note" class="col-sm-2 control-label">#{i18n['dw4.notes']}</label>
 								<div class="col-sm-3">
-									<div class="input-group">
+									<div class="#{!queryVarieDSITO.formsAdapter.elasticsearchEnabled ? 'input-group' : ''}">
 										<h:inputText styleClass="form-control" value="#{queryVarieDSITO.doc_note}" id="doc_note"/>
-										<div class="input-group-btn">
+										
+										<h:panelGroup rendered="#{!queryVarieDSITO.formsAdapter.elasticsearchEnabled}" layout="block" styleClass="input-group-btn">
 											<h:commandLink title="#{i18n['acl.vocabulary']}" action="#{queryVarieDSITO.openIndexNoteDoc}" styleClass="btn btn-default">
 												<f:ajax execute="@form" render="@form"/>
 												<span class="glyphicon glyphicon-search"></span>
 											</h:commandLink>
-										</div>
+										</h:panelGroup>
 									</div>
 								</div>
 								<label for="templateForm:doc_keywords" class="col-sm-offset-1 col-sm-2 control-label">#{i18n['dw4.keywords']}</label>
 								<div class="col-sm-3">
-									<div class="input-group">
+									<div class="#{!queryVarieDSITO.formsAdapter.elasticsearchEnabled ? 'input-group' : ''}">
 										<h:inputText styleClass="form-control" value="#{queryVarieDSITO.doc_keywords}" id="doc_keywords"/>
-										<div class="input-group-btn">
+										
+										<h:panelGroup rendered="#{!queryVarieDSITO.formsAdapter.elasticsearchEnabled}" layout="block" styleClass="input-group-btn">
 											<h:commandLink title="#{i18n['acl.vocabulary']}" action="#{queryVarieDSITO.openIndexKeywordsDoc}" styleClass="btn btn-default">
 												<f:ajax execute="@form" render="@form"/>
 												<span class="glyphicon glyphicon-search"></span>
 											</h:commandLink>
-										</div>
+										</h:panelGroup>
 									</div>
 								</div>
 							</div>
@@ -589,7 +602,7 @@
 		});
 		</script>
 
-		<h:inputTextarea value="#{queryVarieDSITO.xml}" rendered="#{queryVarieDSITO.debugMode}" styleClass="form-control" rows="10" />
+		<h:inputTextarea value="#{queryVarieDSITO.xml}" rendered="#{queryVarieDSITO.debugMode}" styleClass="form-control debug-textarea" rows="10" />
 	</div>
 	
 	<ui:include src="../showindex.xhtml"><ui:param name="pageBean" value="#{queryVarieDSITO}"/></ui:include>

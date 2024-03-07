@@ -69,13 +69,8 @@ public class QueryFascicoloCustom extends DocWayQuery {
 				return null;
 			}
 			
-			// caricamento della pagina di ricerca specifica per il repertorio con campi custom
-			QueryFascicolo queryFascicolo = new QueryFascicolo();
-			queryFascicolo.getFormsAdapter().fillFormsFromResponse(response);
-			queryFascicolo.init(response.getDocument());
-			setSessionAttribute("queryFascicolo", queryFascicolo);
-				
-			return "query@fascicolo";
+			// mbernardini 14/02/2017 : corretto bug in caricamento di fascicoli personalizzati (con campi custom) in baso di interfaccia fascicoli specifica per un cliente (es. sottodirectory sogin)
+			return buildSpecificQueryPageAndReturnNavigationRule("@fascicolo", response);
 		}
 		catch (Throwable t) {
 			handleErrorResponse(ErrormsgFormsAdapter.buildErrorResponse(t));

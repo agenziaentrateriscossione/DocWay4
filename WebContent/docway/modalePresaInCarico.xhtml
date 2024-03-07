@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	  xmlns:h="http://java.sun.com/jsf/html"
+	  xmlns:ui="http://java.sun.com/jsf/facelets"
+	  xmlns:f="http://java.sun.com/jsf/core">
+
+	<ui:composition>
+
+		<!-- modal richiesta presa in carico : inizio -->
+		<h:panelGroup layout="block" id="modalAskTakeCharge">
+			<h:panelGroup rendered="#{bean.formsAdapter.funzionalitaDisponibili['askToTakeCharge']}">
+				<div id="confermaPresaInCaricoModal" class="modal fade in" aria-hidden="false" aria-labelledby="confermaPresaInCaricoModalLabel" role="dialog" tabindex="-1" style="display: block;">
+					<div class="modal-dialog">
+						<div class="modal-content jsf-modal">
+							<div class="modal-header">
+								<h:commandLink rendered="#{!bean.formsAdapter.funzionalitaDisponibili['presaInCaricoObbligatoria']}" styleClass="close" action="#{bean.closeModalPresaInCarico}" value="&#215;" />
+								<h4 class="modal-title">#{i18n['dw4.presa_in_carico']}</h4>
+							</div>
+							<div class="modal-body" style="padding-bottom: 0;">
+								<p style="margin-bottom:10p;">#{i18n['dw4.documento_richiesta_presa_in_carico']}</p>
+								<p style="margin-bottom:20p;"><strong>#{i18n['dw4.confermare_richiesta_presa_in_carico']}</strong></p>
+							</div>
+							<div class="modal-footer">
+								<h:commandLink action="#{bean.prendiInCarico}" styleClass="btn btn-default openwaitmsg" value="#{i18n['acl.confirm']}" />
+								<h:commandLink rendered="#{!bean.formsAdapter.funzionalitaDisponibili['presaInCaricoObbligatoria']}" styleClass="btn btn-default" action="#{bean.closeModalPresaInCarico}"  value="#{i18n['acl.cancel']}" />
+							</div>
+						</div><!-- /.modal-content -->
+					</div><!-- /.modal-dialog -->
+				</div><!-- /.modal -->
+			</h:panelGroup>
+		</h:panelGroup>
+		<!-- modal richiesta presa in carico : fine -->
+
+	</ui:composition>
+
+</html>

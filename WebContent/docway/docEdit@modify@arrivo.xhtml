@@ -9,80 +9,85 @@
 
 <ui:define name="content">
 	<div class="arrivo docedit">
-		
+
 		<!-- toolbar: inizio -->
 		<div class="btn-toolbar" role="toolbar">
 			<div class="btn-group">
-				<h:commandLink rendered="#{!docEditModifyArrivo.doc.bozza or !docEditModifyArrivo.formsAdapter.funzionalitaDisponibili['disabilitaBozzeInModifica']}" id="saveBtn" action="#{docEditModifyArrivo.saveDocument}" 
+				<h:commandLink rendered="#{!docEditModifyArrivo.doc.bozza or !docEditModifyArrivo.formsAdapter.funzionalitaDisponibili['disabilitaBozzeInModifica'] or docEditModifyArrivo.doc.rifiuto.stato eq 'rifiutato'}" id="saveBtn" action="#{docEditModifyArrivo.saveDocument}"
 							styleClass="btn btn-primary openwaitmsg">
 					#{i18n['acl.save']}
 				</h:commandLink>
-				<h:commandLink rendered="#{docEditModifyArrivo.doc.bozza}" id="protocoolaBtn" action="#{docEditModifyArrivo.protocollaDoc}" 
-							styleClass="btn #{(!docEditModifyArrivo.formsAdapter.funzionalitaDisponibili['disabilitaBozzeInModifica']) ? 'btn-default' : 'btn-primary'} openwaitmsg">
+				<h:commandLink rendered="#{docEditModifyArrivo.doc.bozza and docEditModifyArrivo.doc.rifiuto.stato ne 'rifiutato' and docEditModifyArrivo.formsAdapter.funzionalitaDisponibili['protocollaRight'] and docEditModifyArrivo.doc.protocollabile}" id="protocollaBtn" action="#{docEditModifyArrivo.protocollaDoc}"
+							styleClass="btn #{(!docEditModifyArrivo.formsAdapter.funzionalitaDisponibili['disabilitaBozzeInModifica']) ? 'btn-default' : 'btn-primary'} openwaitmsg #{(!docEditModifyArrivo.formsAdapter.funzionalitaDisponibili['docClassifEreditabile'] and (docEditModifyArrivo.doc.classif eq null or docEditModifyArrivo.doc.classif.cod eq null or empty docEditModifyArrivo.doc.classif.cod)) ? 'disabled' : ''}"
+							disabled="#{!docEditModifyArrivo.formsAdapter.funzionalitaDisponibili['docClassifEreditabile'] and (docEditModifyArrivo.doc.classif eq null or docEditModifyArrivo.doc.classif.cod eq null or empty docEditModifyArrivo.doc.classif.cod)}">
 					#{i18n['dw4.protocolla']}
 				</h:commandLink>
-				<h:commandLink action="#{docEditModifyArrivo.clearDocument}" 
-							onclick="IwxRuntime.Client.resetJobIWX();" styleClass="btn btn-default">
+				<h:commandLink rendered="#{!docEditModifyArrivo.formsAdapter.funzionalitaDisponibili['trasformaByDocEdit']}" action="#{docEditModifyArrivo.clearDocument}"
+						onclick="IwxRuntime.Client.resetJobIWX();" styleClass="btn btn-default">
 					#{i18n['acl.back']}
-				</h:commandLink>	
+				</h:commandLink>
+				<h:commandLink rendered="#{docEditModifyArrivo.formsAdapter.funzionalitaDisponibili['trasformaByDocEdit']}" action="#{docEditModifyArrivo.clearTrasformaRep}"
+							onclick="IwxRuntime.Client.resetJobIWX();" styleClass="btn btn-default">
+					#{i18n['acl.cancel']}
+				</h:commandLink>
 			</div>
 		</div>
 		<!-- toolbar: fine -->
-		
+
 		<h5 class="sub-header">
 			<span class="doc-tipo-arrivo glyphicons-pro"></span>&#160;
-			<h:outputText value="#{docEditModifyArrivo.docEditTitle}" escape="false" />
+			<h:outputText value="#{docEditModifyArrivo.docEditTitle}" />
 		</h5>
-	
+
 		<!-- messages: inizio -->
 		<h:panelGroup rendered="#{not empty facesContext.messageList}" layout="block" styleClass="docedit-messages alert alert-danger">
 			<h:messages styleClass="" id="validationMesseges" />
 		</h:panelGroup>
 		<h:inputHidden id="errorFieldIds" value="#{docEditModifyArrivo.errorFieldIds}" />
 		<!-- messages: fine -->
-	
+
 		<script type="text/javascript">
 		$(document).ready(function() {
 			apriPopupVerificaDuplicatiDoc(); // verifica dei duplicati in caso di inserimento/modifica di un doc
-			
+
 			setInvalidInputFields();
-			
+
 			// disabilita link esterni al form per rilascio del lock sul documento
 			disableNoTemplateFormLinks("#{i18n['dw4.abbandona_alert_msg']}");
 		});
-		
+
 		$(window).load(function() {
-			jsf.ajax.addOnEvent(function(data) { 
+			jsf.ajax.addOnEvent(function(data) {
 				if (data.status == 'success') {
-					if (data.source.id == 'templateForm:existsDuplicatiBtn') 
+					if (data.source.id == 'templateForm:existsDuplicatiBtn')
 						apriPopupVerificaDuplicatiDoc(); // verifica dei duplicati in caso di inserimento/modifica di un doc
 				}
 			});
 
 		});
 		</script>
-		
+
 		<!-- scheda edit: inizio -->
 		<div class="row-fluid" style="margin-top:10px;">
 			<div id="fixedshowdoc" class="box span12 fixed-showdoc">
 				<div class="box-content">
-				
+
 					<div class="fieldset">
 						<div class="legend">
 							#{i18n['dw4.datidoc']}
-						
+
 							<div class="pull-right">
 								<span class="glyphicon glyphicon-envelope" title="#{i18n['dw4.datidoc']}"></span>
 							</div>
 						</div>
-						
+
 						<h:panelGroup rendered="#{!empty docEditModifyArrivo.doc.repertorio.numero and docEditModifyArrivo.doc.repertorio.numero ne '.'}" layout="block" styleClass="form-group">
 							<label class="col-sm-2 control-label">#{i18n['dw4.repertorio_n']}</label>
 							<div class="col-sm-9">
 								<p class="form-control-static"><h:outputText value="#{docEditModifyArrivo.doc.repertorio.numero}"><f:converter converterId="NumRepConverter"/></h:outputText></p>
 							</div>
 						</h:panelGroup>
-						
+
 						<h:panelGroup rendered="#{fn:length(docEditModifyArrivo.doc.repTipologiaSelect) > 0}" layout="block" styleClass="form-group">
 							<label for="templateForm:repTipoDocumento" class="col-sm-2 control-label">#{i18n['dw4.tipodocumento']}</label>
 							<div class="col-sm-3">
@@ -91,7 +96,7 @@
 								</h:selectOneMenu>
 							</div>
 						</h:panelGroup>
-						
+
 						<h:panelGroup rendered="#{docEditModifyArrivo.doc.num_prot ne '' and docEditModifyArrivo.doc.num_prot ne '.'}" layout="block" styleClass="form-group">
 							<h:panelGroup rendered="#{docEditModifyArrivo.formsAdapter.funzionalitaDisponibili['nonModDataprot']}">
 								<label class="col-sm-2 control-label">#{i18n['dw4.protocollo_n']}</label>
@@ -102,14 +107,14 @@
 												<f:converter converterId="NumConverter"/>
 											</h:outputText>
 										</strong>
-										
+
 										#{i18n['dw4.del']}
 										<strong>
 											<h:outputText value="#{docEditModifyArrivo.doc.data_prot}" styleClass="outputField">
 												<f:converter converterId="DateConverter"/>
 											</h:outputText>
 										</strong>
-										
+
 										(<h:outputText value="#{docEditModifyArrivo.doc.num_prot}" />)
 									</p>
 								</div>
@@ -123,11 +128,11 @@
 												<f:converter converterId="NumConverter"/>
 											</h:outputText>
 										</strong>
-																				
+
 										(<h:outputText value="#{docEditModifyArrivo.doc.num_prot}" />)
 									</p>
 								</div>
-								
+
 								<ui:include src="./dateField.xhtml">
 									<ui:param name="label" value="#{i18n['dw4.data_protocollo']}" />
 									<ui:param name="id" value="dataProt" />
@@ -136,7 +141,7 @@
 								</ui:include>
 							</h:panelGroup>
 						</h:panelGroup>
-						
+
 						<h:panelGroup rendered="#{docEditModifyArrivo.doc.bozza and docEditModifyArrivo.doc.creazione.dateLong != null and docEditModifyArrivo.doc.creazione.dateLong ne ''}" layout="block" styleClass="form-group">
 							<label class="col-sm-2 control-label">#{i18n['dw4.bozza']} #{i18n['dw4.del']}</label>
 							<div class="col-sm-2">
@@ -145,10 +150,10 @@
 								</p>
 							</div>
 						</h:panelGroup>
-						
+
 						<h:panelGroup rendered="#{docEditModifyArrivo.formsAdapter.funzionalitaDisponibili['DataNumProtMittenteNonModificabile']}">
 							<!-- TODO gestire i diversi casi di bozza nobozza interoperabilita nointeroperabilita (per il momento versione "standard") -->
-							
+
 							<div class="form-group">
 								<h:panelGroup rendered="#{docEditModifyArrivo.doc.rif_esterni[0].data_prot ne ''}">
 									<label class="col-sm-2 control-label">#{i18n['dw4.data_doc']}</label>
@@ -171,7 +176,7 @@
 								</h:panelGroup>
 							</div>
 						</h:panelGroup>
-						
+
 						<h:panelGroup rendered="#{docEditModifyArrivo.formsAdapter.funzionalitaDisponibili['DataNumProtMittenteModificabile']}">
 							<div class="form-group">
 								<ui:include src="./dateField.xhtml">
@@ -184,7 +189,7 @@
 								<div class="col-sm-2">
 									<h:inputText id="protMittente" value="#{docEditModifyArrivo.doc.rif_esterni[0].n_prot}" styleClass="#{ component.valid ? '' : 'invalidinput' } form-control" onblur="#{ (docEditModifyArrivo.formsAdapter.funzionalitaDisponibili['verificaDuplicati']) ? 'verificaDuplicatiDocMittente();' : ''}" />
 								</div>
-								
+
 								<h:commandLink id="existsDuplicatiBtn" action="#{docEditModifyArrivo.verificaDuplicatiDoc}" actionListener="#{docEditModifyArrivo.attrListenerVerificaDuplicati}" style="display:none;">
 									<f:attribute name="tipoVerificaDuplicati" value="exists" />
 									<f:ajax execute="@form" render="templateForm:duplicatiDocPresenti templateForm:duplicatoVerificato templateForm:errormsg templateForm:nomeMittenteInit templateForm:dataProtMittenteInit templateForm:numProtMittenteInit" />
@@ -192,16 +197,16 @@
 								<h:commandLink id="apriPopupDuplicatiBtn" action="#{docEditModifyArrivo.verificaDuplicatiDoc}" actionListener="#{docEditModifyArrivo.attrListenerVerificaDuplicati}" style="display:none;" onclick="openCenterPopup('', 'popupVerificaDuplicati')" target="popupVerificaDuplicati">
 									<f:attribute name="tipoVerificaDuplicati" value="popup" />
 								</h:commandLink>
-								
+
 								<h:inputHidden id="nomeMittenteInit" value="#{docEditModifyArrivo.nomeMittenteInitValue}" />
 								<h:inputHidden id="dataProtMittenteInit" value="#{docEditModifyArrivo.dataProtMittenteInitValue}" />
 								<h:inputHidden id="numProtMittenteInit" value="#{docEditModifyArrivo.numProtMittenteInitValue}" />
-								
+
 								<h:inputHidden id="duplicatiDocPresenti" value="#{docEditModifyArrivo.duplicatiPresenti}" />
-								<h:inputHidden id="duplicatoVerificato" value="#{docEditModifyArrivo.duplicatoVerificato}" />	
+								<h:inputHidden id="duplicatoVerificato" value="#{docEditModifyArrivo.duplicatoVerificato}" />
 							</div>
 						</h:panelGroup>
-						
+
 						<div class="form-group">
 							<label for="templateForm:mezzoTrasmissioneDoc" class="col-sm-2 control-label">#{i18n['dw4.a_mezzo']}</label>
 							<div class="col-sm-3">
@@ -211,7 +216,7 @@
 								</h:selectOneMenu>
 							</div>
 						</div>
-						
+
 						<h:panelGroup id="docRaccomandata" layout="block">
 							<h:panelGroup rendered="#{docEditModifyArrivo.formsAdapter.funzionalitaDisponibili['abilitaRaccomandate'] and docEditModifyArrivo.showRaccomandataFields}" layout="block" styleClass="form-group">
 								<label for="templateForm:numraccomandata_input" class="col-sm-2 control-label">#{i18n['dw4.num_raccomandata']}</label>
@@ -229,7 +234,7 @@
 								</div>
 							</h:panelGroup>
 						</h:panelGroup>
-						
+
 						<div class="endsection">
 							<h:panelGroup rendered="#{ !docEditModifyArrivo.formsAdapter.funzionalitaDisponibili['abilitaModificaDatiDiProtocollo'] and docEditModifyArrivo.doc.num_prot ne '' and !docEditModifyArrivo.doc.bozza }">
 								<ui:repeat var="rif" value="#{docEditModifyArrivo.doc.rif_esterni}">
@@ -253,7 +258,7 @@
 									</div>
 								</ui:repeat>
 							</h:panelGroup>
-							
+
 							<h:panelGroup rendered="#{ docEditModifyArrivo.formsAdapter.funzionalitaDisponibili['abilitaModificaDatiDiProtocollo'] or docEditModifyArrivo.doc.bozza }">
 								<div class="form-group">
 									<label for="templateForm:nomeMittente_input" class="col-sm-2 control-label requiredField">* #{i18n['dw4.mittente']}</label>
@@ -278,7 +283,7 @@
 										</div>
 									</h:panelGroup>
 								</div>
-									
+
 								<div class="form-group">
 									<label for="templateForm:firmatario_input" class="col-sm-2 control-label">#{i18n['dw4.firmatario']}</label>
 									<div class="col-sm-4">
@@ -300,7 +305,7 @@
 										<h:inputText id="firmatarioRole" value="#{docEditModifyArrivo.doc.rif_esterni[0].referente.ruolo}" styleClass="form-control" />
 									</div>
 								</div>
-								
+
 								<h:panelGroup rendered="#{empty docEditModifyArrivo.hideDivs or not fn:contains(docEditModifyArrivo.hideDivs, 'indirizzo_fax')}">
 									<div class="form-group">
 										<label for="templateForm:address" class="col-sm-2 control-label"><span>#{i18n['acl.address']}</span></label>
@@ -308,7 +313,7 @@
 											<h:inputText id="address" value="#{docEditModifyArrivo.doc.rif_esterni[0].indirizzo}" styleClass="readonlyinput form-control" readonly="true" />
 										</div>
 									</div>
-									
+
 									<div class="form-group">
 										<label class="col-sm-2 control-label"><span>#{i18n['dw4.email_cert']}</span></label>
 										<div class="col-sm-2">
@@ -351,7 +356,7 @@
 								</h:panelGroup>
 							</h:panelGroup>
 						</div>
-						
+
 						<div class="form-group">
 							<label for="templateForm:doc_oggetto" class="col-sm-2 control-label #{ (docEditModifyArrivo.formsAdapter.funzionalitaDisponibili['oggettoModificabile']) ? 'requiredField' : '' }">#{ (docEditModifyArrivo.formsAdapter.funzionalitaDisponibili['oggettoModificabile']) ? '*' : '' } #{i18n['dw4.object']}</label>
 							<div class="col-sm-9">
@@ -361,13 +366,13 @@
 								<h:inputTextarea rendered="#{docEditModifyArrivo.formsAdapter.funzionalitaDisponibili['oggettoModificabile']}" id="doc_oggetto" value="#{docEditModifyArrivo.doc.oggetto}" rows="4" cols="120" styleClass="#{ component.valid ? '' : 'invalidinput' } form-control" />
 							</div>
 						</div>
-						
+
 						<ui:include src="./allegatiFields.xhtml">
 							<ui:param name="bean" value="#{docEditModifyArrivo}" />
 			        		<ui:param name="beanDoc" value="#{docEditModifyArrivo.doc}" />
 			        		<ui:param name="readOnly" value="#{ !docEditModifyArrivo.formsAdapter.funzionalitaDisponibili['abilitaModificaDatiDiProtocollo'] and !docEditModifyArrivo.doc.bozza }" />
 			        	</ui:include>
-			        	
+
 			        	<h:panelGroup rendered="#{ !docEditModifyArrivo.customfields.hiddenFields['voceindice'] and docEditModifyArrivo.docIsNotInFascicolo }" layout="block" styleClass="form-group">
 			        		<label for="templateForm:voceindice_input" class="col-sm-2 control-label"><span>#{i18n['dw4.index']}</span></label>
 							<div class="col-sm-4">
@@ -375,7 +380,7 @@
 					        		<ui:param name="id" value="voceindice" />
 					        		<ui:param name="field" value="#{docEditModifyArrivo.doc.voce_indice.text}" />
 					        		<ui:param name="bean" value="#{docEditModifyArrivo}" />
-					        		<ui:param name="confirmOnAction" value="#{(docEditModifyArrivo.formsAdapter.funzionalitaDisponibili['rifInterniModificabiliDaVoceIndice']) ? i18n['dw4.se_si_seleziona_una_voce_di_indice_potrebbero_essere_sovrascritti_gli_assegnatari_del_documento_Continuare'] : ''}" />
+					        		<ui:param name="confirmOnAction" value="#{(docEditModifyArrivo.formsAdapter.funzionalitaDisponibili['rifInterniModificabiliDaVoceIndice']) ? i18n['dw4.se_si_seleziona_una_voce_di_indice_potrebbero_essere_aggiornati_gli_assegnatari_del_documento_Continuare'] : ''}" />
 					        		<ui:param name="action" value="lookupVoceIndice"/>
 					        		<ui:param name="clearaction" value="clearLookupVoceIndice"/>
 					        		<ui:param name="title" value="#{i18n['dw4.lookup_voce_indice']}"/>
@@ -384,7 +389,7 @@
 					        	</ui:include>
 							</div>
 						</h:panelGroup>
-						
+
 						<h:panelGroup id="classif_holder" layout="block">
 							<ui:include src="./classifFields.xhtml">
 				        		<ui:param name="id" value="classif" />
@@ -393,52 +398,52 @@
 				        		<ui:param name="beanDoc" value="#{docEditModifyArrivo.doc}" />
 				        		<ui:param name="actionTitolario" value="thVincolatoTitolarioClassificazione"/>
 				        		<ui:param name="actionGerarchia" value="gerarchiaTitolarioClassificazione"/>
-				        		<ui:param name="refresh" value="templateForm:classif_holder templateForm:showthes templateForm:errormsg"/>
+				        		<ui:param name="refresh" value="templateForm:classif_holder templateForm:showthes templateForm:errormsg templateForm:protocollaBtn"/>
 				        		<ui:param name="readOnlyConservazione" value="false" />
 				        		<ui:param name="optionalField" value="#{docEditModifyArrivo.formsAdapter.funzionalitaDisponibili['docClassifEreditabile']}" />
 				        	</ui:include>
 			        	</h:panelGroup>
-			        	
+
 			        	<ui:include src="./visibilitaFields.xhtml">
 							<ui:param name="bean" value="#{docEditModifyArrivo}" />
 			        		<ui:param name="beanDoc" value="#{docEditModifyArrivo.doc}" />
 			        	</ui:include>
 					</div> <!-- /fieldset -->
-					
+
 					<ui:include src="./scadenzaFields.xhtml">
 						<ui:param name="bean" value="#{docEditModifyArrivo}" />
 		        		<ui:param name="beanDoc" value="#{docEditModifyArrivo.doc}" />
 		        	</ui:include>
-		        	
+
 		        	<ui:include src="../customfields/docedit@customfields.xhtml">
 						<ui:param name="bean" value="#{docEditModifyArrivo}" />
 		        	</ui:include>
-	        	
+
 	        		<h:panelGroup rendered="#{docEditModifyArrivo.docIsNotInFascicolo and docEditModifyArrivo.doc.bozza}">
 		        		<ui:include src="./docEdit@rifinterni@doc.xhtml">
 							<ui:param name="bean" value="#{docEditModifyArrivo}" />
 			        	</ui:include>
 		        	</h:panelGroup>
-	        		
+
 	        		<h:panelGroup rendered="#{!docEditModifyArrivo.customfields.hiddenSections['altro']}">
 		        		<div class="fieldset">
 							<div class="legend">
 								#{i18n['dw4.other']}
-		        			
+
 			        			<div class="pull-right">
 									<span class="glyphicon glyphicon-list-alt" title="#{i18n['dw4.other']}"></span>
 								</div>
 							</div>
-							
+
 							<h:panelGroup rendered="#{!docEditModifyArrivo.customfields.hiddenFields['codiceprogetto'] and docEditModifyArrivo.formsAdapter.funzionalitaDisponibili['mostraCodiceProgetto']}">
 								<div class="form-group">
 					               	<label for="templateForm:codProgetto" class="col-sm-2 control-label">#{i18n['dw4.codice_progetto']}</label>
 					               	<div class="col-sm-9">
 					               		<h:inputText id="codProgetto" value="#{docEditModifyArrivo.doc.extra.codice_progetto}" styleClass="form-control" />
-					               	</div>		
+					               	</div>
 								</div>
 							</h:panelGroup>
-							
+
 							<h:panelGroup rendered="#{!docEditModifyArrivo.customfields.hiddenFields['riferimenti'] or !docEditModifyArrivo.customfields.hiddenFields['tipologia']}">
 								<div class="form-group">
 					               	<h:panelGroup rendered="#{!docEditModifyArrivo.customfields.hiddenFields['riferimenti']}">
@@ -447,7 +452,7 @@
 						               		<h:inputText id="riferimentiDoc" value="#{docEditModifyArrivo.doc.riferimenti.text}" styleClass="form-control" />
 						               	</div>
 									</h:panelGroup>
-									<h:panelGroup rendered="#{!docEditModifyArrivo.customfields.hiddenFields['tipologia']}">		
+									<h:panelGroup rendered="#{!docEditModifyArrivo.customfields.hiddenFields['tipologia']}">
 					               		<label for="templateForm:codTipologiaDoc" class="col-sm-2 control-label">#{i18n['acl.tipologia']}</label>
 						               	<div class="col-sm-3">
 						               		<h:selectOneMenu id="codTipologiaDoc" value="#{docEditModifyArrivo.doc.tipologia.cod}" styleClass="form-control">
@@ -457,25 +462,25 @@
 									</h:panelGroup>
 								</div>
 							</h:panelGroup>
-							
+
 							<h:panelGroup rendered="#{!docEditModifyArrivo.customfields.hiddenFields['note']}">
 								<div class="form-group">
 					               	<label for="templateForm:note" class="col-sm-2 control-label">#{i18n['acl.notes']}</label>
 					               	<div class="col-sm-9">
 					               		<h:inputTextarea id="note" value="#{docEditModifyArrivo.doc.note.text}" rows="4" cols="120" styleClass="form-control" />
-					               	</div>		
+					               	</div>
 								</div>
 							</h:panelGroup>
-							
+
 							<h:panelGroup rendered="#{!docEditModifyArrivo.customfields.hiddenFields['parolechiave']}">
 								<div class="form-group">
 									<label for="templateForm:keywordsDoc" class="col-sm-2 control-label">#{i18n['dw4.keywords']}</label>
 									<div class="col-sm-9">
 										<h:inputText id="keywordsDoc" value="#{docEditModifyArrivo.doc.keywords.text}" styleClass="form-control" />
-									</div>			
+									</div>
 								</div>
 							</h:panelGroup>
-							
+
 							<h:panelGroup rendered="#{docEditModifyArrivo.formsAdapter.funzionalitaDisponibili['show_customSelect1']}" layout="block" styleClass="form-group">
 								<h:panelGroup rendered="#{fn:length(docEditModifyArrivo.doc.customSelect1) > 0}">
 								   	<label for="templateForm:customSelect1" class="col-sm-2 control-label">#{i18n['dw4.custom_select_1_label']}</label>
@@ -496,12 +501,12 @@
 							</h:panelGroup>
 						</div> <!-- /fieldset -->
 					</h:panelGroup>
-					
+
 					<ui:include src="./xlinkFields.xhtml">
 						<ui:param name="bean" value="#{docEditModifyArrivo}" />
 		        		<ui:param name="beanDoc" value="#{docEditModifyArrivo.doc}" />
 		        	</ui:include>
-		        	
+
 		        	<ui:include src="./docInformaticiFields.xhtml">
 						<ui:param name="bean" value="#{docEditModifyArrivo}" />
 		        		<ui:param name="beanDoc" value="#{docEditModifyArrivo.doc}" />
@@ -514,12 +519,20 @@
 			</div>
 		</div>
 		<!-- scheda edit: fine -->
-		
+
 		<ui:include src="./lookup.xhtml"> <ui:param name="pageBean" value="#{docEditModifyArrivo}"/></ui:include>
 		<ui:include src="./rifintLookup.xhtml"> <ui:param name="pageBean" value="#{docEditModifyArrivo}"/></ui:include>
 		<ui:include src="./showthes.xhtml"> <ui:param name="pageBean" value="#{docEditModifyArrivo}"/></ui:include>
-		
-		<h:inputTextarea value="#{docEditModifyArrivo.xml}" rendered="#{docEditModifyArrivo.debugMode}" styleClass="form-control" rows="10" />
+		<!-- template per upload e la decompressione di archivi ZIP -->
+		<ui:param name="currentBean" value="#{docEditModifyArrivo}" />
+		<ui:include src="./docUploadArchive.xhtml">
+			<ui:param name="bean" value="#{docWayUploadArchive}"/>
+			<ui:param name="beanDoc" value="#{currentBean}" />
+			<ui:param name="doc" value="#{currentBean.doc}" />
+			<ui:param name="enableFiles" value="#{currentBean.docInformaticiEnabled and currentBean.formsAdapter.funzionalitaDisponibili['addFile']}" />
+		</ui:include>
+
+		<h:inputTextarea value="#{docEditModifyArrivo.xml}" rendered="#{docEditModifyArrivo.debugMode}" styleClass="form-control debug-textarea" rows="10" />
 	</div>
 </ui:define>
 

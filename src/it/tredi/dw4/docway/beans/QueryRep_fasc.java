@@ -1,6 +1,7 @@
 package it.tredi.dw4.docway.beans;
 
 import it.tredi.dw4.utils.XMLDocumento;
+import it.tredi.dw4.utils.XMLUtil;
 import it.tredi.dw4.adapters.AdaptersConfigurationLocator;
 import it.tredi.dw4.adapters.ErrormsgFormsAdapter;
 import it.tredi.dw4.docway.doc.adapters.DocDocWayQueryFormsAdapter;
@@ -29,6 +30,8 @@ public class QueryRep_fasc extends DocWayQuery {
 	private boolean consistenza_fasc = false;
 	private boolean consistenza_sottofasc = false;
 	
+	private String codSede = "";
+	
 	private Rif rif = new Rif();
 		
 	public QueryRep_fasc() throws Exception {
@@ -37,6 +40,8 @@ public class QueryRep_fasc extends DocWayQuery {
 	
 	public void init(Document dom) {
 		xml = dom.asXML();
+		
+		codSede = XMLUtil.parseStrictAttribute(dom, "/response/@cod_sede");
     }	
 	
 	public DocDocWayQueryFormsAdapter getFormsAdapter() {
@@ -121,6 +126,14 @@ public class QueryRep_fasc extends DocWayQuery {
 
 	public void setRif(Rif rif) {
 		this.rif = rif;
+	}
+	
+	public String getCodSede() {
+		return codSede;
+	}
+
+	public void setCodSede(String codSede) {
+		this.codSede = codSede;
 	}
 
 	@Override
@@ -242,7 +255,11 @@ public class QueryRep_fasc extends DocWayQuery {
 			String campi 		= ".@nome_uff=xml,/struttura_interna/nome ; .@cod_uff=xml,/struttura_interna/@cod_uff";
 			String db 			= formsAdapter.getDefaultForm().getParam("aclDb"); //db 
 			String newRecord 	= ""; //newRecord
-			String xq			= ""; //extraQuery
+			
+			// mbernardini 25/01/2016 : in caso di lookup su anagrafica occorre filtrare sull'aoo corrente
+			String xq = ""; //extraQuery
+			if (codSede != null && codSede.length() > 0)
+				xq = "[struint_codammaoo]=\"" + codSede + "\""; 
 			
 			return customPrintLookup(rif, aliasName, aliasName1, titolo, ord, campi, xq, db, newRecord, value);
 		}
@@ -280,7 +297,11 @@ public class QueryRep_fasc extends DocWayQuery {
 			String campi 		= ".@nome_persona=xml,/persona_interna/@cognome xml,/persona_interna/@nome ; .@cod_persona=xml,/persona_interna/@cod_persona";
 			String db 			= formsAdapter.getDefaultForm().getParam("aclDb"); //db 
 			String newRecord 	= ""; //newRecord
-			String xq			= ""; //extraQuery
+			
+			// mbernardini 25/01/2016 : in caso di lookup su anagrafica occorre filtrare sull'aoo corrente e non includere i profili nella selezione (solo persone)
+			String xq = "[/persona_interna/@tipo]=\"&null;\""; //extraQuery
+			if (codSede != null && codSede.length() > 0)
+				xq += " AND [persint_codammaoo]=\"" + codSede + "\"";
 			
 			return customPrintLookup(rif, aliasName, aliasName1, titolo, ord, campi, xq, db, newRecord, value);
 		}

@@ -12,11 +12,13 @@ public class WorkflowLink extends XmlEntity {
 
 	private String name = "";
 	private String label = "";
+	private String bonitaVersion = "";
 	
 	@Override
 	public XmlEntity init(Document dom) {
 		this.name = XMLUtil.parseStrictAttribute(dom, "/bwf_link/@name");
 		this.label = XMLUtil.parseStrictAttribute(dom, "/bwf_link/label");
+		this.bonitaVersion = XMLUtil.parseStrictAttribute(dom, "/bwf_link/@bonitaVersion");
 		
 		return this;
 	}
@@ -29,6 +31,7 @@ public class WorkflowLink extends XmlEntity {
     	if (this.name != null && this.name.length() > 0) {
     		params.put(prefix + ".@name", this.name);
     		params.put(prefix + ".label", this.label);
+    		params.put(prefix + ".@bonitaVersion", this.bonitaVersion);
     	}
     	
     	return params;
@@ -50,4 +53,11 @@ public class WorkflowLink extends XmlEntity {
 		this.label = label;
 	}
 
+	public String getBonitaVersion() {
+		return bonitaVersion;
+	}
+
+	public void setBonitaVersion(String bonitaVersion) {
+		this.bonitaVersion = bonitaVersion;
+	}
 }

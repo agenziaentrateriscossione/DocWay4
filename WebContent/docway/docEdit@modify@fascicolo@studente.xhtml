@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+    template="#{docEditModifyFascicoloStudente.pageTemplate}"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:c="http://java.sun.com/jsp/jstl/core">
+
+<ui:define name="content">
+	<div class="fascicolo docedit">
+	
+		<!-- toolbar: inizio -->
+		<div class="btn-toolbar" role="toolbar">
+			<div class="btn-group">
+				<h:commandLink id="saveBtn" action="#{docEditModifyFascicoloStudente.saveDocument}" styleClass="btn btn-primary openwaitmsg">#{i18n['acl.save']}</h:commandLink>
+				<h:commandLink action="#{docEditModifyFascicoloStudente.clearDocument}" styleClass="btn btn-default">#{i18n['acl.back']}</h:commandLink>	
+			</div>
+		</div>
+		<!-- toolbar: fine -->
+		
+		<h5 class="sub-header">
+			<span class="doc-tipo-fascicolo glyphicon glyphicon-folder-open"></span>&#160;
+			<h:outputText value="#{docEditModifyFascicoloStudente.modFascicoloTitle}" />
+		</h5>
+		
+		<script type="text/javascript">
+		$(document).ready(function() {
+			// disabilita link esterni al form per rilascio del lock sul documento
+			disableNoTemplateFormLinks("#{i18n['dw4.abbandona_alert_msg']}");
+		});
+		</script>
+		
+		<!-- messages: inizio -->
+		<h:panelGroup rendered="#{not empty facesContext.messageList}" layout="block" styleClass="docedit-messages alert alert-danger">
+			<h:messages styleClass="" id="validationMesseges" />
+		</h:panelGroup>
+		<!-- messages: fine -->
+		
+		<!-- scheda edit: inizio -->
+		<div class="row-fluid" style="margin-top:10px;">
+			<div id="fixedshowdoc" class="box span12 fixed-showdoc">
+				<div class="box-content">
+				
+					<div class="fieldset">
+						<div class="legend">
+							#{i18n['dw4.datifasc']}
+							
+							<div class="pull-right">
+								<span class="glyphicon glyphicon-folder-close" title="#{i18n['dw4.datifasc']}"></span>
+							</div>
+						</div>
+						
+						<h:panelGroup rendered="#{docEditModifyFascicoloStudente.showIfSottoFasc}" layout="block" styleClass="form-group">
+							<label for="templateForm:fasc_oggetto" class="col-sm-2 control-label requiredField">* #{i18n['dw4.object']}</label>
+							<div class="col-sm-9">
+								<h:inputTextarea id="fasc_oggetto" value="#{docEditModifyFascicoloStudente.fascicolo.oggetto}" rows="4" cols="120" styleClass="#{ component.valid ? '' : 'invalidinput' } form-control" />
+							</div>
+						</h:panelGroup>
+						
+						<h:panelGroup rendered="#{docEditModifyFascicoloStudente.showIfFasc}">
+							<div class="form-group">
+								<label for="templateForm:fasc_nominativo" class="col-sm-2 control-label requiredField">* #{i18n['dw4.nominativo']}</label>
+								<div class="col-sm-9">
+									<h:inputText id="fasc_nominativo" value="#{docEditModifyFascicoloStudente.fascicolo.oggetto}" styleClass="#{ component.valid ? '' : 'invalidinput' } form-control" />
+								</div>
+							</div>
+							
+							<div class="form-group">
+								<label for="templateForm:fasc_matricola" class="col-sm-2 control-label">#{i18n['acl.code']}</label>
+								<div class="col-sm-3">
+									<h:inputText id="fasc_matricola" value="#{docEditModifyFascicoloStudente.fascicolo.fascicolo_speciale.matricola}" styleClass="#{ component.valid ? '' : 'invalidinput' } form-control" />
+								</div>
+								<label for="templateForm:fasc_codfis" class="col-sm-3 control-label">#{i18n['dw4.codicefiscale']}</label>
+								<div class="col-sm-3">
+									<h:inputText id="fasc_codfis" value="#{docEditModifyFascicoloStudente.fascicolo.fascicolo_speciale.codice_fiscale}" styleClass="form-control" />
+								</div>
+							</div>
+							
+							<div class="form-group">
+								<ui:include src="./dateField.xhtml">
+									<ui:param name="label" value="#{i18n['acl.birthdate']}" />
+									<ui:param name="id" value="fasc_data_nascita" />
+									<ui:param name="value" value="#{docEditModifyFascicoloStudente.fascicolo.fascicolo_speciale.data_nascita}" />
+								</ui:include>
+								
+								<ui:include src="./dateField.xhtml">
+									<ui:param name="label" value="#{i18n['dw4.data_immatr']}" />
+									<ui:param name="id" value="fasc_data_immatricolazione" />
+									<ui:param name="value" value="#{docEditModifyFascicoloStudente.fascicolo.fascicolo_speciale.data_immatricolazione}" />
+									<ui:param name="offset" value="3" />
+								</ui:include>
+							</div>
+						</h:panelGroup>
+						
+						<div class="form-group">
+							<div class="feHolder">
+								<label class="col-sm-2 control-label">#{i18n['dw4.classif']}</label>
+								<div class="col-sm-9">
+									<p class="form-control-static"><h:outputText value="#{docEditModifyFascicoloStudente.fascicolo.classif.text_ro}" /></p>
+								</div>
+							</div>
+						</div>
+					</div> <!-- /fieldset -->
+					
+					<div class="fieldset">
+	        			<div class="legend">
+	        				#{i18n['dw4.other']}
+	        				
+	        				<div class="pull-right">
+								<span class="glyphicon glyphicon-list-alt" title="#{i18n['dw4.other']}"></span>
+							</div>
+	        			</div>
+	        			
+	        			<ui:include src="./docEditTags.xhtml">
+				        	<ui:param name="bean" value="#{docEditModifyFascicoloStudente.fascicolo}" />
+				        	<ui:param name="pageBean" value="#{docEditModifyFascicoloStudente}" />
+			        	</ui:include>
+	        			
+	        			<div class="form-group">
+			               	<label for="templateForm:note" class="col-sm-2 control-label">#{i18n['acl.notes']}</label>
+			               	<div class="col-sm-9">
+			               		<h:inputTextarea id="note" value="#{docEditModifyFascicoloStudente.fascicolo.note.text}" rows="4" cols="120" styleClass="form-control" />
+			               	</div>		
+						</div>
+	        		</div> <!-- /fieldset -->
+				</div>
+			</div>
+		</div>
+		<!-- scheda edit: fine -->
+		
+		<h:inputTextarea value="#{docEditModifyFascicoloStudente.xml}" rendered="#{docEditModifyFascicoloStudente.debugMode}" styleClass="form-control debug-textarea" rows="10" />
+			
+		<ui:fragment rendered="#{docEditModifyFascicoloStudente.formsAdapter.assignAndClose != null and docEditModifyFascicoloStudente.formsAdapter.assignAndClose == 'true'}">
+			<script type="text/javascript">
+			window.opener.$('#templateForm\\:reloadPage').trigger("click");
+			self.close();
+			</script>
+		</ui:fragment>
+		
+		<ui:include src="./lookup.xhtml"> <ui:param name="pageBean" value="#{docEditModifyFascicoloStudente}"/></ui:include>
+		<ui:include src="./rifintLookup.xhtml"> <ui:param name="pageBean" value="#{docEditModifyFascicoloStudente}"/></ui:include>
+		<ui:include src="./showthes.xhtml"> <ui:param name="pageBean" value="#{docEditModifyFascicoloStudente}"/></ui:include>
+	</div>
+</ui:define>
+	
+</ui:composition>

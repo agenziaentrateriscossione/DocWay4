@@ -52,10 +52,22 @@
 					</h:commandLink>
 				</div>
 			</div>
+			
+			<!-- upload file zip button -->
+			<h:panelGroup rendered="#{bean.formsAdapter.funzionalitaDisponibili['abilitaUploadArchiviCompressi']}">
+				<div class="form-group">
+					<div class="col-xs-10 col-xs-offset-2">
+						<h:commandLink styleClass="btn btn-xs btn-primary" action="#{bean.openUploadArchiviCompressi}" title="#{i18n['dw4.scompatta_e_carica_validi']}" value="#{i18n['dw4.upload_zip']}">
+							<f:ajax execute="@form" render="@form" />
+						</h:commandLink>
+					</div>
+				</div>
+			</h:panelGroup>
+			
 			<c:forEach var="file" items="#{beanDoc.files}" varStatus="indice">
 				<div class="form-group">
 					<label class="col-sm-2 control-label">#{i18n['acl.title']}</label>
-					<div class="col-sm-7">
+					<div class="col-sm-#{(!empty fileFieldSize) ? fileFieldSize : '7'}">
 						<h:inputHidden id="xwFiles_#{indice.index}_fileName" value="#{file.name}" />
 						<h:inputHidden id="xwFiles_#{indice.index}_xwayId" value="#{file.xwayId}" />
 						<h:inputHidden id="xwFiles_#{indice.index}_iwxGuId" value="#{file.iwxGuId}" />
@@ -63,11 +75,11 @@
 						<div class="input-group">
 							<h:panelGroup rendered="#{bean.formsAdapter.funzionalitaDisponibili['abilitaLibroFirma']}">
 								<span class="input-group-addon firma-digitale-addon popoveritem" title="#{i18n['dw4.da_firmare']}" data-toggle="popover" data-placement="top" data-trigger="hover" data-content="#{i18n['dw4.richiesta_di_firma_digitale_sul_file_da_parte_del_responsabile']}" >
-									<label for="templateForm:xwFiles_#{indice.index}_checkFirma"><span class="glyphicons-pro pen firma-digitale normla-size-icon"></span></label>&#160;
+									<label for="templateForm:xwFiles_#{indice.index}_checkFirma"><span class="glyphicons-pro pen firma-digitale normal-size-icon"></span></label>&#160;
 									<h:selectBooleanCheckbox id="xwFiles_#{indice.index}_checkFirma" value="#{file.da_firmare}" label="#{i18n['dw4.da_firmare']}" title="#{i18n['dw4.da_firmare']}" />
 								</span>
 							</h:panelGroup>
-							<h:inputText id="xwFiles_#{indice.index}_fileTitle" value="#{file.title}" styleClass="form-control" />
+							<h:inputText id="xwFiles_#{indice.index}_fileTitle" value="#{file.title}" styleClass="#{ component.valid ? '' : 'invalidinput' } form-control" />
 							<div class="input-group-btn">
 								<h:outputLink rendered="#{file.xwayId ne ''}" onclick="alert('#{i18n['dw4.apertura_del_file_non_consentita_su_file_appena_caricati']}'); return false;" onkeypress="alert('#{i18n['dw4.apertura_del_file_non_consentita_su_file_appena_caricati']}'); return false;" title="#{i18n['dw4.apri_il_file']}" styleClass="btn btn-default disabled">
 									<span class="glyphicon glyphicon-download-alt"></span>
@@ -94,14 +106,17 @@
 								</h:commandLink>
 								
 								<h:panelGroup rendered="#{indice.index == fn:length(beanDoc.files)-1}">
-									<h:panelGroup rendered="#{bean.enableIW}">
+									<h:panelGroup rendered="#{bean.enableIW and !forceDisableIWX}">
 										<h:commandLink onclick="return IwxRuntime.Client.addDocIWX();" styleClass="btn btn-default sfogliaButton">#{i18n['dw4.sfoglia']}</h:commandLink>
 									</h:panelGroup>
-									<h:panelGroup rendered="#{!bean.enableIW}">
-										<span id="swfupload-files-control">
-											<span id="swfuploadFilesHolder"></span>
-											<h:commandLink id="xwFiles_#{indice.index}_swfuploadFilesBtn" onclick="return false;" styleClass="btn btn-default sfogliaButton">#{i18n['dw4.sfoglia']}</h:commandLink>
-										</span>
+									<h:panelGroup rendered="#{!bean.enableIW or forceDisableIWX}">
+										<h:commandLink onclick="return addDocDragAndDrop();" styleClass="btn btn-default sfogliaButton">#{i18n['dw4.sfoglia']}</h:commandLink>
+										<script type="text/javascript">
+										function addDocDragAndDrop() {
+											$('#dropzoneFiles').contents().find('#fileupload').trigger('click');
+											return false;
+										}
+										</script>
 									</h:panelGroup>
 								</h:panelGroup>
 							</div>
@@ -109,6 +124,30 @@
 					</div>
 				</div>
 			</c:forEach>
+			
+			<h:panelGroup rendered="#{!bean.enableIW or forceDisableIWX or bean.formsAdapter.funzionalitaDisponibili['enableDragAndDropUploadFiles']}" layout="block" styleClass="form-group">
+				<label class="col-sm-2 control-label">#{i18n['dw4.drag_and_drop']}</label>
+				<div class="col-sm-#{(!empty fileFieldSize) ? fileFieldSize : '7'}">
+					<iframe id="dropzoneFiles" class="dropzone-iframe dropzone-files form-control" src="#{facesContext.externalContext.requestContextPath}/docway/dropzoneFileUpload.jsf"></iframe>
+					<script type="text/javascript">
+					var dadFilesTypes = "#{bean.docInformaticiFileTypes}";
+					var dadMaxFileSize = #{bean.formsAdapter.sizeMaxFile};
+					
+					function updateFilesFromDragAndDrop(dadFilesIds, dadFilesNames) {
+						if (dadFilesIds &amp;&amp; dadFilesNames) {
+							$('#templateForm\\:nFileId').val(dadFilesIds);
+							$('#templateForm\\:nFileName').val(dadFilesNames);
+							$('#templateForm\\:nFileTitle').val(dadFilesNames);
+							
+							$('#templateForm\\:addFilesButton').trigger('click');
+						}
+						else {
+							hideOpenwaitmsg();
+						}
+					}
+					</script>
+				</div>
+			</h:panelGroup>
 		</h:panelGroup>
 		
 		<h:panelGroup rendered="#{enableImages}" layout="block" id="images_Fields">
@@ -136,7 +175,7 @@
 			<c:forEach var="file" items="#{beanDoc.immagini}" varStatus="indice">
 				<div class="form-group">
 					<label class="col-sm-2 control-label"><span>#{i18n['acl.title']}</span></label>
-					<div class="col-sm-7">
+					<div class="col-sm-#{(!empty fileFieldSize) ? fileFieldSize : '7'}">
 						<h:inputHidden id="xwImages_#{indice.index}_fileName" value="#{file.name}" />
 						<h:inputHidden id="xwImages_#{indice.index}_xwayId" value="#{file.xwayId}" />
 						<h:inputHidden id="xwImages_#{indice.index}_iwxGuId" value="#{file.iwxGuId}" />
@@ -144,13 +183,13 @@
 						<div class="input-group">
 							<h:panelGroup rendered="#{bean.formsAdapter.funzionalitaDisponibili['abilitaLibroFirma']}">	
 								<span class="input-group-addon firma-digitale-addon popoveritem" title="#{i18n['dw4.da_firmare']}" data-toggle="popover" data-placement="top" data-trigger="hover" data-content="#{i18n['dw4.richiesta_di_firma_digitale_sul_file_da_parte_del_responsabile']}" >
-									<label for="templateForm:xwImages_#{indice.index}_checkFirma"><span class="glyphicons-pro pen firma-digitale normla-size-icon"></span></label>&#160;
+									<label for="templateForm:xwImages_#{indice.index}_checkFirma"><span class="glyphicons-pro pen firma-digitale normal-size-icon"></span></label>&#160;
 									<h:selectBooleanCheckbox id="xwImages_#{indice.index}_checkFirma" value="#{file.da_firmare}" label="#{i18n['dw4.da_firmare']}" />
 								</span>
 							</h:panelGroup>
 							<h:inputText id="xwImages_#{indice.index}_fileTitle" value="#{file.title}" styleClass="xwimageinput form-control" />
 							<div class="input-group-btn">
-								<h:panelGroup rendered="#{bean.enableIW}">
+								<h:panelGroup rendered="#{bean.enableIW and !forceDisableIWX}">
 									<h:commandLink rendered="#{file.xwayId ne ''}" id="xwImages_#{indice.index}_image_apri_button" onclick="return IwxRuntime.Client.openImageIWX(#{indice.index});" title="#{i18n['dw4.apri_il_file']}" styleClass="btn btn-default">
 										<span class="glyphicon glyphicon-picture"></span>
 									</h:commandLink>
@@ -158,7 +197,7 @@
 							   			<span class="glyphicon glyphicon-picture"></span>
 							   		</h:commandLink>
 							   	</h:panelGroup>
-							   	<h:panelGroup rendered="#{!bean.enableIW}">
+							   	<h:panelGroup rendered="#{!bean.enableIW or forceDisableIWX}">
 							   		<h:outputLink rendered="#{file.xwayId ne ''}" onclick="alert('#{i18n['dw4.apertura_del_file_non_consentita_su_file_appena_caricati']}'); return false;" onkeypress="alert('#{i18n['dw4.apertura_del_file_non_consentita_su_file_appena_caricati']}'); return false;" title="#{i18n['dw4.apri_il_file']}" styleClass="btn btn-default disabled">
 										<span class="glyphicon glyphicon-download-alt"></span>
 									</h:outputLink>
@@ -184,10 +223,8 @@
 						 			<span class="glyphicon glyphicon-chevron-down"></span>
 								</h:commandLink>
 								
-								
-								
 								<h:panelGroup rendered="#{indice.index == fn:length(beanDoc.immagini)-1}">
-									<h:panelGroup rendered="#{bean.enableIW}">
+									<h:panelGroup rendered="#{bean.enableIW and !forceDisableIWX}">
 										<h:commandLink onclick="return IwxRuntime.Client.addImageIWX();" styleClass="btn btn-default sfogliaButton">#{i18n['dw4.sfoglia']}</h:commandLink>
 										<div class="input-group-btn dropup scannerButton">
   											<a class="btn btn-default dropdown-toggle" data-toggle="dropdown">#{i18n['dw4.scansione']} <span class="caret"></span></a>
@@ -203,11 +240,14 @@
 											</ul>
 										</div>
 									</h:panelGroup>
-									<h:panelGroup rendered="#{!bean.enableIW}">
-										<span id="swfupload-images-control">
-											<span id="swfuploadImagesHolder"></span>
-											<h:commandLink id="xwImages_#{indice.index}_swfuploadImagesBtn" onclick="return false;" styleClass="btn btn-default sfogliaButton">#{i18n['dw4.sfoglia']}</h:commandLink>
-										</span>
+									<h:panelGroup rendered="#{!bean.enableIW or forceDisableIWX}">
+										<h:commandLink onclick="return addImageDragAndDrop();" styleClass="btn btn-default sfogliaButton">#{i18n['dw4.sfoglia']}</h:commandLink>
+										<script type="text/javascript">
+										function addImageDragAndDrop() {
+											$('#dropzoneImages').contents().find('#fileupload').trigger('click');
+											return false;
+										}
+										</script>
 									</h:panelGroup>
 								</h:panelGroup>
 							</div>
@@ -215,18 +255,42 @@
 					</div>
 				</div>
 			</c:forEach>
+			
+			<h:panelGroup rendered="#{!bean.enableIW or forceDisableIWX or bean.formsAdapter.funzionalitaDisponibili['enableDragAndDropUploadFiles']}" layout="block" styleClass="form-group">
+				<label class="col-sm-2 control-label">#{i18n['dw4.drag_and_drop']}</label>
+				<div class="col-sm-#{(!empty fileFieldSize) ? fileFieldSize : '7'}">
+					<iframe id="dropzoneImages" class="dropzone-iframe dropzone-images form-control" src="#{facesContext.externalContext.requestContextPath}/docway/dropzoneFileUpload.jsf?dadType=Image"></iframe>
+					<script type="text/javascript">
+					var dadImagesTypes = "#{(!empty bean.docInformaticiImageTypes) ? bean.docInformaticiImageTypes : '*.tif;*.tiff;*.jpg;*.jpeg;*.bmp;*.png' }";
+					var dadMaxImageSize = #{bean.formsAdapter.sizeMaxImg};
+					
+					function updateImagesFromDragAndDrop(dadImagesIds, dadImagesNames) {
+						if (dadImagesIds &amp;&amp; dadImagesNames) {
+							$('#templateForm\\:nImageId').val(dadImagesIds);
+							$('#templateForm\\:nImageName').val(dadImagesNames);
+							$('#templateForm\\:nImageTitle').val(dadImagesNames);
+							
+							$('#templateForm\\:addImagesButton').trigger('click');
+						}
+						else {
+							hideOpenwaitmsg();
+						}
+					}
+					</script>
+				</div>
+			</h:panelGroup>
 		</h:panelGroup>
 		
 		<h:panelGroup rendered="#{ enableFiles or enableImages }">
-			<h:panelGroup rendered="#{ !bean.enableIW }">
+			<h:panelGroup rendered="#{ !bean.enableIW or forceDisableIWX }">
 				<script type="text/javascript">
 				var docInformaticiUploadUrl = "#{facesContext.externalContext.requestContextPath}/fileupload";
-				var docInformaticiFileLimit = "0"; // TODO dim massima files, recuperarla da file di properties
+				var docInformaticiFileLimit = #{bean.formsAdapter.sizeMaxFile}; // dim massima files, recuperarla da file di properties
 				//var docInformaticiFileDescription = "#{i18n['dw4.all_files']}";
 				var docInformaticiFileDescription = "#{bean.docInformaticiFileDescription}";
 				//var docInformaticiFileTypes = "*.*";
 				var docInformaticiFileTypes = "#{bean.docInformaticiFileTypes}";
-				var docInformaticiImageLimit = "0"; // TODO dim massima images, recuperarla da file di properties
+				var docInformaticiImageLimit = #{bean.formsAdapter.sizeMaxImg}; // dim massima images, recuperarla da file di properties
 				//var docInformaticiImageTypesDescription = "#{i18n['dw4.image_files']}";
 				var docInformaticiImageTypesDescription = "#{pageBean.docInformaticiImageDescription}";
 				//var docInformaticiImageTypes = "*.tif; *.tiff; *.jpg; *.jpeg; *.bmp; *.png";
@@ -248,7 +312,7 @@
 				</script>
 			</h:panelGroup>
 			
-			<h:panelGroup rendered="#{ bean.enableIW }">
+			<h:panelGroup rendered="#{ bean.enableIW and !forceDisableIWX }">
 				<div class="clearfix">
 					<div class="iwx-box" style="margin-top:13px;">
 						<div class="iwx-button-bar">
@@ -322,13 +386,13 @@
 				var iwxHeight = "#{(enableImages) ? '' : '5px;'}";
 				
 				window.loadIWX = function() {
-					initIwxAfterReload('#{facesContext.externalContext.requestContextPath}/fileupload', '#{cookie.JSESSIONID.value}', '#{userBean.login}', '#{userBean.matricola}', '#{bean.formsAdapter.customTupleName}', '#{bean.formsAdapter.db}', resetJobsIwx, 'openDocEditCurrentImage', null, iwxHeight, '#{bean.iwxFileTypes}', '#{bean.iwxImageTypes}');
+					initIwxAfterReload("#{facesContext.externalContext.requestContextPath}/fileupload", "#{cookie.JSESSIONID.value}", "#{userBean.login}", "#{userBean.matricola}", "#{bean.formsAdapter.customTupleName}", "#{bean.formsAdapter.db}", resetJobsIwx, "openDocEditCurrentImage", null, iwxHeight, "#{bean.iwxFileTypes}", "#{bean.iwxImageTypes}", #{bean.formsAdapter.sizeMaxFile}, #{bean.formsAdapter.sizeMaxImg});
 				}
 				
 				$(window).load(function() {
 					jsf.ajax.addOnEvent(function(data) { 
 						if (data.status == 'success') {
-							initIwxAfterAjax('#{facesContext.externalContext.requestContextPath}/fileupload', '#{cookie.JSESSIONID.value}', '#{userBean.login}', '#{userBean.matricola}', '#{bean.formsAdapter.customTupleName}', '#{bean.formsAdapter.db}', 'openDocEditCurrentImage', null, iwxHeight, '#{bean.iwxFileTypes}', '#{bean.iwxImageTypes}');
+							initIwxAfterAjax("#{facesContext.externalContext.requestContextPath}/fileupload", "#{cookie.JSESSIONID.value}", "#{userBean.login}", "#{userBean.matricola}", "#{bean.formsAdapter.customTupleName}", "#{bean.formsAdapter.db}", "openDocEditCurrentImage", null, iwxHeight, "#{bean.iwxFileTypes}", "#{bean.iwxImageTypes}", #{bean.formsAdapter.sizeMaxFile}, #{bean.formsAdapter.sizeMaxImg});
 						}
 					});
 				});

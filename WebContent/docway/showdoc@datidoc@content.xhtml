@@ -1,7 +1,7 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml" 
-	  xmlns:h="http://java.sun.com/jsf/html" 
-	  xmlns:ui="http://java.sun.com/jsf/facelets" 
+<html xmlns="http://www.w3.org/1999/xhtml"
+	  xmlns:h="http://java.sun.com/jsf/html"
+	  xmlns:ui="http://java.sun.com/jsf/facelets"
 	  xmlns:f="http://java.sun.com/jsf/core">
 <ui:composition>
 
@@ -13,7 +13,7 @@
 		<dt>#{i18n['dw4.protocollo_n']}</dt>
 		<dd><h:outputText value="#{fn:substringAfter(fn:substringAfter(bean.doc.num_prot, '-'), '-')}"><f:converter converterId="NumConverter"/></h:outputText> #{i18n['dw4.del']} <h:outputText value="#{bean.doc.data_prot}"><f:converter converterId="DateConverter"/></h:outputText> (#{bean.doc.num_prot})</dd>
 	</h:panelGroup>
-	
+
 	<h:panelGroup rendered="#{!empty bean.doc.repertorio.cod and (empty hideDatiRepertorio or hideDatiRepertorio ne 'true')}">
 		<h:panelGroup rendered="#{!empty bean.doc.extra.tipo_repertorio}">
 			<dt>#{i18n['dw4.tipodocumento']}</dt>
@@ -29,27 +29,29 @@
 			</dd>
 		</h:panelGroup>
 	</h:panelGroup>
-	
-	<h:panelGroup rendered="#{bean.doc.tipo eq 'interno' and (bean.doc.minuta.mittente.nome_uff ne '' or bean.doc.minuta.mittente.nome_persona ne '')}">
-		<dt>#{i18n['dw4.mittente']}</dt>
-		<dd>#{bean.doc.minuta.mittente.nome_uff} - #{bean.doc.minuta.mittente.nome_persona}</dd>
-	</h:panelGroup>
-	<h:panelGroup rendered="#{bean.doc.tipo eq 'partenza'}">
-		<ui:include src="./showdoc@rifesterni@partenza.xhtml">
-			<ui:param name="bean" value="#{bean}"/>
-			<ui:param name="hideInvioTelematico" value="#{hideInvioTelematico}" />
-		</ui:include>
-	</h:panelGroup>
-	<h:panelGroup rendered="#{bean.doc.tipo eq 'arrivo'}">
-		<ui:include src="showdoc@rifesterni@arrivo.xhtml">
-			<ui:param name="bean" value="#{bean}"/>
-		</ui:include>
+
+	<h:panelGroup rendered="#{hideRifEsterno ne 'true'}">
+		<h:panelGroup rendered="#{bean.doc.tipo eq 'interno' and (bean.doc.minuta.mittente.nome_uff ne '' or bean.doc.minuta.mittente.nome_persona ne '')}">
+			<dt>#{i18n['dw4.mittente']}</dt>
+			<dd>#{bean.doc.minuta.mittente.nome_uff} - #{bean.doc.minuta.mittente.nome_persona}</dd>
+		</h:panelGroup>
+		<h:panelGroup rendered="#{bean.doc.tipo eq 'partenza' and !bean.doc.hideDestinatari}">
+			<ui:include src="./showdoc@rifesterni@partenza.xhtml">
+				<ui:param name="bean" value="#{bean}"/>
+				<ui:param name="hideInvioTelematico" value="#{hideInvioTelematico}" />
+			</ui:include>
+		</h:panelGroup>
+		<h:panelGroup rendered="#{bean.doc.tipo eq 'arrivo'}">
+			<ui:include src="showdoc@rifesterni@arrivo.xhtml">
+				<ui:param name="bean" value="#{bean}"/>
+			</ui:include>
+		</h:panelGroup>
 	</h:panelGroup>
 	<h:panelGroup rendered="#{bean.doc.tipo eq 'varie' and !empty bean.doc.autore.text and empty personalViewToUse}">
 		<dt>#{i18n['dw4.author']}</dt>
 		<dd>#{bean.doc.autore.text}</dd>
 	</h:panelGroup>
-	
+
 	<h:panelGroup rendered="#{!empty bean.doc.prot_differito.data_arrivo}">
 		<dt>#{i18n['dw4.dataarrivo']}</dt>
 		<dd>
@@ -64,12 +66,12 @@
 			<dt>#{i18n['dw4.data_doc']}</dt>
 			<dd><h:outputText value="#{bean.doc.rif_esterni[0].data_prot}"><f:converter converterId="DateConverter"/></h:outputText></dd>
 		</h:panelGroup>
-		<h:panelGroup rendered="#{ !empty bean.doc.rif_esterni[0].n_prot }">
+		<h:panelGroup rendered="#{ !empty bean.doc.rif_esterni[0].n_prot and bean.doc.tipo ne 'partenza' }">
 			<dt>#{i18n['dw4.prot_mittente']}</dt>
 			<dd>#{bean.doc.rif_esterni[0].n_prot}</dd>
-		</h:panelGroup>	
+		</h:panelGroup>
 	</h:panelGroup>
-	
+
 	<h:panelGroup rendered="#{personalViewToUse eq 'proposta' or personalViewToUse eq 'comunicazione'}">
 		<h:panelGroup rendered="#{!empty bean.doc.datiProposta and !empty bean.doc.datiProposta.categoria}">
 			<dt>#{bean.categoriaLabel}</dt>
@@ -85,37 +87,42 @@
 			<dd>#{bean.doc.societa}</dd>
 		</dl>
 	</h:panelGroup>
-	
+
 	<h:panelGroup rendered="#{!empty bean.doc.oggetto}">
 		<dt class="oggetto-documento-label">#{(!empty labelOggetto) ? labelOggetto : i18n['dw4.object']}</dt>
-		<dd class="oggetto-documento-value"><h:outputText value="#{bean.doc.oggetto}" escape="false" /></dd>
+		<dd class="oggetto-documento-value"><h:outputText value="#{bean.doc.oggetto}" /></dd>
 	</h:panelGroup>
-	
+
 	<h:panelGroup rendered="#{!empty bean.doc.mezzo_trasmissione.cod}">
 		<dt>#{i18n['dw4.mezzotrasmissione']}</dt>
 		<dd>#{bean.doc.mezzo_trasmissione.cod}</dd>
 	</h:panelGroup>
-	
+
+	<h:panelGroup rendered="#{!empty bean.doc.data_reale}">
+		<dt>#{i18n['dw4.data_doc']}</dt>
+		<dd><h:outputText value="#{bean.doc.data_reale}"><f:converter converterId="DateConverter"/></h:outputText></dd>
+	</h:panelGroup>
+
 	<h:panelGroup rendered="#{hideAllegati ne 'true'}">
 		<ui:include src="showdoc@allegati.xhtml">
 			<ui:param name="bean" value="#{bean}"/>
 		</ui:include>
 	</h:panelGroup>
-	
+
 	<h:panelGroup rendered="#{fn:length(bean.doc.extra.approvazione) > 0}">
 		<dt>#{i18n['dw4.stato_approvazione']}</dt>
 		<dd>
-			<span 
+			<span
 				style="#{(fn:toLowerCase(bean.doc.extra.approvazione[fn:length(bean.doc.extra.approvazione)-1].stato) eq 'approvato') ? 'color:green;' : ''} #{(fn:toLowerCase(bean.doc.extra.approvazione[fn:length(bean.doc.extra.approvazione)-1].stato) eq 'rifiutato') ? 'color:red;' : ''}"
 			>
 				#{bean.doc.extra.approvazione[fn:length(bean.doc.extra.approvazione)-1].stato}
 			</span>
 		</dd>
 	</h:panelGroup>
-	
+
 	<ui:include src="showdoc@corpoEmail.xhtml">
 		<ui:param name="bean" value="#{bean}"/>
 	</ui:include>
-	
+
 </ui:composition>
 </html>

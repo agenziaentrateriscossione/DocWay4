@@ -36,7 +36,7 @@
 
 			<h5 class="sub-header" title="#{docEditModifyAccount.account.id}">
 				<span class="account glyphicons-pro"></span>&#160;
-				<h:outputText value="#{docEditModifyAccount.account.descrAccount}" escape="false" />
+				<h:outputText value="#{docEditModifyAccount.account.descrAccount}" />
 			</h5>
 
 			<!-- scheda show: inizio -->
@@ -58,6 +58,6 @@
 			<!-- scheda show: fine -->
 		</div>
 
-		<h:inputTextarea value="#{docEditModifyAccount.xml}" rendered="#{docEditModifyAccount.debugMode}" styleClass="form-control" rows="10" />
+		<h:inputTextarea value="#{docEditModifyAccount.xml}" rendered="#{docEditModifyAccount.debugMode}" styleClass="form-control debug-textarea" rows="10" />
 	</ui:define>
 </ui:composition>

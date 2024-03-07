@@ -1,0 +1,272 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+    template="../#{queryRaccoglitoreINDICE.pageTemplate}"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:p="http://xmlns.jcp.org/jsf/passthrough">
+
+<ui:define name="content">
+	<div id="advancedSearch" class="raccoglitore indice submitEnterKey">
+	
+		<!-- toolbar: inizio -->
+		<div class="btn-toolbar docway-toolbar margin-bottom" role="toolbar">
+			<div class="btn-group">
+				<h:commandLink id="advancedSearchBtn" action="#{queryRaccoglitoreINDICE.queryPlain}" styleClass="btn btn-primary openwaitmsg" value="#{i18n['acl.search']}" />
+				<h:commandLink action="#{queryRaccoglitoreINDICE.resetQuery}" styleClass="btn btn-default" value="#{i18n['acl.clear']}">
+					<f:ajax execute="@form" render="@form" />
+				</h:commandLink>
+				
+				<h:commandLink rendered="#{!queryRaccoglitoreINDICE.formsAdapter.funzionalitaDisponibili['readOnlyAccessMode'] and queryRaccoglitoreINDICE.formsAdapter.funzionalitaDisponibili['raccoglitorigestione']}" action="#{queryRaccoglitoreINDICE.insTableDocRaccoglitore}" styleClass="btn btn-default">#{i18n['nuovo']}</h:commandLink>
+				
+				<ui:remove>
+					<h:commandLink rendered="#{!queryRaccoglitoreINDICE.popupPage and queryRaccoglitoreINDICE.formsAdapter.funzionalitaDisponibili['showRefine']}" action="#{queryRaccoglitoreINDICE.refine}" styleClass="btn btn-default">#{i18n['dw4.refine']}</h:commandLink>
+				</ui:remove>				
+				
+				<h:commandLink rendered="#{queryRaccoglitoreINDICE.popupPage}" onclick="self.close();" styleClass="btn btn-default">#{i18n['acl.close']}</h:commandLink>
+			</div>
+		</div>
+		<!-- toolbar: fine -->
+		
+		<h5 class="sub-header">
+			<span class="glyphicon glyphicon-search"></span>&#160;
+			#{queryRaccoglitoreINDICE.descrizione} - #{i18n['acl.ricerca']}
+		</h5>
+		
+		<!-- messages: inizio -->
+		<h:panelGroup rendered="#{not empty facesContext.messageList}" layout="block" styleClass="docedit-messages alert alert-danger">
+			<h:messages styleClass="" id="validationMesseges" />
+		</h:panelGroup>
+		<!-- messages: fine -->
+	
+		<!-- scheda query: inizio -->
+		<div class="row-fluid" style="margin-top:10px;">
+			<div id="fixedshowdoc" class="box span12 fixed-showdoc">
+				<div class="box-content">
+					<div class="fieldset">
+						<div class="legend">#{i18n['dw4.datiracc']}</div>
+						
+						<div class="form-group">
+							<div class="col-sm-offset-2 col-sm-9">
+								<h:selectBooleanCheckbox id="raccRpaCheck" value="#{queryRaccoglitoreINDICE.raccoglitoriRPA}"/>
+								<label class="normal-weight-text" for="templateForm:raccRpaCheck"><h:outputText value="#{i18n['dw4.mostrarac']} #{fn:substring(userBean.userInfo,0, fn:indexOf(userBean.userInfo, '('))}" /></label>
+							</div>
+						</div>
+						<div class="form-group">
+							<div class="col-sm-offset-2 col-sm-3">
+								<h:selectBooleanCheckbox id="raccSoloApertiCheck" value="#{queryRaccoglitoreINDICE.aperti}" />
+								<label class="normal-weight-text" for="templateForm:raccSoloApertiCheck"><h:outputText value="#{i18n['dw4.soloaperti']}"></h:outputText></label>
+							</div>
+							<div class="col-sm-3">
+								<h:selectBooleanCheckbox id="raccSoloChiusiCheck" value="#{queryRaccoglitoreINDICE.chiusi}" />
+								<label class="normal-weight-text" for="templateForm:raccSoloChiusiCheck"><h:outputText value="#{i18n['dw4.solochiusi']}" /></label>
+							</div>
+						</div>
+						<div class="form-group endsection">
+							<div class="col-sm-offset-2 col-sm-3">
+								<h:selectBooleanCheckbox id="raccPubbliciCheck" value="#{queryRaccoglitoreINDICE.pubblici}"/>
+								<label class="normal-weight-text" for="templateForm:raccPubbliciCheck"><h:outputText value="#{i18n['dw4.racpubblici']}"/></label>
+							</div>
+							<div class="col-sm-3">
+								<h:selectBooleanCheckbox id="raccPrivatiCheck" value="#{queryRaccoglitoreINDICE.privati}"/>
+								<label class="normal-weight-text" for="templateForm:raccPrivatiCheck"><h:outputText value="#{i18n['dw4.racprivati']}"/></label>
+							</div>
+						</div>
+						
+						<div class="form-group">
+							<label for="templateForm:rac_anno" class="col-sm-2 control-label">#{i18n['dw4.anno']}</label>
+							<div class="col-sm-2">
+								<div class="input-group">
+									<h:inputText styleClass="form-control" value="#{queryRaccoglitoreINDICE.rac_anno}" id="rac_anno" />
+									<div class="input-group-btn">
+										<h:commandLink title="#{i18n['acl.vocabulary']}" action="#{queryRaccoglitoreINDICE.openIndexAnnoRaccoglitore}" styleClass="btn btn-default">
+											<f:ajax execute="@form" render="@form"/>
+											<span class="glyphicon glyphicon-search"></span>
+										</h:commandLink>
+									</div>
+								</div>
+							</div>
+						</div>
+						<div class="form-group">
+							<label for="templateForm:rac_oggetto" class="col-sm-2 control-label">#{i18n['dw4.object']}</label>
+							<div class="col-sm-9">
+								<div class="input-group">
+									<h:inputText styleClass="form-control" value="#{queryRaccoglitoreINDICE.rac_oggetto}" id="rac_oggetto" />
+									<div class="input-group-btn">
+										<h:commandLink title="#{i18n['acl.vocabulary']}" action="#{queryRaccoglitoreINDICE.openIndexOggettoRaccoglitore}" styleClass="btn btn-default">
+											<f:ajax execute="@form" render="@form"/>
+											<span class="glyphicon glyphicon-search"></span>
+										</h:commandLink>
+									</div>
+								</div>
+							</div>
+						</div>
+						<div class="form-group">
+							<label for="templateForm:rac_note" class="col-sm-2 control-label">#{i18n['dw4.notes']}</label>
+							<div class="col-sm-9">
+								<div class="input-group">
+									<h:inputText styleClass="form-control" value="#{queryRaccoglitoreINDICE.rac_note}" id="rac_note" />
+									<div class="input-group-btn">
+										<h:commandLink title="#{i18n['acl.vocabulary']}" action="#{queryRaccoglitoreINDICE.openIndexNoteRaccoglitore}" styleClass="btn btn-default">
+											<f:ajax execute="@form" render="@form"/>
+											<span class="glyphicon glyphicon-search"></span>
+										</h:commandLink>
+									</div>
+								</div>
+							</div>
+						</div>
+						
+						<ui:include src="../../customfields/query@customfields.xhtml">
+							<ui:param name="key" value="#{queryRaccoglitoreINDICE.currentCustomFieldSection}" />
+							<ui:param name="bean" value="#{queryRaccoglitoreINDICE}"/>
+			        	</ui:include>
+					</div> <!-- /fieldset -->
+					
+					<h:panelGroup id="responsabilitaPanel" layout="block" styleClass="fieldset">
+						<div class="legend">#{i18n['dw4.assegnatari']}</div>
+					
+						<h:panelGroup id="rpa" rendered="#{!queryRaccoglitoreINDICE.rpatiporuolo}" layout="block" styleClass="form-group">
+							<label for="templateForm:rpanomeuff" class="col-sm-2 control-label">#{i18n['dw4.proprietario']}</label>
+							<div class="col-sm-4">
+								<div class="input-group">
+									<h:inputText styleClass="form-control" value="#{queryRaccoglitoreINDICE.rpanomeuff}" id="rpanomeuff" p:placeholder="#{i18n['acl.uff']}" title="#{i18n['acl.uff']}" />
+									<div class="input-group-btn">
+										<h:commandLink title="#{i18n['acl.vocabulary']}" action="#{queryRaccoglitoreINDICE.openIndexUORRaccoglitore}" styleClass="btn btn-default">
+											<f:ajax execute="@form" render="@form"/>
+											<span class="glyphicon glyphicon-search"></span>
+										</h:commandLink>
+									</div>
+								</div>
+							</div>
+							<div class="col-sm-5">
+								<div class="input-group">
+									<h:inputText styleClass="form-control" value="#{queryRaccoglitoreINDICE.rpanomepersona}" id="rpanomepersona" p:placeholder="#{i18n['acl.oper']}" title="#{i18n['acl.oper']}" />
+									<div class="input-group-btn">
+										<h:commandLink title="#{i18n['acl.vocabulary']}" action="#{queryRaccoglitoreINDICE.openIndexRPARaccoglitore}" styleClass="btn btn-default">
+											<f:ajax execute="@form" render="@form"/>
+											<span class="glyphicon glyphicon-search"></span>
+										</h:commandLink>
+										<h:panelGroup rendered="#{queryRaccoglitoreINDICE.formsAdapter.funzionalitaDisponibili['rolesManagement']}">
+							        		<h:commandLink action="#{queryRaccoglitoreINDICE.switchRpaRuoloUfficio}" title="#{i18n['dw4.passa_a_ruolo']}" styleClass="btn btn-default">
+							        			<f:ajax execute="@form" render="templateForm:responsabilitaPanel" />
+							        			<span class="glyphicon glyphicon-briefcase"></span>
+							        		</h:commandLink>
+							        	</h:panelGroup>
+									</div>
+								</div>									
+							</div>
+						</h:panelGroup>
+						<h:panelGroup id="rpa_ruolo" rendered="#{queryRaccoglitoreINDICE.rpatiporuolo}" layout="block" styleClass="form-group">
+							<label for="templateForm:rpanomeruolo" class="col-sm-2 control-label">#{i18n['dw4.proprietario']}</label>
+							<div class="col-sm-9">
+								<div class="input-group">
+									<h:inputText styleClass="form-control" value="#{queryRaccoglitoreINDICE.rpanomeuff}" id="rpanomeruolo" p:placeholder="#{i18n['acl.role']}" title="#{i18n['acl.role']}" />
+									<div class="input-group-btn">
+										<h:commandLink title="#{i18n['acl.vocabulary']}" action="#{queryRaccoglitoreINDICE.openIndexUORRaccoglitore}" styleClass="btn btn-default">
+											<f:ajax execute="@form" render="@form"/>
+											<span class="glyphicon glyphicon-search"></span>
+										</h:commandLink>
+										<h:commandLink action="#{queryRaccoglitoreINDICE.switchRpaRuoloUfficio}" title="#{i18n['dw4.passa_a_ufficio_persona']}" styleClass="btn btn-default">
+							        		<f:ajax execute="@form" render="templateForm:responsabilitaPanel" />
+							        		<span class="glyphicon glyphicon-user"></span>
+							        	</h:commandLink>
+									</div>
+								</div>
+							</div>
+						</h:panelGroup>
+						
+						<h:panelGroup rendered="#{queryRaccoglitoreINDICE.formsAdapter.funzionalitaDisponibili['abilitaCCRaccoglitori']}">
+							<h:panelGroup rendered="#{!queryRaccoglitoreINDICE.cctiporuolo}" id="cc" layout="block" styleClass="form-group">
+								<label for="templateForm:ccnomeuff" class="col-sm-2 control-label">#{i18n['dw4.cc']}</label>
+								<div class="col-sm-4">
+									<div class="input-group">
+										<h:inputText styleClass="form-control" value="#{queryRaccoglitoreINDICE.ccnomeuff}" id="ccnomeuff" p:placeholder="#{i18n['acl.uff']}" title="#{i18n['acl.uff']}" />
+										<div class="input-group-btn">
+											<h:commandLink title="#{i18n['acl.vocabulary']}" action="#{queryRaccoglitoreINDICE.openIndexCCUffRaccoglitore}" styleClass="btn btn-default">
+												<f:ajax execute="@form" render="@form"/>
+												<span class="glyphicon glyphicon-search"></span>
+											</h:commandLink>
+										</div>
+									</div>
+								</div>
+								<div class="col-sm-5">
+									<div class="input-group">
+										<h:inputText styleClass="form-control" value="#{queryRaccoglitoreINDICE.ccnomepersona}" id="ccnomepersona" p:placeholder="#{i18n['acl.oper']}" title="#{i18n['acl.oper']}" />
+										<div class="input-group-btn">
+											<h:commandLink title="#{i18n['acl.vocabulary']}" action="#{queryRaccoglitoreINDICE.openIndexCCPersonaRaccoglitore}" styleClass="btn btn-default">
+												<f:ajax execute="@form" render="@form"/>
+												<span class="glyphicon glyphicon-search"></span>
+											</h:commandLink>
+											<h:panelGroup rendered="#{queryRaccoglitoreINDICE.formsAdapter.funzionalitaDisponibili['rolesManagement']}">
+								        		<h:commandLink action="#{queryRaccoglitoreINDICE.switchCcRuoloUfficio}" title="#{i18n['dw4.passa_a_ruolo']}" styleClass="btn btn-default">
+								        			<f:ajax execute="@form" render="templateForm:responsabilitaPanel" />
+								        			<span class="glyphicon glyphicon-briefcase"></span>
+								        		</h:commandLink>
+								        	</h:panelGroup>
+										</div>
+									</div>									
+								</div>
+							</h:panelGroup>
+							<h:panelGroup rendered="#{queryRaccoglitoreINDICE.cctiporuolo}" id="cc_ruolo" layout="block" styleClass="form-group">
+								<label for="templateForm:ccnomeruolo" class="col-sm-2 control-label">#{i18n['dw4.cc']}</label>
+								<div class="col-sm-9">
+									<div class="input-group">
+										<h:inputText styleClass="form-control" value="#{queryRaccoglitoreINDICE.ccnomeuff}" id="ccnomeruolo" p:placeholder="#{i18n['acl.role']}" title="#{i18n['acl.role']}" />
+										<div class="input-group-btn">
+											<h:commandLink title="#{i18n['acl.vocabulary']}" action="#{queryRaccoglitoreINDICE.openIndexCCUffRaccoglitore}" styleClass="btn btn-default">
+												<f:ajax execute="@form" render="@form"/>
+												<span class="glyphicon glyphicon-search"></span>
+											</h:commandLink>
+											<h:commandLink action="#{queryRaccoglitoreINDICE.switchCcRuoloUfficio}" title="#{i18n['dw4.passa_a_ufficio_persona']}" styleClass="btn btn-default">
+								        		<f:ajax execute="@form" render="templateForm:responsabilitaPanel" />
+								        		<span class="glyphicon glyphicon-user"></span>
+								        	</h:commandLink>
+										</div>
+									</div>
+								</div>
+							</h:panelGroup>
+						</h:panelGroup>
+					</h:panelGroup> <!-- /fieldset -->
+					
+					<div class="fieldset">
+						<div class="legend">#{i18n['acl.servicesinformation']}</div>
+						
+						<div class="form-group">
+							<ui:include src="../rangeField.xhtml">
+								<ui:param name="label" value="#{i18n['dw4.id']}" />
+								<ui:param name="id" value="rangenum_nrecord" />
+								<ui:param name="from_value" value="#{queryRaccoglitoreINDICE.rangenum_nrecord_from}" />
+								<ui:param name="to_value" value="#{queryRaccoglitoreINDICE.rangenum_nrecord_to}" />
+								<ui:param name="is_date" value="false" />
+							</ui:include>
+						</div>
+						
+						<div class="form-group">
+							<label for="templateForm:ordinamentoRacc" class="col-sm-2 control-label">#{i18n['dw4.ordinamento']}</label>
+							<div class="col-sm-3">
+								<h:selectOneMenu id="ordinamentoRacc" value="#{queryRaccoglitoreINDICE.ordinamento}"  styleClass="form-control">
+									<f:selectItem itemLabel="#{i18n['dw4.object']}" itemValue="xml(xpart:/raccoglitore/oggetto)" />
+									<f:selectItem itemLabel="#{i18n['dw4.noorder']}" itemValue="" />
+								</h:selectOneMenu>
+							</div>
+						</div>
+					</div> <!-- /fieldset -->
+				</div>
+			</div>
+		</div>
+		<!-- scheda query: fine -->
+		
+		<h:inputTextarea value="#{queryRaccoglitoreINDICE.xml}" rendered="#{queryRaccoglitoreINDICE.debugMode}" styleClass="form-control debug-textarea" rows="10" />
+		
+		<ui:include src="../showindex.xhtml"><ui:param name="pageBean" value="#{queryRaccoglitoreINDICE}"/></ui:include>
+	</div>
+	<script type="text/javascript">
+	$(document).ready(function() {
+		// focus su campo oggetto
+		$('#templateForm\\:rac_oggetto').focus();
+	});
+	</script>
+
+</ui:define>
+    
+</ui:composition>    

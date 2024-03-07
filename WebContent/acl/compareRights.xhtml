@@ -35,7 +35,7 @@
 										<c:forEach var="difference" items="#{pageBean.compareRights.comparison.differences}">
 											<tr class="#{(difference.type eq 'added') ? 'success' : ((difference.type eq 'deleted') ? 'danger' : '')}">
 												<td>#{difference.cod}</td>
-												<td><h:outputText value="#{difference.label}" escape="false" /></td>
+												<td><h:outputText value="#{difference.label}" /></td>
 												<td><span class="#{difference.alfa ? 'diritti-wordwrap' : ''}">#{(difference.alfa) ? fn:replace(difference.value1, ',', ', ') : difference.value1}</span></td>
 												<td><span class="#{difference.alfa ? 'diritti-wordwrap' : ''}">#{(difference.alfa) ? fn:replace(difference.value2, ',', ', ') : difference.value2}</span></td>
 											</tr>

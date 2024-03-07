@@ -16,6 +16,7 @@ public class Repertorio extends XmlEntity {
 	private String descrizione;
 	private boolean selected;
     private Tabella tabella = new Tabella();
+    
 	public Repertorio() {}
     
 	public Repertorio(String xml) throws Exception {
@@ -38,6 +39,18 @@ public class Repertorio extends XmlEntity {
     	params.put(prefix, this.text);
     	params.put(prefix+".@cod", this.cod);
     	params.put(prefix+".@numero", this.numero);
+    	return params;
+    }
+    
+    public Map<String, String> asFormAdapterParamsTrasformaRep(String prefix) throws Exception {
+    	if (null == prefix) prefix = "";
+    	Map<String, String> params = new HashMap<String, String>();
+    	
+    	if (this.numero != null && !this.numero.isEmpty() && !this.numero.equals("."))
+    		throw new Exception("Trasformazione in repertorio non possibile sul documento corrente. Documento già repertoriato!");
+    	
+    	params.put(prefix, this.text);
+    	params.put(prefix+".@cod", this.cod);
     	return params;
     }
     
@@ -96,5 +109,6 @@ public class Repertorio extends XmlEntity {
 	public boolean isSelected() {
 		return selected;
 	}
+
 }
 

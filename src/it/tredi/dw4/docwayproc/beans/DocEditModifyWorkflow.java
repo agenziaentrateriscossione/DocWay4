@@ -1,6 +1,10 @@
 package it.tredi.dw4.docwayproc.beans;
 
-import it.tredi.dw4.utils.XMLDocumento;
+import java.io.File;
+import java.util.HashMap;
+
+import org.dom4j.Document;
+
 import it.tredi.dw4.acl.beans.UserBean;
 import it.tredi.dw4.adapters.AdaptersConfigurationLocator;
 import it.tredi.dw4.adapters.DocEditFormsAdapter;
@@ -8,13 +12,9 @@ import it.tredi.dw4.adapters.ErrormsgFormsAdapter;
 import it.tredi.dw4.docway.beans.DocWayDocedit;
 import it.tredi.dw4.docway.doc.adapters.DocDocWayDocEditFormsAdapter;
 import it.tredi.dw4.docwayproc.model.workflow.WorkflowEntity;
-import it.tredi.dw4.i18n.I18N;
+import it.tredi.dw4.model.XmlEntity;
 import it.tredi.dw4.utils.UploadFileUtil;
-
-import java.io.File;
-import java.util.HashMap;
-
-import org.dom4j.Document;
+import it.tredi.dw4.utils.XMLDocumento;
 
 public class DocEditModifyWorkflow extends DocWayDocedit {
 
@@ -151,6 +151,11 @@ public class DocEditModifyWorkflow extends DocWayDocedit {
 //		}
 		
 		return result;
+	}
+	
+	@Override
+	public XmlEntity getModel() {
+		return this.workflow;
 	}
 	
 }

@@ -42,6 +42,9 @@ public class ShowdocOrgano extends AclShowdoc {
 		String dicitCategoria 		=	FormsAdapter.getParameterFromCustomTupleValue("dicitCategoria", formsAdapter.getDefaultForm().getParam("_cd")); 
 		if(!dicitCategoria.equals(""))
 			this.setCategorieLabel(dicitCategoria.substring(dicitCategoria.indexOf("|") +1 ));
+		
+		// inizializzazione di componenti common
+		initCommons(dom);
 	}
 
 	@Override
@@ -51,7 +54,7 @@ public class ShowdocOrgano extends AclShowdoc {
 
 	@Override
 	public void reload() throws Exception {
-		super._reload("showdoc@organo");
+		super._reload(FacesContext.getCurrentInstance().getExternalContext().getRequestContextPath() + "/acl/showdoc@organo");
 	}
 	
 	/**

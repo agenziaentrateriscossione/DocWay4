@@ -1,17 +1,17 @@
 package it.tredi.dw4.docway.beans;
 
-import it.tredi.dw4.utils.XMLDocumento;
+import org.dom4j.Document;
+
 import it.tredi.dw4.adapters.AdaptersConfigurationLocator;
 import it.tredi.dw4.adapters.ErrormsgFormsAdapter;
 import it.tredi.dw4.docway.doc.adapters.DocDocWayDocEditFormsAdapter;
 import it.tredi.dw4.docway.model.Arrivo;
 import it.tredi.dw4.i18n.I18N;
+import it.tredi.dw4.model.XmlEntity;
 import it.tredi.dw4.utils.AppStringPreferenceUtil;
 import it.tredi.dw4.utils.Const;
 import it.tredi.dw4.utils.DateUtil;
-import it.tredi.dw4.utils.XMLUtil;
-
-import org.dom4j.Document;
+import it.tredi.dw4.utils.XMLDocumento;
 
 public class DocEditArrivo extends DocEditDoc {
 	private Arrivo doc = new Arrivo();
@@ -41,9 +41,14 @@ public class DocEditArrivo extends DocEditDoc {
 		// inizializzazione common per tutte le tipologie di documenti di DocWay
 		initCommon(domDocumento);
 		
+		// mbernardini 13/01/2017 : in caso di risposta da doc in partenza con corpo mail viene erroneamente registrato il corpo della mail anche nel doc in arrivo generato
+		setCorpoEmailVisibile(false);
+		getDoc().setCorpoEmail("");
+		
 		if (this.protocolloDifferito) {
 			// impostazione del valore di defualt per la data arrivo su prot differito
-			this.doc.getProt_differito().setData_arrivo(XMLUtil.parseAttribute(domDocumento, "response/@currDate", ""));
+			// tiommi richiesta di togliere il valore di default per costringere gli utenti a controllare la data
+			this.doc.getProt_differito().setData_arrivo("");
 		}
 		
 		// Imposto il titolo della pagina di creazione del documento
@@ -426,6 +431,11 @@ public class DocEditArrivo extends DocEditDoc {
 			
 			return null;
 		}
+	}
+	
+	@Override
+	public XmlEntity getModel() {
+		return this.doc;
 	}
 	
 }

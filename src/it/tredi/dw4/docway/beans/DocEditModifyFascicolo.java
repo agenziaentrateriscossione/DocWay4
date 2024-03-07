@@ -1,19 +1,20 @@
 package it.tredi.dw4.docway.beans;
 
-import it.tredi.dw4.utils.XMLDocumento;
+import org.dom4j.Document;
+
 import it.tredi.dw4.adapters.AdaptersConfigurationLocator;
 import it.tredi.dw4.adapters.ErrormsgFormsAdapter;
 import it.tredi.dw4.docway.doc.adapters.DocDocWayDocEditFormsAdapter;
 import it.tredi.dw4.docway.model.Fascicolo;
 import it.tredi.dw4.i18n.I18N;
+import it.tredi.dw4.model.XmlEntity;
 import it.tredi.dw4.utils.AppStringPreferenceUtil;
 import it.tredi.dw4.utils.Const;
 import it.tredi.dw4.utils.StringUtil;
+import it.tredi.dw4.utils.XMLDocumento;
 import it.tredi.dw4.utils.XMLUtil;
 
-import org.dom4j.Document;
-
-public class DocEditModifyFascicolo extends DocWayDocedit {
+public class DocEditModifyFascicolo extends DocEditFascicoloShared {
 	private DocDocWayDocEditFormsAdapter formsAdapter;
 	private Fascicolo fascicolo = new Fascicolo();
 	
@@ -225,6 +226,8 @@ public class DocEditModifyFascicolo extends DocWayDocedit {
 		
 		codiceFascicoloCustom = XMLUtil.parseStrictAttribute(domDocumento, "/response/@codice_fasc");
 		descrizioneFascicoloCustom = XMLUtil.parseStrictAttribute(domDocumento, "/response/@descrizione_fasc");
+		
+		this.initTags(); // TODO si potrebbe invocare il metodo di validazione univocita' in fase di caricamento del fascicolo
     }
 	
 	public DocDocWayDocEditFormsAdapter getFormsAdapter() {
@@ -417,6 +420,11 @@ public class DocEditModifyFascicolo extends DocWayDocedit {
 		}
 		
 		return result;
+	}
+	
+	@Override
+	public XmlEntity getModel() {
+		return this.fascicolo;
 	}
 	
 }

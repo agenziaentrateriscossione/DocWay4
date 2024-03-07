@@ -64,18 +64,18 @@
 				    </ui:fragment>
 				    
 				    <h:commandLink rendered="#{!hier.virtual}" action="#{hierBrowser.mostraDocumento}" styleClass="openwaitmsg" style="padding-left:2px; #{hier.ghost? 'color: gray;' : ''} #{hierBrowser.selected.ndoc == hier.ndoc ? 'font-weight: bold;' : ''}" title="#{hier.title}">
-				    	<h:outputText value="#{hier.title}" escape="false" />
+				    	<h:outputText value="#{hier.title}" />
 				    	<f:param name="hier" value="#{hier}"></f:param>
 				    </h:commandLink>
 				    
-				    <h:outputText rendered="#{hier.virtual}" style="padding-left:2px;font-style:italic;" title="#{hier.title}" value="#{hier.title}" escape="false" />						    
+				    <h:outputText rendered="#{hier.virtual}" style="padding-left:2px;font-style:italic;" title="#{hier.title}" value="#{hier.title}" />						    
 			        
 				    </div>    
 			    </ui:repeat>
 			</div>
 		</h:panelGroup>
 		
-		<h:inputTextarea value="#{hierBrowser.xml}" rendered="#{aclHome.debugMode}" styleClass="form-control" rows="10" />
+		<h:inputTextarea value="#{hierBrowser.xml}" rendered="#{aclHome.debugMode}" styleClass="form-control debug-textarea" rows="10" />
 	</div> <!--/.sidebar-nav -->
 
 </ui:composition>

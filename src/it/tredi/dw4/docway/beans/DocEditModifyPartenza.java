@@ -1,19 +1,19 @@
 package it.tredi.dw4.docway.beans;
 
-import it.tredi.dw4.utils.XMLDocumento;
 import it.tredi.dw4.adapters.AdaptersConfigurationLocator;
 import it.tredi.dw4.adapters.ErrormsgFormsAdapter;
 import it.tredi.dw4.docway.doc.adapters.DocDocWayDocEditFormsAdapter;
 import it.tredi.dw4.docway.model.Partenza;
 import it.tredi.dw4.docway.model.RifEsterno;
 import it.tredi.dw4.i18n.I18N;
+import it.tredi.dw4.model.XmlEntity;
 import it.tredi.dw4.utils.AppStringPreferenceUtil;
 import it.tredi.dw4.utils.Const;
 import it.tredi.dw4.utils.DateUtil;
+import it.tredi.dw4.utils.XMLDocumento;
+import org.dom4j.Document;
 
 import javax.faces.context.FacesContext;
-
-import org.dom4j.Document;
 
 public class DocEditModifyPartenza extends DocEditDoc {
 	private Partenza doc = new Partenza();
@@ -46,7 +46,7 @@ public class DocEditModifyPartenza extends DocEditDoc {
 	 */
 	private void setInsPartenzaTitleByCodRepertorio() {
 		if (doceditRep && descrizioneRepertorio != null && descrizioneRepertorio.length() > 0)
-			docEditTitle = descrizioneRepertorio + " - " + I18N.mrs("acl.modify");
+			docEditTitle = descrizioneRepertorio + " - " + (getFormsAdapter().checkBooleanFunzionalitaDisponibile("trasformaByDocEdit", false) ? I18N.mrs("dw4.trasformazioneRepertorio") : I18N.mrs("acl.modify"));
 		else
 			docEditTitle = I18N.mrs(DEFAULT_PARTENZA_TITLE);
 	}
@@ -54,7 +54,9 @@ public class DocEditModifyPartenza extends DocEditDoc {
 	@Override
 	public String saveDocument() throws Exception {
 		try {
-			if (checkRequiredField()) return null;
+			boolean checkDestinatari = !doc.isHideDestinatari();
+
+			if (checkRequiredField(checkDestinatari)) return null;
 			
 			// personalizzazione del salvataggio per il repertorio
 			boolean isRepertorio = false;
@@ -182,16 +184,33 @@ public class DocEditModifyPartenza extends DocEditDoc {
 	 * 
 	 * @return false se tutti i campo obbligatori sono stati compilati, true se anche un solo campo obbligatorio non e' compilato
 	 */
-	public boolean checkRequiredField() {
+	public boolean checkRequiredField(boolean checkDestinatari) {
 		String formatoData = Const.DEFAULT_DATE_FORMAT; // TODO Dovrebbe essere caricato dal file di properties dell'applicazione
 		boolean result = false;
 		
 		result = super.checkRequiredFieldCommon(true); // controlli comuni a tutte le tipologie di documenti
 		
-		// Controllo se almeno un destinatario del documento e' valorizzato
-		if (getDoc().getRepertorio() == null || getDoc().getRepertorio().getCod() == null || getDoc().getRepertorio().getCod().length() == 0) { // eseguo il controllo solo se non si tratta di un repertorio
-			if (getDoc().getRif_esterni().get(0).getNome() == null || getDoc().getRif_esterni().get(0).getNome().length() == 0) {
-				this.setErrorMessage("templateForm:docEditDestinatari:0:nomeDestinatario_input", I18N.mrs("acl.requiredfield") + " '" + I18N.mrs("dw4.destinatario") + "'");
+		if (checkDestinatari) {
+			// Controllo di obbligatorieta' su destinatari del documento
+			boolean allDestinatariCC = true;
+			int destinatari = this.getDoc().getRif_esterni().size();
+			for(int i = 0; i < destinatari; i++) {
+				RifEsterno rifEsterno = getDoc().getRif_esterni().get(i);
+				if(!rifEsterno.isCopia_conoscenza())
+					allDestinatariCC = false;
+				
+				if (rifEsterno.getNome() == null || rifEsterno.getNome().length() == 0) {
+					String fieldId = "templateForm:docEditDestinatari:" + i + ":nomeDestinatario_input";
+					if (!rifEsterno.isVincolato())
+						fieldId = "templateForm:docEditDestinatari:" + i + ":nomeDestinatarioLibero";
+					this.setErrorMessage(fieldId, I18N.mrs("acl.requiredfield") + " '" + I18N.mrs("dw4.destinatario") + "'");
+					result = true;
+				}
+			}
+			
+			if(allDestinatariCC) {
+				String fieldId = "templateForm:docEditDestinatari:#{indice.index}:ccCheck";
+				this.setErrorMessage(fieldId, I18N.mrs("dw4.cc_destinatario"));
 				result = true;
 			}
 		}
@@ -231,6 +250,11 @@ public class DocEditModifyPartenza extends DocEditDoc {
 		}
 				
 		return result;
+	}
+	
+	@Override
+	public XmlEntity getModel() {
+		return this.doc;
 	}
 	
 }

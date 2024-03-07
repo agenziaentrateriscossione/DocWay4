@@ -22,7 +22,7 @@
 		
 		<h5 class="sub-header">
 			<span class="doc-tipo-fascicolo glyphicon glyphicon-folder-open"></span>&#160;
-			<h:outputText value="#{docEditFascicoloPersonale.insFascicoloTitle}" escape="false" />
+			<h:outputText value="#{docEditFascicoloPersonale.insFascicoloTitle}" />
 		</h5>
 	
 		<!-- messages: inizio -->
@@ -170,6 +170,11 @@
 							</div>
 	        			</div>
 	        			
+	        			<ui:include src="./docEditTags.xhtml">
+				        	<ui:param name="bean" value="#{docEditFascicoloPersonale.fascicolo}" />
+				        	<ui:param name="pageBean" value="#{docEditFascicoloPersonale}" />
+			        	</ui:include>
+	        			
 	        			<div class="form-group">
 			               	<label for="templateForm:note" class="col-sm-2 control-label">#{i18n['acl.notes']}</label>
 			               	<div class="col-sm-9">
@@ -183,7 +188,7 @@
 	</div>
 	<!-- scheda edit: fine -->
 
-	<h:inputTextarea value="#{docEditFascicoloPersonale.xml}" rendered="#{docEditFascicoloPersonale.debugMode}" styleClass="form-control" rows="10" />
+	<h:inputTextarea value="#{docEditFascicoloPersonale.xml}" rendered="#{docEditFascicoloPersonale.debugMode}" styleClass="form-control debug-textarea" rows="10" />
 			
 	<ui:fragment rendered="#{docEditFascicoloPersonale.formsAdapter.assignAndClose != null and docEditFascicoloPersonale.formsAdapter.assignAndClose == 'true'}">
 		<script type="text/javascript">

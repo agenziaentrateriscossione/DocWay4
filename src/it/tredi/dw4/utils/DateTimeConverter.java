@@ -32,15 +32,16 @@ public class DateTimeConverter implements Converter{
 	 */
 	private String convertDateTime(String dateTime) {
 		if (dateTime.length() == 14) {
-			String formatoData = Const.DEFAULT_DATE_TIME_FORMAT; // TODO Dovrebbe essere caricato dal file di properties dell'applicazione
+			// String formatoData = Const.DEFAULT_DATE_TIME_FORMAT; // TODO Dovrebbe essere caricato dal file di properties dell'applicazione
+			String formatoData = Const.DOCWAY_DATE_TIME_FORMAT;
 			
 			String out = dateTime;
 			try {
-				Date temp = new SimpleDateFormat("yyyyMMddHHmmSS").parse(dateTime);
+				Date temp = new SimpleDateFormat("yyyyMMddHHmmss").parse(dateTime);
 				out = new SimpleDateFormat(formatoData).format(temp);
 			} 
 			catch (Throwable t) {
-				Logger.error(t.getMessage(), t);
+				Logger.warn("DateTimeConverter.convertDateTime(): conversion failed (" + t.getMessage() + ")... use " + dateTime);
 			}
 			
 			return out;
@@ -57,7 +58,7 @@ public class DateTimeConverter implements Converter{
 				out = new SimpleDateFormat(formatoData).format(temp);
 			} 
 			catch (Throwable t) {
-				Logger.error(t.getMessage(), t);
+				Logger.warn("DateTimeConverter.convertDateTime(): conversion failed (" + t.getMessage() + ")... use " + dateTime);
 			}
 			
 			return out;

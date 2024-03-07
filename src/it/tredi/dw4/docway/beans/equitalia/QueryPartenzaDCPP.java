@@ -41,7 +41,8 @@ public class QueryPartenzaDCPP extends QueryGlobale {
 	private void forzaRepertorio() {
 		setRepertori_multipli(true);
 		forceRepertorioSelected("DCPP", "P");
-		setArrivo(true);
+		setCurrentCustomFieldSection("partenza_DCPP");
+		setPartenza(true);
 	}
 	
 	@Override

@@ -14,7 +14,7 @@ public class DatiSAL extends XmlEntity {
 
 	@Override
 	public XmlEntity init(Document dom) {
-		this.riferimentoFase = XMLUtil.parseStrictElement(dom, "datiSAL/riferimentoFase");
+		this.riferimentoFase = XMLUtil.parseStrictAttribute(dom, "datiSAL/@riferimentoFase");
 		return this;
 	}
 
@@ -24,7 +24,7 @@ public class DatiSAL extends XmlEntity {
     	Map<String, String> params = new HashMap<String, String>();
     	
     	if (this.riferimentoFase != null && this.riferimentoFase.length() > 0)
-    		params.put(prefix+".riferimentoFase", this.riferimentoFase);
+    		params.put(prefix+".@riferimentoFase", this.riferimentoFase);
     	
     	return params;
 	}

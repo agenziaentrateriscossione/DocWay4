@@ -28,13 +28,14 @@ public class Storia extends XmlEntity {
 	private String data_visto;
 	private String ora_visto;
 	private String visto_da;
-    
+	private String delegato;
+
 	public Storia() {}
-    
+
 	public Storia(String xml) throws Exception {
         this.init(XMLUtil.getDOM(xml));
     }
-    
+
     public Storia init(Document dom) {
     	this.tipo = 			dom.getRootElement().getName();
     	this.oper 			= XMLUtil.parseAttribute(dom, tipo+"/@oper");
@@ -53,13 +54,14 @@ public class Storia extends XmlEntity {
     	this.data_visto		= XMLUtil.parseAttribute(dom, tipo+"/@data_visto");
     	this.ora_visto 		= XMLUtil.parseAttribute(dom, tipo+"/@ora_visto");
     	this.visto_da		= XMLUtil.parseAttribute(dom, tipo+"/@visto_da");
+    	this.delegato       = XMLUtil.parseAttribute(dom, tipo+"/@delegato");
         return this;
     }
-    
+
     public Map<String, String> asFormAdapterParams(String prefix){
     	return new HashMap<String, String>();
     }
-    
+
     public String getOper() {
 		return oper;
 	}
@@ -195,13 +197,21 @@ public class Storia extends XmlEntity {
 	public String getNome_persona() {
 		return nome_persona;
 	}
-	
+
 	public String getDataFormatted(){
 		return new DateConverter().getAsString(null, null, this.data);
 	}
 
 	public String getDataVistoFormatted(){
 		return new DateConverter().getAsString(null, null, this.data_visto);
+	}
+
+	public String getDelegato() {
+		return delegato;
+	}
+
+	public void setDelegato(String delegato) {
+		this.delegato = delegato;
 	}
 }
 

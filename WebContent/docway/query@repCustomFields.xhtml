@@ -77,14 +77,15 @@
 							<div class="form-group">
 								<label for="templateForm:doc_oggetto" class="col-sm-2 control-label">#{i18n['dw4.object']}</label>
 								<div class="col-sm-9">
-									<div class="input-group">
+									<div class="#{!queryCustomFieldsRep.formsAdapter.elasticsearchEnabled ? 'input-group' : ''}">
 										<h:inputText styleClass="form-control" value="#{queryCustomFieldsRep.doc_oggetto}" id="doc_oggetto" />
-										<div class="input-group-btn">
+										
+										<h:panelGroup rendered="#{!queryCustomFieldsRep.formsAdapter.elasticsearchEnabled}" layout="block" styleClass="input-group-btn">
 											<h:commandLink title="#{i18n['acl.vocabulary']}" action="#{queryCustomFieldsRep.openIndexOggettoDoc}" styleClass="btn btn-default">
 												<f:ajax execute="@form" render="@form"/>
 												<span class="glyphicon glyphicon-search"></span>
 											</h:commandLink>
-										</div>
+										</h:panelGroup>
 									</div>
 								</div>
 							</div>
@@ -116,14 +117,15 @@
 							<div class="form-group">
 								<label for="templateForm:doc_postit" class="col-sm-2 control-label">#{i18n['dw4.annotazioni']}</label>
 								<div class="col-sm-9">
-									<div class="input-group">
+									<div class="#{!queryCustomFieldsRep.formsAdapter.elasticsearchEnabled ? 'input-group' : ''}">
 										<h:inputText styleClass="form-control" value="#{queryCustomFieldsRep.doc_postit}" id="doc_postit"/>
-										<div class="input-group-btn">
+										
+										<h:panelGroup rendered="#{!queryCustomFieldsRep.formsAdapter.elasticsearchEnabled}" layout="block" styleClass="input-group-btn">
 											<h:commandLink title="#{i18n['acl.vocabulary']}" action="#{queryCustomFieldsRep.openIndexPostitDoc}" styleClass="btn btn-default">
 												<f:ajax execute="@form" render="@form"/>
 												<span class="glyphicon glyphicon-search"></span>
 											</h:commandLink>
-										</div>
+										</h:panelGroup>
 									</div>
 								</div>
 							</div>
@@ -342,7 +344,7 @@
 		});
 		</script>
 
-		<h:inputTextarea value="#{queryCustomFieldsRep.xml}" rendered="#{queryCustomFieldsRep.debugMode}" styleClass="form-control" rows="10" />
+		<h:inputTextarea value="#{queryCustomFieldsRep.xml}" rendered="#{queryCustomFieldsRep.debugMode}" styleClass="form-control debug-textarea" rows="10" />
 	</div>
 	
 	<ui:include src="./showindex.xhtml"><ui:param name="pageBean" value="#{queryCustomFieldsRep}"/></ui:include>

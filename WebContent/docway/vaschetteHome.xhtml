@@ -1,269 +1,212 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml"
-    xmlns:ui="http://java.sun.com/jsf/facelets"
-    xmlns:h="http://java.sun.com/jsf/html"
-    xmlns:f="http://java.sun.com/jsf/core"
-    xmlns:c="http://java.sun.com/jsp/jstl/core">
+	  xmlns:ui="http://java.sun.com/jsf/facelets"
+	  xmlns:h="http://java.sun.com/jsf/html"
+	  xmlns:f="http://java.sun.com/jsf/core"
+	  xmlns:c="http://java.sun.com/jsp/jstl/core">
 <ui:composition>
 
-	<h:panelGroup rendered="#{docwayHome.scrivaniaPersonaleEnabled}">
-		<div class="panel panel-default">
-			<div class="panel-heading clearfix">
-				<h3 class="panel-title pull-left" style="padding-top:7px;">#{i18n['dw4.la_mia_scrivania']}</h3>
-				<div class="btn-group pull-right">
-					<h:commandLink action="#{docwayHome.refreshVaschette}" styleClass="btn btn-default btn-xs" title="#{i18n['dw4.aggiorna_vaschette']}. #{i18n['dw4.ultimo_aggiornamento']}: #{docwayHome.ultimo_aggiornamento_vaschette}">
-				    	<span class="glyphicon glyphicon-refresh refresh-vaschette"></span>
-					   	<f:ajax execute="@form" render="@form" />
-					</h:commandLink>
-			    </div>
-			</div>
-			<div class="panel-body scrivania-personale">
-				<ul class="nav nav-pills nav-stacked">
-					<h:panelGroup rendered="#{fn:length(docwayHome.vaschetteCustom) > 0}">
-						<li>
-							<div class="vaschetta-link vaschetta-con-select">
-								<h:panelGroup rendered="#{docwayHome.formsAdapter.funzionalitaDisponibili['mostraFrequenze']}" styleClass="badge selection-item">
-									#{fn:length(docwayHome.vaschetteCustom)}
-								</h:panelGroup>
-								
-								<div class="btn-group btn-input clearfix vaschette-custom">
-									<button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
-										 #{i18n['dw4.vaschette_utente']} <span class="caret"></span>
-									</button>
-									<ul class="dropdown-menu" role="menu">
-										<ui:repeat var="vaschetta" value="#{docwayHome.vaschetteCustom}">
-											<li>
-												<h:commandLink action="#{docwayHome.gotoDocsInGestione}">
-													#{vaschetta.title}
-													<h:panelGroup rendered="#{vaschetta.num &lt; '0'}">
-														&#160;<span class="vaschetta-error">(ERR)</span>
-													</h:panelGroup>
-												</h:commandLink>
-											</li>
-										</ui:repeat>
-	  								</ul>
+	<h:commandLink action="#{docwayHome.toggleVaschetteResponsive}" styleClass="btn btn-default btn-xs hidden-sm hidden-md hidden-lg">
+		<span>#{docwayHome.showVaschetteResponsive ? i18n['dw4.nascondi_vaschette'] : i18n['dw4.mostra_vaschette']}</span>
+		<f:ajax execute="@form" render="@form" />
+	</h:commandLink>
+	<script>
+		// scoll in fondo alla lista delle vaschette
+		$(document).ready(function () {
+			if (window.matchMedia("(max-width: 988px)").matches) {
+				$('html, body').scrollTop($('.vaschette-container')[0].scrollHeight + 30);
+			}
+		});
+	</script>
+
+	<h:panelGroup layout="block" styleClass="#{not docwayHome.showVaschetteResponsive ? 'responsive-hidden' : ''} vaschette-container">
+
+		<h:panelGroup rendered="#{docwayHome.scrivaniaPersonaleEnabled}">
+			<div class="panel panel-default">
+				<div class="panel-heading clearfix #{docwayHome.accessoDelega ? 'vaschetta-delega-bg' : ''}">
+					<h3 class="panel-title pull-left" style="padding-top:7px;">#{i18n['dw4.la_mia_scrivania']}</h3>
+					<div class="btn-group pull-right">
+						<h:commandLink action="#{docwayHome.refreshVaschette}" styleClass="btn btn-default btn-xs vaschette-toggler" title="#{i18n['dw4.aggiorna_vaschette']}. #{i18n['dw4.ultimo_aggiornamento']}: #{docwayHome.ultimo_aggiornamento_vaschette}">
+							<span class="glyphicon glyphicon-refresh refresh-vaschette"></span>
+							<f:ajax execute="@form" render="@form" />
+						</h:commandLink>
+					</div>
+				</div>
+				<div class="panel-body scrivania-personale">
+					<ul class="nav nav-pills nav-stacked">
+						<h:panelGroup rendered="#{fn:length(docwayHome.vaschetteCustom) > 0}">
+							<li>
+								<div class="vaschetta-link vaschetta-con-select">
+									<h:panelGroup rendered="#{docwayHome.formsAdapter.funzionalitaDisponibili['mostraFrequenze']}" styleClass="badge selection-item">
+										#{fn:length(docwayHome.vaschetteCustom)}
+									</h:panelGroup>
+
+									<div class="btn-group btn-input clearfix vaschette-custom">
+										<button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+											#{i18n['dw4.vaschette_utente']} <span class="caret"></span>
+										</button>
+										<ul class="dropdown-menu" role="menu">
+											<ui:repeat var="vaschetta" value="#{docwayHome.vaschetteCustom}">
+												<li>
+													<h:commandLink action="#{docwayHome.gotoDocsInGestione}">
+														#{vaschetta.title}
+														<h:panelGroup rendered="#{vaschetta.num &lt; '0'}">
+															&#160;<span class="vaschetta-error">(ERR)</span>
+														</h:panelGroup>
+													</h:commandLink>
+												</li>
+											</ui:repeat>
+										</ul>
+									</div>
 								</div>
-							</div>
-						</li>
-					</h:panelGroup>
-					
-					<h:panelGroup rendered="#{fn:length(docwayHome.esportazioni) > 0}">
-                        <li>
-                        	<div class="vaschetta-link vaschetta-con-select">
-	                            <h:panelGroup rendered="#{docwayHome.formsAdapter.funzionalitaDisponibili['mostraFrequenze']}" styleClass="badge selection-item">
-	                                #{fn:length(docwayHome.esportazioni)}
-	                            </h:panelGroup>
-	                            
-	                            <div class="btn-group btn-input clearfix vaschette-custom">
-	                                <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
-	                                     #{i18n['dw4.esportazioni']} <span class="caret"></span>
-	                                </button>
-	                                <ul class="dropdown-menu" role="menu">
-	                                    <ui:repeat var="esportazione" value="#{docwayHome.esportazioni}">
-	                                        <li>
-	                                            <h:commandLink action="#{docwayHome.gotoCustomEsportazione}" styleClass="#{esportazione.num == '0' and docwayHome.formsAdapter.funzionalitaDisponibili['mostraFrequenze'] ? 'disabled' :''}">
-	                                                #{esportazione.title}
-	                                                <h:panelGroup rendered="#{esportazione.num &lt; '0'}">
-	                                                    &#160;<span class="vaschetta-error">(ERR)</span>
-	                                                </h:panelGroup>
-	                                            </h:commandLink>
-	                                        </li>
-	                                    </ui:repeat>
-	                                </ul>
-	                            </div>
-                            </div>
-                        </li>
-                    </h:panelGroup>
-                    
-                    <ui:remove>
-	                    <h:panelGroup rendered="#{(fn:length(docwayHome.vaschetteCustom) > 0 or fn:length(docwayHome.esportazioni) > 0) and docwayHome.formsAdapter.funzionalitaDisponibili['abilitaeXtraWayWorkflow']}">
-	                    	<hr/>
-	                    </h:panelGroup>
-                    </ui:remove>
-					
-					<h:panelGroup rendered="#{docwayHome.formsAdapter.funzionalitaDisponibili['abilitaeXtraWayWorkflow']}">
-						<ui:repeat var="vaschetta" value="#{docwayHome.vaschette}">
-							<h:panelGroup rendered="#{vaschetta.tipo == 'activeTask'}">
-								<li class="#{(vaschetta.num &lt; '0' or (vaschetta.num == '0' and docwayHome.formsAdapter.funzionalitaDisponibili['mostraFrequenze'])) ? 'disabled' :''}">
-									<div class="vaschetta-link">
-										<ui:param name="id" value="dw4.#{vaschetta.label}" />
-										<h:commandLink action="#{docwayHome.gotoDocsInGestione}" title="#{i18n['dw4.task_di_un_workflow_assegnati']}">
-											<h:panelGroup rendered="#{vaschetta.num >= '0'}">
+							</li>
+						</h:panelGroup>
+
+						<h:panelGroup rendered="#{fn:length(docwayHome.esportazioni) > 0}">
+							<li>
+								<div class="vaschetta-link vaschetta-con-select">
+									<h:panelGroup rendered="#{docwayHome.formsAdapter.funzionalitaDisponibili['mostraFrequenze']}" styleClass="badge selection-item">
+										#{fn:length(docwayHome.esportazioni)}
+									</h:panelGroup>
+
+									<div class="btn-group btn-input clearfix vaschette-custom">
+										<button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+											#{i18n['dw4.esportazioni']} <span class="caret"></span>
+										</button>
+										<ul class="dropdown-menu" role="menu">
+											<ui:repeat var="esportazione" value="#{docwayHome.esportazioni}">
+												<li>
+													<h:commandLink action="#{docwayHome.gotoCustomEsportazione}" styleClass="#{esportazione.num == '0' and docwayHome.formsAdapter.funzionalitaDisponibili['mostraFrequenze'] ? 'disabled' :''}">
+														#{esportazione.title}
+														<h:panelGroup rendered="#{esportazione.num &lt; '0'}">
+															&#160;<span class="vaschetta-error">(ERR)</span>
+														</h:panelGroup>
+													</h:commandLink>
+												</li>
+											</ui:repeat>
+										</ul>
+									</div>
+								</div>
+							</li>
+						</h:panelGroup>
+
+						<ui:remove>
+							<h:panelGroup rendered="#{(fn:length(docwayHome.vaschetteCustom) > 0 or fn:length(docwayHome.esportazioni) > 0) and docwayHome.formsAdapter.funzionalitaDisponibili['deleghePersonaliAttive']}">
+								<hr/>
+							</h:panelGroup>
+						</ui:remove>
+
+						<h:panelGroup rendered="#{docwayHome.formsAdapter.funzionalitaDisponibili['abilitaeXtraWayWorkflow']}">
+							<ui:repeat var="vaschetta" value="#{docwayHome.vaschette}">
+								<h:panelGroup rendered="#{vaschetta.tipo == 'activeTask'}">
+									<li class="#{(vaschetta.num &lt; '0' or (vaschetta.num == '0' and docwayHome.formsAdapter.funzionalitaDisponibili['mostraFrequenze'])) ? 'disabled' :''} vaschetta-sm-inline">
+										<div class="vaschetta-link">
+											<ui:param name="id" value="dw4.#{vaschetta.label}" />
+											<h:commandLink action="#{docwayHome.gotoDocsInGestione}" title="#{i18n['dw4.task_di_un_workflow_assegnati']}">
+												<h:panelGroup rendered="#{vaschetta.num >= '0'}">
+													<h:panelGroup rendered="#{docwayHome.formsAdapter.funzionalitaDisponibili['mostraFrequenze']}" styleClass="badge">
+														#{vaschetta.num}
+													</h:panelGroup>
+													#{i18n['dw4.workflow_assegnati']}
+												</h:panelGroup>
+												<h:panelGroup rendered="#{vaschetta.num &lt; '0'}">
+													<span class="badge">ERR</span>
+													#{i18n['dw4.workflow_assegnati']}
+												</h:panelGroup>
+											</h:commandLink>
+										</div>
+									</li>
+								</h:panelGroup>
+							</ui:repeat>
+						</h:panelGroup>
+
+						<h:panelGroup rendered="#{docwayHome.formsAdapter.funzionalitaDisponibili['verificaVirus']}">
+							<ui:repeat var="vaschetta" value="#{docwayHome.vaschette}">
+								<h:panelGroup rendered="#{vaschetta.tipo == 'verificaVirus'}">
+									<li class="#{(vaschetta.num == '0' and docwayHome.formsAdapter.funzionalitaDisponibili['mostraFrequenze']) ? 'disabled' :''} vaschetta-sm-inline">
+										<div class="vaschetta-link">
+											<h:commandLink action="#{docwayHome.gotoDocsInGestione}" title="#{i18n['dw4.richiesta_verifica_virus']}">
 												<h:panelGroup rendered="#{docwayHome.formsAdapter.funzionalitaDisponibili['mostraFrequenze']}" styleClass="badge">
 													#{vaschetta.num}
 												</h:panelGroup>
-												#{i18n['dw4.workflow_assegnati']}
-											</h:panelGroup>
-											<h:panelGroup rendered="#{vaschetta.num &lt; '0'}">
-												<span class="badge">ERR</span>
-												#{i18n['dw4.workflow_assegnati']}
-											</h:panelGroup>
-										</h:commandLink>
-									</div>
-								</li>
-							</h:panelGroup>
-						</ui:repeat>
+												#{i18n['dw4.richiesta_verifica_virus']}
+											</h:commandLink>
+										</div>
+									</li>
+								</h:panelGroup>
+							</ui:repeat>
+						</h:panelGroup>
+					</ul>
+
+					<h:panelGroup rendered="#{docwayHome.abilitaCestino}">
+						<hr />
+						<ul class="nav nav-pills nav-stacked">
+							<li class="vaschetta-sm-inline">
+								<div class="vaschetta-link">
+									<h:commandLink action="#{docwayHome.apriCestino}" title="#{i18n['dw4.visualizza_documenti_nel_cestino']}">
+										<span class="badge cestino-documenti"><span class="glyphicons-pro bin"></span></span>
+										#{i18n['dw4.cestino']}
+									</h:commandLink>
+								</div>
+							</li>
+						</ul>
 					</h:panelGroup>
-				</ul>
-				
-				<h:panelGroup rendered="#{docwayHome.abilitaCestino}">
-					<hr />
-					<ul class="nav nav-pills nav-stacked">
-						<li>
+				</div>
+			</div>
+		</h:panelGroup>
+
+		<h:panelGroup rendered="#{fn:length(docwayHome.vaschetteFatture) > 0}" layout="block" class="panel panel-default">
+			<div class="panel-heading clearfix #{docwayHome.accessoDelega ? 'vaschetta-delega-bg' : ''}">
+				<h:panelGroup rendered="#{docwayHome.scrivaniaPersonaleEnabled}">
+					<h3 class="panel-title">#{i18n['dw4.fatturePA']}</h3>
+				</h:panelGroup>
+				<h:panelGroup rendered="#{!docwayHome.scrivaniaPersonaleEnabled}">
+					<h3 class="panel-title pull-left" style="padding-top:7px;">#{i18n['dw4.fatturePA']}</h3>
+					<div class="btn-group pull-right">
+						<h:commandLink action="#{docwayHome.refreshVaschette}" styleClass="btn btn-default btn-xs" title="#{i18n['dw4.aggiorna_vaschette']}. #{i18n['dw4.ultimo_aggiornamento']}: #{docwayHome.ultimo_aggiornamento_vaschette}">
+							<span class="glyphicon glyphicon-refresh refresh-vaschette"></span>
+							<f:ajax execute="@form" render="@form" />
+						</h:commandLink>
+					</div>
+				</h:panelGroup>
+			</div>
+			<div class="panel-body">
+				<ul class="nav nav-pills nav-stacked">
+					<ui:repeat var="vaschetta" value="#{docwayHome.vaschetteFatture}">
+						<li class="#{(vaschetta.num &lt; '0' or (vaschetta.num == '0' and docwayHome.formsAdapter.funzionalitaDisponibili['mostraFrequenze'])) ? 'disabled' :''} vaschetta-sm-inline">
 							<div class="vaschetta-link">
-								<h:commandLink action="#{docwayHome.apriCestino}" title="#{i18n['dw4.visualizza_documenti_nel_cestino']}">
-									<span class="badge cestino-documenti"><span class="glyphicons-pro bin"></span></span>
-									#{i18n['dw4.cestino']}
+								<ui:param name="id" value="dw4.#{vaschetta.label}" />
+								<h:commandLink action="#{docwayHome.gotoDocsInGestione}" styleClass="#{vaschetta.num == '0' and docwayHome.formsAdapter.funzionalitaDisponibili['mostraFrequenze'] ? 'disabled' :''}" title="#{(id eq 'dw4.DAFASC') ? i18n['dw4.doc_non_fascicolati'] : ''}">
+									<h:panelGroup rendered="#{docwayHome.formsAdapter.funzionalitaDisponibili['mostraFrequenze']}" styleClass="badge #{(vaschetta.num > 0) ? vaschetta.label : ''}">
+										#{vaschetta.num}
+									</h:panelGroup>
+									#{i18n[id]}
 								</h:commandLink>
 							</div>
 						</li>
-					</ul>
-				</h:panelGroup>
+					</ui:repeat>
+				</ul>
 			</div>
-		</div>
-	</h:panelGroup>
-	
-	<h:panelGroup rendered="#{fn:length(docwayHome.vaschetteFatture) > 0}" layout="block" class="panel panel-default">
-		<div class="panel-heading clearfix">
-			<h:panelGroup rendered="#{docwayHome.scrivaniaPersonaleEnabled}">
-				<h3 class="panel-title">#{i18n['dw4.fatturePA']}</h3>
-			</h:panelGroup>
-			<h:panelGroup rendered="#{!docwayHome.scrivaniaPersonaleEnabled}">
-				<h3 class="panel-title pull-left" style="padding-top:7px;">#{i18n['dw4.fatturePA']}</h3>
-				<div class="btn-group pull-right">
-					<h:commandLink action="#{docwayHome.refreshVaschette}" styleClass="btn btn-default btn-xs" title="#{i18n['dw4.aggiorna_vaschette']}. #{i18n['dw4.ultimo_aggiornamento']}: #{docwayHome.ultimo_aggiornamento_vaschette}">
-				    	<span class="glyphicon glyphicon-refresh refresh-vaschette"></span>
-					   	<f:ajax execute="@form" render="@form" />
-					</h:commandLink>
-			    </div>
-			</h:panelGroup>
-		</div>
-		<div class="panel-body">
-			<ul class="nav nav-pills nav-stacked">
-				<ui:repeat var="vaschetta" value="#{docwayHome.vaschetteFatture}">
-					<li class="#{(vaschetta.num &lt; '0' or (vaschetta.num == '0' and docwayHome.formsAdapter.funzionalitaDisponibili['mostraFrequenze'])) ? 'disabled' :''}">
-						<div class="vaschetta-link">
-							<ui:param name="id" value="dw4.#{vaschetta.label}" />
-							<h:commandLink action="#{docwayHome.gotoDocsInGestione}" styleClass="#{vaschetta.num == '0' and docwayHome.formsAdapter.funzionalitaDisponibili['mostraFrequenze'] ? 'disabled' :''}" title="#{(id eq 'dw4.DAFASC') ? i18n['dw4.doc_non_fascicolati'] : ''}">
-								<h:panelGroup rendered="#{docwayHome.formsAdapter.funzionalitaDisponibili['mostraFrequenze']}" styleClass="badge #{(vaschetta.num > 0) ? vaschetta.label : ''}">
-									#{vaschetta.num}
-								</h:panelGroup>
-								#{i18n[id]}
-							</h:commandLink>
-						</div>
-					</li>
-				</ui:repeat>
-			</ul>
-		</div>
-	</h:panelGroup>
-	
-	<div class="panel panel-default">
-		<div class="panel-heading clearfix">
-			<h:panelGroup rendered="#{docwayHome.scrivaniaPersonaleEnabled or fn:length(docwayHome.vaschetteFatture) > 0}">
-				<h3 class="panel-title">#{i18n['dw4.documenti_e_archivio']}</h3>
-			</h:panelGroup>
-			<h:panelGroup rendered="#{!docwayHome.scrivaniaPersonaleEnabled and fn:length(docwayHome.vaschetteFatture) == 0}">
-				<h3 class="panel-title pull-left" style="padding-top:7px;">#{i18n['dw4.documenti_e_archivio']}</h3>
-				<div class="btn-group pull-right">
-					<h:commandLink action="#{docwayHome.refreshVaschette}" styleClass="btn btn-default btn-xs" title="#{i18n['dw4.aggiorna_vaschette']}. #{i18n['dw4.ultimo_aggiornamento']}: #{docwayHome.ultimo_aggiornamento_vaschette}">
-				    	<span class="glyphicon glyphicon-refresh refresh-vaschette"></span>
-					   	<f:ajax execute="@form" render="@form" />
-					</h:commandLink>
-			    </div>
-			</h:panelGroup>
-		</div>
-		<div class="panel-body">
-			<ui:repeat var="vaschetta" value="#{docwayHome.vaschette}">
-				<h:panelGroup rendered="#{vaschetta.tipo == 'doc'}">
-					<div class="col-md-12 col-lg-6 column">
-						<div class="vaschetta-link">
-							<ui:param name="id" value="dw4.#{vaschetta.label}" />
-							<h:commandLink action="#{docwayHome.gotoDocsInGestione}" styleClass="#{vaschetta.num == '0' and docwayHome.formsAdapter.funzionalitaDisponibili['mostraFrequenze'] ? 'disabled' :''}" title="#{(id eq 'dw4.DAFASC') ? i18n['dw4.doc_non_fascicolati'] : ''}">
-								<h:panelGroup rendered="#{docwayHome.formsAdapter.funzionalitaDisponibili['mostraFrequenze']}" styleClass="badge">
-									#{vaschetta.num}
-								</h:panelGroup>
-								#{i18n[id]}
-							</h:commandLink>
-						</div>
-					</div>
-				</h:panelGroup>
-			</ui:repeat>
-			
-			<div class="col-md-12 column">
-				<hr/>
-			</div>
-			
-			<ui:repeat var="vaschetta" value="#{docwayHome.vaschette}">
-				<h:panelGroup rendered="#{vaschetta.tipo == 'fasc'}">
-					<div class="col-md-12 col-lg-6 column">
-						<div class="vaschetta-link">
-							<ui:param name="id" value="dw4.#{vaschetta.label}" />
-							<h:commandLink action="#{docwayHome.gotoFascInGestione}" styleClass="#{vaschetta.num == '0' and docwayHome.formsAdapter.funzionalitaDisponibili['mostraFrequenze'] ? 'disabled' :''}">
-								<h:panelGroup rendered="#{docwayHome.formsAdapter.funzionalitaDisponibili['mostraFrequenze']}" styleClass="badge">
-									#{vaschetta.num}
-								</h:panelGroup>
-								#{i18n[id]}
-							</h:commandLink>
-						</div>
-					</div>
-				</h:panelGroup>
-			</ui:repeat>
-			<ui:repeat var="vaschetta" value="#{docwayHome.vaschette}">
-				<h:panelGroup rendered="#{vaschetta.tipo == 'rac'}">
-					<div class="col-md-12 col-lg-6 column">
-						<div class="vaschetta-link">
-							<ui:param name="id" value="dw4.#{vaschetta.label}" />
-							<h:commandLink action="#{docwayHome.gotoRacInGestione}" styleClass="#{vaschetta.num == '0' and docwayHome.formsAdapter.funzionalitaDisponibili['mostraFrequenze'] ? 'disabled' :''}">
-								<h:panelGroup rendered="#{docwayHome.formsAdapter.funzionalitaDisponibili['mostraFrequenze']}" styleClass="badge">
-									#{vaschetta.num}
-								</h:panelGroup>
-								#{i18n[id]}
-							</h:commandLink>
-						</div>
-					</div>
-				</h:panelGroup>
-			</ui:repeat>
-		</div>
-	</div>
-	
-	<h:panelGroup rendered="#{fn:length(docwayHome.vaschetteAlboExt) > 0}">
+		</h:panelGroup>
+
 		<div class="panel panel-default">
-			<div class="panel-heading">
-				<h3 class="panel-title">#{i18n['dw4.albo_online']}</h3>
+			<div class="panel-heading clearfix #{docwayHome.accessoDelega ? 'vaschetta-delega-bg' : ''}">
+				<h:panelGroup rendered="#{docwayHome.scrivaniaPersonaleEnabled or fn:length(docwayHome.vaschetteFatture) > 0}">
+					<h3 class="panel-title">#{i18n['dw4.documenti_e_archivio']}</h3>
+				</h:panelGroup>
+				<h:panelGroup rendered="#{!docwayHome.scrivaniaPersonaleEnabled and fn:length(docwayHome.vaschetteFatture) == 0}">
+					<h3 class="panel-title pull-left" style="padding-top:7px;">#{i18n['dw4.documenti_e_archivio']}</h3>
+					<div class="btn-group pull-right">
+						<h:commandLink action="#{docwayHome.refreshVaschette}" styleClass="btn btn-default btn-xs" title="#{i18n['dw4.aggiorna_vaschette']}. #{i18n['dw4.ultimo_aggiornamento']}: #{docwayHome.ultimo_aggiornamento_vaschette}">
+							<span class="glyphicon glyphicon-refresh refresh-vaschette"></span>
+							<f:ajax execute="@form" render="@form" />
+						</h:commandLink>
+					</div>
+				</h:panelGroup>
 			</div>
 			<div class="panel-body">
-				<ui:repeat var="vaschetta" value="#{docwayHome.vaschetteAlboExt}">
-						<div class="col-md-12 col-lg-6 column">
-							<div class="vaschetta-link">
-								<ui:param name="id" value="dw4.#{vaschetta.label}" />
-								<h:commandLink action="#{docwayHome.gotoDocsInGestione}" styleClass="#{vaschetta.num == '0' and docwayHome.formsAdapter.funzionalitaDisponibili['mostraFrequenze'] ? 'disabled' :''}" title="#{(id eq 'dw4.DAFASC') ? i18n['dw4.doc_non_fascicolati'] : ''}">
-									<h:panelGroup rendered="#{docwayHome.formsAdapter.funzionalitaDisponibili['mostraFrequenze']}" styleClass="badge">
-										#{vaschetta.num}
-									</h:panelGroup>
-									#{i18n[id]}
-								</h:commandLink>
-							</div>
-						</div>
-				</ui:repeat>
-			</div>
-		</div>
-	</h:panelGroup>
-	
-	<c:if test="#{fn:length(docwayHome.uor_select) > 0}">
-		<div class="panel panel-default">
-			<div class="panel-heading">
-				<h3 class="panel-title">#{i18n['dw4.il_mio_ufficio']}</h3>
-			</div>
-			<div class="panel-body">
-				<div class="ufficio-selector">
-					<h:selectOneMenu class="form-control" value="#{docwayHome.selected_uor}" onchange="$('#leftsideContentForm\\:changeUorBtn').trigger('click');">
-						<f:selectItems value="#{docwayHome.uor_select}" var="option" itemValue="#{option.value}" itemLabel="#{option.label}" />
-					</h:selectOneMenu>
-					<h:commandLink id="changeUorBtn" action="#{docwayHome.changeUORTendina}" style="display:none;"><f:ajax execute="@form" render="@form :templateForm:errormsg" /></h:commandLink>
-				</div>
-				
 				<ui:repeat var="vaschetta" value="#{docwayHome.vaschette}">
-					<h:panelGroup rendered="#{vaschetta.tipo == 'doc_uff'}">
+					<h:panelGroup rendered="#{vaschetta.tipo == 'doc'}">
 						<div class="col-md-12 col-lg-6 column">
 							<div class="vaschetta-link">
 								<ui:param name="id" value="dw4.#{vaschetta.label}" />
@@ -277,13 +220,45 @@
 						</div>
 					</h:panelGroup>
 				</ui:repeat>
-				
-				<div class="col-md-12 column">
-					<hr/>	
+
+				<h:panelGroup rendered="#{fn:length(docwayHome.vaschetteRuoli) > 0}">
+					<div class="col-md-12 column separator">
+						<hr/>
+					</div>
+					<div class="col-md-12 column">
+						<ul class="nav nav-pills nav-stacked">
+							<li>
+								<div class="vaschetta-link vaschetta-con-select">
+									<h:panelGroup rendered="#{docwayHome.formsAdapter.funzionalitaDisponibili['mostraFrequenze']}" styleClass="badge selection-item">
+										#{fn:length(docwayHome.vaschetteRuoli)}
+									</h:panelGroup>
+
+									<div class="btn-group btn-input clearfix vaschette-custom">
+										<button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+											#{i18n['dw4.ruoli_utente']} <span class="caret"></span>
+										</button>
+										<ul class="dropdown-menu" role="menu">
+											<ui:repeat var="vaschetta" value="#{docwayHome.vaschetteRuoli}">
+												<li>
+													<h:commandLink action="#{docwayHome.gotoDocsInGestione}">
+														<span class="badge dropdown-badge">#{vaschetta.num}</span> #{vaschetta.title}
+													</h:commandLink>
+												</li>
+											</ui:repeat>
+										</ul>
+									</div>
+								</div>
+							</li>
+						</ul>
+					</div>
+				</h:panelGroup>
+
+				<div class="col-md-12 column separator">
+					<hr/>
 				</div>
-				
+
 				<ui:repeat var="vaschetta" value="#{docwayHome.vaschette}">
-					<h:panelGroup rendered="#{vaschetta.tipo == 'fasc_uff'}">
+					<h:panelGroup rendered="#{vaschetta.tipo == 'fasc'}">
 						<div class="col-md-12 col-lg-6 column">
 							<div class="vaschetta-link">
 								<ui:param name="id" value="dw4.#{vaschetta.label}" />
@@ -298,7 +273,7 @@
 					</h:panelGroup>
 				</ui:repeat>
 				<ui:repeat var="vaschetta" value="#{docwayHome.vaschette}">
-					<h:panelGroup rendered="#{vaschetta.tipo == 'rac_uff'}">
+					<h:panelGroup rendered="#{vaschetta.tipo == 'rac'}">
 						<div class="col-md-12 col-lg-6 column">
 							<div class="vaschetta-link">
 								<ui:param name="id" value="dw4.#{vaschetta.label}" />
@@ -314,7 +289,97 @@
 				</ui:repeat>
 			</div>
 		</div>
-	</c:if>
-	
+
+		<h:panelGroup rendered="#{fn:length(docwayHome.vaschetteAlboExt) > 0}">
+			<div class="panel panel-default">
+				<div class="panel-heading #{docwayHome.accessoDelega ? 'vaschetta-delega-bg' : ''}">
+					<h3 class="panel-title">#{i18n['dw4.albo_online']}</h3>
+				</div>
+				<div class="panel-body">
+					<ui:repeat var="vaschetta" value="#{docwayHome.vaschetteAlboExt}">
+						<div class="col-md-12 col-lg-6 column">
+							<div class="vaschetta-link">
+								<ui:param name="id" value="dw4.#{vaschetta.label}" />
+								<h:commandLink action="#{docwayHome.gotoDocsInGestione}" styleClass="#{vaschetta.num == '0' and docwayHome.formsAdapter.funzionalitaDisponibili['mostraFrequenze'] ? 'disabled' :''}" title="#{(id eq 'dw4.DAFASC') ? i18n['dw4.doc_non_fascicolati'] : ''}">
+									<h:panelGroup rendered="#{docwayHome.formsAdapter.funzionalitaDisponibili['mostraFrequenze']}" styleClass="badge">
+										#{vaschetta.num}
+									</h:panelGroup>
+									#{i18n[id]}
+								</h:commandLink>
+							</div>
+						</div>
+					</ui:repeat>
+				</div>
+			</div>
+		</h:panelGroup>
+
+		<c:if test="#{fn:length(docwayHome.uor_select) > 0}">
+			<div class="panel panel-default">
+				<div class="panel-heading #{docwayHome.accessoDelega ? 'vaschetta-delega-bg' : ''}">
+					<h3 class="panel-title">#{i18n['dw4.il_mio_ufficio']}</h3>
+				</div>
+				<div class="panel-body">
+					<div class="ufficio-selector">
+						<h:selectOneMenu class="form-control" value="#{docwayHome.selected_uor}" onchange="$('#leftsideContentForm\\:changeUorBtn').trigger('click');">
+							<f:selectItems value="#{docwayHome.uor_select}" var="option" itemValue="#{option.value}" itemLabel="#{option.label}" />
+						</h:selectOneMenu>
+						<h:commandLink id="changeUorBtn" action="#{docwayHome.changeUORTendina}" style="display:none;"><f:ajax execute="@form" render="@form :templateForm:errormsg" /></h:commandLink>
+					</div>
+
+					<ui:repeat var="vaschetta" value="#{docwayHome.vaschette}">
+						<h:panelGroup rendered="#{vaschetta.tipo == 'doc_uff'}">
+							<div class="col-md-12 col-lg-6 column">
+								<div class="vaschetta-link">
+									<ui:param name="id" value="dw4.#{vaschetta.label}" />
+									<h:commandLink action="#{docwayHome.gotoDocsInGestione}" styleClass="#{vaschetta.num == '0' and docwayHome.formsAdapter.funzionalitaDisponibili['mostraFrequenze'] ? 'disabled' :''}" title="#{(id eq 'dw4.DAFASC') ? i18n['dw4.doc_non_fascicolati'] : ''}">
+										<h:panelGroup rendered="#{docwayHome.formsAdapter.funzionalitaDisponibili['mostraFrequenze']}" styleClass="badge">
+											#{vaschetta.num}
+										</h:panelGroup>
+										#{i18n[id]}
+									</h:commandLink>
+								</div>
+							</div>
+						</h:panelGroup>
+					</ui:repeat>
+
+					<div class="col-md-12 column separator">
+						<hr/>
+					</div>
+
+					<ui:repeat var="vaschetta" value="#{docwayHome.vaschette}">
+						<h:panelGroup rendered="#{vaschetta.tipo == 'fasc_uff'}">
+							<div class="col-md-12 col-lg-6 column">
+								<div class="vaschetta-link">
+									<ui:param name="id" value="dw4.#{vaschetta.label}" />
+									<h:commandLink action="#{docwayHome.gotoFascInGestione}" styleClass="#{vaschetta.num == '0' and docwayHome.formsAdapter.funzionalitaDisponibili['mostraFrequenze'] ? 'disabled' :''}">
+										<h:panelGroup rendered="#{docwayHome.formsAdapter.funzionalitaDisponibili['mostraFrequenze']}" styleClass="badge">
+											#{vaschetta.num}
+										</h:panelGroup>
+										#{i18n[id]}
+									</h:commandLink>
+								</div>
+							</div>
+						</h:panelGroup>
+					</ui:repeat>
+					<ui:repeat var="vaschetta" value="#{docwayHome.vaschette}">
+						<h:panelGroup rendered="#{vaschetta.tipo == 'rac_uff'}">
+							<div class="col-md-12 col-lg-6 column">
+								<div class="vaschetta-link">
+									<ui:param name="id" value="dw4.#{vaschetta.label}" />
+									<h:commandLink action="#{docwayHome.gotoRacInGestione}" styleClass="#{vaschetta.num == '0' and docwayHome.formsAdapter.funzionalitaDisponibili['mostraFrequenze'] ? 'disabled' :''}">
+										<h:panelGroup rendered="#{docwayHome.formsAdapter.funzionalitaDisponibili['mostraFrequenze']}" styleClass="badge">
+											#{vaschetta.num}
+										</h:panelGroup>
+										#{i18n[id]}
+									</h:commandLink>
+								</div>
+							</div>
+						</h:panelGroup>
+					</ui:repeat>
+				</div>
+			</div>
+		</c:if>
+	</h:panelGroup>
+
 </ui:composition>
 </html>

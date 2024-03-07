@@ -46,6 +46,7 @@ public class QueryVarieFPNALGERIA extends QueryGlobale {
 	private void forzaRepertorio() {
 		setRepertori_multipli(true);
 		forceRepertorioSelected("FPNALGERIA", "V");
+		setCurrentCustomFieldSection("varie_FPNALGERIA");
 		setVarie(true);
 	}
 	

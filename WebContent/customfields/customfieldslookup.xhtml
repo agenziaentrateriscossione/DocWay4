@@ -82,7 +82,7 @@
 								<div style="margin-top:15px;" class="alert alert-info">#{i18n['acl.emptysearch']}</div>
 							</h:panelGroup>
 				        	
-					       	<h:inputTextarea value="#{pageBean.customfieldsLookup.xml}" rendered="#{pageBean.debugMode}" styleClass="form-control" rows="10"/>
+					       	<h:inputTextarea value="#{pageBean.customfieldsLookup.xml}" rendered="#{pageBean.debugMode}" styleClass="form-control debug-textarea" rows="10"/>
 						</div>
 						<div class="modal-footer">
 							<h:commandButton styleClass="btn btn-default" title="#{i18n['acl.close']}" action="#{pageBean.customfieldsLookup.close}" data-dismiss="modal"  value="#{i18n['acl.close']}" >

@@ -1,0 +1,335 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app metadata-complete="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://java.sun.com/xml/ns/javaee" xmlns:web="http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd" xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd" version="3.0">
+    
+    <welcome-file-list>
+        <welcome-file>index.jsp</welcome-file>
+        <welcome-file>index.html</welcome-file>
+    </welcome-file-list>
+	<error-page>
+		<exception-type>java.lang.Throwable</exception-type>
+		<location>/error.jsp</location>
+	</error-page>
+    
+    <!-- autenticazione FORM-BASED (Tomcat) (N.B. Se attiva questa autenticazione disattivare i filtri 'sqlAuthenticationFilter' e 'aclAuthenticationFilter') -->
+    <!--    <login-config>
+        <auth-method>FORM</auth-method>
+        <realm-name>BASIC</realm-name>
+        <form-login-config>
+            <form-login-page>/login.jsp</form-login-page>
+            <form-error-page>/loginError.jsp</form-error-page>
+        </form-login-config>
+    </login-config>
+    -->
+    <security-constraint>
+        <web-resource-collection>
+            <web-resource-name>Acl</web-resource-name> 
+            <url-pattern>/acl/*</url-pattern> 
+        </web-resource-collection>
+        <auth-constraint>
+            <role-name>BUILTIN\Users</role-name> 
+        </auth-constraint>
+    </security-constraint>
+    
+    <security-constraint>
+        <web-resource-collection>
+            <web-resource-name>DocWay</web-resource-name> 
+            <url-pattern>/docway/*</url-pattern> 
+        </web-resource-collection>
+        <auth-constraint>
+            <role-name>BUILTIN\Users</role-name> 
+        </auth-constraint>
+	</security-constraint>
+
+	<security-constraint>
+        <web-resource-collection>
+            <web-resource-name>DocWay</web-resource-name> 
+            <url-pattern>/docway/initadm.jsf</url-pattern> 
+        </web-resource-collection>
+        <auth-constraint>
+            <role-name>BUILTIN\Administrators</role-name> 
+        </auth-constraint>
+    </security-constraint>
+    
+    <!-- accesso a repertorio specifico -->
+    <security-constraint>
+		<web-resource-collection>
+			<web-resource-name>DocWay</web-resource-name>
+			<url-pattern>/dwrep/*</url-pattern>
+		</web-resource-collection>
+		<auth-constraint>
+			<role-name>BUILTIN\Users</role-name>
+		</auth-constraint>
+	</security-constraint>
+    
+    <!-- Archivio Procedimenti (xdocwayproc) -->
+    <security-constraint>
+        <web-resource-collection>
+            <web-resource-name>DocWayProc</web-resource-name> 
+            <url-pattern>/docwayproc/*</url-pattern> 
+        </web-resource-collection>
+        <auth-constraint>
+            <role-name>BUILTIN\Users</role-name> 
+        </auth-constraint>
+	</security-constraint>
+    
+    <!-- soginSAP -->
+    <security-constraint>
+		<web-resource-collection>
+			<web-resource-name>DocWay</web-resource-name>
+			<url-pattern>/soginSAP/*</url-pattern>
+		</web-resource-collection>
+		<auth-constraint>
+			<role-name>BUILTIN\Users</role-name>
+		</auth-constraint>
+	</security-constraint>
+	
+     <!-- aclCrawler -->
+     <security-constraint>
+        <web-resource-collection>
+            <web-resource-name>Acl</web-resource-name> 
+            <url-pattern>/aclCrawler/*</url-pattern> 
+        </web-resource-collection>
+        <auth-constraint>
+            <role-name>BUILTIN\Users</role-name> 
+        </auth-constraint>
+    </security-constraint>
+    
+    <security-constraint>
+		<web-resource-collection>
+			<web-resource-name>Risorse pubbliche</web-resource-name>
+			<url-pattern>/docway/actalisApplet/*</url-pattern>
+			<url-pattern>/docway/3diSignatureApplet/*</url-pattern>
+			<url-pattern>/docway/fatturepa/xslt/*</url-pattern>
+			<url-pattern>/stacktester</url-pattern>
+		</web-resource-collection>
+		<!-- No auth-constraint means everybody has access! -->
+    </security-constraint>
+    
+    <security-role>
+  		<role-name>BUILTIN\Users</role-name>
+	</security-role>
+    
+    <!-- autenticazione Servlet (N.B. Richiede l'attivazione del filtro 'sqlAuthenticationFilter' o 'aclAuthenticationFilter') -->
+    <!-- aggiunti da VP -->
+	
+    <login-config>
+        <auth-method>NONE</auth-method>
+    </login-config>
+    
+    <context-param>
+        <param-name>javax.faces.PROJECT_STAGE</param-name>
+        <!--param-value>Development</param-value-->
+        <param-value>Production</param-value> <!-- da attivare in ambiente di produzione insieme alla pagina di errore (error-page) -->
+    </context-param>
+    <context-param>
+        <param-name>javax.faces.FACELETS_LIBRARIES</param-name>
+        <param-value>
+            /WEB-INF/tredi.taglib.xml
+        </param-value>
+    </context-param>
+    <!-- Rimuove dal campo hidden javax.faces.ViewState l'attributo autocomplete (per validazione xHTML) -->
+	<context-param>
+		<param-name>com.sun.faces.autoCompleteOffOnViewState</param-name>
+		<param-value>false</param-value>
+	</context-param>
+	<!-- Forza JSF ad utilizzare per il campo hidden javax.faces.ViewState l'attributo name anziche' id (per validazione xHTML) -->
+	<context-param>
+		<param-name>com.sun.faces.enableViewStateIdRendering</param-name>
+		<param-value>false</param-value>
+	</context-param> 
+    
+    <servlet>
+        <servlet-name>Faces Servlet</servlet-name>
+        <servlet-class>javax.faces.webapp.FacesServlet</servlet-class>
+    </servlet>
+    <servlet>
+		<servlet-name>FileUploadServlet</servlet-name>
+		<servlet-class>it.tredi.dw4.servlet.FileUploadServlet</servlet-class>
+	</servlet>
+	<servlet>
+		<servlet-name>FileDownloadServlet</servlet-name>
+		<servlet-class>it.tredi.dw4.servlet.FileDownloadServlet</servlet-class>
+	</servlet>
+	<servlet>
+		<servlet-name>TreDiSignatureToolsServlet</servlet-name>
+		<servlet-class>it.tredi.dw4.servlet.TreDiSignatureToolsServlet</servlet-class>
+	</servlet>
+	<servlet>
+		<servlet-name>PreviewFatturaPAServlet</servlet-name>
+		<servlet-class>it.tredi.dw4.servlet.fatturepa.PreviewFatturaServlet</servlet-class>
+	</servlet>
+	<servlet>
+		<servlet-name>Doc2AttachmentServlet</servlet-name>
+		<servlet-class>it.tredi.dw4.servlet.Doc2AttachmentServlet</servlet-class>
+	</servlet>
+	<servlet>
+		<servlet-name>StackTesterServlet</servlet-name>
+		<servlet-class>it.tredi.dw4.servlet.StackTesterServlet</servlet-class>
+	</servlet>
+    
+    <servlet-mapping>
+        <servlet-name>Faces Servlet</servlet-name>
+        <url-pattern>*.jsf</url-pattern>
+    </servlet-mapping>
+   <servlet-mapping>
+		<servlet-name>FileUploadServlet</servlet-name>
+		<url-pattern>/fileupload</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>FileDownloadServlet</servlet-name>
+		<url-pattern>/filedownload</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>TreDiSignatureToolsServlet</servlet-name>
+		<url-pattern>/3disignaturetools</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>PreviewFatturaPAServlet</servlet-name>
+		<url-pattern>/previewfatturapa</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>Doc2AttachmentServlet</servlet-name>
+		<url-pattern>/doc2attachment</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>StackTesterServlet</servlet-name>
+		<url-pattern>/stacktester</url-pattern>
+	</servlet-mapping>
+	
+	<!--filter>
+        <filter-name>sqlAuthenticationFilter</filter-name>
+        <filter-class>it.tredi.dw4.utils.filters.SqlAuthenticationFilter</filter-class>
+        <init-param>
+			<param-name>driverClassName</param-name>
+			<param-value>com.microsoft.sqlserver.jdbc.SQLServerDriver</param-value>
+		</init-param>
+        <init-param>
+			<param-name>connectionUrl</param-name>
+			<param-value>jdbc:sqlserver://192.168.120.210\SQL2008R2;DatabaseName=XRM_ASSIND_SV</param-value>
+		</init-param>
+		<init-param>
+			<param-name>dbUser</param-name>
+			<param-value>assind</param-value>
+		</init-param>
+		<init-param>
+			<param-name>dbPassword</param-name>
+			<param-value>Harder1ng</param-value>
+		</init-param>
+		<init-param>
+			<param-name>autoLoginQuery</param-name>
+			<param-value>select PASSWORD from SYS_USERS where DELETED = 'false' and LOGIN = '%USERNAME%' and IS_LOCK = 'false' and SESSION_ID_MAP = 'xrm_assind=''%SESSIONID%'';'</param-value>
+		</init-param>
+		<init-param>
+			<param-name>loginQuery</param-name>
+			<param-value>select PASSWORD from SYS_USERS where DELETED = 'false' and LOGIN = '%USERNAME%' and IS_LOCK = 'false'</param-value>
+		</init-param>
+		<init-param>
+			<param-name>encryptionAlghoritm</param-name>
+			<param-value>DESEDE</param-value>
+		</init-param>
+		<init-param>
+			<param-name>encryptionKey</param-name>
+			<param-value>rO0ABXNyACFjb20uc3VuLmNyeXB0by5wcm92aWRlci5ERVNlZGVLZXkiMda6D0P12gIAAVsAA2tleXQAAltCeHB1cgACW0Ks8xf4BghU4AIAAHhwAAAAGLX+H6HanbVGRlgNblehEAjsiZG8pJENlA==</param-value>
+		</init-param>
+    </filter-->
+    <!--filter>
+        <filter-name>aclAuthenticationFilter</filter-name>
+        <filter-class>it.tredi.dw4.utils.filters.AclAuthenticationFilter</filter-class>
+        <init-param>
+			<param-name>authLogin</param-name>
+			<param-value>xwuser</param-value>
+		</init-param>
+    </filter-->
+    <filter>
+        <filter-name>checkLoginFilter</filter-name>
+        <filter-class>it.tredi.dw4.utils.filters.CheckLoginFilter</filter-class>
+    </filter>
+    <filter>
+        <filter-name>checkClientIdFilter</filter-name>
+        <filter-class>it.tredi.dw4.utils.filters.CheckClientIdFilter</filter-class>
+    </filter>
+    <filter>
+        <filter-name>docwayAdmFilter</filter-name>
+        <filter-class>it.tredi.dw4.utils.filters.DocwayAdmFilter</filter-class>
+    </filter>
+	<filter>
+        <filter-name>loginFilter</filter-name>
+        <filter-class>it.tredi.dw4.utils.filters.LoginFilter</filter-class>
+    </filter>
+    
+    <!--filter-mapping>
+        <filter-name>sqlAuthenticationFilter</filter-name>
+        <url-pattern>*.pf</url-pattern>
+        <servlet-name>Faces Servlet</servlet-name>
+    </filter-mapping-->
+    <!--filter-mapping>
+        <filter-name>aclAuthenticationFilter</filter-name>
+        <url-pattern>*.pf</url-pattern>
+        <servlet-name>Faces Servlet</servlet-name>
+    </filter-mapping-->
+    <filter-mapping>
+        <filter-name>checkLoginFilter</filter-name>
+        <url-pattern>*.pf</url-pattern>
+        <servlet-name>Faces Servlet</servlet-name>
+    </filter-mapping>
+    <filter-mapping>
+        <filter-name>checkClientIdFilter</filter-name>
+        <url-pattern>*.pf</url-pattern>
+        <servlet-name>Faces Servlet</servlet-name>
+    </filter-mapping>
+    <filter-mapping>
+        <filter-name>docwayAdmFilter</filter-name>
+        <url-pattern>*.pf</url-pattern>
+        <servlet-name>Faces Servlet</servlet-name>
+    </filter-mapping>
+	<filter-mapping>
+        <filter-name>loginFilter</filter-name>
+        <url-pattern>*.pf</url-pattern>
+        <servlet-name>Faces Servlet</servlet-name>
+    </filter-mapping>
+    
+    <filter>
+        <filter-name>Pretty Filter</filter-name>
+        <filter-class>com.ocpsoft.pretty.PrettyFilter</filter-class>
+        <!--async-supported>true</async-supported-->
+    </filter>
+	
+   	<filter-mapping> 
+		<filter-name>Pretty Filter</filter-name> 
+		<url-pattern>*.pf</url-pattern> 
+		<dispatcher>FORWARD</dispatcher> 
+		<dispatcher>REQUEST</dispatcher> 
+		<dispatcher>ERROR</dispatcher>
+		<!--dispatcher>ASYNC</dispatcher-->
+	</filter-mapping>
+	
+   	<filter>
+   	    <filter-name>Multipart Filter</filter-name>
+   	    <filter-class>it.tredi.dw4.utils.filters.UploadFilter</filter-class>
+   	</filter>
+   	
+   	<filter-mapping>
+   	    <filter-name>Multipart Filter</filter-name>
+   	    <url-pattern>*.jsf</url-pattern>
+   	</filter-mapping>
+	
+	<listener>
+		<listener-class>it.tredi.dw4.utils.SessionListener</listener-class>
+	</listener>
+	
+	<context-param>
+        <param-name>it.treditech.workflow.jsfcomponents.TaskForm.wsdl</param-name>
+        <param-value>http://localhost:8080/eXtraWayWorkflowWS/services/Workflow?wsdl</param-value>
+    </context-param>
+    <!-- enable cliend window mode -->
+	<context-param>
+    	<param-name>javax.faces.CLIENT_WINDOW_MODE</param-name>
+    	<param-value>url</param-value>
+	</context-param>
+    
+    <!-- Session Configuration -->
+	<!--session-config>
+        <session-timeout>60</session-timeout>
+	</session-config-->
+	
+</web-app>

@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" 
+	  xmlns:h="http://java.sun.com/jsf/html" 
+	  xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	  xmlns:ui="http://java.sun.com/jsf/facelets" 
+	  xmlns:f="http://java.sun.com/jsf/core"
+	  xmlns:p="http://xmlns.jcp.org/jsf/passthrough">
+<ui:composition>
+
+	<h:panelGroup layout="block" id="loadingbarMergeDocs">
+		<h:panelGroup rendered="#{pageBean.loadingbarActive and !pageBean.loadingbar.error and (pageBean.action =='mergeDocs' or pageBean.action == 'stampaUfficioRuolo')}">
+			<!-- Modal -->
+			<div id="loadingbarMergeDocsModal" class="modal fade in" aria-hidden="false" aria-labelledby="loadingbarMergeDocsModalLabel" role="dialog" tabindex="-1" style="display: block;">
+			<!--div class="modal fade" id="loadingbarMergeDocsModal" tabindex="-1" role="dialog" aria-labelledby="loadingbarMergeDocsModalLabel" aria-hidden="true"-->
+				<div class="modal-dialog">
+					<div class="modal-content jsf-modal">
+						<div class="modal-header">
+							<h:commandButton styleClass="close" action="#{pageBean.loadingbar.close}" value="&#215;" />
+							
+							<h4 class="modal-title" id="loadingbarMergeDocsModalLabel">#{(pageBean.loadingbar.title eq '') ? i18n['dw4.stampa_report'] : pageBean.loadingbar.title}</h4>
+						</div>
+						<div class="modal-body">
+							
+		        			<div class="well">
+		        				<h:panelGroup rendered="#{pageBean.loadingbar.stopDate eq ''}">
+			        				<div class="loadingbar-message" style="margin-bottom:15px;"><h:outputText value="#{i18n['dw4.elaborazione_dei_documenti_da_stampare_in_corso']}" /></div>
+			        			</h:panelGroup>
+			        			<div class="loadingbar-message loadingbar-startdate"><h:outputText rendered="#{pageBean.loadingbar.startDate ne ''}" value="job started at #{pageBean.loadingbar.startDate}"/></div>
+			        			<div class="loadingbar-message loadingbar-status"><h:outputText value="#{pageBean.loadingbar.status}"/></div>
+			        			<div class="loadingbar-message loadingbar-exceptions"><h:outputText value="#{pageBean.loadingbar.exceptions}"/></div>
+			        			<div class="loadingbar-message loadingbar-progress"><h:outputText rendered="#{pageBean.loadingbar.progress ne 'nDoc=0'}" value="#{pageBean.loadingbar.progress}"/></div>
+			        			<div class="loadingbar-message loadingbar-stopdate"><h:outputText rendered="#{pageBean.loadingbar.stopDate ne ''}" value="job completed at #{pageBean.loadingbar.stopDate}"/></div>
+		        			</div>
+		        			
+		        			<h:panelGroup rendered="#{pageBean.loadingbar.stopDate ne ''}" display="block">
+		        				<h:panelGroup rendered="#{!empty pageBean.loadingbar.errorMessage}" layout="block" styleClass="alert alert-danger">
+									<h:outputText value="#{pageBean.loadingbar.errorMessage}" />
+								</h:panelGroup>
+		        				
+		        				<h:panelGroup rendered="#{!empty pageBean.loadingbar.outputDocLink}">
+		        					<h:commandLink immediate="true" id="openMergeDocBtn" actionListener="#{pageBean.loadingbar.closeAndReloadRaccoglitore}" style="display:none;" />
+		        					<h:outputScript>
+										function openMergeDoc() {
+											$("#templateForm\\:openMergeDocBtn").trigger("click");
+										}
+										window.setTimeout('openMergeDoc()',2000);
+									</h:outputScript>
+									
+			        				<h:panelGroup styleClass="loadingbar-resultmessage" layout="block" style="margin-bottom:20px;">
+			        					<h:outputText value="#{i18n['dw4.aggiornamento_del_raccoglitore_Attendere_prego']}" />
+				        			</h:panelGroup>
+		        				</h:panelGroup>
+		        				
+			        			<h:panelGroup rendered="#{!empty pageBean.loadingbar.fileNameAggregato}">
+				        			<h:outputScript>
+										function downloadFileMergeDocs() {
+											location.href = "#{facesContext.externalContext.requestContextPath}/filedownload?name=#{pageBean.loadingbar.fileNameAggregato}&amp;title=#{pageBean.loadingbar.fileTitleAggregato}&amp;tempDir=true";
+										}
+										window.setTimeout('downloadFileMergeDocs()',2000);
+									</h:outputScript>
+									
+			        				<h:panelGroup styleClass="loadingbar-resultmessage" layout="block" style="margin-bottom:20px;">
+			        					<h:outputText value="#{i18n['dw4.generazione_del_pdf_in_corso_Attendere_prego']}" />
+				        			</h:panelGroup>
+			        			</h:panelGroup>
+		        			</h:panelGroup>
+		        			
+				        	<div style="margin-top:20px;" class="progress">
+	  							<div class="progress-bar" role="progressbar" aria-valuenow="#{(pageBean.loadingbar.completed) ? '100' : pageBean.loadingbar.percentage}" aria-valuemin="0" aria-valuemax="100" style="width: #{(pageBean.loadingbar.completed) ? '100' : pageBean.loadingbar.percentage}%;">
+	    							<span class="sr-only">#{pageBean.loadingbar.percentage}% Complete</span>
+	  							</div>
+							</div>
+							
+							<h:commandLink style="display:none;" id="refreshMergeDocs" action="#{pageBean.loadingbar.refresh}" >
+		        				<f:ajax execute="@form" render="@form" />
+		        			</h:commandLink>
+							<script type="text/javascript">
+							function refreshMergeDocs() {
+								$("#templateForm\\:refreshMergeDocs").trigger("click");
+							}
+							var completed = #{pageBean.loadingbar.completed};
+							if (!completed) {
+								window.setTimeout('refreshMergeDocs()',2000);
+							}
+							</script>
+							
+							<h:inputTextarea value="#{pageBean.loadingbar.xml}" rendered="#{pageBean.debugMode}" styleClass="form-control debug-textarea" rows="10" />
+						</div>
+						<div class="modal-footer">
+							<h:commandButton styleClass="btn btn-default" action="#{pageBean.loadingbar.close}" value="#{i18n['acl.close']}" />
+						</div>
+					</div>
+				</div>
+			</div>
+			<!--script type="text/javascript">
+			$('#loadingbarMergeDocsModal').modal('show');
+			</script-->
+		</h:panelGroup>
+	</h:panelGroup>
+
+</ui:composition>   
+</html>

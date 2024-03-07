@@ -6,6 +6,7 @@ import it.tredi.dw4.acl.model.StrutturaEsterna;
 import it.tredi.dw4.adapters.AdaptersConfigurationLocator;
 import it.tredi.dw4.adapters.ErrormsgFormsAdapter;
 
+import javax.faces.context.FacesContext;
 import javax.faces.event.ComponentSystemEvent;
 
 import org.dom4j.Document;
@@ -31,7 +32,10 @@ public class ShowdocStrutturaEsterna extends AclShowdoc {
 	public void init(Document domDocumento) {
     	xml = domDocumento.asXML();
     	struttura_esterna = new StrutturaEsterna();
-    	struttura_esterna.init(domDocumento);    
+    	struttura_esterna.init(domDocumento); 
+    	
+    	// inizializzazione di componenti common
+    	initCommons(domDocumento);
     }	
 	
 	public AclDocumentFormsAdapter getFormsAdapter() {
@@ -43,7 +47,7 @@ public class ShowdocStrutturaEsterna extends AclShowdoc {
 	}
 	
 	public void reload() throws Exception {
-		super._reload("showdoc@struttura_esterna");
+		super._reload(FacesContext.getCurrentInstance().getExternalContext().getRequestContextPath() + "/acl/showdoc@struttura_esterna");
 	}
 
 	public void setStruttura_esterna(StrutturaEsterna struttura_esterna) {

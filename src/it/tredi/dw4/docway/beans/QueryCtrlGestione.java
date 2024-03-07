@@ -594,6 +594,26 @@ public class QueryCtrlGestione extends DocWayQuery {
 	}
 	
 	/**
+	 * check sulle opzioni di stampa selezionate
+	 * @return
+	 * @throws Exception
+	 */
+	public String checkOpzioni() throws Exception {
+		try {
+			if (chkbox_mittenti_protocollista)
+				chkbox_dettaglio_protocollista = true;
+			if (chkbox_mittenti_uor)
+				chkbox_dettaglio_uor = true;
+			
+			return null;
+		}
+		catch (Throwable t) {
+			handleErrorResponse(ErrormsgFormsAdapter.buildErrorResponse(t));
+			return null;
+		}
+	}
+	
+	/**
 	 * Click su check di 'protocolli_noallegati'
 	 * @param vce
 	 * @throws Exception

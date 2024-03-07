@@ -1,21 +1,15 @@
 <!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml" 
-	xmlns:h="http://java.sun.com/jsf/html" 
-	xmlns:ui="http://java.sun.com/jsf/facelets" 
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
 	xmlns:f="http://java.sun.com/jsf/core">
 
 <h:head>
 	<title>#{i18n['acl.page_title']}</title>
-	
+
 	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-	<h:panelGroup rendered="#{fn:containsIgnoreCase(header['User-Agent'], 'Trident/7.0;')}"> <!-- TODO identifica correttamente IE11?  -->
-		<!-- Pare ci sia un bug su IE11 per la quale non funziona la registrazione di funzioni su eventi (addEventListener/attachEvent) -->
-		<meta http-equiv="X-UA-Compatible" content="IE=9" />
-	</h:panelGroup>
-	<h:panelGroup rendered="#{!fn:containsIgnoreCase(header['User-Agent'], 'Trident/7.0;')}">
-		<meta http-equiv="X-UA-Compatible" content="IE=edge" />
-	</h:panelGroup>
+	<meta http-equiv="X-UA-Compatible" content="IE=edge" />
 
 	<!-- javascript -->
 	<script type="text/javascript" src="#{facesContext.externalContext.requestContextPath}/common/js/jquery.js?ver=#{aclHome.versioneDocway}"></script>
@@ -28,12 +22,14 @@
 	<script type="text/javascript" src="#{facesContext.externalContext.requestContextPath}/common/js/common.js?ver=#{aclHome.versioneDocway}"></script>
 	<script type="text/javascript" src="#{facesContext.externalContext.requestContextPath}/acl/js/acl.js?ver=#{aclHome.versioneDocway}"></script>
 
+	<link href="#{facesContext.externalContext.requestContextPath}/favicon.ico" type="image/png" rel="icon"/>
+
 	<!-- styles -->
 	<link href="#{facesContext.externalContext.requestContextPath}/bootstrap/css/bootstrap.css?ver=#{aclHome.versioneDocway}" rel="stylesheet" type="text/css" />
 	<h:panelGroup rendered="#{aclHome.languageOrientation eq 'rtl'}">
 		<link href="#{facesContext.externalContext.requestContextPath}/bootstrap/css/bootstrap-rtl.css?ver=#{aclHome.versioneDocway}" rel="stylesheet" type="text/css" />
 	</h:panelGroup>
-	
+
     <link href="#{facesContext.externalContext.requestContextPath}/glyphicons/css/glyphicons.css?ver=#{aclHome.versioneDocway}" rel="stylesheet" type="text/css" />
 	<link href="#{facesContext.externalContext.requestContextPath}/common/css/dashboard.css?ver=#{aclHome.versioneDocway}" rel="stylesheet" type="text/css" />
 	<link href="#{facesContext.externalContext.requestContextPath}/common/css/datepicker.css?ver=#{aclHome.versioneDocway}" rel="stylesheet" type="text/css" />
@@ -42,11 +38,11 @@
 	<h:panelGroup rendered="#{aclHome.languageOrientation eq 'rtl'}">
 		<link href="#{facesContext.externalContext.requestContextPath}/common/css/rtl.css?ver=#{aclHome.versioneDocway}" rel="stylesheet" type="text/css" />
 	</h:panelGroup>
-	
+
 	<h:panelGroup rendered="#{!empty aclHome.customDirCss}">
 		<link href="#{facesContext.externalContext.requestContextPath}/acl/css/#{aclHome.customDirCss}/acl.css?ver=#{aclHome.versioneDocway}" rel="stylesheet" type="text/css" />
 	</h:panelGroup>
-	
+
 	<!--h:outputScript name="jsf.js" library="javax.faces"/-->
 </h:head>
 <h:body styleClass="#{aclHome.languageOrientation}">
@@ -55,37 +51,44 @@
 
 	<div class="container-fluid">
 		<div class="row">
-	
+
 			<!-- sx col: inizio -->
 			<h:form id="leftsideContentForm" styleClass="form-horizontal">
 				<div class="col-sm-3 col-md-2 sidebar">
 					<ui:include src="./aooSelector.xhtml" />
-				
+
 					<ui:include src="./hierBrowser.xhtml"/>
 				</div>
-				
+
 				<ui:include src="./loadingbar.xhtml"><ui:param name="pageBean" value="#{hierBrowser}"/></ui:include>
 			</h:form>
 			<!-- sx col: fine -->
-			
+
 			<!-- dx col: inizio -->
 			<div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
-			
+
 				<h:form id="templateForm" class="form-horizontal">
-				
+
 					<ui:insert name="content"/>
 					<ui:include src="./errormsg.xhtml"/>
+					<ui:include src="./reloadmsg.xhtml"/>
+					
+					<ui:include src="../azionimassive/azioneMassivaInputParams.xhtml" />
+					<ui:include src="../azionimassive/luaStoredProcedureThrobber.xhtml" />
 				</h:form>
-			
+
 			</div>
 			<!-- dx col: fine -->
-			
+
 			<ui:include src="./waitmsg.xhtml"/>
 			<a href="#" class="back-to-top"><span class="glyphicon glyphicon-chevron-up"></span></a>
-			
+
 			<input type="hidden" id="globalFocusFieldAfterAjax" value="" />
+
+			<input type="hidden" id="scrollbarElementSelectorAfterAjax" value="" />
+			<input type="hidden" id="scrollbarTopAfterAjax" value="" />
 		</div>
 	</div>
-	
+
 </h:body>
 </html>

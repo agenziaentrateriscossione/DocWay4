@@ -4,13 +4,14 @@ import java.util.Map;
 
 import org.dom4j.Document;
 
-import it.tredi.dw4.utils.XMLDocumento;
 import it.tredi.dw4.adapters.AdaptersConfigurationLocator;
 import it.tredi.dw4.adapters.ErrormsgFormsAdapter;
 import it.tredi.dw4.docway.beans.DocEditDoc;
 import it.tredi.dw4.docway.doc.adapters.DocDocWayDocumentFormsAdapter;
 import it.tredi.dw4.docway.model.Doc;
+import it.tredi.dw4.model.XmlEntity;
 import it.tredi.dw4.soginSAP.model.SAPDoc;
+import it.tredi.dw4.utils.XMLDocumento;
 
 public class SoginSAPAssociateDoc extends DocEditDoc {
 	private SAPDoc doc = new SAPDoc();
@@ -87,5 +88,10 @@ public class SoginSAPAssociateDoc extends DocEditDoc {
 	@Override
 	public String saveDocument() throws Exception {
 		return null;
+	}
+	
+	@Override
+	public XmlEntity getModel() {
+		return this.doc;
 	}
 }

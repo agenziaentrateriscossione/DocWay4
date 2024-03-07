@@ -1,6 +1,29 @@
 
 /*############################### STILI PER IDENTIFICAZIONE ARCHIVIO - INIZIO ###############################*/
 
+a.archive-xdocwayproc, a.archive-xdocwayproc:hover {
+	background: url('images/logo/xdocwayproc.png') no-repeat center;
+	background-size: 85%; 
+	background-color: #fff !important;
+	margin-top: 2px;
+	border-radius: 4px;
+}
+
+a.archive-xdocwayproc img {
+	visibility: hidden;
+}
+
+/* commentati perche' i loghi BIG in login non devono essere personalizzati, viene mostrato il logo classico di DocWay */
+/*
+.login-archive-xdocwayproc {
+	background: url('images/logo/xdocwayproc.png') no-repeat center;
+}
+
+.login-archive-xdocwayproc img {
+	visibility: hidden;
+}
+*/
+
 a.archive-xdocwayproc-centro, a.archive-xdocwayproc-centro:hover {
 	background: url('images/logo/xdocwayproc-centro.png') no-repeat center;
 	background-size: 85%; 

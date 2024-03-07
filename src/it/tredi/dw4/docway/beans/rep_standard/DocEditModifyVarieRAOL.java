@@ -56,7 +56,7 @@ public class DocEditModifyVarieRAOL extends DocEditModifyVarie {
 			ShowdocVarieRAOL showdocVarieRAOL = new ShowdocVarieRAOL();
 			showdocVarieRAOL.getFormsAdapter().fillFormsFromResponse(response);
 			showdocVarieRAOL.init(response.getDocument());
-			showdocVarieRAOL.loadAspects("@arrivo", response, "showdoc");
+			showdocVarieRAOL.loadAspects("@varie", response, "showdoc");
 			setSessionAttribute("showdocVarieRAOL", showdocVarieRAOL);
 			
 			return "rep_standard_showdoc@varie@RAOL@reload";
@@ -257,29 +257,52 @@ public class DocEditModifyVarieRAOL extends DocEditModifyVarie {
 		
 		result = super.checkRequiredField();
 		
+		// controllo su campo tipo documento
+		if (getDoc().getExtra() == null || getDoc().getExtra().getTipo_repertorio() == null || getDoc().getExtra().getTipo_repertorio().isEmpty()) {
+			this.setErrorMessage("templateForm:repTipoDocumento", I18N.mrs("acl.requiredfield") + " '" + I18N.mrs("dw4.tipodocumento") + "'");
+			result = true;
+		}
+		
 		// controllo su data dipubblicazione dal
+		boolean dataDalValida = true;
 		if (getDoc().getPubblicazione().getDal() == null || getDoc().getPubblicazione().getDal().length() == 0) {
 			this.setErrorMessage("templateForm:dataPubblicazioneDal", I18N.mrs("acl.requiredfield") + " '" + I18N.mrs("dw4.pubblicazione_dal") + "'");
 			result = true;
+			dataDalValida = false;
 		}
 		else {
 			// controllo se il valore associato alla data e' corretto
 			if (!DateUtil.isValidDate(getDoc().getPubblicazione().getDal(), formatoData)) {
 				this.setErrorMessage("templateForm:dataPubblicazioneDal", I18N.mrs("acl.inserire_una_data_valida_nel_campo") + " '" + I18N.mrs("dw4.pubblicazione_dal") + "': " + formatoData.toLowerCase());
 				result = true;
+				dataDalValida = false;
 			}
 		}
 		
 		// controllo su data dipubblicazione al
+		boolean dataAlValida = true;
 		if (getDoc().getPubblicazione().getAl() == null || getDoc().getPubblicazione().getAl().length() == 0) {
 			this.setErrorMessage("templateForm:dataPubblicazioneAl", I18N.mrs("acl.requiredfield") + " '" + I18N.mrs("dw4.pubblicazione_al") + "'");
 			result = true;
+			dataAlValida = false;
 		}
 		else {
 			// controllo se il valore associato alla data e' corretto
 			if (!DateUtil.isValidDate(getDoc().getPubblicazione().getAl(), formatoData)) {
 				this.setErrorMessage("templateForm:dataPubblicazioneAl", I18N.mrs("acl.inserire_una_data_valida_nel_campo") + " '" + I18N.mrs("dw4.pubblicazione_al") + "': " + formatoData.toLowerCase());
 				result = true;
+				dataAlValida = false;
+			}
+		}
+		
+		// controllo la validita' dell'intervallo di date di pubblicazione
+		if (dataDalValida && dataAlValida) {
+			int pubblicazioneDal = Integer.parseInt(DateUtil.formatDate2XW(getDoc().getPubblicazione().getDal(), formatoData));
+			int pubblicazioneAl = Integer.parseInt(DateUtil.formatDate2XW(getDoc().getPubblicazione().getAl(), formatoData));
+			
+			// 'data pubblicazione al' successiva al valore specificato su 'data pubblicazione dal'
+			if (pubblicazioneAl < pubblicazioneDal) {
+				this.setErrorMessage("templateForm:dataPubblicazioneAl", I18N.mrs("dw4.la_data_di_fine_pubblicazione_non_puo_essere_antecedente_a_quella_di_inzio_pubblicazione"));
 			}
 		}
 		

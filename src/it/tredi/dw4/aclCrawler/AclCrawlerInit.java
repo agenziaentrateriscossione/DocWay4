@@ -4,7 +4,6 @@ import it.tredi.dw4.utils.XMLDocumento;
 import it.tredi.dw4.acl.beans.AclHierBrowser;
 import it.tredi.dw4.acl.beans.AclHome;
 import it.tredi.dw4.acl.beans.Menu;
-import it.tredi.dw4.acl.beans.UserBean;
 import it.tredi.dw4.aclCrawler.beans.AclCrawlerHierBrowser;
 import it.tredi.dw4.aclCrawler.beans.AclCrawlerHome;
 import it.tredi.dw4.adapters.AdaptersConfigurationLocator;
@@ -13,7 +12,7 @@ import it.tredi.dw4.beans.Init;
 import it.tredi.dw4.docway.doc.adapters.DocDocWayQueryFormsAdapter;
 
 public class AclCrawlerInit extends Init {
-	
+
 	public AclCrawlerInit() throws Exception {
 		try {
 			this.formsAdapter = new DocDocWayQueryFormsAdapter(AdaptersConfigurationLocator.getInstance().getAdapterConfiguration("aclService"));
@@ -23,30 +22,24 @@ public class AclCrawlerInit extends Init {
 			return;
 		}
 	}
-	
+
 	protected void initDocWayHomeFromResponse(XMLDocumento response) throws Exception {
-		UserBean userbean = getUserBean();
-		if (null != userbean && null == userbean.getUserInfo()) {
-			if (userbean.getMatricola() == null || userbean.getMatricola().equals(""))
-				userbean.setMatricola(response.getRootElement().attributeValue("matricola", "")); // assegnazione della matricola
-			userbean.setUserInfo(response.getRootElement().attributeValue("userInfo", null));
-			setSessionAttribute("userBean", userbean);
-		}
-		
+		initUserBeanData(getUserBean(), response);
+
 		boolean enableIWX = isEnabledIWX(); // abilitazione o meno di IWX
-		
+
 		AclCrawlerHome aclCrawlerHome = new AclCrawlerHome();
 		aclCrawlerHome.injectRequestAndResponse(this.request, this.response);
 		aclCrawlerHome.getFormsAdapter().fillFormsFromResponse(response);
-		
+
 		// disattivazione di IWX da profilo personale
 		if (aclCrawlerHome.getFormsAdapter().checkBooleanFunzionalitaDisponibile("disabilitaIWX", false))
 			enableIWX = false;
-		
+
 		aclCrawlerHome.getFormsAdapter().getDefaultForm().addParam("enableIW", enableIWX);
 		aclCrawlerHome.init(response.getDocument());
 		setSessionAttribute("aclCrawlerHome", aclCrawlerHome);
-		
+
 		if (getSessionAttribute("aclHome") == null) {
 			AclHome aclHome = new AclHome();
 			aclHome.getFormsAdapter().fillFormsFromResponse(response);
@@ -54,7 +47,7 @@ public class AclCrawlerInit extends Init {
 			aclHome.setXml(response.asXML());
 			setSessionAttribute("aclHome", aclHome);
 		}
-		
+
 		// widget gerarchia
 		String aclDb = "";
 		if (formsAdapter.getDefaultForm().getParam("db") != null && formsAdapter.getDefaultForm().getParam("db").length() > 0) // caricamento gerarchia su archivio ACL con nome personalizzato
@@ -76,7 +69,7 @@ public class AclCrawlerInit extends Init {
 		menu.getFormsAdapter().fillFormsFromResponse(response);
 		setSessionAttribute("menu", menu);
 	}
-		
+
 
 	@Override
 	protected String redirectFromMatricolaLogin() {

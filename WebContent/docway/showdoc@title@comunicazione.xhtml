@@ -38,7 +38,7 @@
 						<h:panelGroup rendered="#{!empty doc.repertorio.cod}">
 							<h:outputText value=" - " />
 							<span class="showdoc-title-repertorio">
-								#{i18n['dw4.rep']} <h:outputText value="#{doc.repertorio.text}" escape="false" />
+								#{i18n['dw4.rep']} <h:outputText value="#{doc.repertorio.text}" />
 								<h:panelGroup rendered="#{!empty doc.repertorio.numero and doc.repertorio.numero ne '.'}">
 									(n. <h:outputText value="#{doc.repertorio.numero}"><f:converter converterId="NumRepConverter"/></h:outputText>)
 								</h:panelGroup>

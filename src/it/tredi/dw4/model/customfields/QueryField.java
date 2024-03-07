@@ -2,12 +2,11 @@ package it.tredi.dw4.model.customfields;
 
 import it.tredi.dw4.model.XmlEntity;
 import it.tredi.dw4.utils.XMLUtil;
+import org.dom4j.Document;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-
-import org.dom4j.Document;
 
 public class QueryField extends XmlEntity {
 
@@ -35,7 +34,7 @@ public class QueryField extends XmlEntity {
 		this.size	 		= XMLUtil.parseStrictAttribute(dom, "field/input/@size");
 		this.xpath 			= XMLUtil.parseStrictAttribute(dom, "field/input/@path");
 		this.items 			= XMLUtil.parseSetOfElement(dom, "field/input/item", new Item());
-		
+
 		return this;
 	}
 

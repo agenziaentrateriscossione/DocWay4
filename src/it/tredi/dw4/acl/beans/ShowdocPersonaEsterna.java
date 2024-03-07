@@ -81,6 +81,9 @@ public class ShowdocPersonaEsterna extends AclShowdoc {
     	
     	label_dati_attivita = XMLUtil.parseStrictAttribute(domDocumento, "/response/@dicitDatiAttivita");
     	label_dati_personali = XMLUtil.parseStrictAttribute(domDocumento, "/response/@dicitDatiPersonali");
+    	
+    	// inizializzazione di componenti common
+    	initCommons(domDocumento);
     }	
 	
 	public AclDocumentFormsAdapter getFormsAdapter() {

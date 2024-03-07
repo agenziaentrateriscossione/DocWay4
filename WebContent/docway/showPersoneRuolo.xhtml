@@ -36,7 +36,7 @@
 												#{persona.matricola}
 											</td>
 											<td class="essential">
-												<h:outputText value="#{persona.nome}" escape="false" />
+												<h:outputText value="#{persona.nome}" />
 											</td>
 											<td class="optional">
 												#{persona.email} &#160;
@@ -46,7 +46,7 @@
 								</tbody>
 							</table>
 							
-					       	<h:inputTextarea value="#{bean.xml}" rendered="#{bean.debugMode}" styleClass="form-control" rows="10"/>
+					       	<h:inputTextarea value="#{bean.xml}" rendered="#{bean.debugMode}" styleClass="form-control debug-textarea" rows="10"/>
 						</div>
 						<div class="modal-footer">
 							<h:commandButton styleClass="btn btn-default" title="#{i18n['acl.close']}" action="#{bean.close}" data-dismiss="modal"  value="#{i18n['acl.close']}" >

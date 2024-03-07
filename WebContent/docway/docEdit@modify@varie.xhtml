@@ -10,65 +10,78 @@
 
 <ui:define name="content">
 	<div class="varie docedit">
-	
+
 		<!-- toolbar: inizio -->
 		<div class="btn-toolbar" role="toolbar">
 			<div class="btn-group">
-				<h:commandLink id="saveBtn" action="#{docEditModifyVarie.saveDocument}" 
+				<h:commandLink id="saveBtn" action="#{docEditModifyVarie.saveDocument}"
 							styleClass="btn btn-primary openwaitmsg">
 					#{i18n['acl.save']}
 				</h:commandLink>
-				
-				<h:commandLink action="#{docEditModifyVarie.clearDocument}" 
-							onclick="IwxRuntime.Client.resetJobIWX();" styleClass="btn btn-default">
+
+				<h:commandLink rendered="#{!docEditModifyVarie.formsAdapter.funzionalitaDisponibili['trasformaByDocEdit']}" action="#{docEditModifyVarie.clearDocument}"
+						onclick="IwxRuntime.Client.resetJobIWX();" styleClass="btn btn-default">
 					#{i18n['acl.back']}
-				</h:commandLink>	
+				</h:commandLink>
+				<h:commandLink rendered="#{docEditModifyVarie.formsAdapter.funzionalitaDisponibili['trasformaByDocEdit']}" action="#{docEditModifyVarie.clearTrasformaRep}"
+							onclick="IwxRuntime.Client.resetJobIWX();" styleClass="btn btn-default">
+					#{i18n['acl.cancel']}
+				</h:commandLink>
 			</div>
 		</div>
 		<!-- toolbar: fine -->
-		
+
 		<!-- messages: inizio -->
 		<h:panelGroup rendered="#{not empty facesContext.messageList}" layout="block" styleClass="docedit-messages alert alert-danger">
 			<h:messages styleClass="" id="validationMesseges" />
 		</h:panelGroup>
 		<h:inputHidden id="errorFieldIds" value="#{docEditModifyVarie.errorFieldIds}" />
 		<!-- messages: fine -->
-		
+
 		<h5 class="sub-header">
 			<span class="doc-tipo-varie glyphicon glyphicon-file"></span>&#160;
-			<h:outputText value="#{docEditModifyVarie.docEditTitle}" escape="false" />
+			<h:outputText value="#{docEditModifyVarie.docEditTitle}" />
 		</h5>
-	
+
 		<script type="text/javascript">
 		$(document).ready(function() {
 			setInvalidInputFields();
-			
+
 			// disabilita link esterni al form per rilascio del lock sul documento
 			disableNoTemplateFormLinks("#{i18n['dw4.abbandona_alert_msg']}");
 		});
 		</script>
-		
+
 		<!-- scheda edit: inizio -->
 		<div class="row-fluid" style="margin-top:10px;">
 			<div id="fixedshowdoc" class="box span12 fixed-showdoc">
 				<div class="box-content">
-				
+
 					<div class="fieldset">
 						<div class="legend">
 							#{i18n['dw4.datidoc']}
-						
+
 							<div class="pull-right">
 								<span class="glyphicon glyphicon-envelope" title="#{i18n['dw4.datidoc']}"></span>
 							</div>
 						</div>
-						
+
+						<h:panelGroup rendered="#{docEditModifyVarie.doc.bozza and not empty docEditModifyVarie.doc.creazione.dateLong}" layout="block" styleClass="form-group">
+							<label class="col-sm-2 control-label">#{i18n['dw4.bozza']} #{i18n['dw4.del']}</label>
+							<div class="col-sm-2">
+								<p class="form-control-static">
+									<h:outputText value="#{docEditModifyVarie.doc.creazione.dateLong}" />
+								</p>
+							</div>
+						</h:panelGroup>
+
 						<h:panelGroup rendered="#{!empty docEditModifyVarie.doc.repertorio.numero and docEditModifyVarie.doc.repertorio.numero ne '.'}" layout="block" styleClass="form-group">
 							<label class="col-sm-2 control-label">#{i18n['dw4.repertorio_n']}</label>
 							<div class="col-sm-9">
 								<p class="form-control-static"><h:outputText value="#{docEditModifyVarie.doc.repertorio.numero}"><f:converter converterId="NumRepConverter"/></h:outputText></p>
 							</div>
 						</h:panelGroup>
-						
+
 						<h:panelGroup rendered="#{fn:length(docEditModifyVarie.doc.repTipologiaSelect) > 0}" layout="block" styleClass="form-group">
 							<label for="templateForm:repTipoDocumento" class="col-sm-2 control-label">#{i18n['dw4.tipodocumento']}</label>
 							<div class="col-sm-3">
@@ -77,7 +90,7 @@
 								</h:selectOneMenu>
 							</div>
 						</h:panelGroup>
-						
+
 						<h:panelGroup rendered="#{!docEditModifyVarie.customfields.hiddenFields['personale']}">
 							<div class="form-group">
 								<label for="templateForm:docPersonale" class="col-sm-2 control-label">#{i18n['dw4.personale']}</label>
@@ -86,7 +99,7 @@
 								</div>
 							</div>
 						</h:panelGroup>
-						
+
 						<h:panelGroup rendered="#{!docEditModifyVarie.customfields.hiddenFields['autore'] or !docEditModifyVarie.customfields.hiddenFields['dataProt']}">
 							<div class="form-group endsection">
 								<h:panelGroup rendered="#{!docEditModifyVarie.customfields.hiddenFields['autore']}">
@@ -115,7 +128,7 @@
 						<h:panelGroup rendered="#{docEditModifyVarie.customfields.hiddenFields['autore'] and docEditModifyVarie.customfields.hiddenFields['dataProt']}">
 							<h:inputHidden value="#{docEditModifyVarie.doc.data_prot}"><f:converter converterId="DateConverter"/></h:inputHidden>
 						</h:panelGroup>
-						
+
 						<h:panelGroup rendered="#{ !docEditModifyVarie.customfields.hiddenFields['voceindice'] and docEditModifyVarie.docIsNotInFascicolo }" layout="block" styleClass="form-group">
 							<label for="templateForm:voceindice_input" class="col-sm-2 control-label"><span>#{i18n['dw4.index']}</span></label>
 							<div class="col-sm-4">
@@ -123,7 +136,7 @@
 					        		<ui:param name="id" value="voceindice" />
 					        		<ui:param name="field" value="#{docEditModifyVarie.doc.voce_indice.text}" />
 					        		<ui:param name="bean" value="#{docEditModifyVarie}" />
-					        		<ui:param name="confirmOnAction" value="#{(docEditModifyVarie.formsAdapter.funzionalitaDisponibili['rifInterniModificabiliDaVoceIndice']) ? i18n['dw4.se_si_seleziona_una_voce_di_indice_potrebbero_essere_sovrascritti_gli_assegnatari_del_documento_Continuare'] : ''}" />
+					        		<ui:param name="confirmOnAction" value="#{(docEditModifyVarie.formsAdapter.funzionalitaDisponibili['rifInterniModificabiliDaVoceIndice']) ? i18n['dw4.se_si_seleziona_una_voce_di_indice_potrebbero_essere_aggiornati_gli_assegnatari_del_documento_Continuare'] : ''}" />
 					        		<ui:param name="action" value="lookupVoceIndice"/>
 					        		<ui:param name="clearaction" value="clearLookupVoceIndice"/>
 					        		<ui:param name="title" value="#{i18n['dw4.lookup_voce_indice']}"/>
@@ -132,21 +145,21 @@
 					        	</ui:include>
 							</div>
 						</h:panelGroup>
-						
+
 						<div class="form-group">
 							<label for="templateForm:doc_oggetto" class="col-sm-2 control-label requiredField"><span>* #{i18n['dw4.object']}</span></label>
 							<div class="col-sm-9">
 								<h:inputTextarea id="doc_oggetto" value="#{docEditModifyVarie.doc.oggetto}" rows="4" cols="120" styleClass="#{ component.valid ? '' : 'invalidinput' } form-control" />
 							</div>
 						</div>
-						
+
 						<h:panelGroup rendered="#{ !docEditModifyVarie.customfields.hiddenFields['allegati'] and docEditModifyVarie.formsAdapter.funzionalitaDisponibili['enAllegato'] }">
 							<ui:include src="./allegatiFields.xhtml">
 								<ui:param name="bean" value="#{docEditModifyVarie}" />
 				        		<ui:param name="beanDoc" value="#{docEditModifyVarie.doc}" />
 				        	</ui:include>
 			        	</h:panelGroup>
-			        	
+
 			        	<h:panelGroup rendered="#{!docEditModifyVarie.customfields.hiddenFields['classificazione']}" id="classif_holder" layout="block">
 							<ui:include src="./classifFields.xhtml">
 				        		<ui:param name="id" value="classif" />
@@ -160,52 +173,52 @@
 				        		<ui:param name="optionalField" value="#{docEditModifyVarie.formsAdapter.funzionalitaDisponibili['docClassifEreditabile']}" />
 				        	</ui:include>
 				        </h:panelGroup>
-						
+
 			        	<ui:include src="./visibilitaFields.xhtml">
 							<ui:param name="bean" value="#{docEditModifyVarie}" />
 			        		<ui:param name="beanDoc" value="#{docEditModifyVarie.doc}" />
 			        	</ui:include>
 					</div> <!-- /fieldset -->
-					
+
 					<ui:include src="./scadenzaFields.xhtml">
 						<ui:param name="bean" value="#{docEditModifyVarie}" />
 		        		<ui:param name="beanDoc" value="#{docEditModifyVarie.doc}" />
 		        	</ui:include>
-		        	
+
 		        	<ui:include src="../customfields/docedit@customfields.xhtml">
 						<ui:param name="bean" value="#{docEditModifyVarie}" />
 		        	</ui:include>
-		        	
+
 		        	<h:panelGroup rendered="#{docEditModifyVarie.docIsNotInFascicolo and !docEditModifyVarie.customfields.hiddenSections['assegnatari']}">
 			        	<ui:include src="./docEdit@rifinterni@doc.xhtml">
 							<ui:param name="bean" value="#{docEditModifyVarie}" />
 			        	</ui:include>
 		        	</h:panelGroup>
-		        	
+
 		        	<h:panelGroup rendered="#{!docEditModifyVarie.customfields.hiddenSections['altro']}">
 			        	<div class="fieldset">
 		        			<div class="legend">
 		        				#{i18n['dw4.other']}
-		        				
+
 		        				<div class="pull-right">
 									<span class="glyphicon glyphicon-list-alt" title="#{i18n['dw4.other']}"></span>
 								</div>
 		        			</div>
-		        			
+
 		        			<h:panelGroup rendered="#{!docEditModifyVarie.customfields.hiddenFields['codiceprogetto'] and docEditModifyVarie.formsAdapter.funzionalitaDisponibili['mostraCodiceProgetto']}" layout="block" styleClass="form-group">
 								<label for="templateForm:codProgetto" class="col-sm-2 control-label">#{i18n['dw4.codice_progetto']}</label>
 								<div class="col-sm-9">
 									<h:inputText id="codProgetto" value="#{docEditModifyVarie.doc.extra.codice_progetto}" styleClass="form-control" />
 								</div>
 							</h:panelGroup>
-							
+
 							<h:panelGroup rendered="#{!docEditModifyVarie.customfields.hiddenFields['riferimenti'] or !docEditModifyVarie.customfields.hiddenFields['tipologia']}">
 								<div class="form-group">
 									<h:panelGroup rendered="#{!docEditModifyVarie.customfields.hiddenFields['riferimenti']}">
 						               	<label for="templateForm:riferimentiDoc" class="col-sm-2 control-label">#{i18n['dw4.riferimenti']}</label>
 						               	<div class="col-sm-4">
 						               		<h:inputText id="riferimentiDoc" value="#{docEditModifyVarie.doc.riferimenti.text}" styleClass="form-control" />
-						               	</div>		
+						               	</div>
 					               	</h:panelGroup>
 					               	<h:panelGroup rendered="#{!docEditModifyVarie.customfields.hiddenFields['tipologia']}">
 						               	<label for="templateForm:codTipologiaDoc" class="col-sm-2 control-label">#{i18n['acl.tipologia']}</label>
@@ -217,32 +230,32 @@
 									</h:panelGroup>
 								</div>
 							</h:panelGroup>
-							
+
 							<h:panelGroup rendered="#{!docEditModifyVarie.customfields.hiddenFields['note']}">
 								<div class="form-group">
 					               	<label for="templateForm:note" class="col-sm-2 control-label">#{i18n['acl.notes']}</label>
 					               	<div class="col-sm-9">
 					               		<h:inputTextarea id="note" value="#{docEditModifyVarie.doc.note.text}" rows="4" cols="120" styleClass="form-control" />
-					               	</div>		
+					               	</div>
 								</div>
 							</h:panelGroup>
-							
+
 							<h:panelGroup rendered="#{!docEditModifyVarie.customfields.hiddenFields['parolechiave']}">
 								<div class="form-group">
 									<label for="templateForm:keywordsDoc" class="col-sm-2 control-label">#{i18n['dw4.keywords']}</label>
 									<div class="col-sm-9">
 										<h:inputText id="keywordsDoc" value="#{docEditModifyVarie.doc.keywords.text}" styleClass="form-control" />
-									</div>			
+									</div>
 								</div>
 							</h:panelGroup>
 		        		</div> <!-- /fieldset -->
 		        	</h:panelGroup>
-	        		
+
 	        		<ui:include src="./xlinkFields.xhtml">
 						<ui:param name="bean" value="#{docEditModifyVarie}" />
 		        		<ui:param name="beanDoc" value="#{docEditModifyVarie.doc}" />
 		        	</ui:include>
-		        	
+
 		        	<ui:include src="./docInformaticiFields.xhtml">
 						<ui:param name="bean" value="#{docEditModifyVarie}" />
 		        		<ui:param name="beanDoc" value="#{docEditModifyVarie.doc}" />
@@ -255,12 +268,20 @@
 			</div>
 		</div>
 		<!-- scheda edit: fine -->
-			
-		<h:inputTextarea value="#{docEditModifyVarie.xml}" rendered="#{docEditModifyVarie.debugMode}" styleClass="form-control" rows="10" />
-			
+
+		<h:inputTextarea value="#{docEditModifyVarie.xml}" rendered="#{docEditModifyVarie.debugMode}" styleClass="form-control debug-textarea" rows="10" />
+
 		<ui:include src="./lookup.xhtml"> <ui:param name="pageBean" value="#{docEditModifyVarie}"/></ui:include>
 		<ui:include src="./rifintLookup.xhtml"> <ui:param name="pageBean" value="#{docEditModifyVarie}"/></ui:include>
 		<ui:include src="./showthes.xhtml"> <ui:param name="pageBean" value="#{docEditModifyVarie}"/></ui:include>
+		<!-- template per upload e la decompressione di archivi ZIP -->
+		<ui:param name="currentBean" value="#{docEditModifyVarie}" />
+		<ui:include src="./docUploadArchive.xhtml">
+			<ui:param name="bean" value="#{docWayUploadArchive}"/>
+			<ui:param name="beanDoc" value="#{currentBean}" />
+			<ui:param name="doc" value="#{currentBean.doc}" />
+			<ui:param name="enableFiles" value="#{currentBean.docInformaticiEnabled and currentBean.formsAdapter.funzionalitaDisponibili['addFile']}" />
+		</ui:include>
 	</div>
 </ui:define>
 

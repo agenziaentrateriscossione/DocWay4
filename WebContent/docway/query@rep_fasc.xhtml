@@ -145,7 +145,7 @@
 	<ui:include src="./lookup.xhtml"> <ui:param name="pageBean" value="#{queryRep_fasc}"/></ui:include>
 	<ui:include src="./loadingbar@ctrl_gestione.xhtml"><ui:param name="pageBean" value="#{queryRep_fasc}"/></ui:include>
 	
-	<h:inputTextarea value="#{queryRep_fasc.xml}" rendered="#{queryRep_fasc.debugMode}" styleClass="form-control" rows="10" />
+	<h:inputTextarea value="#{queryRep_fasc.xml}" rendered="#{queryRep_fasc.debugMode}" styleClass="form-control debug-textarea" rows="10" />
 </ui:define>
     
 </ui:composition>    

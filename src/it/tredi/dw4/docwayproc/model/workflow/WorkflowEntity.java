@@ -2,11 +2,13 @@ package it.tredi.dw4.docwayproc.model.workflow;
 
 import it.tredi.dw4.acl.model.Creazione;
 import it.tredi.dw4.acl.model.UltimaModifica;
+import it.tredi.dw4.docway.model.Option;
 import it.tredi.dw4.docway.model.Storia;
 import it.tredi.dw4.model.XmlEntity;
 import it.tredi.dw4.utils.StringUtil;
 import it.tredi.dw4.utils.XMLUtil;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -22,12 +24,13 @@ public class WorkflowEntity extends XmlEntity {
 	private String description = "";
 	private boolean active = false;
 	private boolean subprocess = false;
+	private String bonitaVersion = "";
 	
 	// utilizzati per inserimento/modifica di un workflow
 	private String fileNameBar = "";
 	private String fileNameImage = "";
+	private List<Option> bonitaActiveVersions = new ArrayList<>(); //versioni di bonita attive - vengono lette da property
 	 
-	
 	// storia workflow
 	private Creazione creazione = new Creazione();
 	private UltimaModifica ultima_modifica = new UltimaModifica();
@@ -43,15 +46,17 @@ public class WorkflowEntity extends XmlEntity {
 		this.label = 		XMLUtil.parseStrictElement(dom, "/response/bwf_entity/label");
 		this.description = 	XMLUtil.parseStrictElement(dom, "/response/bwf_entity/description");
 		this.subprocess =	StringUtil.booleanValue(XMLUtil.parseStrictAttribute(dom, "/response/bwf_entity/@subprocess", "false"));
+		this.bonitaVersion = XMLUtil.parseStrictAttribute(dom, "/response/bwf_entity/@bonitaVersion");
 		
 		this.creazione.init(XMLUtil.createDocument(dom, "/response/bwf_entity/storia/creazione"));
 		this.ultima_modifica.init(XMLUtil.createDocument(dom, "/response/bwf_entity/storia/ultima_modifica"));
 		this.storia = XMLUtil.parseSetOfElement(dom, "/response/bwf_entity/storia/node()", new Storia());
 		
+		this.bonitaActiveVersions = XMLUtil.parseSetOfElement(dom, "/response/activeVersions/option", new Option() );
+		
 		return this;
 	}
 	
-
 	@Override
 	public Map<String, String> asFormAdapterParams(String prefix) {
 		if (null == prefix) prefix = "";
@@ -77,6 +82,8 @@ public class WorkflowEntity extends XmlEntity {
     		params.put("*barfilename", fileNameBar);
     	if (fileNameImage != null && fileNameImage.length() > 0)
     		params.put("*imagefilename", fileNameImage);
+    	
+    	params.put(prefix+".@bonitaVersion", this.bonitaVersion);
     	
 		return params;
 	}
@@ -176,4 +183,21 @@ public class WorkflowEntity extends XmlEntity {
 	public void setSubprocess(boolean subprocess) {
 		this.subprocess = subprocess;
 	}
+
+	public String getBonitaVersion() {
+		return bonitaVersion;
+	}
+
+	public void setBonitaVersion(String bonitaVersion) {
+		this.bonitaVersion = bonitaVersion;
+	}
+
+	public List<Option> getBonitaActiveVersions() {
+		return bonitaActiveVersions;
+	}
+
+	public void setBonitaActiveVersions(List<Option> bonitaActiveVersions) {
+		this.bonitaActiveVersions = bonitaActiveVersions;
+	}
+	
 }

@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	  xmlns:h="http://java.sun.com/jsf/html"
+	  xmlns:ui="http://java.sun.com/jsf/facelets"
+	  xmlns:f="http://java.sun.com/jsf/core"
+	  xmlns:c="http://java.sun.com/jsp/jstl/core"
+	  xmlns:p="http://xmlns.jcp.org/jsf/passthrough">
+<ui:composition>
+
+	<h:panelGroup layout="block" id="importFromWebUrlPopup">
+		<h:panelGroup rendered="#{pageBean.importVisible}">
+			<!-- Modal -->
+			<div id="importFromWebUrlModal" class="modal fade in" aria-hidden="false" aria-labelledby="importFromWebUrlModalLabel" role="dialog" tabindex="-1" style="display: block;">
+			<!--div class="modal fade" id="importFromWebUrlModal" tabindex="-1" role="dialog" aria-labelledby="importFromWebUrlModalLabel" aria-hidden="true"-->
+				<div class="modal-dialog docedit">
+					<div class="modal-content jsf-modal">
+						<div class="modal-header">
+							<h:commandLink onclick="saveScrollbarPosition()" styleClass="close" action="#{pageBean.closeImportFromWebURL}" value="&#215;">
+								<f:ajax execute="@form" render="@form" />
+							</h:commandLink>
+
+							<h4 class="modal-title" id="importFromWebUrlModalLabel">#{i18n['dw4.importa_da_url_esterno']}</h4>
+						</div>
+						<div class="modal-body">
+
+							<div class="fieldset">
+								<div class="legend">
+									&#160;
+									<div class="pull-right">
+										<span class="glyphicon glyphicon-search"></span>
+									</div>
+								</div>
+
+								<div class="form-group">
+									<label for="templateForm:webUrlSelect" class="col-sm-2 control-label"><span>#{i18n['dw4.sito']}</span></label>
+									<div class="col-sm-8">
+										<h:selectOneMenu id="webUrlSelect" value="#{pageBean.importUrlSelected}" styleClass="form-control">
+											<f:selectItems value="#{pageBean.importUrls}" var="web" itemValue="#{web.url}" itemLabel="#{web.text}"></f:selectItems>
+										</h:selectOneMenu>
+									</div>
+								</div>
+							</div>
+						</div>
+						<div class="modal-footer">
+							<!-- tiommi 14/07/2017 il triggerSave è necessario per sincronizzare le textarea con l'iframe del plugin prima dell'invio ajax -->
+							<h:commandLink onclick="tinyMCE.triggerSave(); saveScrollbarPosition()" styleClass="btn btn-primary" action="#{pageBean.loadFromWebURL}" value="#{i18n['dw4.carica']}">
+								<f:ajax execute="@form" render="@form" />
+							</h:commandLink>
+
+							<h:commandLink onclick="saveScrollbarPosition()" styleClass="btn btn-default" action="#{pageBean.closeImportFromWebURL}" value="#{i18n['acl.close']}">
+								<f:ajax execute="@form" render="@form" />
+							</h:commandLink>
+						</div>
+					</div>
+				</div>
+			</div>
+			<!--h:outputScript>
+				$('#importFromWebUrlModal').modal('show');
+			</h:outputScript-->
+		</h:panelGroup>
+	</h:panelGroup>
+
+</ui:composition>
+</html>

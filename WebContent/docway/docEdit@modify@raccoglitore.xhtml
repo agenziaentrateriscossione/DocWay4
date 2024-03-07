@@ -93,7 +93,9 @@
 		</div>
 		<!-- scheda edit: fine -->
 		
-		<h:inputTextarea value="#{docEditModifyRaccoglitore.xml}" rendered="#{docEditModifyRaccoglitore.debugMode}" styleClass="form-control" rows="10" />
+		<ui:include src="./lookup.xhtml"> <ui:param name="pageBean" value="#{docEditModifyRaccoglitore}"/></ui:include>
+		
+		<h:inputTextarea value="#{docEditModifyRaccoglitore.xml}" rendered="#{docEditModifyRaccoglitore.debugMode}" styleClass="form-control debug-textarea" rows="10" />
 	</div>
 </ui:define>
 

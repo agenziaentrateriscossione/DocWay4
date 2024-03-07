@@ -71,7 +71,8 @@ public class QueryPartenzaFTRPAA extends QueryGlobale {
 	private void forzaRepertorio() {
 		setRepertori_multipli(true);
 		forceRepertorioSelected("FTRPAA", "P");
-		setArrivo(true);
+		setCurrentCustomFieldSection("partenza_FTRPAA");
+		setPartenza(true);
 	}
 	
 	@Override

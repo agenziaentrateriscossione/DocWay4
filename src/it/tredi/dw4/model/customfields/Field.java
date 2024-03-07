@@ -1,21 +1,24 @@
 package it.tredi.dw4.model.customfields;
 
-import it.tredi.dw4.beans.Page;
-import it.tredi.dw4.i18n.I18N;
-import it.tredi.dw4.model.XmlEntity;
-import it.tredi.dw4.utils.DateUtil;
-import it.tredi.dw4.utils.StringUtil;
-import it.tredi.dw4.utils.XMLUtil;
-
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Pattern;
 
 import javax.faces.context.FacesContext;
 
 import org.dom4j.Document;
 import org.dom4j.Element;
+
+import it.tredi.dw4.beans.Page;
+import it.tredi.dw4.i18n.I18N;
+import it.tredi.dw4.model.XmlEntity;
+import it.tredi.dw4.model.customfields.specialized_fields.SpecializedFieldInstance;
+import it.tredi.dw4.utils.DateUtil;
+import it.tredi.dw4.utils.StringUtil;
+import it.tredi.dw4.utils.XMLUtil;
 
 public class Field extends XmlEntity {
 
@@ -28,12 +31,16 @@ public class Field extends XmlEntity {
 	// docEdit
 	private String defaultvalue = "";
 	private boolean required = false;
+	private boolean visible = true;
 	private boolean numeric = false;
 	private String size = "";
 	private String helpmessage = "";
 	private String placeholder = "";
 	private boolean readonly = false;
 	private HashMap<String, String> lookupParams = new HashMap<String, String>(); // parametri da inviare per il lookup (se e solo se campo di tipo lookup)
+	
+	private Validator validator = new Validator();
+	private Prepend prepend = new Prepend();
 	
 	// showdoc
 	private String xslOut = "";
@@ -52,6 +59,8 @@ public class Field extends XmlEntity {
 		this.size	 		= XMLUtil.parseStrictAttribute(dom, "field/input/@size");
 		this.placeholder	= XMLUtil.parseStrictAttribute(dom, "field/input/@placeholder"); // TODO attributo non ancora gestito a livello di template
 		this.readonly	 	= StringUtil.booleanValue(XMLUtil.parseStrictAttribute(dom, "field/input/@readonly"));
+		
+		this.visible 		= StringUtil.booleanValue(XMLUtil.parseStrictAttribute(dom, "field/input/@visible", "true"));
 		
 		if (type.equals("group")) {
 			// gruppo di campi
@@ -86,6 +95,12 @@ public class Field extends XmlEntity {
 					}
 				}
 			}
+			
+			// caricamento di eventuali specifiche di validazione
+			this.validator = new Validator();
+			this.validator.init(XMLUtil.createDocument(dom, "field/input/validator")); // validazione possibile solo su docEdit o docEditModify
+			
+			this.prepend.init(XMLUtil.createDocument(dom, "field/input/prepend")); // eventuale prepend sul campo
 		}
 		
 		if (XMLUtil.countElements(dom, "field/xslOut") == 1)
@@ -106,7 +121,8 @@ public class Field extends XmlEntity {
     	String fieldprefix = prefix + getFieldPrefixForFormAdapter();
     	for (int i=0; i<instances.size(); i++) {
     		String instanceprefix = fieldprefix;
-    		if (instances.size() > 1)
+    		// mbernardini 13/12/2016 : corretto salvataggio di campi custom multi-instanza (es. eliminazione del primo gruppo di campi su n) 
+    		if (repeteable)
     			instanceprefix = fieldprefix + "[" + i + "]";
     		params.putAll(instances.get(i).asFormAdapterParams(instanceprefix, type));
     	}
@@ -259,6 +275,30 @@ public class Field extends XmlEntity {
 		this.instances = instances;
 	}
 	
+	public Validator getValidator() {
+		return validator;
+	}
+
+	public void setValidator(Validator validator) {
+		this.validator = validator;
+	}
+	
+	public Prepend getPrepend() {
+		return prepend;
+	}
+
+	public void setPrepend(Prepend prepend) {
+		this.prepend = prepend;
+	}
+	
+	public boolean isVisible() {
+		return visible;
+	}
+
+	public void setVisible(boolean visible) {
+		this.visible = visible;
+	}
+
 	/**
 	 * inizializzazione del valore da impostare sul campo
 	 * @param context elemento XML relativo al campo
@@ -282,7 +322,7 @@ public class Field extends XmlEntity {
 					}
 				}
 			}
-			else { 
+			else {
 				// modifica di un campo base (text, textarea, ecc.)
 				FieldInstance instance = new FieldInstance();
 				instance.init(XMLUtil.getDOM(xml));
@@ -418,9 +458,14 @@ public class Field extends XmlEntity {
 					else
 						currentFormLevelId = currentFormLevelId + ":subfieldInstance:" + i;
 					
+					boolean maxLengthRequired = false;
+					if (validator != null && validator.getMaxLength() > 0)
+						maxLengthRequired = true;
 					String idCampo = type + "field";
 					if (type.equals("lookup"))
 						idCampo = type + "_input";
+					else if (maxLengthRequired)
+						idCampo += "_maxLength";
 					
 					// TODO attualmente non e' gestito il controllo di obbligatorieta' su checkbox, occorre gestirlo?
 					
@@ -433,12 +478,14 @@ public class Field extends XmlEntity {
 							result = true;
 						}
 						
+						boolean validValue = true;
 						if (instance.getValue() != null && !instance.getValue().equals("")) {
 							// controllo su formato numerico
 							if (numeric && !StringUtil.isNumber(instance.getValue())) {
 								if (pageBean != null)
 									pageBean.setErrorMessage(currentFormLevelId + ":" + idCampo, I18N.mrs("dw4.inserire_un_valore_numerico_nel_campo") + " '" + label + "' ");
 								result = true;
+								validValue = false;
 							}
 						
 							// controllo su formato data
@@ -446,6 +493,76 @@ public class Field extends XmlEntity {
 								if (pageBean != null)
 									pageBean.setErrorMessage(currentFormLevelId + ":" + idCampo, I18N.mrs("acl.inserire_una_data_valida_nel_campo") + " '" + label + "': " + formatoData.toLowerCase());
 								result = true;
+								validValue = false;
+							}
+						}
+
+						// controlli dei custom fields specializzati
+						if (instance instanceof SpecializedFieldInstance && ((SpecializedFieldInstance) instance).hasSpecificValidators()) {
+							result = ((SpecializedFieldInstance) instance).doSpecificValidation(pageBean, validator, currentFormLevelId, idCampo, label);
+						}
+
+						// controllo eventuale validazione richiesta per il campo
+						if (validator != null) {
+							
+							// validazione tramite RegEx
+							if (validator.getType() != null && !validator.getType().isEmpty() && instance.getValue() != null && !instance.getValue().isEmpty()) {
+								String regex = validator.getValidationRule();
+								if (regex != null && !regex.isEmpty()) {
+									if (!Pattern.matches(regex, instance.getValue())) { // regex non rispettata
+										if (pageBean != null)
+											pageBean.setErrorMessage(currentFormLevelId + ":" + idCampo, I18N.mrs("dw4.formato_non_valido_sul_campo") + " '" + label + "'.");
+										result = true;
+									}
+								}
+							}
+							
+							// validazioni in base al numero di caratteri previsti per il campo
+							if (validator.getMinLength() > 0 || validator.getMaxLength() > 0) {
+								int fieldLength = instance.getValue().length();
+								if (fieldLength < validator.getMinLength() || fieldLength > validator.getMaxLength()) {
+									if (pageBean != null) {
+										String errormsg = I18N.mrs("dw4.inserire_un_testo_compreso_fra_X_e_Y_caratteri_per_il_campo", new Integer[]{ validator.getMinLength(), validator.getMaxLength() });
+										if (validator.getMinLength() == validator.getMaxLength())
+											errormsg = I18N.mrs("dw4.inserire_un_testo_di_X_caratteri_per_il_campo", new Integer[]{ validator.getMaxLength() });
+										pageBean.setErrorMessage(currentFormLevelId + ":" + idCampo, errormsg + " '" + label + "'.");
+									}
+									result = true;
+								}
+							}
+							
+							// validazione in base ai valori minimo e massimo previsti per il campo
+							if ((validator.getMinValue() != null && !validator.getMinValue().isEmpty()) 
+																	|| (validator.getMaxValue() != null && !validator.getMaxValue().isEmpty())) {
+								if (instance.getValue() != null && !instance.getValue().isEmpty() && validValue) {
+									if (type.equals("calendar")) {
+										Date dateValue = DateUtil.fromString(instance.getValue(), formatoData);
+										Date minValue = DateUtil.fromString(validator.getMinValue(), "dd/MM/yyyy");
+										if (minValue != null && dateValue.before(minValue)) {
+											pageBean.setErrorMessage(currentFormLevelId + ":" + idCampo, I18N.mrs("dw4.inserire_una_data_superiore_a_X_per_il_campo", new String[]{ validator.getMinValue() }) + " '" + label + "'");
+											result = true;
+										}
+										Date maxValue = DateUtil.fromString(validator.getMaxValue(), "dd/MM/yyyy");
+										if (maxValue != null && dateValue.after(maxValue)) {
+											pageBean.setErrorMessage(currentFormLevelId + ":" + idCampo, I18N.mrs("dw4.inserire_una_data_inferiore_a_X_per_il_campo", new String[]{ validator.getMaxValue() }) + " '" + label + "'");
+											result = true;
+										}
+									}
+									else if (numeric) {
+										int intValue = Integer.parseInt(instance.getValue());
+										int minValue = Integer.parseInt(validator.getMinValue());
+										if (intValue < minValue) {
+											pageBean.setErrorMessage(currentFormLevelId + ":" + idCampo, I18N.mrs("dw4.inserire_un_numero_superiore_a_X_per_il_campo", new String[]{ validator.getMinValue() }) + " '" + label + "'");
+											result = true;
+										}
+										int maxValue = Integer.parseInt(validator.getMaxValue());
+										if (intValue > maxValue) {
+											pageBean.setErrorMessage(currentFormLevelId + ":" + idCampo, I18N.mrs("dw4.inserire_un_numero_inferiore_a_X_per_il_campo", new String[]{ validator.getMaxValue() }) + " '" + label + "'");
+											result = true;
+										}
+									}
+									// TODO eventuali altri casi da validare
+								}
 							}
 						}
 					}
@@ -553,6 +670,110 @@ public class Field extends XmlEntity {
 				this.getInstances().get(new Integer(index).intValue()).setValue(value);
 			}
 		}
+	}
+	
+	/**
+	 * Recupera il valore associato ad un campo identificato da un path.
+	 * Formato del campo custom: section[0].field_2[0].field_3[2]
+	 * 
+	 * @param fieldPath definizione del campo per il quale recuperare il valore (es. section[0].field_2[0].field_3[2])
+	 * @return Valore associato al campo
+	 */
+	public String getValueFromPath(String fieldPath) {
+		String value = null;
+		if (fieldPath != null && !fieldPath.equals("")) {
+			
+			int fieldIndex = fieldPath.indexOf(".");
+			if (fieldIndex != -1) { 
+				// se esiste almeno un punto nella definizione del campo significa che il campo corrente
+				// e' un campo di tipo gruppo (il campo da settare e' contenuto al suo interno)
+				
+				String propertyName = fieldPath.substring(0, fieldIndex);
+				String currentPath = fieldPath.substring(fieldIndex+1);
+				
+				String index = "0";
+				if (propertyName.endsWith("]"))
+					index = propertyName.substring(propertyName.indexOf("[")+1, propertyName.length()-1);
+				
+				value = this.getInstances().get(new Integer(index)).getValueFromPath(currentPath);
+			}
+			else {
+				// non e' stato individuato un punto nell'xpath, quindi il campo da settare e' il 
+				// campo corrente
+				
+				String index = "0";
+				if (fieldPath.endsWith("]"))
+					index = fieldPath.substring(fieldPath.indexOf("[")+1, fieldPath.length()-1);
+				
+				value = this.getInstances().get(new Integer(index).intValue()).getValue();
+			}
+		}
+		return value;
+	}
+	
+	/**
+	 * Esecuzione di una azione su un campo identificato da un path.
+	 * Formato del campo custom: section[0].field_2[0].field_3[2]
+	 * 
+	 * @param fieldPath definizione del campo da aggiornare (es. section[0].field_2[0].field_3[2])
+	 * @param action azione da svolgere sul campo
+	 * @param value Valore da settare in base all'azione
+	 */
+	public void processActionOnField(String fieldPath, RelationshipAction action, Object value) {
+		if (fieldPath != null && !fieldPath.equals("") && action != null) {
+			
+			int fieldIndex = fieldPath.indexOf(".");
+			if (fieldIndex != -1) { 
+				// se esiste almeno un punto nella definizione del campo significa che il campo corrente
+				// e' un campo di tipo gruppo (il campo da settare e' contenuto al suo interno)
+				
+				String propertyName = fieldPath.substring(0, fieldIndex);
+				String currentPath = fieldPath.substring(fieldIndex+1);
+				
+				String index = "0";
+				if (propertyName.endsWith("]"))
+					index = propertyName.substring(propertyName.indexOf("[")+1, propertyName.length()-1);
+				
+				this.getInstances().get(new Integer(index)).processActionOnField(currentPath, action, value);
+			}
+			else {
+				// non e' stato individuato un punto nell'xpath, quindi il campo da settare e' il 
+				// campo corrente
+				
+				if (action == RelationshipAction.REQUIRED) {
+					this.setRequired(Boolean.parseBoolean(value.toString()));
+				}
+				else if (action == RelationshipAction.VISIBLE) {
+					this.setVisible(Boolean.parseBoolean(value.toString()));
+					if (!this.isVisible()) {
+						String index = "0";
+						if (fieldPath.endsWith("]"))
+							index = fieldPath.substring(fieldPath.indexOf("[")+1, fieldPath.length()-1);
+						
+						this.getInstances().get(new Integer(index).intValue()).setValue("");
+					}
+				}
+			}
+		}
+	}
+	
+	/**
+	 * Ritorna TRUE se il campo contiene del contenuto (singolo campo valorizzato o campo di gruppo con almeno 
+	 * un sottocampo valorizzato), FALSE altrimenti
+	 * @return
+	 */
+	public boolean isWithContent() {
+		boolean withContent = false;
+		if (instances != null && instances.size() > 0) {
+			int i = 0;
+			while (i < instances.size() && !withContent) {
+				FieldInstance instance = instances.get(i);
+				if (instance != null) 
+					withContent = instance.isWithContent();
+				i++;
+			}
+		}
+		return withContent;
 	}
 	
 }

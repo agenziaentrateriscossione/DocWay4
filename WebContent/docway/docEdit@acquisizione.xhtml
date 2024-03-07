@@ -24,7 +24,7 @@
 			<h:panelGroup rendered="#{!empty docEditAcquisizione.tipoDoc and docEditAcquisizione.tipoDoc ne 'acquisizione'}">
 				<span class="doc-tipo-#{docEditAcquisizione.tipoDoc} glyphicon glyphicon-file"></span>&#160;
 			</h:panelGroup>
-			<h:outputText value="#{docEditAcquisizione.docEditTitle}" escape="false" />
+			<h:outputText value="#{docEditAcquisizione.docEditTitle}" />
 		</h5>
 	
 		<!-- messages: inizio -->
@@ -213,9 +213,17 @@
 	
 	</div>
 	
-	<h:inputTextarea value="#{docEditAcquisizione.xml}" rendered="#{docEditAcquisizione.debugMode}" styleClass="form-control" rows="10" />
+	<h:inputTextarea value="#{docEditAcquisizione.xml}" rendered="#{docEditAcquisizione.debugMode}" styleClass="form-control debug-textarea" rows="10" />
 			
 	<ui:include src="./lookup.xhtml"> <ui:param name="pageBean" value="#{docEditAcquisizione}"/></ui:include>
+	<!-- template per upload e la decompressione di archivi ZIP -->
+	<ui:param name="currentBean" value="#{docEditAcquisizione}" />
+	<ui:include src="./docUploadArchive.xhtml">
+		<ui:param name="bean" value="#{docWayUploadArchive}"/>
+		<ui:param name="beanDoc" value="#{currentBean}" />
+		<ui:param name="doc" value="#{currentBean.doc}" />
+		<ui:param name="enableFiles" value="#{currentBean.docInformaticiEnabled and currentBean.formsAdapter.funzionalitaDisponibili['addFile']}" />
+	</ui:include>
 </ui:define>
 	
 </ui:composition>

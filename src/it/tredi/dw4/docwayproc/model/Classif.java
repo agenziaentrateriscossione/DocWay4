@@ -3,6 +3,7 @@ package it.tredi.dw4.docwayproc.model;
 import java.util.HashMap;
 import java.util.Map;
 
+import it.tredi.dw4.beans.ClassifFormatManager;
 import it.tredi.dw4.model.XmlEntity;
 import it.tredi.dw4.utils.ClassifUtil;
 import it.tredi.dw4.utils.XMLUtil;
@@ -66,7 +67,7 @@ public class Classif extends XmlEntity {
 			try {
 				String label = getText();
 				if (label != null && label.length() > 0)
-					return ClassifUtil.formatClassif(label);
+					return ClassifUtil.formatClassif(label, ClassifFormatManager.getInstance().getClassifFormat());
 				else
 					return "";
 			}

@@ -2,15 +2,15 @@ package it.tredi.dw4.acl.beans;
 
 import javax.faces.event.ValueChangeEvent;
 
-import it.tredi.dw4.utils.XMLDocumento;
+import org.dom4j.Document;
+
 import it.tredi.dw4.acl.adapters.AclDocEditFormsAdapter;
 import it.tredi.dw4.acl.model.StrutturaEsterna;
 import it.tredi.dw4.adapters.AdaptersConfigurationLocator;
 import it.tredi.dw4.adapters.ErrormsgFormsAdapter;
 import it.tredi.dw4.i18n.I18N;
 import it.tredi.dw4.utils.Const;
-
-import org.dom4j.Document;
+import it.tredi.dw4.utils.XMLDocumento;
 
 public class DocEditModifyStrutturaEsterna extends AclDocEdit {
 	private AclDocEditFormsAdapter formsAdapter;
@@ -116,7 +116,7 @@ public class DocEditModifyStrutturaEsterna extends AclDocEdit {
 		
 		String aliasName 	= "persest_nomcogn"; //aliasName 
 		String aliasName1 	= "persest_cognome"; //aliasName1 
-		String titolo 		= "xml,/persona_esterna/@cognome xml,/persona_esterna/@nome &quot;- ~&quot; XML,/persona_esterna/recapito/email/@addr &quot;- ~&quot; XML,/persona_esterna/@soprannome"; //titolo 
+		String titolo 		= "xml,/persona_esterna/@cognome xml,/persona_esterna/@nome \"- ~\" XML,/persona_esterna/recapito/email/@addr \"- ~\" XML,/persona_esterna/@soprannome"; //titolo 
 		String ord 			= "xml(xpart:/persona_esterna/@cognome)"; //ord 
 		String campi 		= "nomeresponsabile=xml,/persona_esterna/@cognome xml,/persona_esterna/@nome ; .@cod_responsabile=xml,/persona_esterna/@matricola"; //campi
 		String db 			= ""; //db 

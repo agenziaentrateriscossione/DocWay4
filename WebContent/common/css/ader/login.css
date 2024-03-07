@@ -1,0 +1,47 @@
+
+/*############################### STILI PER IDENTIFICAZIONE ARCHIVIO - INIZIO ###############################*/
+
+/* commentati perche' i loghi BIG in login non devono essere personalizzati, viene mostrato il logo classico di DocWay */
+/*
+.login-archive-xdocwaydoc-centro, .logout-archive-xdocwaydoc-centro, .login-archive-xdocwayproc-centro, .logout-archive-xdocwayproc-centro {
+	background: url('images/logo/xdocwaydoc-centro-big.png') no-repeat center;
+}
+
+.login-archive-xdocwaydoc-centro img, .logout-archive-xdocwaydoc-centro img, .login-archive-xdocwayproc-centro img, .logout-archive-xdocwayproc-centro img {
+	visibility: hidden;
+}
+
+.login-archive-xdocwaydoc-nord, .logout-archive-xdocwaydoc-nord, .login-archive-xdocwayproc-nord, .logout-archive-xdocwayproc-nord {
+	background: url('images/logo/xdocwaydoc-nord-big.png') no-repeat center;
+}
+
+.login-archive-xdocwaydoc-nord img, .logout-archive-xdocwaydoc-nord img, .login-archive-xdocwayproc-nord img, .logout-archive-xdocwayproc-nord img {
+	visibility: hidden;
+}
+
+.login-archive-xdocwaydoc-sud, .logout-archive-xdocwaydoc-sud, .login-archive-xdocwayproc-sud, .logout-archive-xdocwayproc-sud {
+	background: url('images/logo/xdocwaydoc-sud-big.png') no-repeat center;
+}
+
+.login-archive-xdocwaydoc-sud img, .logout-archive-xdocwaydoc-sud img, .login-archive-xdocwayproc-sud img, .logout-archive-xdocwayproc-sud img {
+	visibility: hidden;
+}
+
+.login-archive-xdocwaydoc-giustizia, .logout-archive-xdocwaydoc-giustizia, .login-archive-xdocwayproc-giustizia, .logout-archive-xdocwayproc-giustizia {
+	background: url('images/logo/xdocwaydoc-giustizia-big.png') no-repeat center;
+}
+
+.login-archive-xdocwaydoc-giustizia img, .logout-archive-xdocwaydoc-giustizia img, .login-archive-xdocwayproc-giustizia img, .logout-archive-xdocwayproc-giustizia img {
+	visibility: hidden;
+}
+
+.login-archive-xdocwaydoc-spa, .logout-archive-xdocwaydoc-spa, .login-archive-xdocwayproc-spa, .logout-archive-xdocwayproc-spa {
+	background: url('images/logo/xdocwaydoc-spa-big.png') no-repeat center;
+}
+
+.login-archive-xdocwaydoc-spa img, .logout-archive-xdocwaydoc-spa img, .login-archive-xdocwayproc-spa img, .logout-archive-xdocwayproc-spa img {
+	visibility: hidden;
+}
+*/
+
+/*############################### STILI PER IDENTIFICAZIONE ARCHIVIO - FINE ###############################*/

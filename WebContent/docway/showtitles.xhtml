@@ -28,7 +28,7 @@
 				</div>
 				<div class="col-xs-11">
 					<div class="showdoc-second-row-title" title="#{docwayTitles.oggetto_fasc}">
-						<h:commandLink action="#{docwayTitles.queryFasc}"><h:outputText value="#{docwayTitles.oggetto_fasc}" escape="false" /></h:commandLink>
+						<h:commandLink action="#{docwayTitles.queryFasc}"><h:outputText value="#{docwayTitles.oggetto_fasc}" /></h:commandLink>
 					</div>
 					<div class="showdoc-row-subtitle">
 						<h:panelGroup rendered="#{!empty docwayTitles.classif_fasc}">
@@ -49,23 +49,30 @@
 		</div>
 	</div>
 	
+	<ui:include src="./loadingbar@scartaDocs.xhtml"><ui:param name="pageBean" value="#{docwayTitles}"/></ui:include>
 	<ui:include src="./loadingbar@removeDocs.xhtml"><ui:param name="pageBean" value="#{docwayTitles}"/></ui:include>
+	<ui:include src="./loadingbar@markAsReadDocs.xhtml"><ui:param name="pageBean" value="#{docwayTitles}"/></ui:include>
+	<ui:include src="./loadingbar@protocollaDocs.xhtml"><ui:param name="pageBean" value="#{docwayTitles}"/></ui:include>
 	<ui:include src="./loadingbar@exportCSV.xhtml"><ui:param name="pageBean" value="#{docwayTitles}"/></ui:include>
 	<ui:include src="./loadingbar@removeSelFromFasc.xhtml"><ui:param name="pageBean" value="#{docwayTitles}"/></ui:include>
 	<ui:include src="./loadingbar@if.xhtml"><ui:param name="pageBean" value="#{docwayTitles}"/></ui:include>
 	<ui:include src="./loadingbar@ritiraBandoSelezione.xhtml"><ui:param name="pageBean" value="#{docwayTitles}"/></ui:include>
 	<ui:include src="./rifinterni@RPA.xhtml"><ui:param name="bean" value="#{rifInt}"/></ui:include>
 	<ui:include src="./rifinterni@CC.xhtml"><ui:param name="bean" value="#{rifInt}"/></ui:include>
+	<ui:include src="./rifinterni@OP.xhtml"><ui:param name="bean" value="#{rifInt}"/></ui:include>
 	<ui:include src="./lookup.xhtml"> <ui:param name="pageBean" value="#{rifInt}"/></ui:include>
 	<ui:include src="./rifintLookup.xhtml"> <ui:param name="pageBean" value="#{rifInt}"/></ui:include>
 	<ui:include src="./loadingbar@assegnazioneCC.xhtml"><ui:param name="pageBean" value="#{rifInt}"/></ui:include>
 	<ui:include src="./loadingbar@assegnazioneRPA.xhtml"><ui:param name="pageBean" value="#{rifInt}"/></ui:include>
+	<ui:include src="./loadingbar@assegnazioneOP.xhtml"><ui:param name="pageBean" value="#{rifInt}"/></ui:include>
 	<ui:include src="./changeclassifDoc.xhtml"> <ui:param name="pageBean" value="#{changeclassifdoc}"/></ui:include>
 	<ui:include src="./showthes.xhtml"> <ui:param name="pageBean" value="#{changeclassifdoc}"/></ui:include>
 	<ui:include src="./addVaschettaCustom.xhtml"> <ui:param name="pageBean" value="#{docwayTitles}"/></ui:include>
 	<ui:include src="./exportCSVAdvanced.xhtml"> <ui:param name="pageBean" value="#{docwayTitles}"/></ui:include>
 	
-	<h:inputTextarea value="#{docwayTitles.xml}" rendered="#{docwayTitles.debugMode}" styleClass="form-control" rows="10" />
+	<ui:include src="./printAttachments.xhtml"> <ui:param name="pageBean" value="#{printAttachments}"/></ui:include>
+	
+	<h:inputTextarea value="#{docwayTitles.xml}" rendered="#{docwayTitles.debugMode}" styleClass="form-control debug-textarea" rows="10" />
 </ui:define>
 
 </ui:composition>

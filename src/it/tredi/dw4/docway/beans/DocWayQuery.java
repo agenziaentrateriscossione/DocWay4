@@ -24,7 +24,7 @@ public abstract class DocWayQuery extends Page {
 	public abstract QueryFormsAdapter getFormsAdapter();
 
 	public abstract String queryPlain() throws Exception;
-	
+
 	// gestione dei campi custom definiti dall'utente tramite modello XML in ricerca
 	private CustomQueryFields customQueryFields = new CustomQueryFields();
 	// definisce l'eventuale sezione contenente campi custom da mostrare.
@@ -89,9 +89,23 @@ public abstract class DocWayQuery extends Page {
 	}
 	
 	/**
-	 * Esegue l'escaping dei valori riservati (operatori logici) nelle 
+	 * Compone un pezzo di query senza operatore (e senza spazi)
+	 * @author tiommi
+	 * @param query
+	 * @param value
+	 * @return
+	 */
+	protected String partialQueryField(String query, String value) {
+		if (null == value || "".equals(value.trim()))
+			return "";
+		else
+			return "([" + query + "]=" + value + ")"; 
+	}
+
+	/**
+	 * Esegue l'escaping dei valori riservati (operatori logici) nelle
 	 * query su eXtraWay
-	 * 
+	 *
 	 * @param value
 	 * @return
 	 */
@@ -102,7 +116,7 @@ public abstract class DocWayQuery extends Page {
 	/**
 	 * Appende alla query un filtro su range di date in base ai parametri
 	 * specificati
-	 * 
+	 *
 	 * @param searchName chiave di ricerca (es. creaz, mod)
 	 * @param dataFrom data di inizio dell'intervallo di ricerca
 	 * @param dataTo data di fine dell'intervallo di ricerca
@@ -115,7 +129,7 @@ public abstract class DocWayQuery extends Page {
 	/**
 	 * Appende alla query un filtro su range di date in base ai parametri
 	 * specificati
-	 * 
+	 *
 	 * @param searchName chiave di ricerca (es. creaz, mod)
 	 * @param dataFrom data di inizio dell'intervallo di ricerca
 	 * @param dataTo data di fine dell'intervallo di ricerca
@@ -155,11 +169,11 @@ public abstract class DocWayQuery extends Page {
 
 		return rangeQuery;
 	}
-	
+
 	/**
 	 * Appende alla query un filtro su range di numeri in base ai parametri
 	 * specificati
-	 * 
+	 *
 	 * @param searchName chiave di ricerca (es. creaz, mod)
 	 * @param from data di inizio dell'intervallo di ricerca
 	 * @param to data di fine dell'intervallo di ricerca
@@ -188,11 +202,11 @@ public abstract class DocWayQuery extends Page {
 		}
 		return rangeQuery;
 	}
-	
+
 	/**
 	 * Appende alla query un filtro su range di numeri in base ai parametri
 	 * specificati
-	 * 
+	 *
 	 * @param searchName chiave di ricerca (es. creaz, mod)
 	 * @param values elenco di valori da impostare
 	 * @param operator operatore da appendere dopo la query
@@ -221,9 +235,9 @@ public abstract class DocWayQuery extends Page {
 	}
 
 	/**
-	 * Esecuzione della query specificata con identificazione dell'errore/warning/info e redirect a corretta 
+	 * Esecuzione della query specificata con identificazione dell'errore/warning/info e redirect a corretta
 	 * pagina di destinazione
-	 * 
+	 *
 	 * @param query Query da eseguire
 	 * @return
 	 * @throws Exception
@@ -237,22 +251,22 @@ public abstract class DocWayQuery extends Page {
 			}
 			if (response.getAttributeValue("//response/@verbo", "").equals("showdoc")) {
 				// restituito un solo risultato, redirect a showdoc
-				
+
 				return buildSpecificShowdocPageAndReturnNavigationRule(response.getRootElement().attributeValue("dbTable"), response);
-			} 
+			}
 			else {
 				// restituiti piu' risultati redirect a showtitles
-				
+
 				return buildTitlePageAndReturnNavigationRule(response);
 			}
-		} 
+		}
 		catch (Throwable t) {
 			handleErrorResponse(ErrormsgFormsAdapter.buildErrorResponse(t));
 			getFormsAdapter().fillFormsFromResponse(getFormsAdapter().getLastResponse()); // restore delle form
 			return null;
 		}
 	}
-	
+
 	public String buildTitlePageAndReturnNavigationRule(XMLDocumento response) throws Exception{
 		DocWayTitles titles = new DocWayTitles();
 		titles.getFormsAdapter().fillFormsFromResponse(response);
@@ -260,11 +274,11 @@ public abstract class DocWayQuery extends Page {
 		setSessionAttribute("titles", titles);
 		return "showtitles@docway";
 	}
-	
+
 	/**
 	 * Lettura della response contenente un file (es. operazione di download) o il messaggio
 	 * di errore restituito dall'operazione
-	 * 
+	 *
 	 * @param attachFile oggetto contenente il file da scaricare o il messaggio di errore da restituire
 	 * @return
 	 * @throws Exception
@@ -272,7 +286,7 @@ public abstract class DocWayQuery extends Page {
 	public String getResponseAttach(AttachFile attachFile) throws Exception {
 		if (attachFile.getContent() != null) {
 			getFormsAdapter().fillFormsFromResponse(getFormsAdapter().getLastResponse());
-			
+
 			FacesContext faces = FacesContext.getCurrentInstance();
 			HttpServletResponse response = (HttpServletResponse) faces.getExternalContext().getResponse();
 			response.setContentType(new MimetypesFileTypeMap().getContentType(attachFile.getFilename()));
@@ -288,15 +302,15 @@ public abstract class DocWayQuery extends Page {
 			handleErrorResponse(attachFile.getXmlDocumento());
 			getFormsAdapter().fillFormsFromResponse(getFormsAdapter().getLastResponse());
 		}
-		
+
 		return null;
 	}
-	
+
 	/**
-	 * Data la response derivante da una ricerca carica la pagina di destinazione 
-	 * corretta: pagina dei titoli in caso di piu' risultati, showdoc in caso di un 
+	 * Data la response derivante da una ricerca carica la pagina di destinazione
+	 * corretta: pagina dei titoli in caso di piu' risultati, showdoc in caso di un
 	 * solo documento restituito
-	 * 
+	 *
 	 * @param response
 	 * @return
 	 * @throws Exception
@@ -308,14 +322,14 @@ public abstract class DocWayQuery extends Page {
 		else{
 			DocWayTitles titles = new DocWayTitles();
 			titles.getFormsAdapter().fillFormsFromResponse(response);
-			
+
 			titles.init(response.getDocument());
 			titles.setPopupPage(isPopupPage());
 			setSessionAttribute("docwayTitles", titles);
 			return "showtitles@docway";
 		}
 	}
-		
+
 	/**
 	 * Impostazione di alcuni parametri di stampa (gestione dei report di
 	 * Docway)
@@ -343,7 +357,7 @@ public abstract class DocWayQuery extends Page {
 			print_classif = "true";
 		if (printId)
 			print_id = "true";
-		
+
 		jReportInfo = "Stampe/xdocway/JasperReport/Stampe_Docway/registro_protocollo_dataprot.jasper%jasper%pdf%JRXW#";
 		jReportParams = "boolean#REQ_ID=" + print_id + "&boolean#REQ_UOR=" + print_uor + "&boolean#REQ_POSTIT=" + print_postit + "&boolean#REQ_CLASSIF=" + print_classif;
 
@@ -422,7 +436,7 @@ public abstract class DocWayQuery extends Page {
 
 		getFormsAdapter().findAndPrint(codSocieta, selid, query, qext, qord, view, jReportInfo, jReportParams);
 	}
-	
+
 	/**
 	 * Lookup su maschera di stampa
 	 * @return
@@ -434,26 +448,26 @@ public abstract class DocWayQuery extends Page {
 			getFormsAdapter().fillFormsFromResponse(getFormsAdapter().getLastResponse()); //restore delle form
 			return null;
 		}
-		
-		getFormsAdapter().fillFormsFromResponse(getFormsAdapter().getLastResponse()); 
-		
+
+		getFormsAdapter().fillFormsFromResponse(getFormsAdapter().getLastResponse());
+
 		DocWayLookup docwayLookup = new DocWayLookup();
 		setLookup(docwayLookup);
 		docwayLookup.setModel(model);
-		
+
 		docwayLookup.getFormsAdapter().fillFormsFromResponse(response);
 		docwayLookup.init(response.getDocument());
-		
+
 		if(docwayLookup.getTitoli().size() == 1 && value != null && value.length() > 0){
 			docwayLookup.confirm(docwayLookup.getTitoli().get(0));
 		}
 		else {
 			docwayLookup.setActive(true);
 		}
-		
+
 		return null;
 	}
-	
+
 	/**
 	 * Clear su lookup della maschera di stampa
 	 * @return
@@ -462,10 +476,10 @@ public abstract class DocWayQuery extends Page {
 		DocWayLookup docwayLookup = new DocWayLookup();
 		docwayLookup.setModel(model);
 		docwayLookup.cleanFields(campi);
-		
+
 		return null;
 	}
-	
+
 	public CustomQueryFields getCustomQueryFields() {
 		return customQueryFields;
 	}
@@ -473,24 +487,24 @@ public abstract class DocWayQuery extends Page {
 	public void setCustomQueryFields(CustomQueryFields customQueryFields) {
 		this.customQueryFields = customQueryFields;
 	}
-	
+
 	public String getCurrentCustomFieldSection() {
 		return currentCustomFieldSection;
 	}
 
 	public void setCurrentCustomFieldSection(String customFieldSection) {
-		// verifico se effettivamente esistono campi custom definiti per il tipo 
+		// verifico se effettivamente esistono campi custom definiti per il tipo
 		// selezionato
 		if (customFieldSection.length() > 0 && getCustomQueryFields().getQuerysections() != null) {
 			if (!getCustomQueryFields().getQuerysections().containsKey(customFieldSection))
 				customFieldSection = "";
 		}
-		
+
 		this.currentCustomFieldSection = customFieldSection;
 	}
-	
+
 	/**
-	 * ritorno ad una eventuale lista documenti da pagina corrente (caricamento in 
+	 * ritorno ad una eventuale lista documenti da pagina corrente (caricamento in
 	 * base al selId passato)
 	 * @param selid selid della selezione da caricare
 	 * @return
@@ -501,18 +515,18 @@ public abstract class DocWayQuery extends Page {
 			if (selid != null && selid.length() > 0) {
 				getFormsAdapter().gotoTitles(selid);
 				getFormsAdapter().getDefaultForm().addParam("dbTable", "");
-				
+
 				XMLDocumento response = getFormsAdapter().getDefaultForm().executePOST(getUserBean());
 				if (handleErrorResponse(response)) {
 					getFormsAdapter().fillFormsFromResponse(getFormsAdapter().getLastResponse()); //restore delle form
 					return null;
 				}
-				
+
 				DocWayTitles titles = new DocWayTitles();
 				titles.getFormsAdapter().fillFormsFromResponse(response);
 				titles.init(response.getDocument());
 				setSessionAttribute("docwayTitles", titles);
-				
+
 				return "showtitles@docway";
 			}
 			return null;

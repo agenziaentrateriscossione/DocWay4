@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" 
+	  xmlns:h="http://java.sun.com/jsf/html" 
+	  xmlns:ui="http://java.sun.com/jsf/facelets" 
+	  xmlns:f="http://java.sun.com/jsf/core">
+<ui:composition>
+	<h:panelGroup layout="block" id="bonita7form_block">
+		<h:panelGroup id="bonita7form" rendered="#{!empty pageBean.bonitaForm.url}">
+			<!-- Modal -->
+			<div id="bonita7formModal" class="modal fade in" aria-hidden="false" aria-labelledby="bonita7formModalLabel" role="dialog" tabindex="-1" style="display: block;">
+				<div class="modal-dialog">
+					<div class="modal-content jsf-modal">
+						<div class="modal-header">
+							<h:commandLink id="bonita7formCloseBtn" styleClass="close" action="#{pageBean.closeBonitaBpmFormUrl}" value="&#215;" />
+							<h4 class="modal-title" id="bonita7formModalLabel">Bonita BPM - Task</h4>
+						</div>
+						<div class="modal-body">
+							<h:panelGroup rendered="#{not empty facesContext.messageList}" layout="block" styleClass="alert alert-danger">
+								<h:messages styleClass="" id="validationMessegesbonita7form" />
+							</h:panelGroup>
+							<h:panelGroup id="bonitaiframe" layout="block" class="bonita7_form_container">
+							    <iframe id="3diBonitaFrameForm" class="bonita7_form" src="#{pageBean.bonitaForm.url}?backTo=http%3A%2F%2Flocalhost%3A8080%2FDocWay4%2Fdocway">
+							        Iframes not supported
+							    </iframe>
+							</h:panelGroup>
+						</div>
+					</div>
+				</div>
+			</div>
+			
+			<script type="text/javascript">
+				function closeTaskForm(){
+					console.log("closeTaskForm() called...");
+					$('#templateForm\\:bonita7formCloseBtn').trigger('click');
+				};
+		
+				/**
+				*	Resize del form in modalità fullscreen
+				*/
+				function bonitaFormResize() {
+					var modalExternalMargin = 10*2*2;//raddoppio per non vedere le scrollBar
+					var modalHeaderPadding = 15*2;
+					var modalBodyPadding = 20*2;
+					var modalContentHeight = window.innerHeight - modalExternalMargin;
+					var modalContentWidth = window.innerWidth - modalExternalMargin;
+					var modalBodyHeight = modalContentHeight - $("#bonita7formModal .modal-header").height() -  modalHeaderPadding - modalBodyPadding;	
+					
+					$("#bonita7formModal .modal-content").height(modalContentHeight);
+					$("#bonita7formModal .modal-content").width(modalContentWidth);
+					$("#bonita7formModal .modal-body").height(modalBodyHeight);
+				}
+				
+				$( window ).resize(function() {
+					bonitaFormResize()
+				});
+				
+				bonitaFormResize();
+		</script>
+		</h:panelGroup>
+	</h:panelGroup>
+</ui:composition>   
+</html>

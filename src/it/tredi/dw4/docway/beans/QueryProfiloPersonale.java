@@ -7,11 +7,14 @@ import it.tredi.dw4.adapters.AdaptersConfigurationLocator;
 import it.tredi.dw4.adapters.ErrormsgFormsAdapter;
 import it.tredi.dw4.docway.doc.adapters.DocDocWayQueryFormsAdapter;
 import it.tredi.dw4.docway.model.ConfigStampaSegnatura;
+import it.tredi.dw4.docway.model.HomeContentDefinition;
 import it.tredi.dw4.docway.model.ExportPersonalizzato;
 import it.tredi.dw4.docway.model.Option;
 import it.tredi.dw4.docway.model.VaschettaCustom;
 import it.tredi.dw4.i18n.I18N;
 import it.tredi.dw4.utils.AppStringPreferenceUtil;
+import it.tredi.dw4.utils.Const;
+import it.tredi.dw4.utils.DocWayProperties;
 import it.tredi.dw4.utils.StringUtil;
 import it.tredi.dw4.utils.XMLUtil;
 
@@ -54,9 +57,9 @@ public class QueryProfiloPersonale extends DocWayQuery {
 	
 	private List<ExportPersonalizzato> esportazioni;
 	
-	public QueryProfiloPersonale() throws Exception {
-		this.formsAdapter = new DocDocWayQueryFormsAdapter(AdaptersConfigurationLocator.getInstance().getAdapterConfiguration("docwayService"));
-	}
+	private String titlesMode = ""; // modalita' di visualizzazione della lista titoli
+	
+	private HomeContentDefinition homeContent = new HomeContentDefinition(); // contenuto della home di docway
 	
 	@SuppressWarnings("unchecked")
 	public void init(Document dom) {
@@ -120,6 +123,15 @@ public class QueryProfiloPersonale extends DocWayQuery {
 			this.segnaturaInterno = new ConfigStampaSegnatura(AppStringPreferenceUtil.getAppStringPreference(prefs, AppStringPreferenceUtil.decodeAppStringPreference("portaSerialeSegnaturaInterno")));
 			this.segnaturaVarie = new ConfigStampaSegnatura(AppStringPreferenceUtil.getAppStringPreference(prefs, AppStringPreferenceUtil.decodeAppStringPreference("portaSerialeSegnaturaVarie")));
 		}
+		
+		// modalita' di visualizzazione delle pagine di titoli
+		this.titlesMode = XMLUtil.parseStrictAttribute(dom, "/response/titlesMode/@val");
+		
+		// caricamento della configurazione dell'home page di docway
+		this.homeContent.init(XMLUtil.createDocument(dom, "/response/homeContent"));
+		if ((this.homeContent.getType() == null || this.homeContent.getType().isEmpty())
+				&& (this.homeContent.getTitle() == null || this.homeContent.getTitle().isEmpty()))
+			this.homeContent.setTitle(I18N.mrs("dw4.documenti_recenti"));
     }	
 	
 	public DocDocWayQueryFormsAdapter getFormsAdapter() {
@@ -278,6 +290,26 @@ public class QueryProfiloPersonale extends DocWayQuery {
 		this.segnaturaVarie = segnaturaVarie;
 	}
 	
+	public String getTitlesMode() {
+		return titlesMode;
+	}
+
+	public void setTitlesMode(String titlesMode) {
+		this.titlesMode = titlesMode;
+	}
+
+	public HomeContentDefinition getHomeContent() {
+		return homeContent;
+	}
+
+	public void setHomeContent(HomeContentDefinition homeContent) {
+		this.homeContent = homeContent;
+	}
+
+	public QueryProfiloPersonale() throws Exception {
+		this.formsAdapter = new DocDocWayQueryFormsAdapter(AdaptersConfigurationLocator.getInstance().getAdapterConfiguration("docwayService"));
+	}
+	
 	@Override
 	public String queryPlain() throws Exception {
 		return null;
@@ -300,7 +332,7 @@ public class QueryProfiloPersonale extends DocWayQuery {
 				if (mailboxes.get(i) != null 
 							&& mailboxes.get(i).getPassword() != null
 							&& mailboxes.get(i).getPassword().equals(""))
-					mailboxes.get(i).setPassword("*PWD_SKIP*"); // TODO attualmente non utilizzato
+					mailboxes.get(i).setPassword(Const.PWD_SKIP_LABEL); // TODO attualmente non utilizzato
 			}
 			
 			// configurazioni di stampa per la segnatura
@@ -316,8 +348,12 @@ public class QueryProfiloPersonale extends DocWayQuery {
 				rights += ";0053=" + r_0053; // gestione endorser
 			rights += ";IWX01=" + r_iwx01; // disabilita iwx
 			
+			// aggiornamento in sessione della modalita' di caricamento dei titoli
+			if (titlesMode != null && !titlesMode.isEmpty())
+				setSessionAttribute("titlesmode", titlesMode);
+			
 			UserBean userBean = getUserBean();
-			formsAdapter.saveProfilo(rights, info, mailboxes, vaschetteCustom, esportazioni);	
+			formsAdapter.saveProfilo(rights, info, titlesMode, homeContent, mailboxes, vaschetteCustom, esportazioni);	
 			XMLDocumento response = formsAdapter.getDefaultForm().executePOST(userBean);
 			if (handleErrorResponse(response)) {
 				formsAdapter.fillFormsFromResponse(formsAdapter.getLastResponse()); //restore delle form
@@ -665,4 +701,18 @@ public class QueryProfiloPersonale extends DocWayQuery {
 	public List<ExportPersonalizzato> getEsportazioni() {
 		return esportazioni;
 	}
+	
+	/**
+	 * indica se visualizzare o meno il pulsante di switch della modalita' di visualizzazione dei titoli (da
+	 * lista a tabella o viceversa)
+	 * 
+	 * @return true se il pulsante deve essere visualizzato, false altrimenti
+	 */
+	public boolean isTitlesSwitchEnabled() {
+		if (DocWayProperties.readProperty("titles.mode.switch.enabled", "no").toLowerCase().equals("si"))
+			return true;
+		else
+			return false;
+	}
+	
 }

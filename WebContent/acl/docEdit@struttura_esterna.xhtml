@@ -21,7 +21,7 @@
 		
 		<h5 class="sub-header">
             <span class="strutture-esterne glyphicons-pro"></span>&#160;
-            <h:outputText value="#{i18n['acl.ins_struest']}" escape="false" />
+            <h:outputText value="#{i18n['acl.ins_struest']}" />
         </h5>
 		
 		<!-- messages: inizio -->
@@ -235,7 +235,7 @@
 	<ui:include src="./lookup.xhtml"> <ui:param name="pageBean" value="#{docEditStrutturaEsterna}"/></ui:include>
 	<ui:include src="./thvincolato.xhtml"> <ui:param name="pageBean" value="#{docEditStrutturaEsterna}"/></ui:include>
 
-	<h:inputTextarea value="#{docEditStrutturaEsterna.xml}" rendered="#{docEditStrutturaEsterna.debugMode}" styleClass="form-control" rows="10" />
+	<h:inputTextarea value="#{docEditStrutturaEsterna.xml}" rendered="#{docEditStrutturaEsterna.debugMode}" styleClass="form-control debug-textarea" rows="10" />
 </ui:define>
 
 </ui:composition>    

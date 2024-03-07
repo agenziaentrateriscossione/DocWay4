@@ -9,6 +9,8 @@ import it.tredi.dw4.docway.doc.adapters.DocDocWayDocumentFormsAdapter;
 import it.tredi.dw4.docwayproc.model.workflow.WorkflowEntity;
 import it.tredi.dw4.utils.DocWayProperties;
 
+import javax.faces.context.FacesContext;
+
 import org.dom4j.Document;
 
 public class ShowdocWorkflow extends Showdoc {
@@ -95,7 +97,7 @@ public class ShowdocWorkflow extends Showdoc {
 
 	@Override
 	public void reload() throws Exception {
-		super._reload("showdoc@workflow");
+		super._reload(FacesContext.getCurrentInstance().getExternalContext().getRequestContextPath() + "/docwayproc/showdoc@workflow");
 	}
 
 	@Override

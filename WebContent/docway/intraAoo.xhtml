@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" 
+	  xmlns:h="http://java.sun.com/jsf/html" 
+	  xmlns:ui="http://java.sun.com/jsf/facelets" 
+	  xmlns:f="http://java.sun.com/jsf/core"
+	  xmlns:p="http://xmlns.jcp.org/jsf/passthrough">
+<ui:composition>
+
+	<h:panelGroup id="intraAoo" layout="block">
+		<h:panelGroup rendered="#{bean.active}">
+			<!-- Modal -->
+			<div id="intraAooModal" class="modal fade in" aria-hidden="false" aria-labelledby="intraAooModalLabel" role="dialog" tabindex="-1" style="display: block;">
+			<!--div class="modal fade" id="intraAooModal" role="dialog" aria-labelledby="intraAooModalLabel" aria-hidden="true"-->
+				<div class="modal-dialog modal-lg">
+					<div class="modal-content jsf-modal">
+						<div class="modal-header">
+							<h:commandButton styleClass="close" title="#{i18n['acl.close']}" action="#{bean.close}" p:data-dismiss="modal"  value="&#215;" >
+			        			<f:ajax render="intraAoo"/>
+			        		</h:commandButton>
+			        		
+			        		<h4 class="modal-title" id="intraAooModalLabel">#{i18n['dw4.protocolla_su_altra_aoo']}</h4>
+						</div>
+						<div class="modal-body">
+						
+							<!-- messages: inizio -->
+							<h:panelGroup rendered="#{not empty facesContext.messageList}" layout="block" styleClass="alert alert-danger">
+								<h:messages styleClass="" id="validationMesseges" />
+							</h:panelGroup>
+							<h:inputHidden id="errorFieldIds" value="#{docEditArrivo.errorFieldIds}" />
+							<!-- messages: fine -->
+							
+							<div id="intraAoo_Fields">
+								<div class="form-group">
+									<label for="templateForm:intraAoo_newAoo" class="col-sm-2 control-label">#{i18n['acl.aoo']}</label>
+									<div class="col-sm-3">
+										<h:selectOneMenu id="intraAoo_newAoo" value="#{bean.selectedAoo}" styleClass="form-control" onchange="$('#templateForm\\:aooChangeBtn').trigger('click');">
+											<f:selectItems value="#{bean.aoos.entrySet()}" var="entry" itemValue="#{entry.key}" itemLabel="#{entry.value.descrizione}" />
+										</h:selectOneMenu>
+										<h:commandLink id="aooChangeBtn" action="#{bean.clearAssegnatarioAfterAooChange}" style="display:none;">
+											<f:ajax execute="@form" render="@form" />
+										</h:commandLink>
+									</div>
+								</div>
+								
+								<h:panelGroup rendered="#{!empty bean.defaultNomeUfficioRPA or !empty bean.defaultNomePersonaRPA}" layout="block" styleClass="form-group">
+									<div class="col-sm-9 col-sm-offset-2">
+										<div class="alert alert-info">
+											#{i18n['dw4.nel_caso_in_cui_non_venga_specificato_alcun_assegnatario_sulla_aoo_di_destinazione_verra_settato_come_propritario']}:
+											<h:outputText value="#{bean.defaultNomeUfficioRPA}" styleClass="font-weight-bold" />
+											<h:outputText rendered="#{!empty bean.defaultNomeUfficioRPA and !empty bean.defaultNomePersonaRPA}" value="&#160;-&#160;" />
+											<h:outputText value="#{bean.defaultNomePersonaRPA}" styleClass="font-weight-bold" />
+										</div>
+									</div>
+								</h:panelGroup>
+								
+								<ui:include src="./rifinterni.xhtml">
+						        	<ui:param name="rifintType" value="rpaIntraAoo" />
+						        	<ui:param name="customLabel" value="#{i18n['dw4.proprietario']}" />
+						        	<ui:param name="editable" value="true" /> <!-- TODO Da verificare in base alle diverse casistiche (hideIfInsInFascOrSottofasc, showIfInsInFascAndNotSottofasc, ecc. ) -->
+					        		<ui:param name="pageBean" value="#{bean}" />
+					        		<ui:param name="rifintBean" value="#{bean.assegnazioneRPA}" />
+					        		<ui:param name="refresh" value="@form"/>
+					        		<ui:param name="sendMailSelectedRifInterni" value="false"/> <!-- TODO Verifiare -->
+					        	</ui:include>
+							</div>
+							
+						</div>
+						<div class="modal-footer">
+							<h:commandLink styleClass="btn btn-primary openwaitmsg" action="#{bean.confirm}" value="#{i18n['dw4.protocolla']}" />
+							
+							<h:commandButton styleClass="btn btn-default" title="#{i18n['acl.close']}" action="#{bean.close}" p:data-dismiss="modal"  value="#{i18n['acl.close']}" >
+			        			<f:ajax render="intraAoo"/>
+			        		</h:commandButton>
+						</div>
+					</div>
+				</div>
+			</div>
+			<!--script type="text/javascript">
+			$('#intraAooModal').modal('show');
+			</script-->
+		</h:panelGroup>
+	</h:panelGroup>
+
+</ui:composition>   
+</html>

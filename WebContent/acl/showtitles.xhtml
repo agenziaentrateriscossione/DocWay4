@@ -16,20 +16,30 @@
 		<div class="btn-group">
 			<ui:remove><h:commandLink action="#{titles.esportaCSV}" onclick="if (!owmConfirm('Confermare l\'esportazione di #{titles.count} documenti?')) return false;" styleClass="btn btn-default">#{i18n['dw4.esportazione_csv']}<f:ajax execute="@form" render="@form" /></h:commandLink></ui:remove>
 			
-			<h:panelGroup rendered="#{titles.formsAdapter.funzionalitaDisponibili['abilitaEsportazioneCSVBase'] and titles.formsAdapter.funzionalitaDisponibili['abilitaEsportazioneCSVAvanzata']}">
-				<div class="btn-group">
-					<button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
-						#{i18n['dw4.esportazione_csv']} <span class="caret"></span>
-					</button>
-					<ul class="dropdown-menu">
-						<li><h:commandLink action="#{titles.esportaCSV}" value="#{i18n['dw4.base']}" onclick="return exportCSV(#{titles.count});" /></li>
-						<li><h:commandLink action="#{titles.startExportCSVAdvanced}" value="#{i18n['dw4.avanzata']}" onclick="return exportCSV(#{titles.count});" /></li>
-					</ul>
-				</div>
-			</h:panelGroup>
-			<h:commandLink rendered="#{!titles.formsAdapter.funzionalitaDisponibili['abilitaEsportazioneCSVBase'] and titles.formsAdapter.funzionalitaDisponibili['abilitaEsportazioneCSVAvanzata']}" action="#{titles.startExportCSVAdvanced}" styleClass="btn btn-default" onclick="return exportCSV(#{titles.count});">#{i18n['dw4.esportazione_csv']}</h:commandLink>
-            <h:commandLink rendered="#{titles.formsAdapter.funzionalitaDisponibili['abilitaEsportazioneCSVBase'] and !titles.formsAdapter.funzionalitaDisponibili['abilitaEsportazioneCSVAvanzata']}" action="#{titles.esportaCSV}" styleClass="btn btn-default" onclick="return exportCSV(#{titles.count});">#{i18n['dw4.esportazione_csv']}</h:commandLink>
-			
+			<h:panelGroup rendered="#{!titles.formsAdapter.elasticsearchEnabled}">
+				<h:panelGroup rendered="#{titles.formsAdapter.funzionalitaDisponibili['abilitaEsportazioneCSVBase'] and titles.formsAdapter.funzionalitaDisponibili['abilitaEsportazioneCSVAvanzata']}">
+					<div class="btn-group">
+						<button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+							#{i18n['dw4.esportazione_csv']} <span class="caret"></span>
+						</button>
+						<ul class="dropdown-menu">
+							<li><h:commandLink action="#{titles.esportaCSV}" value="#{i18n['dw4.base']}" onclick="return exportCSV(#{titles.count});" /></li>
+							<li><h:commandLink action="#{titles.startExportCSVAdvanced}" value="#{i18n['dw4.avanzata']}" onclick="return exportCSV(#{titles.count});" /></li>
+						</ul>
+					</div>
+				</h:panelGroup>
+				<h:commandLink rendered="#{!titles.formsAdapter.funzionalitaDisponibili['abilitaEsportazioneCSVBase'] and titles.formsAdapter.funzionalitaDisponibili['abilitaEsportazioneCSVAvanzata']}" action="#{titles.startExportCSVAdvanced}" styleClass="btn btn-default" onclick="return exportCSV(#{titles.count});">#{i18n['dw4.esportazione_csv']}</h:commandLink>
+	            <h:commandLink rendered="#{titles.formsAdapter.funzionalitaDisponibili['abilitaEsportazioneCSVBase'] and !titles.formsAdapter.funzionalitaDisponibili['abilitaEsportazioneCSVAvanzata']}" action="#{titles.esportaCSV}" styleClass="btn btn-default" onclick="return exportCSV(#{titles.count});">#{i18n['dw4.esportazione_csv']}</h:commandLink>
+            </h:panelGroup>
+            <h:panelGroup rendered="#{titles.formsAdapter.elasticsearchEnabled and titles.formsAdapter.funzionalitaDisponibili['abilitaEsportazioneCSVAvanzata']}">
+            	<h:commandLink action="#{titles.startExportCSVAdvanced}" styleClass="btn btn-default" onclick="return exportCSV(#{titles.count});">#{i18n['dw4.esportazione_csv']}</h:commandLink>
+            </h:panelGroup>
+            
+			<ui:include src="../azionimassive/startAzioniMassiveButtons.xhtml">
+				<ui:param name="pageBean" value="#{titles}" />
+				<ui:param name="titlesCount" value="#{titles.count}" />
+			</ui:include>
+            
 			<h:panelGroup rendered="#{titles.formsAdapter.funzionalitaDisponibili['showPrintRightsButton']}">
 				<div class="btn-group">
 					<button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
@@ -84,13 +94,13 @@
 					<ui:repeat var="title" value="#{titles.titles}" varStatus="status">
 						<tr>      
 							<td class="coltipo optional">
-								<h:commandLink action="#{titles.mostraDocumento}"  title="#{title.dbTable}" styleClass="openwaitmsg">
-									<span class="acl-tipo #{title.dbTable} glyphicons-pro"></span>
+								<h:commandLink action="#{titles.mostraDocumento}"  title="#{title.dbTable}#{(fn:endsWith(title.testo, 'INTEROP=si')) ? ' PEC' : ''}" styleClass="openwaitmsg">
+									<span class="acl-tipo #{title.dbTable} #{(fn:endsWith(title.testo, 'INTEROP=si')) ? 'interop' : ''} glyphicons-pro"></span>
 								</h:commandLink>
 							</td>
 							<td class="cologgetto essential">
 								<h:commandLink action="#{titles.mostraDocumento}" styleClass="openwaitmsg">
-									<div>#{title.testo}</div>
+									<div>#{(fn:endsWith(title.testo, 'INTEROP=si') or fn:endsWith(title.testo, 'INTEROP=no')) ? fn:substringBefore(title.testo, 'INTEROP=') : title.testo}</div>
 								</h:commandLink>
 							</td>
 						</tr>
@@ -100,7 +110,7 @@
 		</div>
 	</div>
 
-	<h:inputTextarea value="#{titles.xml}" rendered="#{titles.debugMode}" styleClass="form-control" rows="10" />
+	<h:inputTextarea value="#{titles.xml}" rendered="#{titles.debugMode}" styleClass="form-control debug-textarea" rows="10" />
 		
 	<ui:include src="./loadingbar.xhtml"><ui:param name="pageBean" value="#{titles}"/></ui:include>
 	<ui:include src="./loadingbar@stampe.xhtml"><ui:param name="pageBean" value="#{titles}"/></ui:include>

@@ -38,6 +38,7 @@ public class QueryPartenzaOFF extends QueryGlobale {
 	private void forzaRepertorio() {
 		setRepertori_multipli(true);
 		forceRepertorioSelected("OFF", "P");
+		setCurrentCustomFieldSection("partenza_OFF");
 		setPartenza(true);
 	}
 	

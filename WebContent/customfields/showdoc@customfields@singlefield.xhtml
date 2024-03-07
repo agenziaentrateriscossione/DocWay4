@@ -1,20 +1,21 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml"
-	xmlns:ui="http://java.sun.com/jsf/facelets"
-	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
-	xmlns:h="http://java.sun.com/jsf/html"
-	xmlns:f="http://java.sun.com/jsf/core"
-	xmlns:c="http://java.sun.com/jsp/jstl/core">
+	  xmlns:ui="http://java.sun.com/jsf/facelets"
+	  xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	  xmlns:h="http://java.sun.com/jsf/html"
+	  xmlns:f="http://java.sun.com/jsf/core"
+	  xmlns:c="http://java.sun.com/jsp/jstl/core"
+	  xmlns:tredi="http://www.3di.it/jsf/tredi" xmlns:p="http://xmlns.jcp.org/jsf/passthrough">
 <ui:composition>
 	
 	<h:panelGroup rendered="#{!empty fieldInstance.value}">
-		<div class="customfields-label">#{field.label}</div>
+		<div title="#{field.label}" class="customfields-label">#{field.label}</div>
 		<div class="customfields-value">
 		
 			<h:panelGroup rendered="#{!empty field.xslOut}">
 			
-				<!-- applicazione di un modello XSL al campo custo -->
-				<h:outputText value="#{fieldInstance.value}" escape="false" />
+				<!-- applicazione di un modello XSL al campo custom -->
+				<h:outputText value="#{fieldInstance.value}" escape="false" />&#160;
 				
 			</h:panelGroup>
 			<h:panelGroup rendered="#{empty field.xslOut}">
@@ -27,10 +28,36 @@
 					<pre><h:outputText value="#{fieldInstance.value}" /></pre>
 				</h:panelGroup>
 				
-				<h:panelGroup rendered="#{field.type eq 'text' or field.type eq 'select' or field.type eq 'radio' or field.type eq 'checkbox'}">
+				<h:panelGroup rendered="#{field.type eq 'text' or field.type eq 'select' or field.type eq 'radio' or field.type eq 'checkbox' or field.type eq 'numero_anno'}">
 					<h:outputText value="#{fieldInstance.value}" />
 				</h:panelGroup>
-			
+				
+				<h:panelGroup rendered="#{field.type eq 'html'}">
+					<div>
+						<h:inputTextarea id="htmlreadonlyfield" value="#{fieldInstance.value}" rows="20" cols="120" readonly="true" styleClass="form-control readonly html-readonly-field" />
+					</div>
+				</h:panelGroup>
+				
+				<h:panelGroup rendered="#{field.type eq 'gmap'}">
+					<div>
+						<script src='https://maps.googleapis.com/maps/api/js?v=3.exp'></script>
+						<div style='overflow:hidden;height:200px;width:500px;'>
+							<div id='gmap_canvas' style='height:200px;width:500px;'></div>
+							<div><small><a href="http://embedgooglemaps.com"></a></small></div>
+							<div><small><a href="http://googlemapsgenerator.com/">Google maps generator</a></small></div>
+							<style type="text/css">#gmap_canvas img{max-width:none!important;background:none!important}</style>
+						</div>
+						<script type='text/javascript'>
+							function init_map(){var myOptions = {zoom:3,center:new google.maps.LatLng(#{fieldInstance.value}),mapTypeId: google.maps.MapTypeId.ROADMAP};
+								map = new google.maps.Map(document.getElementById('gmap_canvas'), myOptions);
+								marker = new google.maps.Marker({map: map,position: new google.maps.LatLng(#{fieldInstance.value})});
+								google.maps.event.addListener(marker, 'click', function(){infowindow.open(map,marker);});infowindow.open(map,marker);}
+								google.maps.event.addDomListener(window, 'load', init_map);
+						</script>			
+					</div>
+					<div style="clear:both;"></div>
+				</h:panelGroup>
+
 			</h:panelGroup>
 			
 		</div>

@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" 
+	  xmlns:h="http://java.sun.com/jsf/html" 
+	  xmlns:ui="http://java.sun.com/jsf/facelets" 
+	  xmlns:f="http://java.sun.com/jsf/core">
+<ui:composition>
+
+	<h:panelGroup layout="block" id="motivazione">
+		<h:panelGroup id="rifiuto" rendered="#{bean.visible}">
+			<!-- Modal -->
+			<div id="rifiutoModal" class="modal fade in" aria-hidden="false" aria-labelledby="rifiutoModalLabel" role="dialog" tabindex="-1" style="display: block;">
+			<!--div class="modal fade" id="rifiutoModal" tabindex="-1" role="dialog" aria-labelledby="rifiutoModalLabel" aria-hidden="true"-->
+				<div class="modal-dialog">
+					<div class="modal-content jsf-modal">
+						<div class="modal-header">
+							<h:commandLink styleClass="close" action="#{bean.clearDocument}" value="&#215;">
+		                    	<f:ajax render="motivazione"/>
+		                   	</h:commandLink>
+							
+							<h4 class="modal-title" id="rifiutoModalLabel">#{i18n['dw4.motivazione_rifiuto_arrivo']}</h4>
+						</div>
+						<div class="modal-body">
+						
+							<fieldset>
+								<div class="form-group">
+									<label class="col-sm-2 control-label">#{i18n['dw4.motivazione']}</label>
+									<div class="col-sm-10">
+										<h:inputTextarea id="motivazione_text" value="#{bean.motivazione}" rows="4" cols="120" styleClass="#{ component.valid ? '' : 'invalidinput' } form-control" />
+									</div>
+								</div>
+							</fieldset>
+							
+						</div>
+						<div class="modal-footer">
+							<h:commandLink styleClass="btn btn-default" action="#{bean.clearDocument}"  value="#{i18n['acl.close']}">
+		                    	<f:ajax render="motivazione"/>
+		                   	</h:commandLink>
+		                   	<h:commandLink action="#{bean.confirmRifiuto}" styleClass="btn btn-primary openwaitmsg" value="#{i18n['acl.confirm']}">
+								<f:ajax execute="@form" render="@form"/>
+							</h:commandLink>
+						</div>
+					</div>
+				</div>
+			</div>
+			<!--h:outputScript>
+				$('#rifiutoModal').modal('show');
+			</h:outputScript-->
+		</h:panelGroup>
+	</h:panelGroup>
+
+</ui:composition>   
+</html>

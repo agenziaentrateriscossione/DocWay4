@@ -28,7 +28,7 @@
 		
 		<h5 class="sub-header">
 			<span class="doc-tipo-interno glyphicons-pro"></span>&#160;
-			<h:outputText value="#{docEditInternoProposta.doc.proposta.organo} - #{docEditInternoProposta.doc.proposta.text} (#{i18n['acl.insert']})" escape="false" />
+			<h:outputText value="#{docEditInternoProposta.doc.proposta.organo} - #{docEditInternoProposta.doc.proposta.text} (#{i18n['acl.insert']})" />
 		</h5>
 	
 		<!-- messages: inizio -->
@@ -169,6 +169,7 @@
 				        		<ui:param name="rifintBean" value="#{ docEditInternoProposta.doc.assegnazioneRPA }" />
 				        		<ui:param name="refresh" value="templateForm:rpa_Fields templateForm:rifintLookup templateForm:lookup templateForm:errormsg"/>
 				        		<ui:param name="customLabel" value="#{i18n['dw4.proponente']}"></ui:param>
+				        		<ui:param name="sendMailSelectedRifInterni" value="#{docEditInternoProposta.doc.sendMailSelectedRifInterni}"/>
 				        	</ui:include>
 			        	</h:panelGroup>
 			        	
@@ -183,6 +184,7 @@
 						        		<ui:param name="rifintBean" value="#{rif}" />
 						        		<ui:param name="refresh" value=":templateForm:cds_Fields :templateForm:rifintLookup :templateForm:lookup :templateForm:errormsg"/>
 						        		<ui:param name="multiple" value="true"/>
+						        		<ui:param name="sendMailSelectedRifInterni" value="#{docEditInternoProposta.doc.sendMailSelectedRifInterni}"/>
 						        	</ui:include>
 						        </ui:repeat>
 							</h:panelGroup>
@@ -196,6 +198,7 @@
 					        		<ui:param name="pageBean" value="#{docEditInternoProposta}" />
 					        		<ui:param name="rifintBean" value="#{docEditInternoProposta.doc.assegnazioneOP}" />
 					        		<ui:param name="refresh" value="templateForm:op_Fields templateForm:rifintLookup templateForm:lookup templateForm:errormsg"/>
+					        		<ui:param name="sendMailSelectedRifInterni" value="#{docEditInternoProposta.doc.sendMailSelectedRifInterni}"/>
 					        	</ui:include>
 				        	</h:panelGroup>
 				        </h:panelGroup>
@@ -212,6 +215,7 @@
 					        		<ui:param name="rifintBean" value="#{rif}" />
 					        		<ui:param name="refresh" value=":templateForm:cc_Fields :templateForm:rifintLookup :templateForm:lookup :templateForm:errormsg"/>
 					        		<ui:param name="multiple" value="true"/>
+					        		<ui:param name="sendMailSelectedRifInterni" value="#{docEditInternoProposta.doc.sendMailSelectedRifInterni}"/>
 					        	</ui:include>
 					        </ui:repeat>
 						</h:panelGroup>
@@ -280,8 +284,16 @@
 		<ui:include src="./lookup.xhtml"> <ui:param name="pageBean" value="#{docEditInternoProposta}"/></ui:include>
 		<ui:include src="./rifintLookup.xhtml"> <ui:param name="pageBean" value="#{docEditInternoProposta}"/></ui:include>
 		<ui:include src="./showthes.xhtml"> <ui:param name="pageBean" value="#{docEditInternoProposta}"/></ui:include>
+		<!-- template per upload e la decompressione di archivi ZIP -->
+		<ui:param name="currentBean" value="#{docEditInternoProposta}" />
+		<ui:include src="./docUploadArchive.xhtml">
+			<ui:param name="bean" value="#{docWayUploadArchive}"/>
+			<ui:param name="beanDoc" value="#{currentBean}" />
+			<ui:param name="doc" value="#{currentBean.doc}" />
+			<ui:param name="enableFiles" value="#{currentBean.docInformaticiEnabled and currentBean.formsAdapter.funzionalitaDisponibili['addFile']}" />
+		</ui:include>
 
-		<h:inputTextarea value="#{docEditInternoProposta.xml}" rendered="#{docEditInternoProposta.debugMode}" styleClass="form-control" rows="10" />	
+		<h:inputTextarea value="#{docEditInternoProposta.xml}" rendered="#{docEditInternoProposta.debugMode}" styleClass="form-control debug-textarea" rows="10" />
 	</div>
 </ui:define>
 

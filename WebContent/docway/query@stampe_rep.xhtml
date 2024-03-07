@@ -163,7 +163,7 @@
 
 	<ui:include src="./loadingbar@ctrl_gestione.xhtml"><ui:param name="pageBean" value="#{queryStampe_rep}"/></ui:include>
 	
-	<h:inputTextarea value="#{queryStampe_rep.xml}" rendered="#{queryStampe_rep.debugMode}" styleClass="form-control" rows="10" />		
+	<h:inputTextarea value="#{queryStampe_rep.xml}" rendered="#{queryStampe_rep.debugMode}" styleClass="form-control debug-textarea" rows="10" />
 </ui:define>
     
 </ui:composition>    

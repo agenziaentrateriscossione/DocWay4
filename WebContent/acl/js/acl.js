@@ -1,11 +1,15 @@
 $(document).ready(function() {
 	disableCopyPasteOnPassword();
+	
+	evaluateAlfaRight();
 });
 
 $(window).load(function() {
-	jsf.ajax.addOnEvent(function(data) { 
+	jsf.ajax.addOnEvent(function(data) {
 		if (data.status == 'success') {
 			disableCopyPasteOnPassword();
+			
+			evaluateAlfaRight();
 		}
 	});
 });
@@ -17,6 +21,31 @@ function disableCopyPasteOnPassword() {
 	$('input[type=password]').bind("cut copy paste",function(e) {
         e.preventDefault();
     });
+}
+
+function evaluateAlfaRight() {
+	$('.form-control.alfa-right').change(function() {
+		//alert("alfa-right onchange...");
+		var alfaValue = $(this).val();
+		//alert("alfa-value = " + alfaValue);
+		
+		var spanClass = 'ban glyphicons-pro icon';
+		var liClass = 'block-item-disabled';
+		if (alfaValue && alfaValue != '' && alfaValue != '*NHL*') {
+			spanClass = 'ok glyphicons-pro icon';
+			liClass = 'block-item-enabled';
+		}
+		
+		// aggiornamento dell'icona associata al campo alfa
+		var spanElement = $(this).parent().find('span');
+		if (spanElement)
+			spanElement.attr('class', spanClass);
+		
+		// aggiornamento dello stile del pulsante
+		var liElement = $(this).closest('li')
+		if (liElement)
+			liElement.attr('class', liClass);
+	});
 }
 
 function displayOpenwaitmsg() {
@@ -42,14 +71,14 @@ function lunchboxOpen(lunchID, label) {
  */
 function lunchboxClose(lunchID, label) {
 	$("#lunch_" + lunchID).hide();
-	
+
 	$("#clasp_" + lunchID + " a").attr("href", "javascript:lunchboxOpen('" + lunchID + "', '" + label.replace('\'', '\\\'') + "');");
 	var newImage = $("#clasp_" + lunchID + " span").attr("class").replace("glyphicon-minus", "glyphicon-plus");
 	$("#clasp_" + lunchID + " span").attr("class", newImage);
 }
 
 /**
- * in inserimento/modifica PEC aggiornamento del campo PORTA in base alla selezione del PROTOCOLLO 
+ * in inserimento/modifica PEC aggiornamento del campo PORTA in base alla selezione del PROTOCOLLO
  */
 function changeHostPort(protocolElement, portElement) {
 	var protocol = $('#' + protocolElement + ' option:selected').val();
@@ -69,7 +98,7 @@ function changeHostPort(protocolElement, portElement) {
 			port = '465';
 		else if (protocol == 'smtp-tls')
 			port = '587';
-		
+
 		if (port != '')
 			$('#' + portElement).val(port);
 	}
@@ -89,8 +118,22 @@ function openCloseHistory() {
 		$('#hideHistoryLink').hide();
 		$('#showHistoryLink').show();
 	}
-	
+
 	return false;
+}
+
+/**
+ * seleziona/deselezione opzione per assegnare all'ufficio in CC nelle mailBox
+ */
+function checkTutti(btnId, msg) {
+	var alertForTutti = $("#templateForm\\:cc_alertForTutti").val();
+	if (alertForTutti != undefined && alertForTutti == 'true') {
+		var ret = confirm(msg);
+		if (ret == true) {
+			$("#templateForm\\:cc_alertForTutti").val('false');
+		}
+	}
+	$('.' + btnId).trigger('click');
 }
 
 /**

@@ -23,12 +23,14 @@
 						<div class="modal-body">
 							
 							<div id="cc_Fields">
-								<div class="form-group">
-									<label for="templateForm:cc_sendMailRifInterniCheck" class="col-sm-2 control-label">#{i18n['dw4.invia_email_di_notifica']}</label>
-									<div class="col-sm-1">
-										<h:selectBooleanCheckbox value="#{bean.fascicolo.sendMailRifInterni}" id="cc_sendMailRifInterniCheck" styleClass="#{ component.valid ? '' : 'invalidinput' }" />
+								<h:panelGroup rendered="#{!bean.fascicolo.sendMailSelectedRifInterni}">
+									<div class="form-group">
+										<label for="templateForm:cc_sendMailRifInterniCheck" class="col-sm-2 control-label">#{i18n['dw4.invia_email_di_notifica']}</label>
+										<div class="col-sm-1">
+											<h:selectBooleanCheckbox value="#{bean.fascicolo.sendMailRifInterni}" id="cc_sendMailRifInterniCheck" styleClass="#{ component.valid ? '' : 'invalidinput' }" />
+										</div>
 									</div>
-								</div>
+								</h:panelGroup>
 								<ui:repeat id="rifint_cc_list" var="rif" value="#{bean.fascicolo.assegnazioneCC}" varStatus="indice">
 									<ui:include src="./rifinterni.xhtml">
 							        	<ui:param name="rifintType" value="cc" />
@@ -39,6 +41,7 @@
 						        		<ui:param name="refresh" value="@form"/>
 						        		<ui:param name="multiple" value="true"/>
 						        		<ui:param name="popup" value="extraSmallLabel"/>
+						        		<ui:param name="sendMailSelectedRifInterni" value="#{bean.fascicolo.sendMailSelectedRifInterni}"/>
 						        	</ui:include>
 						        </ui:repeat>
 							</div>

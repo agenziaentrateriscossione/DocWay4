@@ -5,12 +5,12 @@ import java.util.List;
 
 import org.dom4j.Document;
 
-import it.tredi.dw4.utils.XMLDocumento;
 import it.tredi.dw4.adapters.ErrormsgFormsAdapter;
 import it.tredi.dw4.docway.beans.DocEditModifyPartenza;
 import it.tredi.dw4.docway.model.Option;
 import it.tredi.dw4.docway.model.equitalia.ExtraDCP;
 import it.tredi.dw4.i18n.I18N;
+import it.tredi.dw4.utils.XMLDocumento;
 import it.tredi.dw4.utils.XMLUtil;
 
 public class DocEditModifyPartenzaDCPP extends DocEditModifyPartenza {
@@ -114,7 +114,7 @@ public class DocEditModifyPartenzaDCPP extends DocEditModifyPartenza {
 	 * @return false se tutti i campo obbligatori sono stati compilati, true se anche un solo campo obbligatorio non e' compilato
 	 */
 	public boolean checkRequiredField() {
-		boolean result = super.checkRequiredField();
+		boolean result = super.checkRequiredField(true);
 		
 		// controllo sul campo numero nav
 		if (getExtraDCP().getNumero_nav() == null || getExtraDCP().getNumero_nav().length() == 0) {

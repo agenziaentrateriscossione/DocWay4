@@ -7,6 +7,10 @@ a {
 	color: #3f88c7;
 }
 
+a[data-href] {
+	cursor: pointer;
+}
+
 .navbar-default {
 	background-image: none;
 	background-color: #456191;
@@ -403,8 +407,9 @@ legend {
 	opacity: 0.15;
 }
 
-.showdoc-legend.showdoc-titolo-sezione {
-	font-weight: normal;	
+.title.showdoc-titolo-sezione {
+	margin-top: 20px;
+	/*font-style: italic;*/	
 }
 
 dl.dl-horizontal {
@@ -674,7 +679,8 @@ dl.dl-horizontal {
 
 a > .glyphicon-info-sign, a.smartactions-link, 
 a:hover > .glyphicon-info-sign, a:focus > .glyphicon-info-sign, 
-a:hover.smartactions-link, a:focus.smartactions-link {
+a:hover.smartactions-link, a:focus.smartactions-link, 
+a.smartactions-link > .filetype {
 	color: #3f88c7;	
 }
 
@@ -742,6 +748,19 @@ h4.modal-title {
 	color: #cc7878;
 }
 
+.uppercase{
+	text-transform: uppercase;
+}
+
+a.close {
+	padding: 1px 6px;
+	border: 1px solid #a9a9a9;
+	border-radius: 4px;
+	background-color: #e8e8e8;
+	font-size: 21px;
+	font-weight: bold;
+}
+
 /*############################### PERSONALIZZAZIONI DOCWAY PER LE STAMPE - INIZIO ###############################*/
 
 @media print {
@@ -758,3 +777,262 @@ h4.modal-title {
 }
 
 /*############################### PERSONALIZZAZIONI DOCWAY PER LE STAMPE - FINE ###############################*/
+
+.autoclosemsg .modal-header, .autoclosemgs .modal-footer {
+	display: none;
+}
+
+.autoclosemsg .modal-dialog {
+	margin: 200px auto 0 auto;
+}
+
+.autoclosemsg .jumbotron {
+	margin-bottom: 0;
+	background-color: #fff;
+	padding: 10px 30px;
+	text-align: center;
+}
+
+.autoclosemsg .jumbotron p {
+	font-size: 16px;
+	margin: 0;
+}
+
+/*############################### NAVBAR - MENU' DI TERZO LIVELLO (O SUPERIORE) - INIZIO ###############################*/
+
+.dropdown-submenu {
+	position: relative;
+}
+
+.dropdown-submenu>.dropdown-menu {
+	top: 0;
+	left: 100%;
+	margin-top: -6px;
+	margin-left: -1px;
+	-webkit-border-radius: 0 6px 6px 6px;
+	-moz-border-radius: 0 6px 6px;
+	border-radius: 0 6px 6px 6px;
+}
+
+.dropdown-submenu:hover>.dropdown-menu {
+	display: block;
+}
+
+.dropdown-submenu>a:after {
+	display: block;
+	content: " ";
+	float: right;
+	width: 0;
+	height: 0;
+	border-color: transparent;
+	border-style: solid;
+	border-width: 5px 0 5px 5px;
+	border-left-color: #ccc;
+	margin-top: 5px;
+	margin-right: -10px;
+}
+
+.dropdown-submenu:hover>a:after {
+	border-left-color: #fff;
+}
+
+.dropdown-submenu.pull-left {
+	float: none;
+}
+
+.dropdown-submenu.pull-left>.dropdown-menu {
+	left: -100%;
+	margin-left: 10px;
+	-webkit-border-radius: 6px 0 6px 6px;
+	-moz-border-radius: 6px 0 6px 6px;
+	border-radius: 6px 0 6px 6px;
+}
+
+/*############################### NAVBAR - MENU' DI TERZO LIVELLO (O SUPERIORE) - FINE ###############################*/
+
+.campocustom-content-iframe {
+	border: 1px solid #ccc;
+    margin: 5px 0;
+    padding: 5px;
+    width: 100%;
+    height: 350px;
+    overflow: auto;
+}
+/*############################### DELEGHE ############################################################################*/
+
+.navbar-default .navbar-nav > li > a.user-login-delega {
+	color: #C0E9F9;
+}
+
+.vaschetta-delega-bg {
+	background-color: #C0E9F9 !important;
+}
+
+/*############################### CLASSI COLORE TEXT ##################################################################*/
+.text-red {
+	color: red;
+}
+
+.text-green {
+	color: green;
+}
+.text-black {
+	color: black !important;
+}
+.text-white {
+	color: white;
+}
+.text-red {
+	color: red;
+}
+.text-yellow {
+	color: #DAA520;
+}
+.not-allowed {
+	cursor: not-allowed;
+}
+
+.loadingbar-message.loadingbar-exceptions {
+	font-weight: bold;
+	color: #a94442;
+}
+
+/*tiommi aggiunto tooltip personalizzato per copia in clipboard*/
+/* crea l'attributo per il tooltip custom (utilizzare passthrough JSF2.2) */
+[data-tooltip] {
+  position: relative;
+  z-index: 2;
+  cursor: pointer;
+}
+/* il tooltip è nascosto di default */
+[data-tooltip]:before,
+[data-tooltip]:after {
+  visibility: hidden;
+  -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=0)";
+  filter: progid: DXImageTransform.Microsoft.Alpha(Opacity=0);
+  opacity: 0;
+  pointer-events: none;
+}
+/* posizionamento del tooltip */
+[data-tooltip]:before {
+  position: absolute;
+  bottom: 150%;
+  left: 50%;
+  margin-bottom: 5px;
+  margin-left: -80px;
+  padding: 7px;
+  width: auto;
+  -webkit-border-radius: 3px;
+  -moz-border-radius: 3px;
+  border-radius: 3px;
+  background-color: #000;
+  background-color: hsla(0, 0%, 20%, 0.9);
+  color: #fff;
+  content: attr(data-tooltip);
+  text-align: center;
+  font-size: 14px;
+  line-height: 1.2;
+}
+/* triangolo che punta al link */
+[data-tooltip]:after {
+  position: absolute;
+  bottom: 150%;
+  left: 50%;
+  margin-left: -5px;
+  width: 0;
+  border-top: 5px solid #000;
+  border-top: 5px solid hsla(0, 0%, 20%, 0.9);
+  border-right: 5px solid transparent;
+  border-left: 5px solid transparent;
+  content: " ";
+  font-size: 0;
+  line-height: 0;
+}
+/* mostra il tooltip */
+[data-tooltip]:hover:before,
+[data-tooltip]:hover:after {
+  visibility: visible;
+  -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=100)";
+  filter: progid: DXImageTransform.Microsoft.Alpha(Opacity=100);
+  opacity: 1;
+}
+
+.no-deleghe {
+	margin-top: 20px;
+	margin-bottom: 20px;
+	margin-left: 10px;
+}
+
+.modal-dialog.large {
+	width: 800px;
+}
+
+th.colDelegheOptions {
+	width: 75px;
+}
+
+.va-middle {
+	vertical-align: middle !important;
+}
+
+.deleghe-table {
+	margin-top: 20px;
+}
+
+th.colDelegheSostituto {
+	width: 150px;
+}
+
+.btn-delega {
+	margin: 2px;
+}
+
+.big-text {
+	font-size: 17px;
+}
+
+.input-group-btn > .btn.disabled {
+	font-size: 11px;
+	padding: 2.5px 6px;
+	cursor: not-allowed;
+}
+
+.col5 {
+	width: 5%;
+}
+
+.col10 {
+	width: 10%;
+}
+
+.col15 {
+	width: 15%;
+}
+
+.col25 {
+	width: 25%;
+}
+
+.no-br-2-buttons {
+	min-width: 75px;
+}
+
+.menu-button-with-options > .main-btn {
+	width: 116px;
+	border-right: 0px;
+}
+
+.menu-button-with-options > .select-btn {
+	width: 25px;
+	border-left: 0px;
+}
+
+.btn-collapse {
+	color: #FFFFFF !important;
+	font-size: 12px !important;
+	opacity: 1 !important;
+}
+
+.dropdown-toggle.firma {
+	box-shadow: none !important;
+}

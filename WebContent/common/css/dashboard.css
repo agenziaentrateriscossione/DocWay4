@@ -21,10 +21,44 @@ body {
 /*
  * Sidebar
  */
-
 /* Hide for mobile, show later */
-.sidebar {
-  display: none;
+@media (max-width: 988px) {
+  .sidebar {
+    /*display: none;*/
+    top: 70px !important;
+    padding-left: 20px !important;
+    padding-right: 20px !important;
+    padding-bottom: 0 !important;
+  }
+  .sidebar > .vaschette-container > .panel > .panel-body .column {
+    width: 32%;
+    display: inline-block;
+  }
+  .sidebar > .vaschette-container > .panel > .panel-body .column.separator {
+    display: none;
+  }
+  .vaschetta-sm-inline {
+    width: 32%;
+    display: inline-block !important;
+  }
+  .vaschetta-link > a {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .vaschetta-con-select {
+    white-space: nowrap;
+  }
+  .responsive-hidden {
+    display: none;
+  }
+  .vaschette-container {
+    padding-top: 15px;
+  }
+  .main {
+    top: 70px !important;
+    padding-top: 15px !important;
+  }
 }
 @media (min-width: 989px) {
   .sidebar {

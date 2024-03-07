@@ -17,23 +17,26 @@
 							styleClass="btn btn-primary openwaitmsg">
 					#{i18n['acl.save']}
 				</h:commandLink>
-				
-				<h:commandLink rendered="#{docEditModifyPartenzaFTR.doc.bozza}" id="protocoolaBtn" 
-							action="#{docEditModifyPartenzaFTR.protocollaDoc}" styleClass="btn #{(!docEditModifyPartenzaFTR.formsAdapter.funzionalitaDisponibili['disabilitaBozzeInModifica']) ? 'btn-default' : 'btn-primary'} openwaitmsg">
+				<h:commandLink rendered="#{docEditModifyPartenzaFTR.doc.bozza and docEditModifyPartenzaFTR.formsAdapter.funzionalitaDisponibili['protocollaRight'] and docEditModifyPartenzaFTR.doc.protocollabile}" id="protocollaBtn" action="#{docEditModifyPartenzaFTR.protocollaDoc}"
+							styleClass="btn #{(!docEditModifyPartenzaFTR.formsAdapter.funzionalitaDisponibili['disabilitaBozzeInModifica']) ? 'btn-default' : 'btn-primary'} openwaitmsg #{(!docEditModifyPartenzaFTR.formsAdapter.funzionalitaDisponibili['docClassifEreditabile'] and (docEditModifyPartenzaFTR.doc.classif eq null or docEditModifyPartenzaFTR.doc.classif.cod eq null or empty docEditModifyPartenzaFTR.doc.classif.cod)) ? 'disabled' : ''}"
+							disabled="#{!docEditModifyPartenzaFTR.formsAdapter.funzionalitaDisponibili['docClassifEreditabile'] and (docEditModifyPartenzaFTR.doc.classif eq null or docEditModifyPartenzaFTR.doc.classif.cod eq null or empty docEditModifyPartenzaFTR.doc.classif.cod)}">
 					#{i18n['dw4.protocolla']}
 				</h:commandLink>
-				
-				<h:commandLink action="#{docEditModifyPartenzaFTR.clearDocument}" 
-							onclick="IwxRuntime.Client.resetJobIWX();" styleClass="btn btn-default">
+				<h:commandLink rendered="#{!docEditModifyPartenzaFTR.formsAdapter.funzionalitaDisponibili['trasformaByDocEdit']}" action="#{docEditModifyPartenzaFTR.clearDocument}"
+						onclick="IwxRuntime.Client.resetJobIWX();" styleClass="btn btn-default">
 					#{i18n['acl.back']}
-				</h:commandLink>	
+				</h:commandLink>
+				<h:commandLink rendered="#{docEditModifyPartenzaFTR.formsAdapter.funzionalitaDisponibili['trasformaByDocEdit']}" action="#{docEditModifyPartenzaFTR.clearTrasformaRep}"
+							onclick="IwxRuntime.Client.resetJobIWX();" styleClass="btn btn-default">
+					#{i18n['acl.cancel']}
+				</h:commandLink>
 			</div>
 		</div>
 		<!-- toolbar: fine -->
 		
 		<h5 class="sub-header">
 			<span class="doc-tipo-custom glyphicons-pro money fattura"></span>&#160;
-			<h:outputText value="#{docEditModifyPartenzaFTR.docEditTitle}" escape="false" />
+			<h:outputText value="#{docEditModifyPartenzaFTR.docEditTitle}" />
 		</h5>
 	
 		<!-- messages: inizio -->
@@ -212,128 +215,11 @@
 								<!-- TODO interoperabilita' webservices - destinatari interni -->
 							</h:panelGroup>
 							
-							<h:panelGroup rendered="#{ (docEditModifyPartenzaFTR.formsAdapter.funzionalitaDisponibili['abilitaModificaDatiDiProtocollo'] or docEditModifyPartenzaFTR.doc.bozza) and docEditModifyPartenzaFTR.copyIfNotStandardRep }" layout="block" id="destinatari_holder">
-								<ui:repeat id="docEditDestinatari" var="rifEsterno" value="#{docEditModifyPartenzaFTR.doc.rif_esterni}" varStatus="indice">
-									<div class="form-group">
-						               	<label class="col-sm-2 control-label emphasis-title"><span>#{i18n['dw4.destinatario']}</span></label>
-						               	<div class="col-sm-4">
-						               		<div class="input-group">
-						               			<div class="btn-group">
-						               				<h:commandLink action="#{docEditModifyPartenzaFTR.deleteRifEst}" title="#{i18n['dw4.elimina_istanza']}" styleClass="btn btn-default">
-											 			<f:param name="rifEsterno" value="#{rifEsterno}"/>
-											 			<f:ajax execute="@form" render=":templateForm:destinatari_holder :templateForm:errormsg"/>
-											 			<span class="glyphicon glyphicon-minus"></span>
-													</h:commandLink>
-													<h:commandLink action="#{docEditModifyPartenzaFTR.addRifEst}" title="#{i18n['dw4.aggiungi_istanza']}" styleClass="btn btn-default">
-											 			<f:param name="rifEsterno" value="#{rifEsterno}"/>
-										 				<f:ajax execute="@form" render=":templateForm:destinatari_holder :templateForm:errormsg"/>
-											 			<span class="glyphicon glyphicon-plus"></span>
-													</h:commandLink>
-						               			</div>
-						               		</div>
-										</div>
-									</div>
-									
-									<div class="form-group">
-										<label for="templateForm:docEditDestinatari:#{indice.index}:nomeDestinatario_input" class="col-sm-2 control-label requiredField"><span>* #{i18n['dw4.destinatario']}</span></label>
-										<div class="col-sm-4">
-											<ui:include src="./lookupRepeatField.xhtml">
-							        			<ui:param name="id" value="nomeDestinatario" />
-							        			<ui:param name="field" value="#{rifEsterno.nome}" />
-								        		<ui:param name="element" value="#{rifEsterno}" />
-								        		<ui:param name="bean" value="#{docEditModifyPartenzaFTR}" />
-								        		<ui:param name="action" value="lookupDestinatario"/>
-								        		<ui:param name="clearaction" value="clearLookupDestinatario"/>
-								        		<ui:param name="title" value="#{i18n['dw4.lookup_destinatario']}"/>
-								        		<ui:param name="styleclass" value="#{ component.valid ? '' : 'invalidinput' } form-control"/>
-								        		<ui:param name="refresh" value="@form"/>
-								        		<ui:param name="notConstraint" value="#{docEditModifyPartenzaFTR.formsAdapter.funzionalitaDisponibili['destinatariNonVincolati']}"/>
-								        	</ui:include>
-								        </div>
-								        <h:panelGroup rendered="#{docEditModifyPartenzaFTR.formsAdapter.funzionalitaDisponibili['abilitaGestioneSAP']}" >
-											<label for="templateForm:docEditDestinatari:#{indice.index}:codsap_destinatario" class="col-sm-3 control-label"><span>#{i18n['acl.sapcod']}</span></label>
-											<div class="col-sm-2">
-												<h:inputText id="codsap_destinatario" value="#{rifEsterno.cod_SAP}" styleClass="form-control" disabled="true" readonly="true" />
-											</div>
-										</h:panelGroup>
-									</div>
-									
-									<div class="form-group">
-										<label for="templateForm:docEditDestinatari:#{indice.index}:firmatario_input" class="col-sm-2 control-label"><span>#{i18n['dw4.alla_ca']}</span></label>
-										<div class="col-sm-4">
-											<ui:include src="./lookupRepeatField.xhtml">
-							        			<ui:param name="id" value="firmatario" />
-								        		<ui:param name="field" value="#{rifEsterno.referente.nominativo}" />
-								        		<ui:param name="element" value="#{rifEsterno}" />
-								        		<ui:param name="bean" value="#{docEditModifyPartenzaFTR}" />
-								        		<ui:param name="action" value="lookupCorteseAttenzione"/>
-								        		<ui:param name="clearaction" value="clearLookupCorteseAttenzione"/>
-								        		<ui:param name="title" value="#{i18n['dw4.lookup_ca']}"/>
-								        		<ui:param name="styleclass" value="form-control"/>
-								        		<ui:param name="refresh" value="@form"/>
-								        		<ui:param name="notConstraint" value="#{!docEditModifyPartenzaFTR.formsAdapter.funzionalitaDisponibili['firmatarioVincolato']}"/>
-								        	</ui:include>
-								        </div>
-								        <label for="templateForm:docEditDestinatari:#{indice.index}:ccCheck" class="col-sm-1 control-label"><span>#{i18n['dw4.CC']}</span></label>
-										<div class="col-sm-1">
-											<h:selectBooleanCheckbox id="ccCheck" value="#{rifEsterno.copia_conoscenza}" />
-										</div>
-										<label for="templateForm:docEditDestinatari:#{indice.index}:firmatarioRole" class="col-sm-1 control-label"><span>#{i18n['acl.role']}</span></label>
-										<div class="col-sm-2">
-											<h:inputText id="firmatarioRole" value="#{rifEsterno.referente.ruolo}" styleClass="form-control" />
-										</div>
-									</div>
-									
-									<h:panelGroup rendered="#{empty docEditModifyPartenzaFTR.hideDivs or not fn:contains(docEditModifyPartenzaFTR.hideDivs, 'indirizzo_fax')}">
-										<div class="form-group">
-											<label for="templateForm:docEditDestinatari:#{indice.index}:address" class="col-sm-2 control-label"><span>#{i18n['acl.address']}</span></label>
-											<div class="col-sm-4">
-												<h:inputText id="address" value="#{rifEsterno.indirizzo}" styleClass="form-control" disabled="true" readonly="true" />
-											</div>
-										</div>
-										<div class="form-group">
-											<label class="col-sm-2 control-label"><span>#{i18n['dw4.email_cert']}</span></label>
-											<div class="col-sm-2">
-												<h:inputText id="emailCert" value="#{rifEsterno.email_certificata}" styleClass="form-control" disabled="true" readonly="true" />
-											</div>
-											<label class="col-sm-1 control-label"><span>#{i18n['acl.email']}</span></label>
-											<div class="col-sm-2">
-												<h:inputText id="email" value="#{rifEsterno.email}" styleClass="form-control" disabled="true" readonly="true" />
-											</div>
-											<label class="col-sm-2 control-label"><span>#{i18n['acl.fax']}</span></label>
-											<div class="col-sm-2">
-												<h:panelGroup rendered="#{!docEditModifyPartenzaFTR.formsAdapter.funzionalitaDisponibili['abilitaLookupFaxArrivo']}">
-													<h:inputText id="fax" value="#{rifEsterno.fax}" styleClass="form-control" />
-												</h:panelGroup>
-												<h:panelGroup rendered="#{docEditModifyPartenzaFTR.formsAdapter.funzionalitaDisponibili['abilitaLookupFaxArrivo']}">
-													<ui:include src="./lookupRepeatField.xhtml">
-									        			<ui:param name="id" value="fax" />
-										        		<ui:param name="field" value="#{rifEsterno.fax}" />
-										        		<ui:param name="element" value="#{rifEsterno}" />
-										        		<ui:param name="bean" value="#{docEditModifyPartenzaFTR}" />
-										        		<ui:param name="action" value="lookupFax"/>
-										        		<ui:param name="clearaction" value="clearLookupFax"/>
-										        		<ui:param name="title" value="#{i18n['dw4.lookup_fax']}"/>
-										        		<ui:param name="styleclass" value="form-control"/>
-										        		<ui:param name="refresh" value=":templateForm:destinatari_holder :templateForm:lookup :templateForm:errormsg"/>
-										        	</ui:include>
-												</h:panelGroup>
-											</div>
-										</div>
-										<div class="form-group">
-											<label class="col-sm-2 control-label"><span>#{i18n['dw4.piva']}</span></label>
-											<div class="col-sm-2">
-												<h:inputText id="piva" value="#{rifEsterno.partita_iva}" styleClass="readonlyinput form-control" disabled="true" readonly="true" />
-											</div>
-											<label class="col-sm-1 control-label"><span>#{i18n['dw4.cf']}</span></label>
-											<div class="col-sm-2">
-												<h:inputText id="cf" value="#{rifEsterno.codice_fiscale}" styleClass="readonlyinput form-control" disabled="true" readonly="true" />
-											</div>
-										</div>
-									</h:panelGroup>
-									
-									<!-- TODO Interoperabilita' WebServices (interopWSDestInterni) -->
-								</ui:repeat>
+							<h:panelGroup rendered="#{ (docEditModifyPartenzaFTR.formsAdapter.funzionalitaDisponibili['abilitaModificaDatiDiProtocollo'] or docEditModifyPartenzaFTR.doc.bozza) and docEditModifyPartenzaFTR.copyIfNotStandardRep }">
+								<ui:include src="./docEdit@rifesterni@partenza.xhtml">
+									<ui:param name="disableDestinatariLiberi" value="#{true}" />
+									<ui:param name="bean" value="#{docEditModifyPartenzaFTR}" />
+					        	</ui:include>
 							</h:panelGroup>
 						</div>
 						
@@ -360,7 +246,7 @@
 					        		<ui:param name="id" value="voceindice" />
 					        		<ui:param name="field" value="#{docEditModifyPartenzaFTR.doc.voce_indice.text}" />
 					        		<ui:param name="bean" value="#{docEditModifyPartenzaFTR}" />
-					        		<ui:param name="confirmOnAction" value="#{(docEditModifyPartenzaFTR.formsAdapter.funzionalitaDisponibili['rifInterniModificabiliDaVoceIndice']) ? i18n['dw4.se_si_seleziona_una_voce_di_indice_potrebbero_essere_sovrascritti_gli_assegnatari_del_documento_Continuare'] : ''}" />
+					        		<ui:param name="confirmOnAction" value="#{(docEditModifyPartenzaFTR.formsAdapter.funzionalitaDisponibili['rifInterniModificabiliDaVoceIndice']) ? i18n['dw4.se_si_seleziona_una_voce_di_indice_potrebbero_essere_aggiornati_gli_assegnatari_del_documento_Continuare'] : ''}" />
 					        		<ui:param name="action" value="lookupVoceIndice"/>
 					        		<ui:param name="clearaction" value="clearLookupVoceIndice"/>
 					        		<ui:param name="title" value="#{i18n['dw4.lookup_voce_indice']}"/>
@@ -378,7 +264,7 @@
 				        		<ui:param name="beanDoc" value="#{docEditModifyPartenzaFTR.doc}" />
 				        		<ui:param name="actionTitolario" value="thVincolatoTitolarioClassificazione"/>
 				        		<ui:param name="actionGerarchia" value="gerarchiaTitolarioClassificazione"/>
-				        		<ui:param name="refresh" value="templateForm:classif_holder templateForm:showthes templateForm:errormsg"/>
+				        		<ui:param name="refresh" value="templateForm:classif_holder templateForm:showthes templateForm:errormsg templateForm:protocollaBtn"/>
 				        		<ui:param name="readOnlyConservazione" value="false" />
 				        		<ui:param name="optionalField" value="#{docEditModifyPartenzaFTR.formsAdapter.funzionalitaDisponibili['docClassifEreditabile']}" />
 				        	</ui:include>
@@ -398,6 +284,10 @@
 						<ui:param name="bean" value="#{docEditModifyPartenzaFTR}" />
 						<ui:param name="titoloBlocco" value="#{i18n['dw4.informazioni_della_fattura']}" />
 						<ui:param name="titoloTotale" value="#{i18n['dw4.totale_fattura']}" />
+		        	</ui:include>
+		        	
+		        	<ui:include src="../customfields/docedit@customfields.xhtml">
+						<ui:param name="bean" value="#{docEditModifyPartenzaFTR}" />
 		        	</ui:include>
 				
 					<h:panelGroup rendered="#{docEditModifyPartenzaFTR.docIsNotInFascicolo and docEditModifyPartenzaFTR.doc.bozza}">
@@ -484,12 +374,20 @@
 		</div>
 		<!-- scheda edit: fine -->
 		
-		<h:inputTextarea value="#{docEditModifyPartenzaFTR.xml}" rendered="#{docEditModifyPartenzaFTR.debugMode}" styleClass="form-control" rows="10" />
+		<h:inputTextarea value="#{docEditModifyPartenzaFTR.xml}" rendered="#{docEditModifyPartenzaFTR.debugMode}" styleClass="form-control debug-textarea" rows="10" />
 			
 		<ui:include src="./lookup.xhtml"> <ui:param name="pageBean" value="#{docEditModifyPartenzaFTR}"/></ui:include>
 		<ui:include src="./rifintLookup.xhtml"> <ui:param name="pageBean" value="#{docEditModifyPartenzaFTR}"/></ui:include>
 		<ui:include src="./showthes.xhtml"> <ui:param name="pageBean" value="#{docEditModifyPartenzaFTR}"/></ui:include>
 		<ui:include src="./thvincolato.xhtml"> <ui:param name="pageBean" value="#{docEditModifyPartenzaFTR}"/></ui:include>
+		<!-- template per upload e la decompressione di archivi ZIP -->
+		<ui:param name="currentBean" value="#{docEditModifyPartenzaFTR}" />
+		<ui:include src="./docUploadArchive.xhtml">
+			<ui:param name="bean" value="#{docWayUploadArchive}"/>
+			<ui:param name="beanDoc" value="#{currentBean}" />
+			<ui:param name="doc" value="#{currentBean.doc}" />
+			<ui:param name="enableFiles" value="#{currentBean.docInformaticiEnabled and currentBean.formsAdapter.funzionalitaDisponibili['addFile']}" />
+		</ui:include>
 	</div>
 </ui:define>
 

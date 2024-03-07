@@ -6,7 +6,10 @@ import java.util.List;
 import javax.faces.context.FacesContext;
 import javax.faces.event.ValueChangeEvent;
 
-import it.tredi.dw4.utils.XMLDocumento;
+import org.dom4j.Document;
+import org.dom4j.Element;
+import org.dom4j.Node;
+
 import it.tredi.dw4.acl.adapters.AclQueryFormsAdapter;
 import it.tredi.dw4.acl.model.Sede;
 import it.tredi.dw4.adapters.AdaptersConfigurationLocator;
@@ -18,11 +21,8 @@ import it.tredi.dw4.utils.Const;
 import it.tredi.dw4.utils.DateUtil;
 import it.tredi.dw4.utils.Logger;
 import it.tredi.dw4.utils.StringUtil;
+import it.tredi.dw4.utils.XMLDocumento;
 import it.tredi.dw4.utils.XMLUtil;
-
-import org.dom4j.Document;
-import org.dom4j.Element;
-import org.dom4j.Node;
 
 public class AclHome extends AclQuery {
 	
@@ -47,12 +47,17 @@ public class AclHome extends AclQuery {
 	
 	// caricamento di rif interni/esterni da DocWay
 	private String searchKeyRif = "";
+	
 	private String valueRif = ""; 
 	private String codAmmAooRestriction = "";
 	
 	//Valore di inizializzazione del campo del model
 	private String lookupFieldVal = ""; 
 	private String xverbInsPersona = "";
+	
+	// caricamento di risorse di ACL da URL esterno (prettyFaces)
+	private String aclAlias = ""; // alias o chiave di ricerca
+	private String aclValue = ""; // nrecord o valore da ricercare
 	
 	// nome dell'archivio di ACL
 	private String aclDb = "";
@@ -217,7 +222,14 @@ public class AclHome extends AclQuery {
 				extra = addQueryFieldOR(extra, "[UD,/xw/@UdType]=\"comune\"");
 				extra = addQueryFieldOR(extra, addQueryRestriction("[UD,/xw/@UdType]=\"gruppo\"", DIRITTO_INT_AOO_RESTRICTION, "[gruppi_codammaoo]=\"" + CODSEDE_KEY + "\"", codSede));
 			}
-			
+
+			// mbernardini 02/05/2017 : ottimizzazione da eseguire solo in caso di integrazione con elasticsearch disattivata (<?THEN?> non implementato su Elasticsearch)
+			if (!this.formsAdapter.isElasticsearchEnabled()) {
+				// mbernardini 24/03/2017 : ottimizzata la query su ricerca home acl in base alle indicazioni di rtirabassi
+				// teoricamente in questo punto sia query che extra dovrebbero risultare valorizzati
+				if (!this.query.isEmpty())
+					this.query = "(" + this.query + ") <?THEN?>  [?SEL]=<?SEL0?>";
+			}
 			this.query = addQueryFieldAND(this.query, encapsulateQuery(extra));
 			
 			// Imposto l'ordinamento dei risultati
@@ -486,6 +498,22 @@ public class AclHome extends AclQuery {
 		this.adminAcl = adminAcl;
 	}
 	
+	public String getAclAlias() {
+		return aclAlias;
+	}
+
+	public void setAclAlias(String aclAlias) {
+		this.aclAlias = aclAlias;
+	}
+
+	public String getAclValue() {
+		return aclValue;
+	}
+
+	public void setAclValue(String aclValue) {
+		this.aclValue = aclValue;
+	}
+	
 	/**
 	 * Verifico se all'interno dei campi di tipo data sono stati impostati dei valori corretti
 	 * @return true se anche un solo campo non è compilato correttamente, false altrimenti
@@ -605,6 +633,48 @@ public class AclHome extends AclQuery {
 		}
 		else {
 			// TODO gestione del messaggio di errore
+			return null;
+		}
+	}
+	
+	
+	/**
+	 * Caricamento di un record di ACL da URL (prettyFaces)
+	 * @return
+	 * @throws Exception
+	 */
+	public String load() throws Exception {
+		try {
+			if (aclAlias != null && !aclAlias.equals("")
+					&& aclValue != null && !aclValue.equals("")) {
+				String q = "";
+
+				// verifica della presenza di alias multipli separati da virgola (,)
+				String[] aliases = aclAlias.split(",");
+				if (aliases != null && aliases.length > 0) {
+					for (int i=0; i<aliases.length; i++) {
+						if (aliases[i] != null && !aliases[i].equals("")) {
+							if (!q.equals("")) // la ricerca su alias multipli viene fatta in OR
+								q = q + " OR ";
+							q = q + "([" + aliases[i] + "]=\"" + aclValue + "\")";
+						}
+					}
+				}
+
+				// nel caso in cui sia stato specificato un database tramite
+				// prettyfaces si aggiorna il formsAdapter
+				if (aclDb != null && !aclDb.equals(""))
+					formsAdapter.getDefaultForm().addParam("db", aclDb);
+				
+				formsAdapter.getDefaultForm().addParam("auditVisualizzazione", "true");
+
+				return this.queryPlain(q);
+			}
+			return null;
+		}
+		catch (Throwable t) {
+			handleErrorResponse(ErrormsgFormsAdapter.buildErrorResponse(t));
+			getFormsAdapter().fillFormsFromResponse(getFormsAdapter().getLastResponse()); //restore delle form
 			return null;
 		}
 	}

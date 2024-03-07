@@ -18,17 +18,21 @@
 					#{i18n['acl.save']}
 				</h:commandLink>
 				
-				<h:commandLink action="#{docEditModifyInternoProposta.clearDocument}" 
-							onclick="IwxRuntime.Client.resetJobIWX();" styleClass="btn btn-default">
+				<h:commandLink rendered="#{!docEditModifyInternoProposta.formsAdapter.funzionalitaDisponibili['trasformaByDocEdit']}" action="#{docEditModifyInternoProposta.clearDocument}"
+						onclick="IwxRuntime.Client.resetJobIWX();" styleClass="btn btn-default">
 					#{i18n['acl.back']}
-				</h:commandLink>	
+				</h:commandLink>
+				<h:commandLink rendered="#{docEditModifyInternoProposta.formsAdapter.funzionalitaDisponibili['trasformaByDocEdit']}" action="#{docEditModifyInternoProposta.clearTrasformaRep}"
+							onclick="IwxRuntime.Client.resetJobIWX();" styleClass="btn btn-default">
+					#{i18n['acl.cancel']}
+				</h:commandLink>
 			</div>
 		</div>
 		<!-- toolbar: fine -->
 		
 		<h5 class="sub-header">
 			<span class="doc-tipo-interno glyphicons-pro"></span>&#160;
-			<h:outputText value="#{docEditModifyInternoProposta.doc.proposta.organo} - #{docEditModifyInternoProposta.doc.proposta.text} (#{i18n['acl.modify']})" escape="false" />
+			<h:outputText value="#{docEditModifyInternoProposta.doc.proposta.organo} - #{docEditModifyInternoProposta.doc.proposta.text} (#{i18n['acl.modify']})" />
 		</h5>
 
 		<!-- messages: inizio -->
@@ -129,7 +133,7 @@
 						        		<ui:param name="id" value="voceindice" />
 						        		<ui:param name="field" value="#{docEditModifyInternoProposta.doc.voce_indice.text}" />
 						        		<ui:param name="bean" value="#{docEditModifyInternoProposta}" />
-						        		<ui:param name="confirmOnAction" value="#{(docEditModifyInternoProposta.formsAdapter.funzionalitaDisponibili['rifInterniModificabiliDaVoceIndice']) ? i18n['dw4.se_si_seleziona_una_voce_di_indice_potrebbero_essere_sovrascritti_gli_assegnatari_del_documento_Continuare'] : ''}" />
+						        		<ui:param name="confirmOnAction" value="#{(docEditModifyInternoProposta.formsAdapter.funzionalitaDisponibili['rifInterniModificabiliDaVoceIndice']) ? i18n['dw4.se_si_seleziona_una_voce_di_indice_potrebbero_essere_aggiornati_gli_assegnatari_del_documento_Continuare'] : ''}" />
 						        		<ui:param name="action" value="lookupVoceIndice"/>
 						        		<ui:param name="clearaction" value="clearLookupVoceIndice"/>
 						        		<ui:param name="title" value="#{i18n['dw4.lookup_voce_indice']}"/>
@@ -190,10 +194,12 @@
 	        			</div>
 	        			
 	        			<div class="form-group">
+							<h:panelGroup rendered="#{ !docEditModifyInternoProposta.doc.sendMailSelectedRifInterni }">
 			        		<label for="templateForm:sendMailRifInterniCheck" class="col-sm-2 control-label">#{i18n['dw4.invia_email_di_notifica']}</label>
 							<div class="col-sm-1">
 								<h:selectBooleanCheckbox value="#{docEditModifyInternoProposta.doc.sendMailRifInterni}" id="sendMailRifInterniCheck" />
 							</div>
+							</h:panelGroup>
 							<h:panelGroup rendered="#{docEditModifyInternoProposta.formsAdapter.funzionalitaDisponibili['cds']}">
 								<label for="templateForm:showCDSSectionCheck" class="col-sm-2 control-label">#{i18n['dw4.conferenza_di_servizi']}</label>
 								<div class="col-sm-1">
@@ -213,6 +219,7 @@
 				        		<ui:param name="rifintBean" value="#{ docEditModifyInternoProposta.doc.assegnazioneRPA }" />
 				        		<ui:param name="refresh" value="templateForm:rpa_Fields templateForm:rifintLookup templateForm:lookup templateForm:errormsg"/>
 				        		<ui:param name="customLabel" value="#{i18n['dw4.proponente']}" />
+				        		<ui:param name="sendMailSelectedRifInterni" value="#{docEditModifyInternoProposta.doc.sendMailSelectedRifInterni}"/>
 				        	</ui:include>
 			        	</h:panelGroup>
 			        	
@@ -227,6 +234,7 @@
 						        		<ui:param name="rifintBean" value="#{rif}" />
 						        		<ui:param name="refresh" value=":templateForm:cds_Fields :templateForm:rifintLookup :templateForm:lookup :templateForm:errormsg"/>
 						        		<ui:param name="multiple" value="true"/>
+						        		<ui:param name="sendMailSelectedRifInterni" value="#{docEditModifyInternoProposta.doc.sendMailSelectedRifInterni}"/>
 						        	</ui:include>
 						        </ui:repeat>
 							</h:panelGroup>
@@ -240,6 +248,7 @@
 					        		<ui:param name="pageBean" value="#{docEditModifyInternoProposta}" />
 					        		<ui:param name="rifintBean" value="#{docEditModifyInternoProposta.doc.assegnazioneOP}" />
 					        		<ui:param name="refresh" value="templateForm:op_Fields templateForm:rifintLookup templateForm:lookup templateForm:errormsg"/>
+					        		<ui:param name="sendMailSelectedRifInterni" value="#{docEditModifyInternoProposta.doc.sendMailSelectedRifInterni}"/>
 					        	</ui:include>
 				        	</h:panelGroup>
 				        </h:panelGroup>
@@ -256,6 +265,7 @@
 					        		<ui:param name="rifintBean" value="#{rif}" />
 					        		<ui:param name="refresh" value=":templateForm:cc_Fields :templateForm:rifintLookup :templateForm:lookup :templateForm:errormsg"/>
 					        		<ui:param name="multiple" value="true"/>
+					        		<ui:param name="sendMailSelectedRifInterni" value="#{docEditModifyInternoProposta.doc.sendMailSelectedRifInterni}"/>
 					        	</ui:include>
 					        </ui:repeat>
 						</h:panelGroup>
@@ -319,11 +329,19 @@
 		</div>
 		<!-- scheda edit: fine -->
 	
-		<h:inputTextarea value="#{docEditModifyInternoProposta.xml}" rendered="#{docEditModifyInternoProposta.debugMode}" styleClass="form-control" rows="10" />
+		<h:inputTextarea value="#{docEditModifyInternoProposta.xml}" rendered="#{docEditModifyInternoProposta.debugMode}" styleClass="form-control debug-textarea" rows="10" />
 			
 		<ui:include src="./lookup.xhtml"> <ui:param name="pageBean" value="#{docEditModifyInternoProposta}"/></ui:include>
 		<ui:include src="./rifintLookup.xhtml"> <ui:param name="pageBean" value="#{docEditModifyInternoProposta}"/></ui:include>
-		<ui:include src="./showthes.xhtml"> <ui:param name="pageBean" value="#{docEditModifyInternoProposta}"/></ui:include>	
+		<ui:include src="./showthes.xhtml"> <ui:param name="pageBean" value="#{docEditModifyInternoProposta}"/></ui:include>
+		<!-- template per upload e la decompressione di archivi ZIP -->
+		<ui:param name="currentBean" value="#{docEditModifyInternoProposta}" />
+		<ui:include src="./docUploadArchive.xhtml">
+			<ui:param name="bean" value="#{docWayUploadArchive}"/>
+			<ui:param name="beanDoc" value="#{currentBean}" />
+			<ui:param name="doc" value="#{currentBean.doc}" />
+			<ui:param name="enableFiles" value="#{currentBean.docInformaticiEnabled and currentBean.formsAdapter.funzionalitaDisponibili['addFile']}" />
+		</ui:include>	
 	</div>
 </ui:define>
 

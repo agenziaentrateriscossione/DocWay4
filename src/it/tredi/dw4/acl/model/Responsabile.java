@@ -18,7 +18,9 @@ public class Responsabile extends XmlEntity {
     private String daCopiaConoscenza;
     private String daDestinatario;
     private String daMittente;
-	
+    
+    private boolean respRuolo = false;
+    
 	public Responsabile() {}
     
 	public Responsabile(String xmlResponsabile) throws Exception {
@@ -35,6 +37,12 @@ public class Responsabile extends XmlEntity {
     	this.daCopiaConoscenza	= XMLUtil.parseAttribute(domResponsabile, "responsabile/@daCopiaConoscenza");
     	this.daDestinatario		= XMLUtil.parseAttribute(domResponsabile, "responsabile/@daDestinatario");
     	this.daMittente			= XMLUtil.parseAttribute(domResponsabile, "responsabile/@daMittente");
+    	
+    	if (this.cod_ruolo != null && !this.cod_ruolo.isEmpty())
+    		this.respRuolo = true;
+    	else 
+    		this.respRuolo = false;
+    	
         return this;
     }
     
@@ -52,7 +60,7 @@ public class Responsabile extends XmlEntity {
     	if (null != this.daMittente) 		params.put(prefix+".@daMittente", this.daMittente);
     	return params;
     }
-    
+        
     public String getCod_uff() {
 		return cod_uff;
 	}
@@ -123,6 +131,14 @@ public class Responsabile extends XmlEntity {
 
 	public String getDaMittente() {
 		return daMittente;
+	}
+	
+	public boolean isRespRuolo() {
+		return respRuolo;
+	}
+
+	public void setRespRuolo(boolean respRuolo) {
+		this.respRuolo = respRuolo;
 	}
 	
 }

@@ -29,6 +29,11 @@
 						<h:commandLink action="#{showdocOrgano.remove}" onclick="if (!owmConfirm('#{i18n['acl.deleteconfirm']}')) return false;" styleClass="btn btn-danger" >	
 							<span>#{i18n['acl.delete']}</span>
 						</h:commandLink>
+						
+						<ui:include src="../azionimassive/startAzioniMassiveButtons.xhtml">
+		                    <ui:param name="pageBean" value="#{showdocOrgano}" />
+		                </ui:include>
+						
 						<h:commandLink action="#{showdocOrgano.inserisciSedutaSospesa}" title="#{i18n['acl.inserisci_seduta_per_proposte_sospese']}" styleClass="btn btn-primary openwaitmsg">
 							<small><span>#{i18n['acl.ins_seduta_prop_sos']}</span></small>
 						</h:commandLink>
@@ -50,7 +55,7 @@
 
 			<h5 class="sub-header" title="#{showdocOrgano.organo.nome}">
 				<span class="organo glyphicons-pro"></span>&#160;
-				<h:outputText value="#{showdocOrgano.organo.nome}" escape="false" />
+				<h:outputText value="#{showdocOrgano.organo.nome}" />
 			</h5>
 
 			<!-- scheda show: inizio -->
@@ -70,7 +75,7 @@
 						
 						<h:panelGroup rendered="#{!empty showdocOrgano.organo.classif}">
 							<dt>#{i18n['dw4.classif']} #{i18n['dw4.verbale']}</dt>
-							<dd><h:outputText value="#{showdocOrgano.organo.classif.cod} - #{showdocOrgano.organo.classif.text}" escape="false"><f:converter converterId="ClassifConverter"/><f:attribute name="classifFormat" value="#{bean.classifFormat}" /></h:outputText></dd>
+							<dd><h:outputText value="#{showdocOrgano.organo.classif.cod} - #{showdocOrgano.organo.classif.text}" ><f:converter converterId="ClassifConverter"/><f:attribute name="classifFormat" value="#{bean.classifFormat}" /></h:outputText></dd>
 						</h:panelGroup>
 					</dl>
 				</div>
@@ -206,6 +211,6 @@
 			<!-- scheda show: fine -->
 		</div>
 
-		<h:inputTextarea value="#{showdocOrgano.xml}" rendered="#{showdocOrgano.debugMode}" styleClass="form-control" rows="10" />
+		<h:inputTextarea value="#{showdocOrgano.xml}" rendered="#{showdocOrgano.debugMode}" styleClass="form-control debug-textarea" rows="10" />
 	</ui:define>
 </ui:composition>

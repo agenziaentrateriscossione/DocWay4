@@ -1,5 +1,6 @@
 package it.tredi.dw4.servlet;
 
+import it.tredi.dw4.acl.beans.UserBean;
 import it.tredi.dw4.adapters.AdaptersConfigurationLocator;
 import it.tredi.dw4.adapters.AdaptersConfigurationLocator.AdapterConfig;
 import it.tredi.dw4.adapters.FormAdapter;
@@ -17,6 +18,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.FileItemFactory;
@@ -64,6 +66,26 @@ public class FileUploadServlet extends HttpServlet {
 				}
 			}
 			
+			String login = "";
+			String matricola = "";
+			HttpSession session = request.getSession();
+			if (session != null && session.getAttribute("userBean") != null) {
+				// recupero dei dati dell'utente dalla sessione
+				UserBean user = (UserBean) session.getAttribute("userBean");
+				login = user.getLogin();
+				matricola = user.getMatricola();
+				
+				if (params.get("login") == null || params.get("login").isEmpty())
+					params.put("login", login);
+				if (params.get("matricola") == null || params.get("matricola").isEmpty())
+					params.put("matricola", matricola);
+			}
+			else {
+				// tentativo di recupeor dell'utente tramite parametri dalla request
+				login = params.get("login");
+				matricola = params.get("matricola");
+			}
+			
 			// verifico se si tratta di un upload di file temporaneo tramite
 			// i parametri inviati nella request
 			if (params.containsKey("tempUpload") && params.get("tempUpload").equals("true"))
@@ -96,7 +118,7 @@ public class FileUploadServlet extends HttpServlet {
 					
 				}
 				
-				uploadResponse = redirectRequestToService(params.get("login"), params.get("matricola"), params, fileItem); // es. ritorno: <--remotefile:11.tiff;-->
+				uploadResponse = redirectRequestToService(login, matricola, params, fileItem); // es. ritorno: <--remotefile:11.tiff;-->
 				Logger.info("FileUploadServlet - Response: " + uploadResponse);
 			}
 			else {
@@ -107,7 +129,7 @@ public class FileUploadServlet extends HttpServlet {
 				boolean deleteTempDir = true;
 				if (params.get("keepUserDir") != null && params.get("keepUserDir").equals("true"))
 					deleteTempDir = false;
-				File fileTemp = UploadFileUtil.createUserTempFile(fileItem, params.get("login"), params.get("matricola"), deleteTempDir);
+				File fileTemp = UploadFileUtil.createUserTempFile(fileItem, login, matricola, deleteTempDir);
 				uploadResponse = "<--tempfile:" + fileTemp.getName() + ";-->";
 			}
 			

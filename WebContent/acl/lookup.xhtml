@@ -53,7 +53,7 @@
 										<ui:repeat var="title" value="#{pageBean.lookup.titoli}" varStatus="status">
 											<tr>
 												<td class="essential">
-													<h:commandLink action="#{pageBean.lookup.confirm}" value="#{title.testo}">
+													<h:commandLink action="#{pageBean.lookup.confirm}" onclick="saveScrollbarPosition()" value="#{title.testo}">
 														<f:ajax execute="@form" render="@form" />
 													</h:commandLink>
 												</td>
@@ -66,7 +66,7 @@
 								<div style="margin-top:15px;" class="alert alert-info">#{i18n['acl.emptysearch']}</div>
 							</h:panelGroup>
 				        	
-					       	<h:inputTextarea value="#{pageBean.lookup.xml}" rendered="#{pageBean.debugMode}" styleClass="form-control" rows="10"/>
+					       	<h:inputTextarea value="#{pageBean.lookup.xml}" rendered="#{pageBean.debugMode}" styleClass="form-control debug-textarea" rows="10"/>
 						</div>
 						<div class="modal-footer">
 							<h:commandButton styleClass="btn btn-default" title="#{i18n['acl.close']}" action="#{pageBean.lookup.close}" data-dismiss="modal"  value="#{i18n['acl.close']}" >

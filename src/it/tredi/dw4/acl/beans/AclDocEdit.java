@@ -1,15 +1,15 @@
 package it.tredi.dw4.acl.beans;
 
-import it.tredi.dw4.utils.XMLDocumento;
+import java.util.List;
+
+import org.dom4j.Document;
+
 import it.tredi.dw4.adapters.DocEditFormsAdapter;
 import it.tredi.dw4.adapters.ErrormsgFormsAdapter;
 import it.tredi.dw4.addons.BaseAddOn;
 import it.tredi.dw4.model.XmlEntity;
 import it.tredi.dw4.utils.Const;
-
-import java.util.List;
-
-import org.dom4j.Document;
+import it.tredi.dw4.utils.XMLDocumento;
 
 public abstract class AclDocEdit extends AclPage {
 	
@@ -143,7 +143,7 @@ public abstract class AclDocEdit extends AclPage {
 	public void callLookupComune(XmlEntity entity, String campi, String value) throws Exception{
 		String aliasName 	= "comuni_nome";
 		String aliasName1 	= "";
-		String titolo 		= "xml,/comune/@nome &quot;^ (&quot; xml,/comune/@prov &quot;^)&quot; &quot;^ ~&quot; XML,/comune/@cap";
+		String titolo 		= "xml,/comune/@nome \"^ (\" xml,/comune/@prov \"^)\" \"^ ~\" XML,/comune/@cap";
 		String ord 			= "xml(xpart:/comune/@nome),xml(xpart:/comune/@cap)";
 		String xq			= "";
 		String db 			= "";
@@ -155,7 +155,7 @@ public abstract class AclDocEdit extends AclPage {
 	public void callLookupCap(XmlEntity entity, String campi, String value) throws Exception{
 		String aliasName 	= "comuni_cap";
 		String aliasName1 	= "";
-		String titolo 		= "xml,/comune/@nome &quot;^ (&quot; xml,/comune/@prov &quot;^)&quot; &quot;^ ~&quot; XML,/comune/@cap";
+		String titolo 		= "xml,/comune/@nome \"^ (\" xml,/comune/@prov \"^)\" \"^ ~\" XML,/comune/@cap";
 		String ord 			= "xml(xpart:/comune/@nome),xml(xpart:/comune/@cap)";
 		String xq			= "";
 		String db 			= "";
@@ -174,6 +174,65 @@ public abstract class AclDocEdit extends AclPage {
 		
 		callThesaurus(entity, numTitles4Page, fieldName, radice, relazione, chiave, insRight, delRight, windowTitle, value);
 	}
-
+	
+	/**
+	 * Chiamata a Lookup su Rif Interni su ACL
+	 * @throws Exception
+	 */
+	protected void callRifintLookup(XmlEntity entity, String aliasName, String aliasName1, String titolo, String ord, String campi, String xq, String db, String newRecord, String value) throws Exception {
+		try {
+			AclRifintLookup aclRifintLookup = new AclRifintLookup();
+			setRifintLookup(aclRifintLookup);
+			aclRifintLookup.setModel(entity);
+			
+			XMLDocumento response = this._rifintLookup(aliasName, aliasName1, titolo, ord, campi, xq, db, newRecord, value);
+			if (handleErrorResponse(response, Const.MSG_LEVEL_ERROR)) {
+				getFormsAdapter().fillFormsFromResponse(getFormsAdapter().getLastResponse()); //restore delle form
+				return;
+			}
+			aclRifintLookup.getFormsAdapter().fillFormsFromResponse(response);
+			aclRifintLookup.init(response.getDocument());
+			
+			if(aclRifintLookup.getTitoli().size() == 1 && value != null && value.length() > 0){
+				aclRifintLookup.confirm(aclRifintLookup.getTitoli().get(0));
+			}
+			else {
+				aclRifintLookup.setActive(true);
+			}
+		}
+		catch (Throwable t) {
+			handleErrorResponse(ErrormsgFormsAdapter.buildErrorResponse(t));
+			getFormsAdapter().fillFormsFromResponse(getFormsAdapter().getLastResponse()); //restore delle form
+			return;			
+		}
+	}
+	
+	/**
+	 * Chiamata a lookup su rif interni
+	 * @return
+	 * @throws Exception
+	 */
+	private XMLDocumento _rifintLookup(String aliasName, String aliasName1, String titolo, String ord, String campi, String xq, String db, String newRecord, String value) throws Exception {
+		getRifintLookup().cleanFields(campi);
+		getFormsAdapter().rifintLookup(aliasName, aliasName1, titolo, ord, campi, xq, db, newRecord, value);
+		
+		XMLDocumento response = getFormsAdapter().getIndexForm().executePOST(getUserBean());
+		getFormsAdapter().fillFormsFromResponse(getFormsAdapter().getLastResponse()); //restore delle form partendo dall'xml dell'ultima richiesta effettuata sulla pagina di docedit
+		return response;
+	}
+	
+	/**
+	 * Pulizia di campi di RifintLookup
+	 * @param campi stringa contenente i campi da ripulire
+	 * @param entity entita' sulla quale si sta operando
+	 * @return
+	 * @throws Exception
+	 */
+	public String clearFieldRifint(String campi, XmlEntity entity) throws Exception{
+		AclRifintLookup aclRifintLookup = new AclRifintLookup();
+		aclRifintLookup.setModel(entity);
+		aclRifintLookup.cleanFields(campi);
+		return null;
+	}
 
 }

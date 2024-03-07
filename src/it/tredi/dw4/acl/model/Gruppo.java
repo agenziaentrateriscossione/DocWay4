@@ -81,10 +81,10 @@ public class Gruppo extends XmlEntity {
     	params.put(prefix + ".@nrecord", this.nrecord);
     	params.put(prefix + ".nome", this.nome);
     	params.put(prefix + ".descrizione_gr", this.descrizione);
-    	params.put(prefix + ".@id", this.id);
-    	params.put(prefix + ".@cod_amm", this.cod_amm);
-    	params.put(prefix + ".@cod_aoo", this.cod_aoo);
-    	params.put(prefix + ".@cod_responsabile", this.cod_responsabile);
+    	params.put(prefix + ".@id", (this.id != null) ? this.id.trim() : null);
+    	params.put(prefix + ".@cod_amm", (this.cod_amm != null) ? this.cod_amm.trim() : null);
+    	params.put(prefix + ".@cod_aoo", (this.cod_aoo != null) ? this.cod_aoo.trim() : null);
+    	params.put(prefix + ".@cod_responsabile", (this.cod_responsabile != null) ? this.cod_responsabile.trim() : null);
     	for ( Iterator<?> i = this.rights.entrySet().iterator() ; i.hasNext() ; ) {  
     	    @SuppressWarnings("rawtypes")
 			Map.Entry e = (Map.Entry) i.next();  
@@ -254,7 +254,17 @@ public class Gruppo extends XmlEntity {
 	public String modifyRight(){
 		Right right = (Right) FacesContext.getCurrentInstance().getExternalContext().getRequestMap().get("right");
 		boolean newVal = !right.getSelected();
-		right.setValue(String.valueOf(newVal));
+		
+		// mbernardini 04/09/2017 : migliorata la modifica di diritti di tipo 'alfa'
+		if (right.getType() != null && right.getType().equals("alfa")) {
+			if (right.getValue().equals("") || right.getValue().equals("*NHL*"))
+				newVal = false;
+			else
+				newVal = true;
+		}
+		else
+			right.setValue(String.valueOf(newVal));
+
 		if (newVal){
 			List<Oncheck> operation = right.getOnchecks();
 			for (Iterator<Oncheck> iterator = operation.iterator(); iterator.hasNext();) {

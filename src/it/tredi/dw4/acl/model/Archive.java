@@ -23,6 +23,9 @@ public class Archive extends XmlEntity {
 	private String port = "";
 	private boolean canDelete = true;
 	
+	// mbernardini 11/01/2017 : aggiunto nuovo attributo
+	private String consolidamento = "";
+	
 	@Override
 	public XmlEntity init(Document dom) {
 		this.idEc = XMLUtil.parseAttribute(dom, "archive/@idEc");
@@ -35,6 +38,7 @@ public class Archive extends XmlEntity {
 		this.pne = XMLUtil.parseAttribute(dom, "archive/@pne");
 		this.structure = XMLUtil.parseAttribute(dom, "archive/@structure");
 		this.webapp = XMLUtil.parseAttribute(dom, "archive/@webapp");
+		this.consolidamento = XMLUtil.parseAttribute(dom, "archive/@consolidamento");
 		this.text = XMLUtil.parseElement(dom, "archive");
 		
 		evaluateCanDelete();
@@ -61,6 +65,7 @@ public class Archive extends XmlEntity {
     	params.put(prefix+".@pne", this.pne);
     	params.put(prefix+".@structure", this.structure);
     	params.put(prefix+".@webapp", this.webapp);
+    	params.put(prefix+".@consolidamento", this.consolidamento);
     	params.put(prefix, this.text);
     	
 		return params;
@@ -170,6 +175,14 @@ public class Archive extends XmlEntity {
 
 	public void setPort(String port) {
 		this.port = port;
+	}
+	
+	public String getConsolidamento() {
+		return consolidamento;
+	}
+
+	public void setConsolidamento(String consolidamento) {
+		this.consolidamento = consolidamento;
 	}
 }
 

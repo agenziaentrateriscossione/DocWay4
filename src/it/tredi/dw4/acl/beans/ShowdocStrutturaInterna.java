@@ -6,6 +6,7 @@ import it.tredi.dw4.acl.model.StrutturaInterna;
 import it.tredi.dw4.adapters.AdaptersConfigurationLocator;
 import it.tredi.dw4.adapters.ErrormsgFormsAdapter;
 
+import javax.faces.context.FacesContext;
 import javax.faces.event.ComponentSystemEvent;
 
 import org.dom4j.Document;
@@ -31,7 +32,10 @@ public class ShowdocStrutturaInterna extends AclShowdoc {
 	public void init(Document domDocumento) {
     	xml = domDocumento.asXML();
     	struttura_interna = new StrutturaInterna();
-    	struttura_interna.init(domDocumento);    		
+    	struttura_interna.init(domDocumento);
+    	
+    	// inizializzazione di componenti common
+    	initCommons(domDocumento);
     }	
 	
 	public AclDocumentFormsAdapter getFormsAdapter() {
@@ -43,7 +47,7 @@ public class ShowdocStrutturaInterna extends AclShowdoc {
 	}
 	
 	public void reload() throws Exception {
-		super._reload("showdoc@struttura_interna");
+		super._reload(FacesContext.getCurrentInstance().getExternalContext().getRequestContextPath() + "/acl/showdoc@struttura_interna");
 	}
 	
 	public void setStruttura_interna(StrutturaInterna struttura_interna) {

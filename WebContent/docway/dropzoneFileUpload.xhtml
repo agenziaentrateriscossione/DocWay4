@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" 
+		xmlns:h="http://java.sun.com/jsf/html" 
+		xmlns:ui="http://java.sun.com/jsf/facelets"
+		xmlns:f="http://java.sun.com/jsf/core"
+		xmlns:fn="http://java.sun.com/jsp/jstl/functions">
+
+<h:head>
+	<title>Drag and Drop #{(!empty param['dadType']) ? param['dadType'] : 'File'} Upload</title>
+
+	<h:panelGroup rendered="#{fn:containsIgnoreCase(header['User-Agent'], 'Trident/7.0;')}">
+		<!-- Su IE11 ci sono problemi nel riconoscimento del drag and drop del file (risolti da compatibilita' IE=10 -->
+		<meta http-equiv="X-UA-Compatible" content="IE=10" />
+	</h:panelGroup>
+	<h:panelGroup rendered="#{!fn:containsIgnoreCase(header['User-Agent'], 'Trident/7.0;')}">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+	</h:panelGroup>
+
+	<!-- javascript -->
+	<script type="text/javascript" src="#{facesContext.externalContext.requestContextPath}/common/js/jquery.js?ver=#{docwayHome.versioneDocway}"></script>
+	<script type="text/javascript" src="#{facesContext.externalContext.requestContextPath}/bootstrap/js/bootstrap.js?ver=#{docwayHome.versioneDocway}"></script>
+	<script type="text/javascript" src="#{facesContext.externalContext.requestContextPath}/common/js/bootstrap-datepicker.js?ver=#{docwayHome.versioneDocway}"></script>
+	<script type="text/javascript" src="#{facesContext.externalContext.requestContextPath}/common/js/dragAndDropFileUpload/jquery.ui.widget.js?ver=#{docwayHome.versioneDocway}"></script>
+	<script type="text/javascript" src="#{facesContext.externalContext.requestContextPath}/common/js/dragAndDropFileUpload/jquery.iframe-transport.js?ver=#{docwayHome.versioneDocway}"></script>
+	<script type="text/javascript" src="#{facesContext.externalContext.requestContextPath}/common/js/dragAndDropFileUpload/jquery.fileupload.js?ver=#{docwayHome.versioneDocway}"></script>
+	<!--script type="text/javascript" src="#{facesContext.externalContext.requestContextPath}/common/js/dragAndDropFileUpload/jquery.fileupload-process.js?ver=#{docwayHome.versioneDocway}"></script-->
+	<!--script type="text/javascript" src="#{facesContext.externalContext.requestContextPath}/common/js/dragAndDropFileUpload/jquery.fileupload-validate.js?ver=#{docwayHome.versioneDocway}"></script-->
+	<!--script type="text/javascript" src="#{facesContext.externalContext.requestContextPath}/common/js/dragAndDropFileUpload/jquery.fileupload-ui.js?ver=#{docwayHome.versioneDocway}"></script-->
+	<script type="text/javascript" src="#{facesContext.externalContext.requestContextPath}/common/js/common.js?ver=#{docwayHome.versioneDocway}"></script>
+	<script type="text/javascript" src="#{facesContext.externalContext.requestContextPath}/docway/js/docway.js?ver=#{docwayHome.versioneDocway}"></script>
+
+	<link href="#{facesContext.externalContext.requestContextPath}/favicon.ico" type="image/png" rel="icon"/>
+
+	<link href="#{facesContext.externalContext.requestContextPath}/bootstrap/css/bootstrap.css?ver=#{docwayHome.versioneDocway}" rel="stylesheet" type="text/css" />
+	<h:panelGroup rendered="#{docwayHome.languageOrientation eq 'rtl'}">
+		<link href="#{facesContext.externalContext.requestContextPath}/bootstrap/css/bootstrap-rtl.css?ver=#{docwayHome.versioneDocway}" rel="stylesheet" type="text/css" />
+	</h:panelGroup>
+	<link href="#{facesContext.externalContext.requestContextPath}/common/css/dragAndDropFileUpload/jquery.fileupload.css?ver=#{docwayHome.versioneDocway}" rel="stylesheet" type="text/css" />
+	<link href="#{facesContext.externalContext.requestContextPath}/common/css/dragAndDropFileUpload/dropzone.css?ver=#{docwayHome.versioneDocway}" rel="stylesheet" type="text/css" />
+</h:head>
+
+<h:body styleClass="dropzone-body #{docwayHome.languageOrientation}">
+
+	<h:outputScript name="jsf.js" library="javax.faces" target="head"/>
+				
+	<!-- Change /upload-target to your upload address -->
+	<form id="dropForm" enctype="multipart/form-data">
+		<!-- The fileinput-button span is used to style the file input field as button -->
+	    <div id="ieWarningMessage" class="ie-warning-message alert alert-warning" style="display:none;"><strong>#{i18n['dw4.il_draganddrop_di_file_su_ie_e_supportato_dalla_versione_10']}</strong>. #{i18n['dw4.se_si_sta_utizzando_una_versione_superiore_di_ie_e_possibile_che_si_stia_visualizzando_la_pagina_in_modalita_ie9']}.</div>
+	    
+	    <span id="dragAndDropMessage"><strong>#{(param['dadType'] eq 'Image') ? i18n['dw4.trascina_le_immagini_qui_per_l_upload'] : i18n['dw4.trascina_i_files_qui_per_l_upload']}</strong>, #{i18n['dw4.oppure']}</span>
+	    <span class="btn btn-default btn-xs fileinput-button">
+	        <i class="glyphicon glyphicon-plus"></i>
+	        <span>#{i18n['dw4.sfoglia']}</span>
+	        <!-- The file input field used as target for the file upload widget -->
+	        <input id="fileupload" type="file" name="files[]" multiple="multiple" />
+	    </span>
+	    	    
+	    <div id="progress" class="fileupload-progress progress" style="display:none;">
+	        <div class="progress-bar progress-bar-success"></div>
+	    </div>
+	    	
+		<div id="dropForm-extra-params">
+			<input type="hidden" id="customTupleName" name="_cd" value="#{docwayHome.formsAdapter.customTupleName}" />
+			<input type="hidden" id="db" name="db" value="#{(!empty param['dadDbName']) ? param['dadDbName'] : docwayHome.formsAdapter.db}" />
+			<input type="hidden" id="tempUpload" name="tempUpload" value="#{(param['dadTempUpload'] eq 'true') ? true : false}" />
+			<input type="hidden" id="keepUserDir" name="keepUserDir" value="#{(param['dadKeepUserDir'] eq 'true') ? true : false}" />
+			<input type="hidden" id="login" name="login" value="#{(!empty param['dadLogin']) ? param['dadLogin'] : ''}" />
+			<input type="hidden" id="matricola" name="matricola" value="#{(!empty param['dadMatricola']) ? param['dadMatricola'] : ''}" />
+		</div>
+	</form>
+	<script type="text/javascript">
+	/*jslint unparam: true */
+	/*global window, $ */
+	$(function() {
+		'use strict';
+		var url = '#{facesContext.externalContext.requestContextPath}/fileupload';
+		
+		log("info", "JQuery.fileUpload :: dadType parameter = #{param['dadType']}");
+
+
+		// variabili necessarie al reload della lista di files
+		var uploadFilesIds = "";
+		var uploadFilesNames = "";
+		var lastFileName = "";
+
+		var maxFilesValue = null;
+		if (parent.dadMax#{(!empty param['dadType']) ? param['dadType'] : 'File'}s) {
+			maxFilesValue = parent.dadMax#{(!empty param['dadType']) ? param['dadType'] : 'File'}s;
+		}
+		log("info", "JQuery.fileUpload :: max files = " + maxFilesValue);
+		
+		var maxFileSize = 0;
+		if (parent.dadMax#{(!empty param['dadType']) ? param['dadType'] : 'File'}Size) {
+			maxFileSize = parent.dadMax#{(!empty param['dadType']) ? param['dadType'] : 'File'}Size;
+		}
+		log("info", "JQuery.fileUpload :: max file size = " + maxFileSize);
+
+		var fileTypesSupported = "";
+		if (parent.dad#{(!empty param['dadType']) ? param['dadType'].concat('s') : 'Files'}Types) {
+			fileTypesSupported = parent.dad#{(!empty param['dadType']) ? param['dadType'].concat('s') : 'Files'}Types;
+			fileTypesSupported = fileTypesSupported.replace(/\*/g, "");
+			fileTypesSupported = fileTypesSupported.replace(/;/g, ",");
+		}
+		log("info", "JQuery.fileUpload :: file types supported = " + fileTypesSupported);
+
+		$('#fileupload')
+				.fileupload(
+						{
+							url : url,
+							dataType : 'text',
+							numMaxFiles : maxFilesValue,
+							dictMaxFilesExceeded : "#{i18n['dw4.non_e_possibile_caricare_ulteriori_files']}.",
+							acceptFileTypes : fileTypesSupported.toLowerCase(),
+							dictInvalidFileType : "#{i18n['dw4.non_e_possibile_caricare_files_con_questa_estensione']}",
+							maxFileSize : maxFileSize,
+							sequentialUploads : true,
+							done : function(e, data) {
+								log("info", "JQuery.fileUpload :: done response: " + data.result);
+
+								var remoteFile = #{(param['dadTempUpload'] eq 'true') ? 'getUploadTempFile' : 'getUploadRemoteFile'}(data.result);
+								log("info", "JQuery.fileUpload :: remoteFile = " + remoteFile);
+								if (remoteFile) {
+									if (uploadFilesIds.indexOf(remoteFile) == -1) {
+										uploadFilesIds += '|' + remoteFile;
+										uploadFilesNames += '|' + data.files[0].name;
+									}
+									lastFileName = remoteFile;
+								} 
+								else {
+									alert("#{i18n['dw4.riscontrato_errore_in_fase_di_salvataggio_del_file']} " + data.files[0].name + ".\n#{i18n['dw4.contattare_l_amministratore_di_sistema_per_maggiori_dettagli']}.");
+								}
+							},
+							start : function(e) {
+								log("info", "JQuery.fileUpload :: start event");
+								$('#progress').show();
+							},
+							stop : function(e) {
+								log("info", "JQuery.fileUpload :: stop event");
+								// coda di upload vuota, tutti gli allegati caricati sul server
+
+								log("info", "JQuery.fileUpload ::  queue completed!");
+								log("info", "JQuery.fileUpload ::  uploadFilesIds = " + uploadFilesIds);
+								log("info", "JQuery.fileUpload ::  uploadFilesNames = " + uploadFilesNames);
+
+								// aggiornamento degli allegati sulla pagina del documento
+								if (typeof parent.update#{(!empty param['dadType']) ? param['dadType'].concat('s') : 'Files'}FromDragAndDrop === "function") {
+									parent.displayOpenwaitmsg();
+
+									if (#{param['dadType'] ne 'Archive'})
+										parent.update#{(!empty param['dadType']) ? param['dadType'].concat('s') : 'Files'}FromDragAndDrop(uploadFilesIds, uploadFilesNames);
+									else
+										parent.updateArchivesFromDragAndDrop(uploadFilesIds, uploadFilesNames, lastFileName);
+								} 
+								else {
+									log("error", "JQuery.fileUpload :: Impossible to call parent function update#{(!empty param['dadType']) ? param['dadType'].concat('s') : 'Files'}FromDragAndDrop()!");
+								}
+							},
+							progressall : function(e, data) {
+								var progress = parseInt(data.loaded / data.total * 100, 10);
+								$('#progress .progress-bar').css('width', progress + '%');
+							}
+						}).prop('disabled', !$.support.fileInput).parent().addClass($.support.fileInput ? undefined : 'disabled');
+	});
+
+	var browser = {
+		isIe : function() {
+			return navigator.appVersion.indexOf("MSIE") != -1;
+		},
+		navigator : navigator.appVersion,
+		getVersion : function() {
+			var version = 999; // we assume a sane browser
+			if (navigator.appVersion.indexOf("MSIE") != -1)
+				// bah, IE again, lets downgrade version number
+				version = parseFloat(navigator.appVersion.split("MSIE")[1]);
+			return version;
+		}
+	};
+	
+	if (browser.isIe() &amp;&amp; browser.getVersion() &lt;= 9) {
+		log("info", "JQuery.fileUpload ::  You are currently using Internet Explorer " + browser.getVersion());
+		$("#ieWarningMessage").show();
+		$("#dragAndDropMessage").hide();
+	}
+	</script>
+	
+</h:body>
+
+</html>

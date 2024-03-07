@@ -164,11 +164,19 @@
 														<ui:repeat var="title" value="#{compositeTitle.titoli}" varStatus="titoliStatus">
 															<h:panelGroup rendered="#{fn:length(compositeTitle.titoli) == 1}">
 																<div class="lookup-span-link">
-																	<h:commandLink styleClass="openwaitmsg" action="#{pageBean.lookup.confirm}">
-																		#{title.testo}
-																		<f:param name="title" value="#{title}"></f:param>
-																		<f:ajax execute="@form" render="@form" />
-																	</h:commandLink>
+																	<h:panelGroup rendered="#{fn:indexOf(title.campiTitolo['tit_rpa_cc'], 'CC') != -1 or fn:indexOf(title.campiTitolo['tit_rpa_cc'], 'CDS') != -1}">
+																		<h:inputText class="vociIndice_overrideCC_#{status.index}_#{titoliStatus.index}" value="#{title.overrideCC}" style="display:none;" />
+																		<h:commandLink styleClass="openwaitmsg" action="#{pageBean.lookup.confirm}" onclick="return appendCC('vociIndice_overrideCC_#{status.index}_#{titoliStatus.index}');">
+																			<h:outputText value="#{title.testo}" />
+																			<f:ajax execute="@form" render="@form" />
+																		</h:commandLink>
+																	</h:panelGroup>
+																	<h:panelGroup rendered="#{fn:indexOf(title.campiTitolo['tit_rpa_cc'], 'CC') == -1 and fn:indexOf(title.campiTitolo['tit_rpa_cc'], 'CDS') == -1}">
+																		<h:commandLink styleClass="openwaitmsg" action="#{pageBean.lookup.confirm}">
+																			<h:outputText value="#{title.testo}" />
+																			<f:ajax execute="@form" render="@form" />
+																		</h:commandLink>
+																	</h:panelGroup>
 																</div>
 															</h:panelGroup>
 															<h:panelGroup rendered="#{fn:length(compositeTitle.titoli) > 1}">
@@ -237,7 +245,7 @@
 								<div style="margin-top:15px;" class="alert alert-info">#{i18n['acl.emptysearch']}</div>
 							</h:panelGroup>
 				        	
-					       	<h:inputTextarea value="#{pageBean.lookup.xml}" rendered="#{pageBean.debugMode}" styleClass="form-control" rows="10"/>
+					       	<h:inputTextarea value="#{pageBean.lookup.xml}" rendered="#{pageBean.debugMode}" styleClass="form-control debug-textarea" rows="10"/>
 						</div>
 						<div class="modal-footer">
 							<h:commandButton styleClass="btn btn-default" title="#{i18n['acl.close']}" action="#{pageBean.lookup.close}" data-dismiss="modal"  value="#{i18n['acl.close']}" >

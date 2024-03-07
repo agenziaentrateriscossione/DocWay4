@@ -2,7 +2,11 @@ package it.tredi.dw4.docway.beans;
 
 import java.util.Arrays;
 
-import it.tredi.dw4.utils.XMLDocumento;
+import javax.faces.context.FacesContext;
+import javax.faces.event.ValueChangeEvent;
+
+import org.dom4j.Document;
+
 import it.tredi.dw4.acl.beans.UserBean;
 import it.tredi.dw4.adapters.DocEditFormsAdapter;
 import it.tredi.dw4.adapters.ErrormsgFormsAdapter;
@@ -12,11 +16,7 @@ import it.tredi.dw4.model.XmlEntity;
 import it.tredi.dw4.model.customfields.Field;
 import it.tredi.dw4.model.customfields.FieldInstance;
 import it.tredi.dw4.utils.Const;
-
-import javax.faces.context.FacesContext;
-import javax.faces.event.ValueChangeEvent;
-
-import org.dom4j.Document;
+import it.tredi.dw4.utils.XMLDocumento;
 
 public abstract class DocWayDocedit extends Page {
 	
@@ -42,12 +42,11 @@ public abstract class DocWayDocedit extends Page {
 	
 	public abstract String clearDocument() throws Exception;
 	
+	public abstract XmlEntity getModel();
+	
 	protected XMLDocumento _saveDocument(String pne, String pnce) throws Exception {
-		
 		getFormsAdapter().getDefaultForm().addParams(getCustomfields().asFormAdapterParams("")); // salvataggio dei campi aggiuntivi (aggiunta a formAdapter)
-		
 		getFormsAdapter().saveDocument(pne, pnce);
-		
 		return getFormsAdapter().getDefaultForm().executePOST(getUserBean());
 	}
 	
@@ -108,7 +107,7 @@ public abstract class DocWayDocedit extends Page {
 	 * @return
 	 * @throws Exception
 	 */
-	protected String rifintLookupUfficio(XmlEntity entity, String valueUfficio, String valuePersona, String campi) throws Exception {
+	protected String rifintLookupUfficio(XmlEntity entity, String valueUfficio, String valuePersona, String campi, Object todoObject, String todoMethod) throws Exception {
 		// in caso di lookup su rif interno (ufficio) occorre impostare a false il reset dei jobs di iwx
 		// perche' viene poi ricaricata la pagina di inserimento/modifica e in caso di immagini precedentemente
 		// caricate si perderebbero le anteprime
@@ -124,9 +123,13 @@ public abstract class DocWayDocedit extends Page {
 		String newRecord 	= ""; //newRecord 
 		String xq			= ""; //extraQuery
 		
-		callRifintLookup(entity, aliasName, aliasName1, titolo, ord, campi, xq, db, newRecord, valueUfficio + "|" + valuePersona);
+		callRifintLookup(entity, aliasName, aliasName1, titolo, ord, campi, xq, db, newRecord, valueUfficio + "|" + valuePersona, todoObject, todoMethod);
 				
 		return null;
+	}
+	
+	protected String rifintLookupUfficio(XmlEntity entity, String valueUfficio, String valuePersona, String campi) throws Exception {
+		return rifintLookupUfficio(entity, valueUfficio, valuePersona, campi, null, null);
 	}
 	
 	/**
@@ -145,7 +148,7 @@ public abstract class DocWayDocedit extends Page {
 	 * @return
 	 * @throws Exception
 	 */
-	protected String rifintLookupPersona(XmlEntity entity, String valueUfficio, String valuePersona, String campi, String xq) throws Exception {
+	protected String rifintLookupPersona(XmlEntity entity, String valueUfficio, String valuePersona, String campi, String xq, Object todoObject, String todoMethod) throws Exception {
 		// in caso di lookup su rif interno (persona) occorre impostare a false il reset dei jobs di iwx
 		// perche' viene poi ricaricata la pagina di inserimento/modifica e in caso di immagini precedentemente
 		// caricate si perderebbero le anteprime
@@ -161,9 +164,13 @@ public abstract class DocWayDocedit extends Page {
 		if (xq == null)
 			xq = "";
 		
-		callRifintLookup(entity, aliasName, aliasName1, titolo, ord, campi, xq, db, newRecord, valueUfficio + "|" + valuePersona);
+		callRifintLookup(entity, aliasName, aliasName1, titolo, ord, campi, xq, db, newRecord, valueUfficio + "|" + valuePersona, todoObject, todoMethod);
 				
 		return null;
+	}
+	
+	protected String rifintLookupPersona(XmlEntity entity, String valueUfficio, String valuePersona, String campi, String xq) throws Exception {
+		return rifintLookupPersona(entity, valueUfficio, valuePersona, campi, xq, null, "");
 	}
 	
 	/**
@@ -171,12 +178,19 @@ public abstract class DocWayDocedit extends Page {
 
 	 * @throws Exception
 	 */
-	protected void callRifintLookup(XmlEntity entity, String aliasName, String aliasName1, String titolo, String ord, String campi, String xq, String db, String newRecord, String value) throws Exception {
+	protected void callRifintLookup(XmlEntity entity, String aliasName, String aliasName1, String titolo, String ord, String campi, String xq, String db, String newRecord, String value, Object todoObject, String todoMethod) throws Exception {
 		try {
 			DocWayRifintLookup docwayRifintLookup = new DocWayRifintLookup();
 			setRifintLookup(docwayRifintLookup);
 			docwayRifintLookup.setModel(entity);
 			docwayRifintLookup.setLookupSuRepertorioByExtraQuery(xq);
+			
+			// tiommi 17/01/2018 aggiunta logica per trigger sulla modifica del campo cod_uff dell'RPA 
+			// per logica di override della visibilità
+			if (todoObject != null && todoMethod != null) {
+				docwayRifintLookup.setTodoOnCompleteLookupObject(todoObject);
+				docwayRifintLookup.setTodoOnCompleteLookupMethod(todoMethod);
+			}
 	
 			XMLDocumento response = this._rifintLookup(aliasName, aliasName1, titolo, ord, campi, xq, db, newRecord, value);
 			if (handleErrorResponse(response, Const.MSG_LEVEL_ERROR)) {
@@ -198,6 +212,10 @@ public abstract class DocWayDocedit extends Page {
 			getFormsAdapter().fillFormsFromResponse(getFormsAdapter().getLastResponse()); //restore delle form
 			return;			
 		}
+	}
+	
+	protected void callRifintLookup(XmlEntity entity, String aliasName, String aliasName1, String titolo, String ord, String campi, String xq, String db, String newRecord, String value) throws Exception {
+		callRifintLookup(entity, aliasName, aliasName1, titolo, ord, campi, xq, db, newRecord, value, null, null);
 	}
 	
 	/**
@@ -263,7 +281,6 @@ public abstract class DocWayDocedit extends Page {
 	
 	/**
 	 * Chiamata a Lookup su DocWayDoc
-
 	 * @throws Exception
 	 */
 	protected void callLookup(XmlEntity entity, String aliasName, String aliasName1, String titolo, String ord, String campiLookup, String campiClear, String xq, String db, String newRecord, String value, String tipoDoc, String xverbDoc) throws Exception {
@@ -352,7 +369,8 @@ public abstract class DocWayDocedit extends Page {
 				CustomFieldsLookup customFieldsLookup = new CustomFieldsLookup();
 				setCustomfieldsLookup(customFieldsLookup);
 				customFieldsLookup.setField(field);
-				customFieldsLookup.setModel(getCustomfields());
+				customFieldsLookup.setModel(this.getModel());
+				customFieldsLookup.setCustomFieldsModel(getCustomfields());
 				
 				customFieldsLookup.cleanFields(campi);
 			}
@@ -412,11 +430,19 @@ public abstract class DocWayDocedit extends Page {
 				if (value.equals(""))
 					value = "*";
 				
+				// mbernardini 13/12/2016 : gestione delle restrizioni su aoo tramite extraquery su lookup
+				// sostituzione di [CODAMMAOO] con il codice della sede dell'operatore corrente
+				if (xq != null && !xq.isEmpty()) {
+					if (getUserBean() != null && getUserBean().getCodSede() != null)
+						xq = xq.replaceAll("_CODAMMAOO_", getUserBean().getCodSede());
+				}
+				
 				CustomFieldsLookup customFieldsLookup = new CustomFieldsLookup();
 				setCustomfieldsLookup(customFieldsLookup);
 				customFieldsLookup.setField(field);
 				customFieldsLookup.setInstance(instance);
-				customFieldsLookup.setModel(getCustomfields());
+				customFieldsLookup.setModel(this.getModel());
+				customFieldsLookup.setCustomFieldsModel(getCustomfields());
 				
 				
 				customFieldsLookup.cleanFields(campi);

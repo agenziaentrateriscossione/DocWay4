@@ -179,14 +179,15 @@
 								<div class="form-group">
 									<label class="col-sm-2 control-label"><span>#{i18n['dexia.unitarichimata']}</span></label>
 									<div class="col-sm-5">
-										<div class="input-group">
+										<div class="#{!queryVarieNA.formsAdapter.elasticsearchEnabled ? 'input-group' : ''}">
 											<h:inputText styleClass="form-control" value="#{queryVarieNA.na_unita}" id="doc_oggetto" />
-											<div class="input-group-btn">
+											
+											<h:panelGroup rendered="#{!queryVarieNA.formsAdapter.elasticsearchEnabled}" layout="block" styleClass="input-group-btn">
 												<h:commandLink title="#{i18n['acl.vocabulary']}" action="#{queryVarieNA.openIndexUnitaRichiamate}" styleClass="btn btn-default">
 													<f:ajax execute="@form" render="@form" />
 													<span class="glyphicon glyphicon-search"></span>
 												</h:commandLink>
-											</div>
+											</h:panelGroup>
 										</div>
 									</div>
 								</div>
@@ -205,6 +206,14 @@
 										</div>
 									</div>
 								</div>
+								
+								<c:if test="#{!empty queryVarieNA.currentCustomFieldSection and queryVarieNA.currentCustomFieldSection.contains('_')}">
+									<hr/>
+									<ui:include src="../../customfields/query@customfields.xhtml">
+										<ui:param name="key" value="#{queryVarieNA.currentCustomFieldSection}" />
+										<ui:param name="bean" value="#{queryVarieNA}"/>
+						        	</ui:include>
+								</c:if>
 							</h:panelGroup>
 						</h:panelGroup>
 					</div>
@@ -411,7 +420,7 @@
 		</div>
 	</div>
 
-	<h:inputTextarea value="#{queryVarieNA.xml}" rendered="#{queryVarieNA.debugMode}" styleClass="form-control" rows="10" />
+	<h:inputTextarea value="#{queryVarieNA.xml}" rendered="#{queryVarieNA.debugMode}" styleClass="form-control debug-textarea" rows="10" />
 	<ui:include src="../showindex.xhtml"> <ui:param name="pageBean" value="#{queryVarieNA}" /> </ui:include>
 	
 </ui:define>

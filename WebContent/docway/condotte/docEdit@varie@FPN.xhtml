@@ -29,7 +29,7 @@
 		
 		<h5 class="sub-header">
 			<span class="doc-tipo-varie glyphicon glyphicon-file"></span>&#160;
-			<h:outputText value="#{docEditVarieFPN.docEditTitle}" escape="false" />
+			<h:outputText value="#{docEditVarieFPN.docEditTitle}" />
 		</h5>
 		
 		<!-- messages: inizio -->
@@ -115,6 +115,10 @@
 						<ui:param name="bean" value="#{docEditVarieFPN}" />
 		        	</ui:include>
 		        	
+		        	<ui:include src="../../customfields/docedit@customfields.xhtml">
+						<ui:param name="bean" value="#{docEditVarieFPN}" />
+		        	</ui:include>
+		        	
 		        	<ui:include src="../docEdit@rifinterni@doc.xhtml">
 						<ui:param name="bean" value="#{docEditVarieFPN}" />
 		        	</ui:include>
@@ -135,8 +139,16 @@
 		<ui:include src="../lookup.xhtml"> <ui:param name="pageBean" value="#{docEditVarieFPN}"/></ui:include>
 		<ui:include src="../rifintLookup.xhtml"> <ui:param name="pageBean" value="#{docEditVarieFPN}"/></ui:include>
 		<ui:include src="../showthes.xhtml"> <ui:param name="pageBean" value="#{docEditVarieFPN}"/></ui:include>
+		<!-- template per upload e la decompressione di archivi ZIP -->
+		<ui:param name="currentBean" value="#{docEditVarieFPN}" />
+		<ui:include src="../docUploadArchive.xhtml">
+			<ui:param name="bean" value="#{docWayUploadArchive}"/>
+			<ui:param name="beanDoc" value="#{currentBean}" />
+			<ui:param name="doc" value="#{currentBean.doc}" />
+			<ui:param name="enableFiles" value="#{currentBean.docInformaticiEnabled and currentBean.formsAdapter.funzionalitaDisponibili['addFile']}" />
+		</ui:include>
 		
-		<h:inputTextarea value="#{docEditVarieFPN.xml}" rendered="#{docEditVarieFPN.debugMode}" styleClass="form-control" rows="10" />
+		<h:inputTextarea value="#{docEditVarieFPN.xml}" rendered="#{docEditVarieFPN.debugMode}" styleClass="form-control debug-textarea" rows="10" />
 	</div>
 </ui:define>
 

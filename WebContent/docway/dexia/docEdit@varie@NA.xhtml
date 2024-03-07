@@ -10,70 +10,81 @@
 
 <ui:define name="content">
     <div class="varie na docedit">
-        
+
         <!-- toolbar: inizio -->
         <div class="btn-toolbar" role="toolbar">
             <div class="btn-group">
-                <h:commandLink id="saveBtn" action="#{docEditVarieNA.saveDocument}" 
+                <h:commandLink id="saveBtn" action="#{docEditVarieNA.saveDocument}"
                             onclick="return customCheckForm();" styleClass="btn btn-primary openwaitmsg">
                     #{i18n['acl.save']}
                 </h:commandLink>
-                
-                <h:commandLink action="#{docEditVarieNA.clearDocument}" 
+
+                <h:commandLink action="#{docEditVarieNA.clearDocument}"
                             onclick="IwxRuntime.Client.resetJobIWX();" styleClass="btn btn-default">
                     #{i18n['acl.clear']}
-                </h:commandLink>    
+                </h:commandLink>
             </div>
         </div>
         <!-- toolbar: fine -->
-        
+
         <h5 class="sub-header">
             <span class="doc-tipo-custom glyphicons-pro bank na"></span>&#160;
-            <h:outputText value="#{docEditVarieNA.docEditTitle}" escape="false" />
+            <h:outputText value="#{docEditVarieNA.docEditTitle}" />
         </h5>
-    
+
         <!-- messages: inizio -->
         <h:panelGroup rendered="#{not empty facesContext.messageList}" layout="block" styleClass="docedit-messages alert alert-danger">
             <h:messages styleClass="" id="validationMesseges" />
         </h:panelGroup>
         <h:inputHidden id="errorFieldIds" value="#{docEditVarieNA.errorFieldIds}" />
         <!-- messages: fine -->
-        
+
         <script type="text/javascript">
         function customCheckForm() {
             if (!controlloWarningSeSenzaAllegato(#{docEditVarieNA.warningSeNessunAllegato}, "#{i18n['dw4.non_e_stato_indicato_alcun_documento_informatico_Continuare_con_la_registrazione']}"))
                 return false;
-            
+
             displayOpenwaitmsg();
             return true;
         }
-        
+
         $(document).ready(function() {
             setInvalidInputFields();
         });
         </script>
-        
+
         <!-- scheda edit: inizio -->
         <div class="row-fluid" style="margin-top:10px;">
             <div id="fixedshowdoc" class="box span12 fixed-showdoc">
                 <div class="box-content">
-                
+
                     <div class="fieldset">
                         <div class="legend">
                             #{i18n['dw4.datidoc']}
-                        
+
                             <div class="pull-right">
                                 <span class="glyphicon glyphicon-envelope" title="#{i18n['dw4.datidoc']}"></span>
                             </div>
                         </div>
-                        
+
                         <div class="form-group">
-                            <label for="templateForm:docPersonale" class="col-sm-2 control-label">#{i18n['dw4.personale']}</label>
-                            <div class="col-sm-3">
-                                <h:selectBooleanCheckbox id="docPersonale" immediate="true" value="#{docEditVarieNA.doc.personale}" p:data-toggle="popover" p:data-placement="bottom" p:data-trigger="hover" p:data-content="#{i18n['dw4.se_si_imposta_il_flag_personale_il_documento_sara_visibile_solo_alle_persone_selezionate_e_non_ai_relativi_uffici']}" styleClass="popoveritem" />
-                            </div>
-                        </div>
-                        
+							<h:panelGroup rendered="#{docEditVarieNA.formsAdapter.funzionalitaDisponibili['repertorioInBozza'] and docEditVarieNA.doceditRep}">
+								<label for="templateForm:docBozza" class="col-sm-2 control-label">#{i18n['dw4.bozza']}</label>
+								<div class="col-sm-1">
+									<h:selectBooleanCheckbox id="docBozza" immediate="true" value="#{docEditVarieNA.doc.bozza}" valueChangeListener="#{docEditVarieNA.doc.setNotificaAfterBozza}">
+										<f:ajax execute="@this" render="templateForm:sendMailRifInterniCheck" />
+									</h:selectBooleanCheckbox>
+								</div>
+							</h:panelGroup>
+
+							<h:panelGroup rendered="#{!docEditVarieNA.customfields.hiddenFields['personale']}">
+								<label for="templateForm:docPersonale" class="col-sm-2 control-label">#{i18n['dw4.personale']}</label>
+								<div class="col-sm-3">
+									<h:selectBooleanCheckbox id="docPersonale" immediate="true" value="#{docEditVarieNA.doc.personale}" p:data-toggle="popover" p:data-placement="bottom" p:data-trigger="hover" p:data-content="#{i18n['dw4.se_si_imposta_il_flag_personale_il_documento_sara_visibile_solo_alle_persone_selezionate_e_non_ai_relativi_uffici']}" styleClass="popoveritem" />
+								</div>
+							</h:panelGroup>
+						</div>
+
                         <h:panelGroup rendered="#{fn:length(docEditVarieNA.doc.repTipologiaSelect) > 0}" layout="block" styleClass="form-group">
                             <label for="templateForm:repTipoDocumento" class="col-sm-2 control-label">#{i18n['acl.tipologia']}</label>
                             <div class="col-sm-3">
@@ -82,14 +93,14 @@
                                 </h:selectOneMenu>
                             </div>
                         </h:panelGroup>
-                        
+
                         <div class="form-group">
                             <label for="templateForm:codiceNorma" class="col-sm-2 control-label requiredField">* #{i18n['dexia.codice_norma']}</label>
                             <div class="col-sm-3">
                                 <h:inputText id="codiceNorma" value="#{docEditVarieNA.doc.extra.na_codiceNorma}" title="#{(component.valid or docEditVarieNA.doc.extra.na_codiceNorma eq '') ? '' : i18n['dexia.il_codice_della_norma_indicato_risulta_gia_registrato']}" styleClass="#{component.valid ? '' : 'invalidinput'} form-control" />
                             </div>
                         </div>
-                        
+
                         <ui:remove> <!-- 20150112 fcappelli - rimosso per richiesta cliente -->
                         <div class="form-group">
                             <ui:include src="../dateField.xhtml">
@@ -100,14 +111,14 @@
                             </ui:include>
                         </div>
                         </ui:remove>
-                        
+
                         <div class="form-group">
                             <label class="col-sm-2 control-label requiredField"><span>* #{i18n['dw4.release']}</span></label>
                             <div class="col-sm-3">
                                 <h:inputText id="releaseNorma" value="#{docEditVarieNA.doc.extra.na_releaseNorma}" styleClass="#{component.valid ? '' : 'invalidinput'} form-control" />
                             </div>
                         </div>
-                        
+
                         <div class="form-group">
                             <label for="templateForm:competenza" class="col-sm-2 control-label requiredField"><span>* #{i18n['dexia.competenza']}</span></label>
                             <div class="col-sm-3">
@@ -119,21 +130,21 @@
                                 </h:selectOneMenu>
                             </div>
                         </div>
-                        
+
                         <div class="form-group">
                             <label for="templateForm:doc_oggetto" class="col-sm-2 control-label requiredField"><span>* #{i18n['dexia.denominazione']}</span></label>
                             <div class="col-sm-9">
                                 <h:inputTextarea id="doc_oggetto" value="#{docEditVarieNA.doc.oggetto}" rows="4" cols="120" styleClass="#{ component.valid ? '' : 'invalidinput' } form-control" />
                             </div>
                         </div>
-                        
+
                         <h:panelGroup rendered="#{docEditVarieNA.formsAdapter.funzionalitaDisponibili['enAllegato']}">
                             <ui:include src="../allegatiFields.xhtml">
                                 <ui:param name="bean" value="#{docEditVarieNA}" />
                                 <ui:param name="beanDoc" value="#{docEditVarieNA.doc}" />
                             </ui:include>
                         </h:panelGroup>
-                        
+
                         <h:panelGroup layout="block">
 	                        <ui:include src="./disposizioniFields@NA.xhtml">
 	                            <ui:param name="bean" value="#{docEditVarieNA}" />
@@ -182,41 +193,45 @@
 							</h:panelGroup>
 
 						</div> <!-- /fieldset -->
-                    
+
                     <ui:include src="../scadenzaFields.xhtml">
                         <ui:param name="bean" value="#{docEditVarieNA}" />
                         <ui:param name="beanDoc" value="#{docEditVarieNA.doc}" />
                     </ui:include>
-                    
+
+                    <ui:include src="../../customfields/docedit@customfields.xhtml">
+						<ui:param name="bean" value="#{docEditVarieNA}" />
+		        	</ui:include>
+
                     <ui:include src="../docEdit@rifinterni@doc.xhtml">
 						<ui:param name="bean" value="#{docEditVarieNA}" />
 		        	</ui:include>
-                    
+
                     <div class="fieldset">
                         <div class="legend">
                             #{i18n['dw4.other']}
-                            
+
                             <div class="pull-right">
                                 <span class="glyphicon glyphicon-list-alt" title="#{i18n['dw4.other']}"></span>
                             </div>
                         </div>
-                        
+
                         <ui:include src="../contenutoInFields.xhtml">
                             <ui:param name="bean" value="#{docEditVarieNA}" />
                         </ui:include>
-                        
+
                         <h:panelGroup rendered="#{docEditVarieNA.formsAdapter.funzionalitaDisponibili['mostraCodiceProgetto']}" layout="block" styleClass="form-group">
                             <label for="templateForm:codProgetto" class="col-sm-2 control-label">#{i18n['dw4.codice_progetto']}</label>
                             <div class="col-sm-9">
                                 <h:inputText id="codProgetto" value="#{docEditVarieNA.doc.extra.codice_progetto}" styleClass="form-control" />
                             </div>
                         </h:panelGroup>
-                        
+
                         <div class="form-group">
                             <label for="templateForm:riferimentiDoc" class="col-sm-2 control-label">#{i18n['dw4.riferimenti']}</label>
                             <div class="col-sm-4">
                                 <h:inputText id="riferimentiDoc" value="#{docEditVarieNA.doc.riferimenti.text}" styleClass="form-control" />
-                            </div>      
+                            </div>
                             <ui:remove>
 	                            <label for="templateForm:codTipologiaDoc" class="col-sm-2 control-label">#{i18n['acl.tipologia']}</label>
 	                            <div class="col-sm-3">
@@ -226,27 +241,27 @@
 	                            </div>
                             </ui:remove>
                         </div>
-                        
+
                         <div class="form-group">
                             <label for="templateForm:note" class="col-sm-2 control-label">#{i18n['acl.notes']}</label>
                             <div class="col-sm-9">
                                 <h:inputTextarea id="note" value="#{docEditVarieNA.doc.note.text}" rows="4" cols="120" styleClass="form-control" />
-                            </div>      
+                            </div>
                         </div>
-                        
+
                         <div class="form-group">
                             <label for="templateForm:keywordsDoc" class="col-sm-2 control-label">#{i18n['dw4.keywords']}</label>
                             <div class="col-sm-9">
                                 <h:inputText id="keywordsDoc" value="#{docEditVarieNA.doc.keywords.text}" styleClass="form-control" />
-                            </div>          
+                            </div>
                         </div>
                     </div> <!-- /fieldset -->
-                    
+
                     <ui:include src="../docInformaticiFields.xhtml">
                         <ui:param name="bean" value="#{docEditVarieNA}" />
                         <ui:param name="beanDoc" value="#{docEditVarieNA.doc}" />
                         <ui:param name="enableFiles" value="#{docEditVarieNA.docInformaticiEnabled and docEditVarieNA.formsAdapter.funzionalitaDisponibili['addFile']}" />
-                        <ui:param name="enableImages" value="#{docEditVarieNA.docInformaticiEnabled and docEditVarieNA.formsAdapter.funzionalitaDisponibili['addImg']}" />                  
+                        <ui:param name="enableImages" value="#{docEditVarieNA.docInformaticiEnabled and docEditVarieNA.formsAdapter.funzionalitaDisponibili['addImg']}" />
                         <ui:param name="enableFileAgentPDF" value="true" />
                         <ui:param name="enableImageAgentPDF" value="true" />
                     </ui:include>
@@ -254,12 +269,21 @@
             </div>
         </div>
         <!-- scheda edit: fine -->
-        
+
         <ui:include src="../lookup.xhtml"> <ui:param name="pageBean" value="#{docEditVarieNA}"/></ui:include>
         <ui:include src="../rifintLookup.xhtml"> <ui:param name="pageBean" value="#{docEditVarieNA}"/></ui:include>
         <ui:include src="../showthes.xhtml"> <ui:param name="pageBean" value="#{docEditVarieNA}"/></ui:include>
+        <!-- template per upload e la decompressione di archivi ZIP -->
+		<ui:param name="currentBean" value="#{docEditVarieNA}" />
+		<ui:include src="../docUploadArchive.xhtml">
+			<ui:param name="bean" value="#{docWayUploadArchive}"/>
+			<ui:param name="beanDoc" value="#{currentBean}" />
+			<ui:param name="doc" value="#{currentBean.doc}" />
+			<ui:param name="enableFiles" value="#{currentBean.docInformaticiEnabled and currentBean.formsAdapter.funzionalitaDisponibili['addFile']}" />
+		</ui:include>
         
-        <h:inputTextarea value="#{docEditVarieNA.xml}" rendered="#{docEditVarieNA.debugMode}" styleClass="form-control" rows="10" />
+
+        <h:inputTextarea value="#{docEditVarieNA.xml}" rendered="#{docEditVarieNA.debugMode}" styleClass="form-control debug-textarea" rows="10" />
     </div>
 </ui:define>
 

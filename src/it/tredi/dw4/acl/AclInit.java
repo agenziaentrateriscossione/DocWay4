@@ -1,14 +1,13 @@
 package it.tredi.dw4.acl;
 
-import it.tredi.dw4.utils.XMLDocumento;
 import it.tredi.dw4.acl.beans.AclHierBrowser;
 import it.tredi.dw4.acl.beans.AclHome;
 import it.tredi.dw4.acl.beans.Menu;
-import it.tredi.dw4.acl.beans.UserBean;
 import it.tredi.dw4.adapters.AdaptersConfigurationLocator;
 import it.tredi.dw4.adapters.ErrormsgFormsAdapter;
 import it.tredi.dw4.beans.Init;
 import it.tredi.dw4.docway.doc.adapters.DocDocWayQueryFormsAdapter;
+import it.tredi.dw4.utils.XMLDocumento;
 
 public class AclInit extends Init {
 
@@ -25,13 +24,7 @@ public class AclInit extends Init {
 	@Override
 	protected void initDocWayHomeFromResponse(XMLDocumento response)
 			throws Exception {
-		UserBean userbean = getUserBean();
-		if (null != userbean && null == userbean.getUserInfo()) {
-			if (userbean.getMatricola() == null || userbean.getMatricola().equals(""))
-				userbean.setMatricola(response.getRootElement().attributeValue("matricola", "")); // assegnazione della matricola
-			userbean.setUserInfo(response.getRootElement().attributeValue("userInfo", null));
-			setSessionAttribute("userBean", userbean);
-		}
+		initUserBeanData(getUserBean(), response);
 
 		AclHome aclHome = new AclHome();
 		aclHome.getFormsAdapter().fillFormsFromResponse(response);

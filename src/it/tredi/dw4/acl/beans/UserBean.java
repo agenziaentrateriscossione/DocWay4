@@ -23,6 +23,7 @@ public class UserBean {
 	private String codSocieta = ""; // Valorizzato in caso in caso di multilogin
 	private boolean allSocieta = false; // Valorizzato in caso in caso di multilogin
 	private String userInfo; 
+	private String codSede = ""; // cod_amm_aoo di appartenenza dell'utente corrente
 	
 	// condivisione di parametri fra diversi formsAdapter:
 	// nel caso in cui il parametro sia gia' definito a livello del
@@ -37,7 +38,7 @@ public class UserBean {
 	// Conferma da parte dell'utente del check di alert a tutte le persone dell'ufficio
 	// per i form di inserimento/modifica su DocWay
 	private boolean alertForTuttiConfirm = true;
-	
+		
 	public UserBean(String login) {
 		this.login = login;
 	}
@@ -76,18 +77,26 @@ public class UserBean {
 
 		String appName = AppUtil.getAppNameFromFacesContex();
 		
-		String db = "";
+		String db = null;
 		if (session.getAttribute(appName+"reqDb") != null)
 			db = (String) session.getAttribute(appName+"reqDb");
+		
 		String repCode = "";
 		if (session.getAttribute("repCode") != null)
 			repCode = (String) session.getAttribute("repCode");
 		
+		String mutiarchEnabled = "";
+		if (session.getAttribute("mutiarchEnabled") != null)
+			mutiarchEnabled = (String) session.getAttribute("mutiarchEnabled");
+		
 		String logoutUrl = FacesContext.getCurrentInstance().getExternalContext().getRequestContextPath() + "/logout.jsp?app=" + appName;
-		if (!db.equals(""))
+		if (db != null && !db.equals(""))
 			logoutUrl += "&db=" + db;
-		if (!repCode.equals(""))
+		if (repCode != null && !repCode.equals(""))
 			logoutUrl += "&repCode=" + repCode;
+		
+		if (appName.equals("docway") && mutiarchEnabled != null && !mutiarchEnabled.isEmpty())
+			logoutUrl += "&mutiarchEnabled=" + mutiarchEnabled;
 		
 		session.invalidate();
 		context.redirect(logoutUrl);
@@ -99,6 +108,14 @@ public class UserBean {
 
 	public String getUserInfo() {
 		return userInfo;
+	}
+	
+	public String getCodSede() {
+		return codSede;
+	}
+
+	public void setCodSede(String codSede) {
+		this.codSede = codSede;
 	}
 	
 	/**

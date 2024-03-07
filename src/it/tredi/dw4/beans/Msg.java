@@ -31,8 +31,7 @@ public class Msg extends Page {
 		this.active = active;
 	}	
 	
-	public Msg() throws Exception {
-	}	
+	public Msg() { }
 	
 	public void init(Document dom) {		
     	xml = dom.asXML();

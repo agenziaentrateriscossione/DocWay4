@@ -8,18 +8,18 @@
 
 <ui:define name="content">
 	<div class="partenza">
-		
+
 		<ui:remove>
 			<h5 class="sub-header">#{i18n['dw4.view_partenza']}</h5>
 		</ui:remove>
-	
+
 		<!-- toolbar: inizio -->
 		<ui:include src="../buttonBar.xhtml">
 			<ui:param name="bean" value="#{showdocPartenzaFTRPAA}"/>
 			<ui:param name="qPersonalView" value="#{showdocPartenzaFTRPAA.personalView}" /> <!-- attiva il pulsante di ricerca specifico per il repertorio -->
 			<ui:param name="hideRipeti" value="true" />
 		</ui:include>
-		
+
 		<h:panelGroup rendered="#{!showdocPartenzaFTRPAA.doc.cestino and !empty showdocPartenzaFTRPAA.fileidFattura}">
 			<div class="btn-toolbar hidden-print" role="toolbar">
 				<div class="btn-group">
@@ -29,16 +29,50 @@
 							#{i18n['dw4.genera_fattura']}
 						</h:commandLink>
 					</ui:remove>
-					
-					<h:panelGroup rendered="#{!empty showdocPartenzaFTRPAA.fileidFattura}">					
-						<h:outputLink 
-								rendered="#{!empty showdocPartenzaFTRPAA.xslVisualizzazioneFattura}"
-								value="#{facesContext.externalContext.requestContextPath}/previewfatturapa?name=#{showdocPartenzaFTRPAA.urlEncodedFileidFattura}&amp;title=#{showdocPartenzaFTRPAA.urlEncodedFileNameFattura}&amp;xsltFileName=#{showdocPartenzaFTRPAA.urlEncodedXsltFileName}&amp;db=#{showdocPartenzaFTRPAA.formsAdapter.db}&amp;_cd=#{showdocPartenzaFTRPAA.formsAdapter.urlEncodedCustomTupleName}" 
-								styleClass="btn btn-primary" 
-								target="_blank">
-							#{i18n['dw4.mostra_fattura']}
-						</h:outputLink>
-						
+
+					<h:panelGroup rendered="#{!empty showdocPartenzaFTRPAA.fileidFattura}">
+						<h:panelGroup rendered="#{!empty showdocPartenzaFTRPAA.xslVisualizzazioneFattura and empty showdocPartenzaFTRPAA.fopVisualizzazioneFattura}">
+							<h:outputLink
+									value="#{facesContext.externalContext.requestContextPath}/previewfatturapa#{showdocPartenzaFTRPAA.servletParamsAsURL()}"
+									title="#{i18n['dw4.mostra_fattura']}"
+									styleClass="btn btn-primary"
+									target="_blank">
+								#{i18n['dw4.mostra_fattura']}
+							</h:outputLink>
+						</h:panelGroup>
+						<h:panelGroup rendered="#{!empty showdocPartenzaFTRPAA.fopVisualizzazioneFattura}">
+							<div class="btn-group menu-button-with-options" role="group">
+								<h:outputLink
+										value="#{facesContext.externalContext.requestContextPath}/previewfatturapa#{showdocPartenzaFTRPAA.servletParamsAsURL()}&amp;xslFOP=true"
+										title="#{i18n['dw4.mostra_fattura']}"
+										styleClass="btn btn-primary main-btn"
+										target="_blank">
+									#{i18n['dw4.mostra_fattura']}
+								</h:outputLink>
+								<button type="button" class="btn btn-primary dropdown-toggle select-btn" data-toggle="dropdown" title="#{i18n['dw4.altre_opzioni']}">
+									<span class="caret"></span>
+								</button>
+								<ul class="dropdown-menu">
+									<li>
+										<h:outputLink
+												value="#{facesContext.externalContext.requestContextPath}/previewfatturapa#{showdocPartenzaFTRPAA.servletParamsAsURL()}"
+												title="#{i18n['dw4.mostra_fattura']}"
+												target="_blank"
+												rendered="#{!empty showdocPartenzaFTRPAA.xslVisualizzazioneFattura}">
+											#{i18n['dw4.modello_standard']}
+										</h:outputLink>
+									</li>
+									<li>
+										<h:outputLink
+												value="#{facesContext.externalContext.requestContextPath}/previewfatturapa#{showdocPartenzaFTRPAA.servletParamsAsURL()}&amp;xslFOP=true"
+												title="#{i18n['dw4.mostra_fattura']}"
+												target="_blank">
+											#{i18n['dw4.modello_pdf']}
+										</h:outputLink>
+									</li>
+								</ul>
+							</div>
+						</h:panelGroup>
 						<h:commandLink rendered="#{showdocPartenzaFTRPAA.formsAdapter.funzionalitaDisponibili['modifica'] and !showdocPartenzaFTRPAA.doc.bozza and showdocPartenzaFTRPAA.doc.annullato ne 'si' and showdocPartenzaFTRPAA.fatturaPA.state eq 'ATTESAINVIO' and showdocPartenzaFTRPAA.statoFattura ne 'NS'}" action="#{showdocPartenzaFTRPAA.inviaFatturaPA}"  onclick="if (!owmConfirm('#{i18n['dw4.confermare_l_invio_della_fattura_tramite_il_SdI']}')) return false;" class="btn btn-primary">
 							<f:ajax execute="@form" render="@form" />
 							#{i18n['dw4.invia_fattura']}
@@ -48,39 +82,39 @@
 			</div>
 		</h:panelGroup>
 		<!-- toolbar: fine -->
-	
-	
+
+
 		<!-- scheda show: inizio -->
 		<div class="contenuto-doc row clearfix">
 			<h:panelGroup rendered="#{!showdocPartenzaFTRPAA.popupPage}">
 				<div class="col-xs-12 col-sm-2 col-md-2 col-lg-2 col-sm-push-10 col-md-push-10 col-lg-push-10 text-right">
 					<!-- azioni rapide: inizio -->
-					
+
 					<ui:include src="../smartActions.xhtml">
 						<ui:param name="bean" value="#{showdocPartenzaFTRPAA}"/>
 					</ui:include>
-					
+
 					<!-- azioni rapide: fine -->
 				</div>
 			</h:panelGroup>
 			<div class="col-xs-12 #{(showdocPartenzaFTRPAA.popupPage) ? 'col-sm-12 col-md-12 col-lg-12' : 'col-sm-10 col-md-10 col-lg-10 col-sm-pull-2 col-md-pull-2 col-lg-pull-2'}">
 				<!-- contenuto doc: inizio -->
-				
+
 				<h:panelGroup rendered="#{empty showdocPartenzaFTRPAA.doc.non_disponibile.estremi}">
 					<ui:include src="../showdoc@title.xhtml">
 						<ui:param name="doc" value="#{showdocPartenzaFTRPAA.doc}"/>
 						<ui:param name="icon" value="glyphicons-pro coins fatturapa-attiva" />
 					</ui:include>
-					
+
 					<ui:include src="../showdoc@conservazione.xhtml"><ui:param name="bean" value="#{showdocPartenzaFTRPAA}"/></ui:include>
 					<ui:include src="../showdoc@annullato.xhtml"><ui:param name="bean" value="#{showdocPartenzaFTRPAA}"/></ui:include>
-					
+
 					<div id="fixedshowdoc" class="fixed-showdoc">
 						<h:panelGroup rendered="#{showdocPartenzaFTRPAA.showSectionStatiDocumento or (showdocPartenzaFTRPAA.fatturaPA.fileNameFattura ne '' and (showdocPartenzaFTRPAA.statoFattura eq 'SEND' or showdocPartenzaFTRPAA.statoFattura eq 'DT' or showdocPartenzaFTRPAA.statoFattura eq 'AT' or showdocPartenzaFTRPAA.statoFattura eq 'NS'))}">
 							<div class="showdoc-section">
 								<div class="title">
 									#{i18n['dw4.stati_del_documento']}
-									
+
 									<div class="pull-right">
 										<span class="glyphicons-pro ok" title="#{i18n['dw4.stati_del_documento']}"></span>
 									</div>
@@ -90,7 +124,7 @@
 										<ui:include src="../showdoc@statidoc@content.xhtml">
 					                        <ui:param name="bean" value="#{showdocPartenzaFTRPAA}"/>
 					                    </ui:include>
-					                    
+
 					                    <h:panelGroup rendered="#{showdocPartenzaFTRPAA.fatturaPA.fileNameFattura ne ''}">
 						                    <h:panelGroup rendered="#{showdocPartenzaFTRPAA.statoFattura eq 'SEND'}">
 						                    	<dt>
@@ -121,67 +155,71 @@
 								</div>
 							</div>
 						</h:panelGroup>
-						
+
 						<ui:include src="../showdoc@datidoc.xhtml">
 							<ui:param name="bean" value="#{showdocPartenzaFTRPAA}"/>
 							<ui:param name="hideInvioTelematico" value="#{(!empty showdocPartenzaFTRPAA.fileidFattura) ? 'true' : 'false'}" />
 						</ui:include>
-						
+
 						<ui:include src="../showdoc@datiarchivio.xhtml">
 							<ui:param name="bean" value="#{showdocPartenzaFTRPAA}"/>
 						</ui:include>
-						
+
 						<ui:include src="./showdoc@datifattura.xhtml">
 							<ui:param name="bean" value="#{showdocPartenzaFTRPAA}"/>
 						</ui:include>
-						
+
+						<ui:include src="../../customfields/showdoc@customfields.xhtml">
+							<ui:param name="bean" value="#{showdocPartenzaFTRPAA}"/>
+			        	</ui:include>
+
 						<ui:include src="../aspects.xhtml">
 							<ui:param name="bean" value="#{showdocPartenzaFTRPAA}"/>
 						</ui:include>
-						
+
 						<ui:include src="../showdoc@responsabilita.xhtml">
 							<ui:param name="bean" value="#{showdocPartenzaFTRPAA}"/>
 						</ui:include>
-						
+
 						<ui:include src="../showdoc@xwfiles.xhtml">
 							<ui:param name="bean" value="#{showdocPartenzaFTRPAA}"/>
 						</ui:include>
-						
+
 						<ui:include src="../showdoc@workflow.xhtml">
 							<ui:param name="bean" value="#{showdocPartenzaFTRPAA}"/>
 						</ui:include>
-						
+
 						<ui:include src="../showdoc@postit.xhtml">
 							<ui:param name="bean" value="#{showdocPartenzaFTRPAA}"/>
 						</ui:include>
-						
+
 						<ui:include src="../showdoc@datialtro.xhtml">
 							<ui:param name="bean" value="#{showdocPartenzaFTRPAA}"/>
-						</ui:include>					
-						
+						</ui:include>
+
 						<ui:include src="../history.xhtml">
 							<ui:param name="bean" value="#{showdocPartenzaFTRPAA.doc}"/>
 							<ui:param name="viewbean" value="#{showdocPartenzaFTRPAA}"/>
 							<ui:param name="visible" value="#{showdocPartenzaFTRPAA.formsAdapter.funzionalitaDisponibili['showHistory']}" />
 						</ui:include>
 					</div>
-					
+
 				</h:panelGroup>
 				<h:panelGroup rendered="#{!empty showdocPartenzaFTRPAA.doc.non_disponibile.estremi}">
-				
+
 					<ui:include src="../showdoc@docnondisponibile.xhtml">
 						<ui:param name="bean" value="#{showdocPartenzaFTRPAA}"/>
 					</ui:include>
-					
+
 				</h:panelGroup>
-				
-				<h:inputTextarea value="#{showdocPartenzaFTRPAA.xml}" rendered="#{showdocPartenzaFTRPAA.debugMode}" styleClass="form-control" rows="10" />	
-				
+
+				<h:inputTextarea value="#{showdocPartenzaFTRPAA.xml}" rendered="#{showdocPartenzaFTRPAA.debugMode}" styleClass="form-control debug-textarea" rows="10" />
+
 				<!-- contenuto doc: fine -->
 			</div>
 		</div>
 		<!-- scheda show: fine -->
-		
+
 		<ui:include src="../postit.xhtml"><ui:param name="pageBean" value="#{docwayPostit}"/></ui:include>
 		<ui:include src="../verificaFirma.xhtml"><ui:param name="pageBean" value="#{docwayVerificaFirma}"/></ui:include>
 		<ui:include src="../annullamentoDoc.xhtml"><ui:param name="pageBean" value="#{docwayAnnullamentoDoc}"/></ui:include>
@@ -195,7 +233,10 @@
 		<ui:include src="../rifintLookup.xhtml"> <ui:param name="pageBean" value="#{rifInt}"/></ui:include>
 		<ui:include src="../show@task@vars.xhtml"><ui:param name="bean" value="#{docwayWfTaskVars}"/></ui:include>
 		<ui:include src="../showPersoneRuolo.xhtml"><ui:param name="bean" value="#{docwayShowPersoneRuolo}"/></ui:include>
-		
+		<ui:include src="../modalePresaInCarico.xhtml"><ui:param name="bean" value="#{showdocPartenzaFTRPAA}"/></ui:include>
+		<ui:include src="../modalePersoneIncaricate.xhtml"><ui:param name="bean" value="#{docWayShowPersonePresaInCarico}"/></ui:include>
+		<ui:include src="../../customfields/customFields@editPopup.xhtml"><ui:param name="pageBean" value="#{docEditCustomFields}"/></ui:include>
+
 	</div>
 </ui:define>
 

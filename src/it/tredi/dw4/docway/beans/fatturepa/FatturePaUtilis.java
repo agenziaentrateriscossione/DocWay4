@@ -52,6 +52,39 @@ public class FatturePaUtilis {
 		
 		return file;
 	}
+	
+	/**
+	 * dato una versione di fatturaPA restituisce il file XSL con il FOP da utilizzare per la generazione della preview della fattura
+	 * in base a quanto definito sul file di properties di DocWay
+	 * 
+	 * @param versione versione di fatturaPA 
+	 * @return
+	 */
+	public static String getXslFopForPreview(String versione) {
+		String file = "";
+		
+		if (versione == null || versione.length() == 0)
+			versione = "1.0"; // nel caso la versione sia vuota si considera la prima versione emessa (1.0). su docway non gestivamo ancora la versione di fatturaPA
+		
+		List<String> fops = DocWayProperties.getPropertyList("fatturepa.fop");
+		if (fops != null && fops.size() > 0) {
+			if (versione.toLowerCase().equals("latest")) {
+				// riscontrato errore in fase di recupero della versione di fatturaPA in fase di analisi dell'XML (archiviatore)
+				file = fops.get(fops.size()-1).substring(fops.get(fops.size()-1).indexOf(",")+1);
+			}
+			else {
+				int i = 0;
+				while (i < fops.size() && file.length() == 0) {
+					String xslt = fops.get(i);
+					if (xslt.length() > 0 && xslt.startsWith(versione + ","))
+						file = xslt.substring(xslt.indexOf(",")+1);
+					i++;
+				}
+			}
+		}
+		
+		return file;
+	}
 
 	/**
 	 * ritorna la lista di voci per il regime fiscale delle fatturePA

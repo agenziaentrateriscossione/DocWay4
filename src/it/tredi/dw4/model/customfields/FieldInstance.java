@@ -1,12 +1,5 @@
 package it.tredi.dw4.model.customfields;
 
-import it.tredi.dw4.adapters.FormAdapter;
-import it.tredi.dw4.model.XmlEntity;
-import it.tredi.dw4.utils.DateUtil;
-import it.tredi.dw4.utils.Logger;
-import it.tredi.dw4.utils.StringUtil;
-import it.tredi.dw4.utils.XMLUtil;
-
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.util.ArrayList;
@@ -23,18 +16,53 @@ import javax.xml.transform.stream.StreamSource;
 import org.dom4j.Document;
 import org.dom4j.Element;
 import org.dom4j.Node;
+import org.json.JSONArray;
+
+import it.tredi.dw4.adapters.FormAdapter;
+import it.tredi.dw4.model.XmlEntity;
+import it.tredi.dw4.utils.DateUtil;
+import it.tredi.dw4.utils.Logger;
+import it.tredi.dw4.utils.StringUtil;
+import it.tredi.dw4.utils.XMLUtil;
 
 public class FieldInstance extends XmlEntity {
 
 	private String value = "";
 	private List<Field> fields = new ArrayList<Field>(); // il campo di tipo gruppo puo' contenere altri campi
 	private List<Item> items = new ArrayList<Item>(); // utilizzato per campi checkbox, radio o select
+
+	/**
+	 * Identifica se sono previste azioni sulla selezione di un item del campo
+	 */
+	private boolean actionOnItems = false;
+	
+	/**
+	 * Elenco completo di azioni di cambio classificazione previste sugli item del campo
+	 */
+	private List<ItemAction> itemsActions = new ArrayList<ItemAction>();
 	
 	@Override
 	@SuppressWarnings("unchecked")
 	public XmlEntity init(Document dom) {
 		this.fields 	= XMLUtil.parseSetOfElement(dom, "field/field", new Field());
 		this.items 		= XMLUtil.parseSetOfElement(dom, "field/input/item", new Item());
+		
+		List<?> actions = dom.selectNodes("field/input/item/action");
+		if (actions != null && actions.size() > 0) {
+			this.actionOnItems = true;
+			
+			for (int i=0; i<actions.size(); i++) {
+				Element el = (Element) actions.get(i);
+				
+				String itemValue = el.getParent().attributeValue("value");
+				if (itemValue != null)
+					this.itemsActions.add(new ItemAction(itemValue, el.attributeValue("type", ""), el.attributeValue("value", "")));
+			}
+		}
+		else {
+			this.actionOnItems = false;
+			this.itemsActions = new ArrayList<ItemAction>();
+		}
 		
 		return this;
 	}
@@ -88,12 +116,22 @@ public class FieldInstance extends XmlEntity {
 	    	}
 	    	else if (type.equals("calendar")) {
 	    		// in caso di campo calendar occorre formattare la data in formato xway
-	    		if (value != null && value.trim().length() > 0)
-	    			params.put(prefix, DateUtil.formatDate2XW(value, null));
+	    		
+	    		// mbernardini 13/12/2016 : problema in cancellazione di un gruppo di campi da multi-istanza in caso di istanza con solo quel gruppo di campi (instances.size() da 1 a 0)
+	    		//if (value != null && value.trim().length() > 0)
+	    		if (value != null) {
+	    			String data = "";
+	    			if (!value.isEmpty())
+	    				data = DateUtil.formatDate2XW(value, null);
+	    			params.put(prefix, data);
+	    		}
 	    	}
 	    	else {
 	    		// il valore da salvare e' contenuto nel campo value
-	    		if (value != null && value.trim().length() > 0)
+	    		
+	    		// mbernardini 13/12/2016 : problema in cancellazione di un gruppo di campi da multi-istanza in caso di istanza con solo quel gruppo di campi (instances.size() da 1 a 0)
+	    		//if (value != null && value.trim().length() > 0)
+	    		if (value != null)
 	    			params.put(prefix, value);
 	    	}
     	}
@@ -126,6 +164,26 @@ public class FieldInstance extends XmlEntity {
 		this.fields = fields;
 	}
 	
+	public boolean isActionOnItems() {
+		return actionOnItems;
+	}
+
+	public void setActionOnItems(boolean actionOnItems) {
+		this.actionOnItems = actionOnItems;
+	}
+	
+	public List<ItemAction> getItemsActions() {
+		return itemsActions;
+	}
+
+	public void setItemsActions(List<ItemAction> actions) {
+		this.itemsActions = actions;
+	}
+	
+	public String getItemsActionsAsJson() {
+		return new JSONArray(this.itemsActions).toString();
+	}
+
 	/**
 	 * inizializzazione del valore da impostare sul campo
 	 * @param context elemento xml relativo al campo
@@ -331,4 +389,80 @@ public class FieldInstance extends XmlEntity {
 		}
 	}
 
+	/**
+	 * Recupera il valore associato ad un campo identificato da un path.
+	 * Formato del campo custom: section[0].field_2[0].field_3[2]
+	 *
+	 * @param fieldPath definizione del campo per il quale recuperare il valore (es. section[0].field_2[0].field_3[2])
+	 * @return Valore associato al campo
+	 */
+	public String getValueFromPath(String fieldPath) {
+		String value = null;
+		if (fieldPath != null && !fieldPath.equals("")) {
+			String propertyName = fieldPath;
+
+			int fieldIndex = fieldPath.indexOf(".");
+			if (fieldIndex != -1)
+				propertyName = fieldPath.substring(0, fieldIndex);
+
+			if (propertyName.indexOf("[") != -1)
+				propertyName = propertyName.substring(0, propertyName.indexOf("["));
+
+			String []fieldParams = propertyName.split("_");
+
+			value = this.getFields().get(new Integer(fieldParams[1]).intValue()).getValueFromPath(fieldPath);
+		}
+		return value;
+	}
+
+	/**
+	 * Esecuzione di una azione su un campo identificato da un path.
+	 * Formato del campo custom: section[0].field_2[0].field_3[2]
+	 *
+	 * @param fieldPath definizione del campo da aggiornare (es. section[0].field_2[0].field_3[2])
+	 * @param action azione da svolgere sul campo
+	 * @param value Valore da settare in base all'azione
+	 */
+	public void processActionOnField(String fieldPath, RelationshipAction action, Object value) {
+		if (fieldPath != null && !fieldPath.equals("") && action != null) {
+			String propertyName = fieldPath;
+
+			int fieldIndex = fieldPath.indexOf(".");
+			if (fieldIndex != -1)
+				propertyName = fieldPath.substring(0, fieldIndex);
+
+			if (propertyName.indexOf("[") != -1)
+				propertyName = propertyName.substring(0, propertyName.indexOf("["));
+
+			String []fieldParams = propertyName.split("_");
+
+			this.getFields().get(new Integer(fieldParams[1]).intValue()).processActionOnField(fieldPath, action, value);
+		}
+	}
+
+	/**
+	 * Ritorna TRUE se il campo contiene del contenuto (singolo campo valorizzato o campo di gruppo con almeno 
+	 * un sottocampo valorizzato), FALSE altrimenti
+	 * @return
+	 */
+	public boolean isWithContent() {
+		if (fields != null && !fields.isEmpty()) { 
+			// presenti campi annidati all'interno dell'istanza
+			boolean found = false;
+			int i = 0;
+			while (i < fields.size() && !found) {
+				Field field = fields.get(i);
+				if (field != null)
+					found = field.isWithContent();
+				i++;
+			}
+			
+			return found;
+		}
+		else {
+			// campo singolo
+			return value != null && !value.isEmpty();
+		}
+	}
+	
 }

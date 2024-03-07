@@ -40,7 +40,7 @@ public class DocEditModifyArrivoORD extends DocEditModifyArrivo {
 		initCommon(domDocumento);
 		
 		// titolo della pagina di creazione del documento
-		docEditTitle = descrizioneRepertorio + " - " + I18N.mrs("acl.modify");
+		docEditTitle = descrizioneRepertorio + " - " + (getFormsAdapter().checkBooleanFunzionalitaDisponibile("trasformaByDocEdit", false) ? I18N.mrs("dw4.trasformazioneRepertorio") : I18N.mrs("acl.modify"));
 		
 		// inizializzazione dei parametri di controllo dei duplicati
 		if (this.doc.getRif_esterni() != null && this.doc.getRif_esterni().size() > 0 

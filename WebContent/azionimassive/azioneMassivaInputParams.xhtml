@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" 
+	  xmlns:h="http://java.sun.com/jsf/html" 
+	  xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	  xmlns:ui="http://java.sun.com/jsf/facelets" 
+	  xmlns:f="http://java.sun.com/jsf/core"
+	  xmlns:c="http://java.sun.com/jsp/jstl/core"
+	  xmlns:p="http://xmlns.jcp.org/jsf/passthrough">
+<ui:composition>
+
+	<h:panelGroup rendered="#{azioneMassivaInputParams.active}">
+		<!-- Modal -->
+		<div id="azioneMassivaInputParamsModal" class="modal fade in" aria-hidden="false" aria-labelledby="azioneMassivaInputParamsModalLabel" role="dialog" tabindex="-1" style="display: block;">
+		<!--div class="modal fade" id="azioneMassivaInputParamsModal" tabindex="-1" role="dialog" aria-labelledby="azioneMassivaInputParamsModalLabel" aria-hidden="true"-->
+			<div class="modal-dialog modal-lg">
+				<div class="modal-content jsf-modal">
+					<div class="modal-header">
+						<h:commandButton styleClass="close" action="#{azioneMassivaInputParams.close}" value="&#215;">
+							<f:ajax execute="@form" render="@form" />
+						</h:commandButton>
+						
+						<h4 class="modal-title" id="azioneMassivaInputParamsModalLabel">#{azioneMassivaInputParams.azione.titolo}</h4>
+					</div>
+					<div class="modal-body">
+						
+	        			<h:panelGroup rendered="#{not empty facesContext.messageList}" layout="block" styleClass="alert alert-danger">
+							<h:messages styleClass="" id="validationMessegesAzioneMassiva" />
+						</h:panelGroup>
+					
+						<fieldset>
+							<ui:repeat id="azioneMassivaParams" var="inputParam" value="#{azioneMassivaInputParams.azione.parametriInput}" varStatus="status">
+								<div class="form-group">
+									<label class="col-sm-3 control-label">
+										<h:panelGroup rendered="#{!empty inputParam.helpMessage}">
+											<span class="popoveritem" data-toggle="popover" data-placement="top" data-trigger="hover" data-content="#{inputParam.helpMessage}" data-original-title="" title="">
+												#{(inputParam.required) ? '* ' : ''} #{inputParam.label}
+												<span class="glyphicon glyphicon-info-sign popoveritem"></span>
+											</span>
+										</h:panelGroup>
+										<h:panelGroup rendered="#{empty inputParam.helpMessage}">
+											#{(inputParam.required) ? '* ' : ''} #{inputParam.label}
+										</h:panelGroup>
+									</label>
+									
+									<h:panelGroup rendered="#{inputParam.tipo eq 'text'}">
+										<div class="col-sm-8">
+											<h:inputText value="#{inputParam.value}" styleClass="#{(inputParam.required) ? 'requiredField' : '' } #{ component.valid ? '' : 'invalidinput' } form-control" />
+										</div>
+									</h:panelGroup>
+									<h:panelGroup rendered="#{inputParam.tipo eq 'textarea'}">
+										<div class="col-sm-8">
+											<h:inputTextarea value="#{inputParam.value}" rows="4" cols="120" styleClass="#{(inputParam.required) ? 'requiredField' : '' } #{ component.valid ? '' : 'invalidinput' } form-control" />
+										</div>
+									</h:panelGroup>
+									<h:panelGroup rendered="#{inputParam.tipo eq 'calendar'}">
+										<div class="col-sm-3">
+											<div class="input-group date free" data-date-format="dd/mm/yyyy">
+												<h:inputText value="#{inputParam.value}" styleClass="#{(inputParam.required) ? 'requiredField' : '' } #{ component.valid ? '' : 'invalidinput' } form-control datepicker">
+													<f:converter converterId="DateConverter"/>
+												</h:inputText>
+												<span class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></span>
+											</div>
+										</div>
+									</h:panelGroup>
+									<h:panelGroup rendered="#{inputParam.tipo eq 'select'}">
+										<div class="col-sm-6">
+											<h:selectOneMenu value="#{inputParam.value}" styleClass="#{(inputParam.required) ? 'requiredField' : '' } #{ component.valid ? '' : 'invalidinput' } form-control">
+												<f:selectItems value="#{inputParam.options}" var="option" itemValue="#{option.value}" itemLabel="#{option.label}"></f:selectItems>
+											</h:selectOneMenu>
+										</div>
+									</h:panelGroup>
+								</div>
+							</ui:repeat>
+						</fieldset>
+	        			
+					</div>
+					<div class="modal-footer">
+						<h:commandButton styleClass="btn btn-primary" action="#{azioneMassivaInputParams.save}" value="#{i18n['acl.save']}">
+							<f:ajax execute="@form" render="@form" />
+						</h:commandButton>
+						
+						<h:commandButton styleClass="btn btn-default" action="#{azioneMassivaInputParams.close}" value="#{i18n['acl.close']}">
+							<f:ajax execute="@form" render="@form" />
+						</h:commandButton>
+					</div>
+				</div>
+			</div>
+		</div>
+		<!--script type="text/javascript">
+		$('#azioneMassivaInputParamsModal').modal('show');
+		</script-->
+	</h:panelGroup>
+
+</ui:composition>   
+</html>

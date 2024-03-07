@@ -12,7 +12,7 @@
 	
 		<h5 class="sub-header">
 			<span class="glyphicons-pro qrcode"></span>&#160;
-			<h:outputText value="#{i18n['dw4.acquisizionemassiva_qrcode']}" escape="false" />
+			<h:outputText value="#{i18n['dw4.acquisizionemassiva_qrcode']}" />
 		</h5>
 	
 		<!-- messages: inizio -->
@@ -128,13 +128,13 @@
 					var iwxHeight = "#{(enableImages) ? '' : '5px;'}";
 					
 					window.loadIWX = function() {
-						initIwxAfterReload('#{facesContext.externalContext.requestContextPath}/fileupload', '#{cookie.JSESSIONID.value}', '#{userBean.login}', '#{userBean.matricola}', '#{docEditAcquisizione.formsAdapter.customTupleName}', '#{docEditAcquisizione.formsAdapter.db}', resetJobsIwx, 'openDocEditCurrentImage', null, iwxHeight, '#{docEditAcquisizione.iwxFileTypes}', '#{docEditAcquisizione.iwxImageTypes}');
+						initIwxAfterReload("#{facesContext.externalContext.requestContextPath}/fileupload", "#{cookie.JSESSIONID.value}", "#{userBean.login}", "#{userBean.matricola}", "#{docEditAcquisizione.formsAdapter.customTupleName}", "#{docEditAcquisizione.formsAdapter.db}", resetJobsIwx, "openDocEditCurrentImage", null, iwxHeight, "#{docEditAcquisizione.iwxFileTypes}", "#{docEditAcquisizione.iwxImageTypes}", #{docEditAcquisizione.formsAdapter.sizeMaxFile}, #{docEditAcquisizione.formsAdapter.sizeMaxImg});
 					}
 					
 					$(window).load(function() {
 						jsf.ajax.addOnEvent(function(data) { 
 							if (data.status == 'success') {
-								initIwxAfterAjax('#{facesContext.externalContext.requestContextPath}/fileupload', '#{cookie.JSESSIONID.value}', '#{userBean.login}', '#{userBean.matricola}', '#{docEditAcquisizione.formsAdapter.customTupleName}', '#{docEditAcquisizione.formsAdapter.db}', 'openDocEditCurrentImage', null, iwxHeight, '#{docEditAcquisizione.iwxFileTypes}', '#{docEditAcquisizione.iwxImageTypes}');
+								initIwxAfterAjax("#{facesContext.externalContext.requestContextPath}/fileupload", "#{cookie.JSESSIONID.value}", "#{userBean.login}", "#{userBean.matricola}", "#{docEditAcquisizione.formsAdapter.customTupleName}", "#{docEditAcquisizione.formsAdapter.db}", "openDocEditCurrentImage", null, iwxHeight, "#{docEditAcquisizione.iwxFileTypes}", "#{docEditAcquisizione.iwxImageTypes}", #{docEditAcquisizione.formsAdapter.sizeMaxFile}, #{docEditAcquisizione.formsAdapter.sizeMaxImg});
 							}
 						});
 					});
@@ -145,7 +145,7 @@
 	
 	</div>
 	
-	<h:inputTextarea value="#{docEditAcquisizione.xml}" rendered="#{docEditAcquisizione.debugMode}" styleClass="form-control" rows="10" />
+	<h:inputTextarea value="#{docEditAcquisizione.xml}" rendered="#{docEditAcquisizione.debugMode}" styleClass="form-control debug-textarea" rows="10" />
 </ui:define>
 	
 </ui:composition>

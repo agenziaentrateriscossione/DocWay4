@@ -7,9 +7,11 @@
 	<application>
 		<locale-config>
 			<default-locale>it</default-locale>
+			<supported-locale>en</supported-locale>
 			<supported-locale>fr</supported-locale>
 			<supported-locale>de</supported-locale>
 			<supported-locale>ar</supported-locale>
+			<supported-locale>sq</supported-locale>
 		</locale-config>
 		<resource-bundle>
 			<base-name>it.tredi.dw4.i18n.I18N</base-name>
@@ -30,6 +32,11 @@
 		<description>ClassifConverter</description>
 		<converter-id>ClassifConverter</converter-id>
 		<converter-class>it.tredi.dw4.utils.ClassifConverter</converter-class>
+	</converter>
+	<converter>
+		<description>CodClassifConverter</description>
+		<converter-id>CodClassifConverter</converter-id>
+		<converter-class>it.tredi.dw4.utils.CodClassifConverter</converter-class>
 	</converter>
 	<converter>
 		<description>DateConverter</description>
@@ -246,6 +253,12 @@
 	-->
 
 	<!-- DocWay -->
+	
+	<managed-bean>
+		<managed-bean-name>docwayHome</managed-bean-name>
+		<managed-bean-class>it.tredi.dw4.docway.beans.DocWayHome</managed-bean-class>
+		<managed-bean-scope>session</managed-bean-scope>
+	</managed-bean>
 	<managed-bean>
 		<managed-bean-name>docwaymenu</managed-bean-name>
 		<managed-bean-class>it.tredi.dw4.docway.beans.Menu</managed-bean-class>
@@ -492,6 +505,17 @@
 		<managed-bean-scope>session</managed-bean-scope>
 	</managed-bean>
 	
+	<managed-bean>
+		<managed-bean-name>docEditRaccoglitoreINDICE</managed-bean-name>
+		<managed-bean-class>it.tredi.dw4.docway.beans.indici.DocEditRaccoglitoreINDICE</managed-bean-class>
+		<managed-bean-scope>session</managed-bean-scope>
+	</managed-bean>
+	<managed-bean>
+		<managed-bean-name>showdocRaccoglitoreINDICE</managed-bean-name>
+		<managed-bean-class>it.tredi.dw4.docway.beans.indici.ShowdocRaccoglitoreINDICE</managed-bean-class>
+		<managed-bean-scope>session</managed-bean-scope>
+	</managed-bean>
+		
 	<!-- Archivio Procedimenti (xdocwayproc) -->
 	<managed-bean>
 		<managed-bean-name>docwayprocMenu</managed-bean-name>
@@ -668,6 +692,13 @@
 	<navigation-rule>
 		<from-view-id>*</from-view-id>
 		<navigation-case>
+			<from-outcome>query@casellaPostaElettronica</from-outcome>
+			<to-view-id>/acl/query@casellaPostaElettronica.xhtml</to-view-id>
+		</navigation-case>
+	</navigation-rule>
+	<navigation-rule>
+		<from-view-id>*</from-view-id>
+		<navigation-case>
 			<from-outcome>showdoc@persona_interna</from-outcome>
 			<to-view-id>/acl/showdoc@persona_interna.xhtml</to-view-id>
 		</navigation-case>
@@ -728,6 +759,13 @@
 			<to-view-id>/acl/showdoc@aoo.xhtml</to-view-id>
 		</navigation-case>
 	</navigation-rule>
+	<navigation-rule>
+		<from-view-id>*</from-view-id>
+		<navigation-case>
+			<from-outcome>showdoc@casellaPostaElettronica</from-outcome>
+			<to-view-id>/acl/showdoc@casellaPostaElettronica.xhtml</to-view-id>
+		</navigation-case>
+	</navigation-rule>
 
 	<navigation-rule>
 		<from-view-id>*</from-view-id>
@@ -741,6 +779,13 @@
 		<navigation-case>
 			<from-outcome>acl_showtitles</from-outcome>
 			<to-view-id>/acl/showtitles.xhtml</to-view-id>
+		</navigation-case>
+	</navigation-rule>
+	<navigation-rule>
+		<from-view-id>*</from-view-id>
+		<navigation-case>
+			<from-outcome>acl_showdeleghetitles</from-outcome>
+			<to-view-id>/acl/showdeleghetitles.xhtml</to-view-id>
 		</navigation-case>
 	</navigation-rule>
 	<navigation-rule>
@@ -804,6 +849,13 @@
 		<navigation-case>
 			<from-outcome>docEdit@modify@aoo</from-outcome>
 			<to-view-id>/acl/docEdit@modify@aoo.xhtml</to-view-id>
+		</navigation-case>
+	</navigation-rule>
+	<navigation-rule>
+		<from-view-id>*</from-view-id>
+		<navigation-case>
+			<from-outcome>docEdit@modify@casellaPostaElettronica</from-outcome>
+			<to-view-id>/acl/docEdit@modify@casellaPostaElettronica.xhtml</to-view-id>
 		</navigation-case>
 	</navigation-rule>
 
@@ -870,6 +922,13 @@
 			<to-view-id>/acl/docEdit@aoo.xhtml</to-view-id>
 		</navigation-case>
 	</navigation-rule>
+	<navigation-rule>
+		<from-view-id>*</from-view-id>
+		<navigation-case>
+			<from-outcome>docEdit@casellaPostaElettronica</from-outcome>
+			<to-view-id>/acl/docEdit@casellaPostaElettronica.xhtml</to-view-id>
+		</navigation-case>
+	</navigation-rule>
 
 	<navigation-rule>
 		<from-view-id>*</from-view-id>
@@ -932,6 +991,13 @@
 		<navigation-case>
 			<from-outcome>showdoc@aoo@reload</from-outcome>
 			<to-view-id>/acl/showdoc@aoo@reload.xhtml</to-view-id>
+		</navigation-case>
+	</navigation-rule>
+	<navigation-rule>
+		<from-view-id>*</from-view-id>
+		<navigation-case>
+			<from-outcome>showdoc@casellaPostaElettronica@reload</from-outcome>
+			<to-view-id>/acl/showdoc@casellaPostaElettronica@reload.xhtml</to-view-id>
 		</navigation-case>
 	</navigation-rule>
 	<navigation-rule>
@@ -1850,6 +1916,90 @@
            <to-view-id>/docway/rep_standard/showdoc@varie@AOL@reload.xhtml</to-view-id>
        </navigation-case> 
     </navigation-rule>
+    <navigation-rule> 
+       <from-view-id>*</from-view-id>        
+       <navigation-case> 
+           <from-outcome>rep_standard_docEdit@partenza@CONTR</from-outcome>
+           <to-view-id>/docway/rep_standard/docEdit@partenza@CONTR.xhtml</to-view-id>
+       </navigation-case> 
+    </navigation-rule>
+    <navigation-rule> 
+       <from-view-id>*</from-view-id>        
+       <navigation-case> 
+           <from-outcome>rep_standard_docEdit@modify@partenza@CONTR</from-outcome>
+           <to-view-id>/docway/rep_standard/docEdit@modify@partenza@CONTR.xhtml</to-view-id>
+       </navigation-case> 
+    </navigation-rule>
+    <navigation-rule> 
+       <from-view-id>*</from-view-id>        
+       <navigation-case> 
+           <from-outcome>rep_standard_showdoc@partenza@CONTR</from-outcome>
+           <to-view-id>/docway/rep_standard/showdoc@partenza@CONTR.xhtml</to-view-id>
+       </navigation-case> 
+    </navigation-rule>
+    <navigation-rule> 
+       <from-view-id>*</from-view-id>        
+       <navigation-case> 
+           <from-outcome>rep_standard_showdoc@partenza@CONTR@reload</from-outcome>
+           <to-view-id>/docway/rep_standard/showdoc@partenza@CONTR@reload.xhtml</to-view-id>
+       </navigation-case> 
+    </navigation-rule>
+    <navigation-rule> 
+       <from-view-id>*</from-view-id>        
+       <navigation-case> 
+           <from-outcome>rep_standard_docEdit@arrivo@ALBO</from-outcome>
+           <to-view-id>/docway/rep_standard/docEdit@arrivo@ALBO.xhtml</to-view-id>
+       </navigation-case> 
+    </navigation-rule>
+    <navigation-rule> 
+       <from-view-id>*</from-view-id>        
+       <navigation-case> 
+           <from-outcome>rep_standard_docEdit@modify@arrivo@ALBO</from-outcome>
+           <to-view-id>/docway/rep_standard/docEdit@modify@arrivo@ALBO.xhtml</to-view-id>
+       </navigation-case> 
+    </navigation-rule>
+    <navigation-rule> 
+       <from-view-id>*</from-view-id>        
+       <navigation-case> 
+           <from-outcome>rep_standard_showdoc@arrivo@ALBO</from-outcome>
+           <to-view-id>/docway/rep_standard/showdoc@arrivo@ALBO.xhtml</to-view-id>
+       </navigation-case> 
+    </navigation-rule>
+    <navigation-rule> 
+       <from-view-id>*</from-view-id>        
+       <navigation-case> 
+           <from-outcome>rep_standard_showdoc@arrivo@ALBO@reload</from-outcome>
+           <to-view-id>/docway/rep_standard/showdoc@arrivo@ALBO@reload.xhtml</to-view-id>
+       </navigation-case> 
+    </navigation-rule>
+    <navigation-rule> 
+       <from-view-id>*</from-view-id>        
+       <navigation-case> 
+           <from-outcome>rep_standard_docEdit@partenza@ALBO</from-outcome>
+           <to-view-id>/docway/rep_standard/docEdit@partenza@ALBO.xhtml</to-view-id>
+       </navigation-case> 
+    </navigation-rule>
+    <navigation-rule> 
+       <from-view-id>*</from-view-id>        
+       <navigation-case> 
+           <from-outcome>rep_standard_docEdit@modify@partenza@ALBO</from-outcome>
+           <to-view-id>/docway/rep_standard/docEdit@modify@partenza@ALBO.xhtml</to-view-id>
+       </navigation-case> 
+    </navigation-rule>
+    <navigation-rule> 
+       <from-view-id>*</from-view-id>        
+       <navigation-case> 
+           <from-outcome>rep_standard_showdoc@partenza@ALBO</from-outcome>
+           <to-view-id>/docway/rep_standard/showdoc@partenza@ALBO.xhtml</to-view-id>
+       </navigation-case> 
+    </navigation-rule>
+    <navigation-rule> 
+       <from-view-id>*</from-view-id>        
+       <navigation-case> 
+           <from-outcome>rep_standard_showdoc@partenza@ALBO@reload</from-outcome>
+           <to-view-id>/docway/rep_standard/showdoc@partenza@ALBO@reload.xhtml</to-view-id>
+       </navigation-case> 
+    </navigation-rule>
     
     <!-- condotte -->
 	<navigation-rule> 
@@ -1937,9 +2087,54 @@
        </navigation-case> 
     </navigation-rule>
     
-    
-    
-    
+    <!-- raccoglitori custom di tipo indice -->
+    <navigation-rule>
+    	<from-view-id>*</from-view-id>
+    	<navigation-case>
+    		<from-outcome>indici_docEdit@raccoglitore@INDICE</from-outcome>
+    		<to-view-id>/docway/indici/docEdit@raccoglitore@INDICE.xhtml</to-view-id>
+    	</navigation-case>
+    </navigation-rule>
+
+	<navigation-rule>
+		<from-view-id>*</from-view-id>
+		<navigation-case>
+			<from-outcome>indici_docEdit@modify@raccoglitore@INDICE</from-outcome>
+			<to-view-id>/docway/indici/docEdit@modify@raccoglitore@INDICE.xhtml</to-view-id>
+		</navigation-case>
+	</navigation-rule>
+
+	<navigation-rule>
+		<from-view-id>*</from-view-id>
+		<navigation-case>
+			<from-outcome>indici_showdoc@raccoglitore@INDICE</from-outcome>
+			<to-view-id>/docway/indici/showdoc@raccoglitore@INDICE.xhtml</to-view-id>
+		</navigation-case>
+	</navigation-rule>
+
+	<navigation-rule>
+		<from-view-id>*</from-view-id>
+		<navigation-case>
+			<from-outcome>indici_showdoc@raccoglitore@INDICE@reload</from-outcome>
+			<to-view-id>/docway/indici/showdoc@raccoglitore@INDICE@reload.xhtml</to-view-id>
+		</navigation-case>
+	</navigation-rule>
+
+	<navigation-rule>
+		<from-view-id>*</from-view-id>
+		<navigation-case>
+			<from-outcome>indici_showtitles@raccoglitore@INDICE</from-outcome>
+			<to-view-id>/docway/indici/showtitles@raccoglitore@INDICE.xhtml</to-view-id>
+		</navigation-case>
+	</navigation-rule>
+
+	<navigation-rule>
+		<from-view-id>*</from-view-id>
+		<navigation-case>
+			<from-outcome>indici_query@raccoglitore@INDICE</from-outcome>
+			<to-view-id>/docway/indici/query@raccoglitore@INDICE.xhtml</to-view-id>
+		</navigation-case>
+	</navigation-rule>
         
     <!-- dexia norme -->
      <navigation-rule> 
@@ -2284,6 +2479,14 @@
 			<to-view-id>/docway/consolefattureapv.xhtml</to-view-id>
 		</navigation-case>
 	</navigation-rule>
+	
+	<render-kit>
+	    <renderer>
+	        <component-family>javax.faces.Command</component-family>
+	        <renderer-type>javax.faces.Link</renderer-type>
+	        <renderer-class>it.tredi.dw4.renderer.Dw4CommandLinkRenderer</renderer-class>
+	    </renderer>
+	</render-kit>
 
 	<lifecycle>
 		<phase-listener>it.tredi.dw4.utils.LoggingPhaseListener</phase-listener>

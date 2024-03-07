@@ -18,6 +18,9 @@
 			<ui:repeat var="postit" value="#{bean.doc.postit}">
 				<dt>#{i18n['dw4.annotazione']}</dt>
 				<dd>
+					<h:panelGroup rendered="#{not empty postit.delegato}">
+						#{fn:substringBefore(postit.delegato, ')')})&#160;#{i18n['dw4.su_delega_di']}
+					</h:panelGroup>
 					<span class="postit-operatore">#{postit.operatore}</span>
 					&#160;-&#160;
 					<span class="postit-data"><h:outputText value="#{postit.data}"><f:converter converterId="DateConverter"/></h:outputText> #{postit.ora}</span>
@@ -34,13 +37,20 @@
 						</h:panelGroup>
 					</span>
 					<br/>
-					<pre class="postit"><h:outputText value="#{postit.text}" escape="false" /></pre>
+					<pre class="postit"><h:outputText value="#{postit.text}" /></pre>
+					<ui:repeat value="#{postit.files}" var="file">
+						<span class="glyphicon glyphicon-paperclip"></span>
+						<h:outputLink value="#{facesContext.externalContext.requestContextPath}/filedownload?name=#{file.idUrlEncoded()}&amp;title=#{file.titleUrlEncoded()}&amp;mode=inline&amp;db=#{bean.formsAdapter.db}&amp;_cd=#{bean.formsAdapter.urlEncodedCustomTupleName}" title="#{i18n['dw4.apri_il_file']}" styleClass="postit_file" target="_blank">
+							<h:outputText value="#{file.title}" />
+						</h:outputLink>
+						<div class="postit_file_separator"> - </div>
+					</ui:repeat>
 				</dd>
 			</ui:repeat>
 		
 			<h:panelGroup rendered="#{! empty bean.doc.note.text and bean.formsAdapter.funzionalitaDisponibili['visioneNote']}">
 				<dt>#{i18n['dw4.notes']}</dt>
-				<dd><pre><h:outputText value="#{bean.doc.note.text}" escape="false" /></pre></dd>
+				<dd><pre><h:outputText value="#{bean.doc.note.text}" /></pre></dd>
 			</h:panelGroup>
 		</dl>
 	</h:panelGroup>

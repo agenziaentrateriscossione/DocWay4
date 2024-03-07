@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	  xmlns:h="http://java.sun.com/jsf/html"
+	  xmlns:ui="http://java.sun.com/jsf/facelets"
+	  xmlns:f="http://java.sun.com/jsf/core">
+<ui:composition>
+
+	<h:panelGroup rendered="#{!empty bean.doc.verificaVirus.status and bean.doc.verificaVirus.status ne 'clean'}">
+		<div class="showdoc-section verifica-virus-#{bean.doc.verificaVirus.status}">
+			<div class="title">
+				#{i18n['dw4.verifica_virus']}
+
+				<div class="pull-right">
+					<span class="glyphicons-pro shield" title="#{i18n['dw4.analisi_verifica_virus']}"></span>
+				</div>
+			</div>
+			<div class="analisi-virus-holder">
+				<dl class="dl-horizontal">
+					<dt>
+						#{i18n['dw4.state']}
+					</dt>
+					<dd>
+						<span class="analisi-virus-status-label">
+							<h:panelGroup rendered="#{bean.doc.verificaVirus.status eq 'progress'}">
+								#{i18n['dw4.richiesto_lo_scan_degli_allegati_del_documento_per_accertare_l_assenza_di_virus']}
+							</h:panelGroup>
+							<h:panelGroup rendered="#{bean.doc.verificaVirus.status eq 'quarantine'}">
+								#{i18n['dw4.documento_in_quarantena_Sono_stati_rilevati_virus']}
+							</h:panelGroup>
+						</span>
+					</dd>
+					<dt>
+						#{i18n['dw4.richiedente']}
+					</dt>
+					<dd>
+						#{bean.doc.verificaVirus.richiedente.operatore}
+						&#160;-&#160;<h:outputText value="#{bean.doc.verificaVirus.richiedente.data}"><f:converter converterId="DateConverter"/></h:outputText>
+						&#160;<h:outputText value="#{bean.doc.verificaVirus.richiedente.ora}" />
+					</dd>
+					<h:panelGroup rendered="#{!empty bean.doc.verificaVirus.esecutore.operatore}">
+						<dt>
+							#{i18n['dw4.esecutore']}
+						</dt>
+						<dd>
+							#{bean.doc.verificaVirus.esecutore.operatore}
+							&#160;-&#160;<h:outputText value="#{bean.doc.verificaVirus.esecutore.data}"><f:converter converterId="DateConverter"/></h:outputText>
+							&#160;<h:outputText value="#{bean.doc.verificaVirus.esecutore.ora}" />
+						</dd>
+					</h:panelGroup>
+					<h:panelGroup rendered="#{fn:length(bean.doc.verificaVirus.fileInfetti) > 0 and !empty bean.doc.verificaVirus.fileInfetti[0].title}">
+						<dt>
+							#{i18n['dw4.file_infetti']}
+						</dt>
+						<dd>
+							<ui:repeat var="file" value="#{bean.doc.verificaVirus.fileInfetti}" varStatus="status">
+								<strong>#{file.title}</strong> <h:outputText rendered="#{status.index != fn:length(bean.doc.verificaVirus.fileInfetti)-1}" value=", " />
+							</ui:repeat>
+						</dd>
+					</h:panelGroup>
+					<h:panelGroup rendered="#{bean.formsAdapter.funzionalitaDisponibili['operatoreVerificaVirus'] and bean.doc.verificaVirus.status eq 'progress'}">
+						<dt>
+							#{i18n['dw4.esito']}
+						</dt>
+						<dd>
+							<div class="btn-group">
+								<h:commandLink
+											action="#{bean.esitoVirusSicuro}"
+											title="#{i18n['dw4.l_analisi_non_ha_rilevato_la_presenza_di_virus']}"
+											styleClass="btn btn-default btn-xs btn-success openwaitmsg">
+									<i class="glyphicon glyphicon-check"></i>
+									#{i18n['dw4.documento_sicuro']}
+								</h:commandLink>
+								<h:commandLink
+											action="#{bean.esitoVirusQuarantena}"
+											title="#{i18n['dw4.sono_stati_rilevati_virus_su_allegati_del_documento']}"
+											styleClass="btn btn-default btn-xs btn-danger openwaitmsg">
+									<i class="glyphicon glyphicon-ban-circle"></i>
+									#{i18n['dw4.rilevati_virus']}
+								</h:commandLink>
+							</div>
+						</dd>
+					</h:panelGroup>
+				</dl>
+			</div>
+		</div>
+		
+		<ui:include src="./showdoc@analisivirus@infoquarantena.xhtml"><ui:param name="pageBean" value="#{docwayEsitoVerificaVirus}"/></ui:include>
+	</h:panelGroup>
+
+</ui:composition>
+</html>

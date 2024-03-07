@@ -21,7 +21,7 @@
 
 		<h5 class="sub-header">
 			<span class="comuni glyphicons-pro"></span>&#160;
-			<h:outputText value="#{i18n['acl.ins_comuni']}" escape="false" />
+			<h:outputText value="#{i18n['acl.ins_comuni']}" />
 		</h5>
 
 			<!-- messages: inizio -->
@@ -129,7 +129,7 @@
 	
 	<ui:include src="./thvincolato.xhtml"> <ui:param name="pageBean" value="#{docEditComune}"/></ui:include>
 
-	<h:inputTextarea value="#{docEditComune.xml}" rendered="#{docEditComune.debugMode}" styleClass="form-control" rows="10" />
+	<h:inputTextarea value="#{docEditComune.xml}" rendered="#{docEditComune.debugMode}" styleClass="form-control debug-textarea" rows="10" />
 </ui:define>
 
 </ui:composition>

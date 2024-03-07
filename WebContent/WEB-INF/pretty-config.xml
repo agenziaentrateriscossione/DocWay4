@@ -6,6 +6,15 @@
 		value="/user/view.xhtml" /> </url-mapping -->
 	<!-- Maps "/user/{username}" to the URL "/user/view.xhtml?username=value" -->
 	
+	<url-mapping id="load-acl">
+		<pattern value="/acl/load.pf"/>
+		<query-param name="alias">#{aclHome.aclAlias}</query-param>
+		<query-param name="value">#{aclHome.aclValue}</query-param>
+		<query-param name="db">#{aclHome.aclDb}</query-param>
+		<view-id value="/acl/home.jsf" />
+		<action onPostback="false">#{aclHome.load}</action>
+	</url-mapping>
+	
 	<url-mapping id="rifesterno-acl">
 		<pattern value="/acl/#{valueRif: aclHome.valueRif}/rifesterno.pf" />
 		<query-param name="codammaoo">#{aclHome.codAmmAooRestriction}</query-param>
@@ -77,6 +86,7 @@
 		<query-param name="alias">#{docwayHome.docAlias}</query-param>
 		<query-param name="value">#{docwayHome.docValue}</query-param>
 		<query-param name="db">#{docwayHome.docDb}</query-param>
+		<query-param name="delega">#{docwayHome.docCodDelegante}</query-param>
 		<view-id value="/docway/home.jsf" />
 		<action onPostback="false">#{docwayHome.loadDoc}</action>
 	</url-mapping>

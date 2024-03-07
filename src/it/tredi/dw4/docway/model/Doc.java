@@ -1,21 +1,8 @@
 package it.tredi.dw4.docway.model;
 
-import it.tredi.dw4.acl.model.Creazione;
-import it.tredi.dw4.acl.model.Note;
-import it.tredi.dw4.acl.model.Societa;
-import it.tredi.dw4.acl.model.UltimaModifica;
-import it.tredi.dw4.docway.model.delibere.Odg_seduta;
-import it.tredi.dw4.docway.model.delibere.Proposta;
-import it.tredi.dw4.docway.model.workflow.WorkflowInstance;
-import it.tredi.dw4.model.XmlEntity;
-import it.tredi.dw4.utils.Const;
-import it.tredi.dw4.utils.DateUtil;
-import it.tredi.dw4.utils.Logger;
-import it.tredi.dw4.utils.StringUtil;
-import it.tredi.dw4.utils.XMLUtil;
-
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
@@ -30,9 +17,25 @@ import javax.faces.event.ValueChangeEvent;
 
 import org.dom4j.Document;
 import org.dom4j.Element;
+import org.dom4j.Node;
+
+import it.tredi.dw4.acl.model.Creazione;
+import it.tredi.dw4.acl.model.Note;
+import it.tredi.dw4.acl.model.Societa;
+import it.tredi.dw4.acl.model.UltimaModifica;
+import it.tredi.dw4.docway.model.analisivirus.VerificaVirus;
+import it.tredi.dw4.docway.model.delibere.Odg_seduta;
+import it.tredi.dw4.docway.model.delibere.Proposta;
+import it.tredi.dw4.docway.model.workflow.WorkflowInstance;
+import it.tredi.dw4.model.XmlEntity;
+import it.tredi.dw4.utils.Const;
+import it.tredi.dw4.utils.DateUtil;
+import it.tredi.dw4.utils.Logger;
+import it.tredi.dw4.utils.StringUtil;
+import it.tredi.dw4.utils.XMLUtil;
 
 public class Doc extends XmlEntity {
-	
+
 	protected String nrecord;
 	protected String oggetto;
 	protected String tipo;
@@ -49,6 +52,7 @@ public class Doc extends XmlEntity {
 	protected boolean sensibile = false;
 	protected int countCcTotali;
 	protected int countCcFascicolo;
+	protected int countCcRaccoglitore;
 	protected int countCcTotaliPersonali;
 	protected Autore autore = new Autore();
 	protected Note note = new Note();
@@ -71,10 +75,14 @@ public class Doc extends XmlEntity {
 	protected Riferimenti riferimenti = new Riferimenti();
 	protected Tipologia tipologia = new Tipologia();
 	protected boolean sendMailRifInterni = true; // Indica se inviare o meno la mail di avviso ai rif interni
+	// rtirabassi - 20190911 - ERM012596 - Abilita l'invio capillare
+	protected boolean sendMailSelectedRifInterni = false;
+	private boolean checkNomi = true; // controllo nomi in caso di trasferimento RPA doc
 	protected List<Allegato> allegati = new ArrayList<Allegato>();
 	protected List<Link_interno> link_interni;
 	protected List<Xlink> xlink;
 	protected List<RifEsterno> rif_esterni;
+	protected List<Interoperabilita> interoperabilita_multipla;
 	protected List<Contenuto_in> contenuto_in;
 	protected List<XwFile> files;
 	protected List<XwFile> immagini;
@@ -98,37 +106,37 @@ public class Doc extends XmlEntity {
 	protected List<Rif> assegnazioneCDS = new ArrayList<Rif>();
 	// in caso di mezzo raccomandata riferimento al doc di raccomandata (repertorio)
 	protected List<NumeroRaccomandata> numero_raccomandata;
-	
+
 	// gestione del protocollo pregresso (se attivato)
 	private String rpp_data_prot = "";
 	private String rpp_num_prot = "";
 	private String rpp_num_rep = "";
-	
+
 	// scelta del mezzo di trasmissione in docEdit di un documento
 	protected List<Option> mezzoTrasmissioneSelect = new ArrayList<Option>();
 	protected List<Option> tipologiaSelect = new ArrayList<Option>();
-	
+
 	 // gestione multisocieta'
 	protected List<Societa> societaSelect = new ArrayList<Societa>();
 	protected String codSocieta = "";
 	protected String societa = "";
-	
+
 	protected List<Tipologia> repTipologiaSelect = new ArrayList<Tipologia>(); // select di tipologie associate al repertorio (se docedit repertorio)
-	
+
 	// liste custom attivabili da file di properties
 	protected List<Option> customSelect1 = new ArrayList<Option>();
 	protected List<Option> customSelect2 = new ArrayList<Option>();
-	
+
 	protected boolean showCDSSection = false; // Indica se visualizzare o meno la sezione dei CDS
 	protected Non_disponibile non_disponibile = new Non_disponibile();
-	
+
 	protected Prot_differito prot_differito = new Prot_differito();
-	
-	protected boolean agent_xml = false; 
-	protected boolean agent_pdf = false; 
-	protected boolean agent_ocr = false; 
+
+	protected boolean agent_xml = false;
+	protected boolean agent_pdf = false;
+	protected boolean agent_ocr = false;
 	protected boolean iagent_pdf = false;
-	
+
 	// utilizzati per l'aggiunta di nuovi doc informatici tramite iwx o upload classico
 	protected String xwFileNamesAttached = "";
 	protected String xwFileTitlesAttached = "";
@@ -136,56 +144,85 @@ public class Doc extends XmlEntity {
 	protected String xwImageNamesAttached = "";
 	protected String xwImageTitlesAttached = "";
 	protected String xwImageIdsAttached = "";
-	
+
 	// gestione CC in showdoc
 	private List<Rif> cc_list = new ArrayList<Rif>();
 	private List<Rif> cc_fasc_list = new ArrayList<Rif>();
+	private List<Rif> cc_racc_list = new ArrayList<Rif>();
 	private HashMap<String, List<Rif>> cc_ufficio = new HashMap<String, List<Rif>>();
 	private HashMap<String, List<Rif>> cc_fasc_ufficio = new HashMap<String, List<Rif>>();
-	
+	private HashMap<String, List<Rif>> cc_racc_ufficio = new HashMap<String, List<Rif>>();
+
 	// gestione mittente/destinatari doc in acquisizione immagini
 	protected MittenteDoc mittente = new MittenteDoc();
 	protected DestinatariDoc destinatari = new DestinatariDoc();
-	
+
 	// gestione dei libri firma (stato del documento: 'attesa firma', 'firmato')
 	protected String stato_firma = "";
 
 	// gestione workflow bonita
 	protected List<WorkflowInstance> workflowInstances;
-	
+
 	private Extra extra = new Extra(); // gestione dei campi extra interni al documento
-	
+
 	private boolean filesPrenotati = false; // indica se esistono files prenotati sul documento
-	
+
 	private String corpoEmail = "";
 	private int docInformaticiSize = 0;
-	
+
 	//Verbale di Seduta per Docway Delibere
 	private boolean verbale = false;
 	private String nrecord_Sed = "";
 	private String verbale_di_seduta = "";
 	private Proposta proposta = new Proposta();
 	private Odg_seduta odg_seduta = new Odg_seduta();
-	
+
 	//data corrente
 	private String currDate = "";
-	
+
 	private int countCCFromFasc = 0; // conta quanti CC associati al documento sono ereditati da uno o piu' fascicoli
-	
+
 	// dati relativi a documenti recuperati da email
 	private String messageId = "";
 	private String emailAttachmentIndex = ""; // split di email in piu' documenti in base agli allegati contenuti
-	
+
 	// cancellazione logica del documento
 	private boolean cestino = false;
 	private String datacestino = "";
+
+	// rifiuto di bozze in arrivo
+	private Rifiuto rifiuto = new Rifiuto();
+
+	// mbernardini 02/03/2017 : possibilita' di settare come readOnly il documento
+	private boolean readOnly = false;
+
+	// tiommi - campi relativi la presa in carico
+	private boolean richiestaPresaInCarico = false;
+	private boolean effettuataPresaInCarico = false;
+	private List<RifPresaInCarico> incaricatiPresaInCarico = new ArrayList<RifPresaInCarico>();
+	private List<RifPresaInCarico> rifPresaInCarico = new ArrayList<RifPresaInCarico>();
+
+	private boolean protocollabile = false;
+	private boolean repertoriabile = false;
+	
+	// tiommi - flag per gestione ricevuti da PEC
+	private boolean bozzaArrivoFromPEC = false;
+	
+	// mbernardini 06/02/2018 : trasformazione di un doc in repertorio tramite docEdit (ripristino del documento)
+    private TrasformazioneRep trasformazioneRep = new TrasformazioneRep();
+    
+    // tiommi 19/04/2018 : controllo se deve essere inserito il diritto di intervento di default ai cc
+    private boolean interventoDefaultCC = false;
+    
+    // mbernardini 09/01/2019 : gestione della verifica di virus su allegati del documento
+    private VerificaVirus verificaVirus = new VerificaVirus();
 	
 	@Override
 	public XmlEntity init(Document dom) {
 		this.init(dom, "");
 		return null;
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	public XmlEntity init(Document dom, String tipo) {
 		String xpath = "/response/doc";
@@ -200,12 +237,12 @@ public class Doc extends XmlEntity {
 		this.cod_amm_aoo = 				XMLUtil.parseStrictAttribute(dom, xpath+"/@cod_amm_aoo");
 		this.annullato = 	 			XMLUtil.parseStrictAttribute(dom, xpath+"/@annullato");
 		this.setAbrogato(XMLUtil.parseStrictAttribute(dom, xpath+"/@abrogato"));
-		String strPersonale =			XMLUtil.parseStrictAttribute(dom, xpath+"/@personale");			
+		String strPersonale =			XMLUtil.parseStrictAttribute(dom, xpath+"/@personale");
 		if (strPersonale != null && strPersonale.equals("si"))
 			this.personale = true;
 		else
 			this.personale = false;
-		String strBozza =				XMLUtil.parseStrictAttribute(dom, xpath+"/@bozza");			
+		String strBozza =				XMLUtil.parseStrictAttribute(dom, xpath+"/@bozza");
 		if (strBozza != null && strBozza.equals("si"))
 			this.bozza = true;
 		else
@@ -215,16 +252,17 @@ public class Doc extends XmlEntity {
 			this.sensibile = true;
 		else
 			this.sensibile = false;
-		this.scarto =	 				XMLUtil.parseStrictAttribute(dom, xpath+"/@scarto");
-		this.oggetto = 	 				XMLUtil.parseElement(dom, "doc/oggetto", false);
+		this.scarto = XMLUtil.parseStrictAttribute(dom, xpath+"/@scarto");
+		this.oggetto = XMLUtil.parseElement(dom, "doc/oggetto", false);
 		this.autore.init(XMLUtil.createDocument(dom, xpath+"/autore"));
 		this.note.init(XMLUtil.createDocument(dom, xpath+"/note"));
-		this.corpoEmail =		 		XMLUtil.parseStrictElement(dom, xpath+"/corpoEmail", false);
+		this.corpoEmail = XMLUtil.parseStrictElement(dom, xpath+"/corpoEmail", false);
 		this.non_disponibile.init(XMLUtil.createDocument(dom, "/response/non_disponibile"));
 		this.visibilita.init(XMLUtil.createDocument(dom, xpath+"/visibilita"));
 		this.classif.init(XMLUtil.createDocument(dom, xpath+"/classif"));
 		this.voce_indice.init(XMLUtil.createDocument(dom, xpath+"/voce_indice"));
 		this.repertorio.init(XMLUtil.createDocument(dom, xpath+"/repertorio"));
+		this.trasformazioneRep.init(XMLUtil.createDocument(dom, xpath+"/trasformazioneRep"));
 		this.registro_emergenza.init(XMLUtil.createDocument(dom, xpath+"/registro_emergenza"));
 		this.mezzo_trasmissione.init(XMLUtil.createDocument(dom, xpath+"/mezzo_trasmissione"));
 		this.minuta.init(XMLUtil.createDocument(dom, xpath+"/minuta"));
@@ -246,13 +284,34 @@ public class Doc extends XmlEntity {
 			this.rif_esterni = new ArrayList<RifEsterno>();
 			this.rif_esterni.add(new RifEsterno());
 		}
+		//tiommi: gestione invio telematico multiplo con una sola email
+		this.interoperabilita_multipla = XMLUtil.parseSetOfElement(dom, xpath+"/rif_esterni/interoperabilita_multipla/interoperabilita", new Interoperabilita());
 		this.contenuto_in = XMLUtil.parseSetOfElement(dom, xpath+"/rif_contenuto_in/contenuto_in", new Contenuto_in());
-		
+
 		this.files = XMLUtil.parseSetOfElement(dom, xpath+"/files/node()[name()='xw:file']", new XwFile());
+		//tiommi 18/12/2017 : ciclo i file alla ricerca di almeno un file da firmare che inibisca la protocollazione (protocollo in partenza)
+		//tiommi 16/03/2018 : ciclo i file alla ricerca del file relativo al daticert.xml per capire se si tratta di una bozza arrivo da pec
+		boolean fileDaFirmare = false;
+		for (XwFile file : this.files) {
+			//effettuo controllo file da firmare solo se richiesto da property
+			if (Const.DOCWAY_TIPOLOGIA_PARTENZA.equals(tipo)
+					&& Boolean.parseBoolean(XMLUtil.parseStrictAttribute(dom, "response/funzionalita_disponibili/@firmaNecessariaPerProtocollazionePartenza"))
+					&& file.isDa_firmare()) {
+				fileDaFirmare = true;
+				break;
+			}
+			//controllo se esiste un file daticert.xml per capire se si tratta di un doc in arrivo da pec
+			if (Const.DOCWAY_TIPOLOGIA_ARRIVO.equals(tipo)
+					&& bozza
+					&& file.getTitle().equalsIgnoreCase("daticert.xml")) {
+				this.bozzaArrivoFromPEC = true;
+				break;
+			}
+		}
 		this.immagini = XMLUtil.parseSetOfElement(dom, xpath+"/immagini/node()[name()='xw:file']", new XwFile());
 		if (this.immagini != null && this.immagini.size() > 0 && this.immagini.get(0) != null && this.immagini.get(0).getName() != null)
 			this.showIwxSelectedImage = this.immagini.get(0).getName();
-		
+
 		this.fascicoli_collegati = XMLUtil.parseSetOfElement(dom, xpath+"/rif_interni/fascicoli_collegati/fasc", new Fasc());
 		this.postit = XMLUtil.parseSetOfElement(dom, xpath+"/postit", new Postit());
 		this.creazione.init(XMLUtil.createDocument(dom, xpath+"/storia/creazione"));
@@ -264,22 +323,25 @@ public class Doc extends XmlEntity {
 
 		this.workflowInstances = XMLUtil.parseSetOfElement(dom, xpath+"/workflows/Instance", new WorkflowInstance());
 
-		this.motiv_ogg_div = XMLUtil.parseStrictElement(dom, xpath+ "/motivazione_oggetti_diversi"); 
-		
+		this.motiv_ogg_div = XMLUtil.parseStrictElement(dom, xpath+ "/motivazione_oggetti_diversi");
+
 		this.prot_differito.init(XMLUtil.createDocument(dom, xpath+"/prot_differito"));
-		
+
 		this.numero_raccomandata = XMLUtil.parseSetOfElement(dom, xpath+"/numero_raccomanda", new NumeroRaccomandata()); // TODO da verificare e completare dopo aver implementato le raccomandate
 		if (this.numero_raccomandata.size() == 0) this.numero_raccomandata.add(new NumeroRaccomandata());
-		
+
 		// TODO verificare la registrazione del protocollo pregresso dopo aver definito la modalità di attivazione
 		this.rpp_data_prot =	 		XMLUtil.parseStrictAttribute(dom, xpath+"/@rpp_data_prot");
 		this.rpp_num_prot =		 		XMLUtil.parseStrictAttribute(dom, xpath+"/@rpp_num_prot");
 		this.rpp_num_rep =		 		XMLUtil.parseStrictAttribute(dom, xpath+"/repertorio/@rpp_num_rep");
-		
-		this.countCcTotali = dom.selectNodes(xpath+"/rif_interni/rif[@diritto='CC'][not(@cc_from_fasc) or @cc_from_fasc='']").size();
+
+		this.countCcTotali = dom.selectNodes(xpath+"/rif_interni/rif[@diritto='CC'][not(@cc_from_fasc) or @cc_from_fasc=''][not(@cc_from_racc) or @cc_from_racc='']").size();
 		this.countCcFascicolo = dom.selectNodes(xpath+"/rif_interni/rif[@diritto='CC'][@cc_from_fasc!='' and @cc_from_fasc!='minuta_fasc']").size();
-		this.countCcTotaliPersonali = dom.selectNodes(xpath+"/rif_interni/rif[@diritto='CC' and @personale='true'][not(@cc_from_fasc) or @cc_from_fasc='']").size();
+		this.countCcRaccoglitore = dom.selectNodes(xpath+"/rif_interni/rif[@diritto='CC'][@cc_from_racc!='']").size();
+		this.countCcTotaliPersonali = dom.selectNodes(xpath+"/rif_interni/rif[@diritto='CC' and @personale='true'][not(@cc_from_fasc) or @cc_from_fasc=''][not(@cc_from_racc) or @cc_from_racc='']").size();
 		
+		this.interventoDefaultCC = Boolean.parseBoolean(XMLUtil.parseStrictAttribute(dom, "response/funzionalita_disponibili/@interventoDefaultCC"));
+
 		// Suddivido i rif_interni in base al diritto (rpa, op, cc, cds)
 		if (rif_interni != null && rif_interni.size() > 0) {
 			for (int i=0; i<rif_interni.size(); i++) {
@@ -305,7 +367,7 @@ public class Doc extends XmlEntity {
 				}
 			}
 		}
-		
+
 		// Nel caso in cui la lista di CC sia piena procedo con la suddivisione
 		// dei cc fra cc specifici del doc e recuperati da fascicolo e raggruppamento
 		// dei cc in base all'ufficio di appartenenza
@@ -313,7 +375,7 @@ public class Doc extends XmlEntity {
 			for (int i=0; i<this.assegnazioneCC.size(); i++) {
 				Rif tmpRif = (Rif) assegnazioneCC.get(i);
 				if (tmpRif != null && tmpRif.getDiritto() != null && !tmpRif.getDiritto().equals("")) {
-					if (tmpRif.getCc_from_fasc().equals("") || tmpRif.getCc_from_fasc().equals("linked_fasc")) { // cc specifici del documento
+					if ((tmpRif.getCc_from_fasc().equals("") || tmpRif.getCc_from_fasc().equals("linked_fasc")) && tmpRif.getCc_from_racc().equals("")) { // cc specifici del documento
 						cc_list.add(tmpRif);
 						if (tmpRif.getCod_uff() != null && !tmpRif.getCod_uff().equals("")) {
 							if (cc_ufficio.containsKey(tmpRif.getCod_uff())) { // ufficio gia' presente nell'hashmap
@@ -325,9 +387,23 @@ public class Doc extends XmlEntity {
 								cc_ufficio.put(tmpRif.getCod_uff(), new_list_ufficio);
 							}
 						}
-							
+
 					}
-					else if (!tmpRif.getCc_from_fasc().equals("minuta_fasc")) { // cc ereditati dal fascicolo (NON IN MINUTA)
+					// mbernardini 01/07/2016 : gestione cc raccoglitori
+					else if (!tmpRif.getCc_from_racc().equals("")) { // cc ereditati dal raccoglitore
+						cc_racc_list.add(tmpRif);
+						if (tmpRif.getCod_uff() != null && !tmpRif.getCod_uff().equals("")) {
+							if (cc_racc_ufficio.containsKey(tmpRif.getCod_uff())) { // ufficio gia' presente nell'hashmap
+								cc_racc_ufficio.get(tmpRif.getCod_uff()).add(tmpRif);
+							}
+							else { // nuovo ufficio nell'hashmap
+								ArrayList<Rif> new_list_ufficio = new ArrayList<Rif>();
+								new_list_ufficio.add(tmpRif);
+								cc_racc_ufficio.put(tmpRif.getCod_uff(), new_list_ufficio);
+							}
+						}
+					}
+					else if (!tmpRif.getCc_from_fasc().equals("") && !tmpRif.getCc_from_fasc().equals("minuta_fasc")) { // cc ereditati dal fascicolo (NON IN MINUTA)
 						cc_fasc_list.add(tmpRif);
 						if (tmpRif.getCod_uff() != null && !tmpRif.getCod_uff().equals("")) {
 							if (cc_fasc_ufficio.containsKey(tmpRif.getCod_uff())) { // ufficio gia' presente nell'hashmap
@@ -343,28 +419,28 @@ public class Doc extends XmlEntity {
 				}
 			}
 		}
-		
+
 		// Nel caso in cui la lista di CC sia vuota carico il primo rif int CC.
-		// mbernardini 13/02/2015 : il caricamento del CC vuoto deve essere fatto anche nel caso in cui la lista dei CC sia 
+		// mbernardini 13/02/2015 : il caricamento del CC vuoto deve essere fatto anche nel caso in cui la lista dei CC sia
 		// valorizzata con solo CC ereditati dal fascicolo (nuovo documento da fascicolo)
-		if (this.assegnazioneCC.size() == 0 || this.assegnazioneCC.size() == countCCFromFasc) { 
-			assegnazioneCC.add(new Rif()); 
+		if (this.assegnazioneCC.size() == 0 || this.assegnazioneCC.size() == countCCFromFasc) {
+			assegnazioneCC.add(new Rif(interventoDefaultCC));
 		}
-		
+
 		if (this.assegnazioneCDS.size() == 0) {
 			Rif cds = new Rif();
-			assegnazioneCDS.add(cds); 
+			assegnazioneCDS.add(cds);
 		}
 		else {
 			showCDSSection = true;
 		}
-		
+
 		if (this.allegati.size() == 0) this.allegati.add(new Allegato());
-		if (this.xlink.size() == 0) this.xlink.add(new Xlink()); 
-		
+		if (this.xlink.size() == 0) this.xlink.add(new Xlink());
+
 		if (this.files.size() == 0) this.files.add(new XwFile());
 		if (this.immagini.size() == 0) this.immagini.add(new XwFile());
-		
+
 		// Controllo la presenza di eventuali file prenotati
 		int index = 0;
 		while (!this.filesPrenotati && index < this.files.size()-1) {
@@ -373,14 +449,14 @@ public class Doc extends XmlEntity {
 				this.filesPrenotati = true;
 			index = index + 1;
 		}
-		
+
 		// Recupero dei valori da utilizzare per il riempimento di campi select (caso docEdit)
 		mezzoTrasmissioneSelect = XMLUtil.parseSetOfElement(dom, "/response/" + tipo + "_mezzo_trasmissione_select/option", new Option());
 		tipologiaSelect = XMLUtil.parseSetOfElement(dom, "/response/" + tipo + "_tipologia_select/option", new Option());
 		repTipologiaSelect = XMLUtil.parseSetOfElement(dom, "/response/tipologie/tipologia", new Tipologia()); // viene valorizzato solo il parametro 'text'
 		customSelect1 = XMLUtil.parseSetOfElement(dom, "/response/select_customSelect1/option", new Option()); // viene valorizzato solo il parametro 'value'
 		customSelect2 = XMLUtil.parseSetOfElement(dom, "/response/select_customSelect2/option", new Option()); // viene valorizzato solo il parametro 'value'
-		
+
 		// Recupero delle societa' da gestire
 		societaSelect = XMLUtil.parseSetOfElement(dom, "/response/societa_select/societa", new Societa());
 		codSocieta = "";
@@ -392,41 +468,110 @@ public class Doc extends XmlEntity {
 			}
 		}
 		this.societa = XMLUtil.parseStrictElement(dom, xpath + "/societa");
-		
+
 		// Recupero di mittente/destinatari per acquisizione immagini
 		this.mittente.init(XMLUtil.createDocument(dom, xpath+"/mittente"));
 		this.destinatari.init(XMLUtil.createDocument(dom, xpath+"/destinatari"));
-		
+
 		// gestione del libro firma (stato firma del documento)
 		this.stato_firma =	XMLUtil.parseStrictAttribute(dom, xpath+"/@stato_firma");
-		
+
 		// documenti derivanti da email
 		this.messageId = XMLUtil.parseStrictAttribute(dom, xpath+"/@messageId");
 		this.emailAttachmentIndex = XMLUtil.parseStrictAttribute(dom, xpath+"/@emailAttachmentIndex");
-		
+
 		extra.init(XMLUtil.createDocument(dom, xpath+"/extra")); // gestione dei campi extra
-		
+
 		// caricamento della dimensione degli allegati del doc...
 		loadDocInformaticiSize();
-		
+
 		//Verbale di Seduta per Docway Delibere
 		this.nrecord_Sed = XMLUtil.parseStrictAttribute(dom, xpath+"/verbale_di_seduta/@nrecord_sed");
 		this.verbale_di_seduta = 	 				XMLUtil.parseElement(dom, "doc/verbale_di_seduta");
-		
+
 		this.proposta.init(XMLUtil.createDocument(dom, xpath+"/proposta"));
 		this.odg_seduta.init(XMLUtil.createDocument(dom, xpath+"/odg_seduta"));
-		
-		this.verbale =  XMLUtil.countElements(dom, xpath+"/verbale_di_seduta") > 0;
-		
-		this.currDate				=	XMLUtil.parseStrictAttribute(dom, "response/@currDate");
-		
+
+		this.verbale = XMLUtil.countElements(dom, xpath+"/verbale_di_seduta") > 0;
+
+		this.currDate =	XMLUtil.parseStrictAttribute(dom, "response/@currDate");
+
 		// caricamento dei dati di cestino (cancellazione logica)
 		this.cestino = StringUtil.booleanValue(XMLUtil.parseStrictAttribute(dom, xpath+"/@cestino", ""));
 		this.datacestino = DateUtil.changeDateFormat(XMLUtil.parseStrictAttribute(dom, xpath+"/@data_cestino", ""), "yyyyMMdd", Const.DEFAULT_DATE_FORMAT); // TODO Dovrebbe essere caricato dal file di properties dell'applicazione
-				
+
+		// rifiuto di bozze in arrivo
+		this.rifiuto.init(XMLUtil.createDocument(dom, xpath + "/rifiuto"));
+
+		// mbernardini 02/03/2017 : possibilita' di settare come readOnly il documento
+		this.readOnly = StringUtil.booleanValue(XMLUtil.parseStrictAttribute(dom, xpath+"/@readOnly", ""));
+
+		// tiommi 18/07/2017 : possibilita' di settare il checkbox per la presa in carico
+		if (Boolean.parseBoolean(XMLUtil.parseStrictAttribute(dom, "response/funzionalita_disponibili/@presaInCaricoAbilitata"))) {
+			this.richiestaPresaInCarico = StringUtil.booleanValue(XMLUtil.parseStrictAttribute(dom, xpath+"/presaInCarico/@richiesta", ""));
+			this.effettuataPresaInCarico = StringUtil.booleanValue(XMLUtil.parseStrictAttribute(dom, xpath+"/presaInCarico/@effettuata", ""));
+			this.incaricatiPresaInCarico = handleRifPresaInCarico(dom.selectNodes(xpath+"/presaInCarico/incaricati/rif"));
+			this.rifPresaInCarico = handleRifPresaInCarico(dom.selectNodes(xpath+"/rif_interni/rif"), XMLUtil.parseStrictAttribute(dom, "response/funzionalita_disponibili/@tipologieAssegnazione"));
+		}
+
+		// tiommi 07/08/2017 : flag per gestione pulsanti protocollazione / associazione numero di repertorio
+		// 18/12/2017 : aggiunto controllo sui file da firmare (inibiscono la protocollazione) 
+		if (this.bozza && !this.rifiuto.getStato().equalsIgnoreCase("rifutato") && !this.tipo.equalsIgnoreCase("varie") && !fileDaFirmare)
+			this.protocollabile = true; 
+		else
+			this.protocollabile = false;
+		
+		// mbernardini 12/06/2018 : un documento e' repertoriabile anche se non in bozza ma di tipo varie
+		if ((this.bozza || (this.tipo != null && this.tipo.equals("varie")))
+				&& !this.rifiuto.getStato().equalsIgnoreCase("rifutato")
+				&& this.repertorio != null
+				&& this.repertorio.getCod() != null
+				&& !this.repertorio.getCod().isEmpty()
+				&& XMLUtil.parseStrictAttribute(dom, xpath+"/repertorio/@numero", "").isEmpty())
+			this.repertoriabile = true;
+		else
+			this.repertoriabile = false;
+		
+		this.verificaVirus.init(XMLUtil.createDocument(dom, xpath+"/verificaVirus"));
+
 		return this;
 	}
-	
+
+	/**
+	 * popola il rif relativo agli utenti che hanno preso in carico
+	 */
+	private List<RifPresaInCarico> handleRifPresaInCarico(List<Node> nodi) {
+		List<RifPresaInCarico> result = new ArrayList<RifPresaInCarico>();
+		if(nodi != null) {
+			for(Node nodo : nodi) {
+				RifPresaInCarico incaricato = new RifPresaInCarico(nodo.asXML());
+				result.add(incaricato);
+			}
+		}
+		return result;
+	}
+
+	/**
+	 * popola il rif relativo ai rif che possono prendere in carico
+	 * fa un controllo sul diritto per vedere se era tra i rif che potevano fare la presa in carico
+	 */
+	private List<Rif> handleRifPresaInCarico(List<Node> nodi, String tipologie) {
+		List<String> tipologieList = Arrays.asList(tipologie.trim().split(","));
+		List<Rif> result = new ArrayList<Rif>();
+		if(nodi != null) {
+			for(Node nodo : nodi) {
+				Rif incaricato = new Rif(nodo.asXML());
+				if(tipologieList.contains(incaricato.getDiritto())) {
+					// skip dei cc senza diritto di intervento
+					if(incaricato.getDiritto().equalsIgnoreCase("CC") && !incaricato.isIntervento())
+						continue;
+					result.add(incaricato);
+				}
+			}
+		}
+		return result;
+	}
+
 	/**
 	 * caricamento della dimensione totale dei doc informatici allegati al documento
 	 */
@@ -446,17 +591,17 @@ public class Doc extends XmlEntity {
 			docInformaticiSize = 0;
 		}
 	}
-		
+
 	@SuppressWarnings("unchecked")
 	public void initHistory(Document dom){
 		this.history = XMLUtil.parseSetOfElement(dom, "//item", new History());
 	}
-	
+
 	@Override
 	public Map<String, String> asFormAdapterParams(String prefix) {
 		return asFormAdapterParams(prefix, false, false);
 	}
-	
+
 	public Map<String, String> asFormAdapterParams(String prefix, boolean modify) {
 		return asFormAdapterParams(prefix, modify, false);
 	}
@@ -465,7 +610,7 @@ public class Doc extends XmlEntity {
 	 * impostazione parametri su formAdapter con controlli vari:
 	 * 1) distinzione fra inserimento e modifica
 	 * 2) impostazione dati di repertorio
-	 * 
+	 *
 	 * @param prefix prefisso da agganciare al nome del parametro
 	 * @param modify true se si sta eseguendo un salvataggio da modifica, false altrimenti
 	 * @param isRepertorio true se si sta eseguendo un salvataggio di un repertorio, false altrimenti
@@ -474,24 +619,24 @@ public class Doc extends XmlEntity {
 	public Map<String, String> asFormAdapterParams(String prefix, boolean modify, boolean isRepertorio) {
 		if (null == prefix) prefix = "";
     	Map<String, String> params = new HashMap<String, String>();
-    	
+
     	params.put(prefix+".@nrecord", this.nrecord);
     	params.put(prefix+".@data_prot", this.data_prot);
-    	
+
     	if (!modify) {
     		// parametri che devono essere spediti solo in caso di inserimento
-    		
+
     		// gestione multisocieta'
     		if (codSocieta != null && codSocieta.trim().length() > 0)
     			params.put("_CODSOCIETA_", codSocieta);
-    		
+
     		if (!this.tipo.equals(Const.DOCWAY_TIPOLOGIA_VARIE))
     			params.put(prefix+".@num_prot", this.num_prot);
-    		
+
     		params.put(prefix+".@anno", this.anno);
     		params.put(prefix+".@cod_amm_aoo", this.cod_amm_aoo);
     		params.put(prefix+".@annullato", this.annullato);
-    		
+
     		if (this.bozza)
         		params.put(prefix+".@bozza", "si");
         	else
@@ -500,19 +645,19 @@ public class Doc extends XmlEntity {
         		params.put(prefix+".@sensibile", "si");
         	else
         		params.put(prefix+".@sensibile", "no");
-        	
+
         	// link interni
         	for (int i = 0; i < link_interni.size(); i++) {
         		Link_interno link = (Link_interno) link_interni.get(i);
         		params.putAll(link.asFormAdapterParams(".link_interno["+String.valueOf(i)+"]"));
     		}
-        	
+
         	// inserimento in fascicolo
         	if (this.fasc_rpam != null && this.fasc_rpam.getNumero() != null && this.fasc_rpam.getNumero().length() > 0)
         		params.put("*inserisciInFascicolo", fasc_rpam.getNumero());
         	else if (this.fasc_rpa != null && this.fasc_rpa.getNumero() != null && this.fasc_rpa.getNumero().length() > 0)
         		params.put("*inserisciInFascicolo", fasc_rpa.getNumero());
-        	
+
         	// contenuto in... (gestione raccoglitori)
         	String insInRaccoglitori = "";
     		for (int i = 0; i < contenuto_in.size(); i++) {
@@ -523,7 +668,7 @@ public class Doc extends XmlEntity {
     		}
     		if (!insInRaccoglitori.equals(""))
     			params.put("*inserisciInRaccoglitori", insInRaccoglitori);
-        	
+
         	// gestione della registrazione del protocollo pregresso
         	if (this.rpp_data_prot != null && this.rpp_data_prot.length() > 0)
         		params.put(prefix+".@rpp_data_prot", this.rpp_data_prot);
@@ -531,19 +676,23 @@ public class Doc extends XmlEntity {
         		params.put(prefix+".@rpp_num_prot", this.rpp_num_prot);
         	if (this.rpp_num_rep != null && this.rpp_num_rep.length() > 0)
         		params.put(prefix+".repertorio.@rpp_num_rep", this.rpp_num_rep);
-        	
-        	// impostazione dei dati di repertorio solo se effettivamente si sta 
+
+        	// impostazione dei dati di repertorio solo se effettivamente si sta
         	// eseguedo il salvataggio di un repertorio
         	if (isRepertorio)
         		params.putAll(repertorio.asFormAdapterParams(".repertorio"));
+
         }
     	else {
     		// parametri che devono essere spediti solo in caso di modifica
-    	
+
     		if (this.tipo.equals(Const.DOCWAY_TIPOLOGIA_VARIE))
     			params.put(prefix+".@data_prot", this.data_prot); // la data di protocollo puo' essere aggiornata in modifica solo sui doc non protocollati
+    		
+    		if (isRepertorio)
+    			params.putAll(trasformazioneRep.asFormAdapterParams(".trasformazioneRep"));
     	}
-    	
+
     	// gestione dei documenti personali (solo doc non protocollati)
     	if (this.tipo.equals(Const.DOCWAY_TIPOLOGIA_VARIE)) {
     		if (this.personale)
@@ -551,7 +700,7 @@ public class Doc extends XmlEntity {
         	else
         		params.put(prefix+".@personale", "no");
     	}
-    	
+
     	params.put(prefix+".@data_reale", this.data_reale);
     	params.put(prefix+".@scarto", this.scarto);
     	params.put(prefix+".oggetto", this.oggetto);
@@ -570,7 +719,8 @@ public class Doc extends XmlEntity {
     	params.putAll(keywords.asFormAdapterParams(".keywords"));
     	params.putAll(tipologia.asFormAdapterParams(".tipologia"));
     	params.putAll(conservazione.asFormAdapterParams(".conservazione"));
-    	
+
+
     	for (int i = 0; i < xlink.size(); i++) {
     		Xlink link = (Xlink) xlink.get(i);
     		params.putAll(link.asFormAdapterParams(".xlink["+String.valueOf(i)+"]"));
@@ -579,8 +729,8 @@ public class Doc extends XmlEntity {
     		Allegato allegato = (Allegato) allegati.get(i);
     		params.putAll(allegato.asFormAdapterParams(".allegato["+String.valueOf(i)+"]"));
 		}
-    	
-    	
+
+
     	// mbernardini 10/04/2015 : gli assegnatari del documento devono essere spediti al service solo se non sono in modifica
     	// oppure se sono in modifica di un documento in bozza (o di tipo non protocollato) e non fascicolato
     	if (!modify || ((tipo.equals(Const.DOCWAY_TIPOLOGIA_VARIE) || (bozza)) && (assegnazioneRPA.getCod_fasc() == null || assegnazioneRPA.getCod_fasc().length() == 0))) {
@@ -589,9 +739,9 @@ public class Doc extends XmlEntity {
 	    	params.putAll(getAssegnazioneCCParam());
 	    	params.putAll(getAssegnazioneCDSParam());
     	}
-		
+
     	boolean existsFileDaFirmare = false;
-    	
+
     	// files
     	int index = 0;
     	boolean fileFound = false;
@@ -601,20 +751,23 @@ public class Doc extends XmlEntity {
 				// carico il file solo se valorizzati name e title
 				if (xwFile.getName() != null && xwFile.getName().length() > 0 && xwFile.getTitle() != null && xwFile.getTitle().length() > 0) {
 					fileFound = true;
-					
+
 					params.put("files.xw:file[" + index + "].@name", xwFile.getName());
 					params.put("*files.xw:file[" + index + "].@title", xwFile.getTitle());
 					// caso di inserimento del doc o modifica del doc con aggiunta di un nuovo allegato
 					params.put("*files.xw:file[" + index + "].@name", xwFile.getXwayId());
-					
+
 					params.put("*files.xw:file[" + index + "].@da_firmare", (xwFile.isDa_firmare()) ? "yes" : ""); // gestione libro firma
-					
+
+					// mbernardini 11/12/2015 : eliminato il passaggio dei dati relativi all'impronta perche' gia' gestito il recupero lato service
 					// impronta SHA256 su singoli files
+					/*
 					if (xwFile.getImpronta() != null && xwFile.getImpronta().length() > 0)
 						params.put("*files.xw:file[" + index + "].@impronta", xwFile.getImpronta());
 					if (xwFile.getTipoImpronta() != null && xwFile.getTipoImpronta().length() > 0)
 						params.put("*files.xw:file[" + index + "].@tipoImpronta", xwFile.getTipoImpronta());
-					
+					*/
+
 					index ++;
 				}
 			}
@@ -622,33 +775,36 @@ public class Doc extends XmlEntity {
 				// carico il file solo se valorizzati name e title
 				if (xwFile.getName() != null && xwFile.getName().length() > 0 && xwFile.getTitle() != null && xwFile.getTitle().length() > 0) {
 					fileFound = true;
-					
+
 					// caso di modifica del doc (allegato precedentemente caricato)
 					params.put("*files.xw:file[" + index + "].@title", xwFile.getTitle());
 					params.put("*files.xw:file[" + index + "].@name", xwFile.getName());
-					
+
 					params.put("*files.xw:file[" + index + "].@da_firmare", (xwFile.isDa_firmare()) ? "yes" : ""); // gestione libro firma
-					
+
+					// mbernardini 11/12/2015 : eliminato il passaggio dei dati relativi all'impronta perche' gia' gestito il recupero lato service
 					// impronta SHA256 su singoli files
+					/*
 					if (xwFile.getImpronta() != null && xwFile.getImpronta().length() > 0)
 						params.put("*files.xw:file[" + index + "].@impronta", xwFile.getImpronta());
 					if (xwFile.getTipoImpronta() != null && xwFile.getTipoImpronta().length() > 0)
 						params.put("*files.xw:file[" + index + "].@tipoImpronta", xwFile.getTipoImpronta());
-					
+					*/
+
 					index ++;
 				}
 			}
-			
+
 			if (xwFile.isDa_firmare())
 				existsFileDaFirmare = true;
 		}
-    	
+
     	if (!fileFound) { // necessario in caso di cancellazione da parte dell'utente di tutti i files inclusi nel documento
     		params.put("files.xw:file[0].@name", "");
     		params.put("*files.xw:file[0].@title", "");
     		params.put("*files.xw:file[0].@name", "");
     	}
-    	
+
 		// immagini
     	index = 0;
     	boolean imageFound = false;
@@ -658,20 +814,23 @@ public class Doc extends XmlEntity {
 				// carico il file solo se valorizzati name e title
 				if (xwFile.getName() != null && xwFile.getName().length() > 0 && xwFile.getTitle() != null && xwFile.getTitle().length() > 0) {
 					imageFound = true;
-					
+
 					// caso di inserimento del doc o modifica del doc con aggiunta di un nuovo allegato
 					params.put("immagini.xw:file[" + index + "].@name", xwFile.getName());
 					params.put("*immagini.xw:file[" + index + "].@title", xwFile.getTitle());
 					params.put("*immagini.xw:file[" + index + "].@name", xwFile.getXwayId());
-					
+
 					params.put("*immagini.xw:file[" + index + "].@da_firmare", (xwFile.isDa_firmare()) ? "yes" : ""); // gestione libro firma
-					
+
+					// mbernardini 11/12/2015 : eliminato il passaggio dei dati relativi all'impronta perche' gia' gestito il recupero lato service
 					// impronta SHA256 su singoli files
+					/*
 					if (xwFile.getImpronta() != null && xwFile.getImpronta().length() > 0)
 						params.put("*immagini.xw:file[" + index + "].@impronta", xwFile.getImpronta());
 					if (xwFile.getTipoImpronta() != null && xwFile.getTipoImpronta().length() > 0)
 						params.put("*immagini.xw:file[" + index + "].@tipoImpronta", xwFile.getTipoImpronta());
-					
+					*/
+
 					index ++;
 				}
 			}
@@ -679,33 +838,36 @@ public class Doc extends XmlEntity {
 				// carico il file solo se valorizzati name e title
 				if (xwFile.getName() != null && xwFile.getName().length() > 0 && xwFile.getTitle() != null && xwFile.getTitle().length() > 0) {
 					imageFound = true;
-					
+
 					// caso di modifica del doc (allegato precedentemente caricato)
 					params.put("*immagini.xw:file[" + index + "].@title", xwFile.getTitle());
 					params.put("*immagini.xw:file[" + index + "].@name", xwFile.getName());
-					
+
 					params.put("*immagini.xw:file[" + index + "].@da_firmare", (xwFile.isDa_firmare()) ? "yes" : ""); // gestione libro firma
-					
+
+					// mbernardini 11/12/2015 : eliminato il passaggio dei dati relativi all'impronta perche' gia' gestito il recupero lato service
 					// impronta SHA256 su singoli files
+					/*
 					if (xwFile.getImpronta() != null && xwFile.getImpronta().length() > 0)
 						params.put("*immagini.xw:file[" + index + "].@impronta", xwFile.getImpronta());
 					if (xwFile.getTipoImpronta() != null && xwFile.getTipoImpronta().length() > 0)
 						params.put("*immagini.xw:file[" + index + "].@tipoImpronta", xwFile.getTipoImpronta());
-					
+					*/
+
 					index ++;
 				}
 			}
-			
+
 			if (xwFile.isDa_firmare())
 				existsFileDaFirmare = true;
 		}
-    	
+
     	if (!imageFound) { // necessario in caso di cancellazione da parte dell'utente di tutte le immagini incluse nel documento
     		params.put("immagini.xw:file[0].@name", "");
     		params.put("*immagini.xw:file[0].@title", "");
     		params.put("*immagini.xw:file[0].@name", "");
     	}
-		
+
 		// conversioni di files e immagini
 		if (agent_xml)
 			params.put("*agent_xml", "1");
@@ -715,7 +877,7 @@ public class Doc extends XmlEntity {
 			params.put("*agent_ocr", "1");
 		if (iagent_pdf)
 			params.put("*iagent_pdf", "1");
-		
+
 		// se almeno un file da firmare imposto lo stato firma del documento
 		if (existsFileDaFirmare)
 			params.put(".@stato_firma", "attesa firma");
@@ -723,17 +885,22 @@ public class Doc extends XmlEntity {
 			params.put(".@stato_firma", "");
 		else
 			params.put(".@stato_firma", stato_firma);
-		
+
 		for (int i = 0; i < numero_raccomandata.size(); i++) {
     		NumeroRaccomandata numRaccomandata = (NumeroRaccomandata) numero_raccomandata.get(i);
     		params.putAll(numRaccomandata.asFormAdapterParams(".numero_raccomandata["+String.valueOf(i)+"]"));
 		}
-    	
+
 		// Imposto il parametro relativo all'invio della mail di notifica ai rif int
 		params.put("*sendMailRifInterni", this.sendMailRifInterni+"");
-		
+		// ERM012596 - rtirabassi - notifica capillare
+		params.put("*sendMailSelectedRifInterni", this.sendMailSelectedRifInterni+"");
+		if ( this.sendMailSelectedRifInterni ) {
+			params.put("*invioCapillareNotifiche", this.getNotificheCapillariParam());
+		}
+
 		params.putAll(extra.asFormAdapterParams(prefix+".extra", modify)); // gestione dei campi extra
-    	
+
 		//Verbale di Seduta per Docway Delibere
 		if(verbale && !modify){
 			params.put(prefix+".verbale_di_seduta.@nrecord_sed", this.nrecord_Sed);
@@ -741,23 +908,26 @@ public class Doc extends XmlEntity {
 			params.put(prefix+".proposta.@cod_organo", this.proposta.getCod_organo());
 			params.put(prefix+".odg_seduta.@data_convocazione", this.odg_seduta.getData_convocazione());
 		}
-		
+
+		if(this.richiestaPresaInCarico)
+			params.put("*handleRichiestaPresaInCarico", "true");
+
     	return params;
 	}
-	
+
 	/**
 	 * impostazione parametri su formAdapter in caso di acquisizione immagini
-	 * 
+	 *
 	 * @param prefix
 	 * @return
 	 */
 	public Map<String, String> asFormAdapterImagesParams(String prefix) {
 		if (null == prefix) prefix = "";
     	Map<String, String> params = new HashMap<String, String>();
-    	
+
     	// dati di conservazione
     	params.putAll(conservazione.asFormAdapterParams(".conservazione"));
-    	
+
     	// immagini
 		for (int i = 0; i < immagini.size(); i++) {
 			XwFile xwFile = (XwFile) immagini.get(i);
@@ -768,16 +938,16 @@ public class Doc extends XmlEntity {
 				params.put(".immagini.xw:file[" + i + "].@name", xwFile.getXwayId());
 			}
 		}
-		
+
 		// conversioni di immagini
 		if (agent_ocr)
 			params.put("*agent_ocr", "1");
 		if (iagent_pdf)
 			params.put("*iagent_pdf", "1");
-    	
+
     	return params;
 	}
-	
+
 	public Map<String, String> getAssegnazioneRPAParam(){
 		Map<String, String> params = new LinkedHashMap<String, String>();
 		//if (assegnazioneRPA != null && assegnazioneRPA.getNome_uff() != null && assegnazioneRPA.getNome_uff().length() > 0) {
@@ -785,7 +955,7 @@ public class Doc extends XmlEntity {
 		//}
 		return params;
 	}
-	
+
 	public Map<String, String> getAssegnazioneRPAMParam(){
 		Map<String, String> params = new LinkedHashMap<String, String>();
 		//if (assegnazioneRPAM != null && assegnazioneRPAM.getNome_uff() != null && assegnazioneRPAM.getNome_uff().length() > 0) {
@@ -793,7 +963,7 @@ public class Doc extends XmlEntity {
 		//}
 		return params;
 	}
-	
+
 	public Map<String, String> getAssegnazioneOPParam(){
 		Map<String, String> params = new LinkedHashMap<String, String>();
 		//if (assegnazioneOP != null && assegnazioneOP.getNome_uff() != null && assegnazioneOP.getNome_uff().length() > 0) {
@@ -801,7 +971,7 @@ public class Doc extends XmlEntity {
 		//}
 		return params;
 	}
-	
+
 	public Map<String, String> getAssegnazioneOPMParam(){
 		Map<String, String> params = new LinkedHashMap<String, String>();
 		//if (assegnazioneOPM != null && assegnazioneOPM.getNome_uff() != null && assegnazioneOPM.getNome_uff().length() > 0) {
@@ -809,7 +979,7 @@ public class Doc extends XmlEntity {
 		//}
 		return params;
 	}
-	
+
 	/**
 	 * aggiunta di parametri di assegnazione dei CDS
 	 * @param addEmpty true se occorre passare il parametro anche se CDS e' vuoto, false altrimenti
@@ -827,7 +997,7 @@ public class Doc extends XmlEntity {
 		}
 		return params;
 	}
-	
+
 	public Map<String, String> getAssegnazioneCCParam(){
 		Map<String, String> params = new LinkedHashMap<String, String>();
 		if (assegnazioneCC != null && assegnazioneCC.size() > 0) {
@@ -841,6 +1011,56 @@ public class Doc extends XmlEntity {
 		return params;
 	}
 	
+	/**
+	 * Codifica i riferimenti interni selezionati per l'invio al servizio
+	 * @return la codifica del singolo riferimento
+	 */
+	private String encodeNotificaCapillare(Rif r) {
+		if ( null == r ) return "" ;
+		if ( r.isUfficio_completo() ) {
+			return "$U$"+r.getCod_uff();
+		}
+		if ( "ruolo" == r.getTipo_uff() ) {
+			return "$R$"+r.getNome_uff();
+		}
+		return "$P$"+r.getCod_persona();
+	}
+	
+	/**
+	 * Elenca i riferimenti interni selezionati per la notifica capillare in forma codificata
+	 * @return 
+	 */
+	public String getNotificheCapillariParam(){
+        String capillari = "";
+		if (assegnazioneRPA.isNotifica_capillare() ) capillari += "|" + encodeNotificaCapillare(assegnazioneRPA) ;
+		if (assegnazioneRPAM.isNotifica_capillare() ) capillari += "|" + encodeNotificaCapillare(assegnazioneRPAM) ;
+		if (assegnazioneOP.isNotifica_capillare() ) capillari += "|" + encodeNotificaCapillare(assegnazioneOP) ;
+		if (assegnazioneOPM.isNotifica_capillare() ) capillari += "|" + encodeNotificaCapillare(assegnazioneOPM) ;
+		if (assegnazioneCC != null && assegnazioneCC.size() > 0) {
+			for (int i=0; i<assegnazioneCC.size(); i++) {
+				Rif rif = (Rif) assegnazioneCC.get(i);
+				if (rif != null && rif.isNotifica_capillare()) {
+					String cod = encodeNotificaCapillare(rif);
+					if ( !cod.isEmpty() ) { 
+						capillari += "|" + cod ;
+					}
+				}
+			}
+		}
+		if (assegnazioneCDS != null && assegnazioneCDS.size() > 0) {
+			for (int i=0; i<assegnazioneCDS.size(); i++) {
+				Rif rif = (Rif) assegnazioneCDS.get(i);
+				if (rif != null && rif.isNotifica_capillare()) {
+					String cod = encodeNotificaCapillare(rif);
+					if ( !cod.isEmpty() ) { 
+						capillari += "|" + cod ;
+					}
+				}
+			}
+		}
+		return (capillari.length() > 0 ? capillari.substring(1) : capillari);
+	}
+
 	public void setNrecord(String nrecord) {
 		this.nrecord = nrecord;
 	}
@@ -864,7 +1084,7 @@ public class Doc extends XmlEntity {
 	public Classif getClassif() {
 		return classif;
 	}
-	
+
 	public void setClassifNV(Classif classif) {
 		this.classifNV = classif;
 	}
@@ -872,7 +1092,7 @@ public class Doc extends XmlEntity {
 	public Classif getClassifNV() {
 		return classifNV;
 	}
-	
+
 	public String getMotiv_ogg_div() {
 		return motiv_ogg_div;
 	}
@@ -896,7 +1116,7 @@ public class Doc extends XmlEntity {
 	public List<WorkflowInstance> getWorkflowInstances() {
 		return workflowInstances;
 	}
-	
+
 	public void setCreazione(Creazione creazione) {
 		this.creazione = creazione;
 	}
@@ -904,7 +1124,7 @@ public class Doc extends XmlEntity {
 	public Creazione getCreazione() {
 		return creazione;
 	}
-	
+
 	public void setProtocollazione(Protocollazione protocollazione) {
 		this.protocollazione = protocollazione;
 	}
@@ -952,7 +1172,7 @@ public class Doc extends XmlEntity {
 	public String getData_prot() {
 		return data_prot;
 	}
-	
+
 	public String getConverted_data_prot() {
 		if (data_prot.length() == 8)
 			return data_prot.substring(6)+"/"+data_prot.substring(4, 6)+"/"+data_prot.substring(0, 4); // TODO caricare il formato della data da file di properties
@@ -1031,7 +1251,7 @@ public class Doc extends XmlEntity {
 	public Scadenza getScadenza() {
 		return scadenza;
 	}
-	
+
 	public void setConservazione(Conservazione conservazione) {
 		this.conservazione = conservazione;
 	}
@@ -1039,7 +1259,7 @@ public class Doc extends XmlEntity {
 	public Conservazione getConservazione() {
 		return conservazione;
 	}
-	
+
 	public Pubblicazione getPubblicazione() {
 		return pubblicazione;
 	}
@@ -1079,7 +1299,7 @@ public class Doc extends XmlEntity {
 	public List<XwFile> getImmagini() {
 		return immagini;
 	}
-	
+
 	public String getShowIwxSelectedImage() {
 		return showIwxSelectedImage;
 	}
@@ -1094,6 +1314,14 @@ public class Doc extends XmlEntity {
 
 	public List<RifEsterno> getRif_esterni() {
 		return rif_esterni;
+	}
+
+	public void setInteroperabilita_multipla(List<Interoperabilita> interoperabilita_multipla) {
+		this.interoperabilita_multipla = interoperabilita_multipla;
+	}
+
+	public List<Interoperabilita> getInteroperabilita_multipla() {
+		return interoperabilita_multipla;
 	}
 
 	public void setFasc_rpa(Fasc_rpa fasc_rpa) {
@@ -1111,7 +1339,7 @@ public class Doc extends XmlEntity {
 	public Autore getAutore() {
 		return autore;
 	}
-	
+
 	public void setNote(Note note) {
 		this.note = note;
 	}
@@ -1119,7 +1347,7 @@ public class Doc extends XmlEntity {
 	public Note getNote() {
 		return note;
 	}
-	
+
 	public void setPostit(List<Postit> postit) {
 		this.postit = postit;
 	}
@@ -1135,13 +1363,21 @@ public class Doc extends XmlEntity {
 	public int getCountCcTotali() {
 		return countCcTotali;
 	}
-	
+
 	public void setCountCcFascicolo(int countCcFascicolo) {
 		this.countCcFascicolo = countCcFascicolo;
 	}
 
 	public int getCountCcFascicolo() {
 		return countCcFascicolo;
+	}
+
+	public int getCountCcRaccoglitore() {
+		return countCcRaccoglitore;
+	}
+
+	public void setCountCcRaccoglitore(int countCcRaccoglitore) {
+		this.countCcRaccoglitore = countCcRaccoglitore;
 	}
 
 	public void setCountCcTotaliPersonali(int countCcTotaliPersonali) {
@@ -1183,7 +1419,7 @@ public class Doc extends XmlEntity {
 	public boolean isPersonale() {
 		return personale;
 	}
-	
+
 	public void setBozza(boolean bozza) {
 		this.bozza = bozza;
 	}
@@ -1191,7 +1427,7 @@ public class Doc extends XmlEntity {
 	public boolean isBozza() {
 		return bozza;
 	}
-	
+
 	public void setSensibile(boolean sensibile) {
 		this.sensibile = sensibile;
 	}
@@ -1255,15 +1491,15 @@ public class Doc extends XmlEntity {
 	public void setAssegnazioneCDS(List<Rif> assegnazioneCDS) {
 		this.assegnazioneCDS = assegnazioneCDS;
 	}
-	
+
 	public void setAssegnazioneRESO(Rif assegnazioneRESO) {
 		this.assegnazioneRESO = assegnazioneRESO;
 	}
-	
+
 	public Rif getAssegnazioneRESO() {
 		return assegnazioneRESO;
 	}
-	
+
 	public List<Rif> getCc_list() {
 		return cc_list;
 	}
@@ -1295,23 +1531,55 @@ public class Doc extends XmlEntity {
 	public void setCc_fasc_ufficio(HashMap<String, List<Rif>> cc_fasc_ufficio) {
 		this.cc_fasc_ufficio = cc_fasc_ufficio;
 	}
-	
+
+	public List<Rif> getCc_racc_list() {
+		return cc_racc_list;
+	}
+
+	public void setCc_racc_list(List<Rif> cc_racc_list) {
+		this.cc_racc_list = cc_racc_list;
+	}
+
+	public HashMap<String, List<Rif>> getCc_racc_ufficio() {
+		return cc_racc_ufficio;
+	}
+
+	public void setCc_racc_ufficio(HashMap<String, List<Rif>> cc_racc_ufficio) {
+		this.cc_racc_ufficio = cc_racc_ufficio;
+	}
+
 	public void setSendMailRifInterni(boolean sendMailRifInterni) {
 		this.sendMailRifInterni = sendMailRifInterni;
 	}
-	
+
 	public boolean isSendMailRifInterni() {
 		return sendMailRifInterni;
 	}
+
+	public void setSendMailSelectedRifInterni(boolean sendMailSelectedRifInterni) {
+		this.sendMailSelectedRifInterni = sendMailSelectedRifInterni;
+	}
 	
+	public boolean isSendMailSelectedRifInterni() {
+		return sendMailSelectedRifInterni;
+	}
+
+	public boolean isCheckNomi() {
+		return checkNomi;
+	}
+
+	public void setCheckNomi(boolean checkNomi) {
+		this.checkNomi = checkNomi;
+	}
+
 	public boolean isAgent_xml() {
 		return agent_xml;
 	}
-	
+
 	public void setAgent_xml(boolean agent_xml) {
 		this.agent_xml = agent_xml;
 	}
-	
+
 	public boolean isAgent_pdf() {
 		return agent_pdf;
 	}
@@ -1319,15 +1587,15 @@ public class Doc extends XmlEntity {
 	public void setAgent_pdf(boolean agent_pdf) {
 		this.agent_pdf = agent_pdf;
 	}
-	
+
 	public boolean isAgent_ocr() {
 		return agent_ocr;
 	}
-	
+
 	public void setAgent_ocr(boolean agent_ocr) {
 		this.agent_ocr = agent_ocr;
 	}
-	
+
 	public boolean isIagent_pdf() {
 		return iagent_pdf;
 	}
@@ -1335,7 +1603,7 @@ public class Doc extends XmlEntity {
 	public void setIagent_pdf(boolean iagent_pdf) {
 		this.iagent_pdf = iagent_pdf;
 	}
-	
+
 
 	public String getXwImageIdsAttached() {
 		return xwImageIdsAttached;
@@ -1352,7 +1620,7 @@ public class Doc extends XmlEntity {
 	public void setXwImageNamesAttached(String xwImageNamesAttached) {
 		this.xwImageNamesAttached = xwImageNamesAttached;
 	}
-	
+
 	public String getXwImageTitlesAttached() {
 		return xwImageTitlesAttached;
 	}
@@ -1376,7 +1644,7 @@ public class Doc extends XmlEntity {
 	public void setXwFileNamesAttached(String xwFileNamesAttached) {
 		this.xwFileNamesAttached = xwFileNamesAttached;
 	}
-	
+
 	public String getXwFileTitlesAttached() {
 		return xwFileTitlesAttached;
 	}
@@ -1384,7 +1652,7 @@ public class Doc extends XmlEntity {
 	public void setXwFileTitlesAttached(String xwFileTitlesAttached) {
 		this.xwFileTitlesAttached = xwFileTitlesAttached;
 	}
-	
+
 	/**
 	 * Abilita/Disabilita la sezione CDS del documento
 	 * @param showCDSSection true se la sezione deve essere aperta, false se la sezione deve essere chiusa
@@ -1397,43 +1665,43 @@ public class Doc extends XmlEntity {
 		}
 		this.showCDSSection = showCDSSection;
 	}
-	
+
 	public boolean isShowCDSSection() {
 		return showCDSSection;
 	}
-	
+
 	public void setRegistro_emergenza(Registro_emergenza registro_emergenza) {
 		this.registro_emergenza = registro_emergenza;
 	}
-	
+
 	public Registro_emergenza getRegistro_emergenza() {
 		return registro_emergenza;
 	}
-	
+
 	public void setRepertorio(Repertorio repertorio) {
 		this.repertorio = repertorio;
 	}
-	
+
 	public Repertorio getRepertorio() {
 		return repertorio;
 	}
-	
+
 	public void setAssegnazioneRPAM(Rif assegnazioneRPAM) {
 		this.assegnazioneRPAM = assegnazioneRPAM;
 	}
-	
+
 	public Rif getAssegnazioneRPAM() {
 		return assegnazioneRPAM;
 	}
-	
+
 	public void setMinuta(Minuta minuta) {
 		this.minuta = minuta;
 	}
-	
+
 	public Minuta getMinuta() {
 		return minuta;
 	}
-	
+
 	public Storia getSegnatura(){
 		Storia segnatura = null;
 		for (Iterator<Storia> iter = storia.iterator(); iter.hasNext();) {
@@ -1443,39 +1711,39 @@ public class Doc extends XmlEntity {
 		}
 		return segnatura;
 	}
-	
+
 	public void setVisibilita(Visibilita visibilita) {
 		this.visibilita = visibilita;
 	}
-	
+
 	public Visibilita getVisibilita() {
 		return visibilita;
 	}
-	
+
 	public List<Option> getMezzoTrasmissioneSelect() {
 		return mezzoTrasmissioneSelect;
 	}
-	
+
 	public void setMezzoTrasmissioneSelect(List<Option> mezzo_trasmissione_select) {
 		this.mezzoTrasmissioneSelect = mezzo_trasmissione_select;
 	}
-	
+
 	public List<Option> getTipologiaSelect() {
 		return tipologiaSelect;
 	}
-	
+
 	public void setTipologiaSelect(List<Option> opzioni) {
 		this.tipologiaSelect = opzioni;
 	}
-	
+
 	public List<Societa> getSocietaSelect() {
 		return societaSelect;
 	}
-	
+
 	public void setSocietaSelect(List<Societa> societa_select) {
 		this.societaSelect = societa_select;
 	}
-	
+
 	public String getCodSocieta() {
 		return codSocieta;
 	}
@@ -1483,7 +1751,7 @@ public class Doc extends XmlEntity {
 	public void setCodSocieta(String codSocieta) {
 		this.codSocieta = codSocieta;
 	}
-	
+
 	public String getSocieta() {
 		return societa;
 	}
@@ -1491,79 +1759,79 @@ public class Doc extends XmlEntity {
 	public void setSocieta(String societa) {
 		this.societa = societa;
 	}
-	
+
 	public List<Tipologia> getRepTipologiaSelect() {
 		return repTipologiaSelect;
 	}
-	
+
 	public void setRepTipologiaSelect(List<Tipologia> tipologia) {
 		this.repTipologiaSelect = tipologia;
 	}
-	
+
 	public List<Option> getCustomSelect2() {
 		return customSelect2;
 	}
-	
+
 	public void setCustomSelect2(List<Option> customSelect2) {
 		this.customSelect2 = customSelect2;
 	}
-	
+
 	public List<Option> getCustomSelect1() {
 		return customSelect1;
 	}
-	
+
 	public void setCustomSelect1(List<Option> customSelect1) {
 		this.customSelect1 = customSelect1;
 	}
-	
+
 	public List<NumeroRaccomandata> getNumero_raccomandata() {
 		return numero_raccomandata;
 	}
-	
+
 	public void setNumero_raccomandata(List<NumeroRaccomandata> numero_raccomandata) {
 		this.numero_raccomandata = numero_raccomandata;
 	}
-	
+
 	public String getRpp_num_rep() {
 		return rpp_num_rep;
 	}
-	
+
 	public void setRpp_num_rep(String rpp_num_rep) {
 		this.rpp_num_rep = rpp_num_rep;
 	}
-	
+
 	public String getRpp_num_prot() {
 		return rpp_num_prot;
 	}
-	
+
 	public void setRpp_num_prot(String rpp_num_prot) {
 		this.rpp_num_prot = rpp_num_prot;
 	}
-	
+
 	public String getRpp_data_prot() {
 		return rpp_data_prot;
 	}
-	
+
 	public void setRpp_data_prot(String rpp_data_prot) {
 		this.rpp_data_prot = rpp_data_prot;
 	}
-	
+
 	public void setFasc_rpam(Fasc_rpam fasc_rpam) {
 		this.fasc_rpam = fasc_rpam;
 	}
-	
+
 	public Fasc_rpam getFasc_rpam() {
 		return fasc_rpam;
 	}
-	
+
 	public void setVoce_indice(Voce_indice voce_indice) {
 		this.voce_indice = voce_indice;
 	}
-	
+
 	public Voce_indice getVoce_indice() {
 		return voce_indice;
 	}
-	
+
 	public MittenteDoc getMittente() {
 		return mittente;
 	}
@@ -1571,7 +1839,7 @@ public class Doc extends XmlEntity {
 	public void setMittente(MittenteDoc mittente) {
 		this.mittente = mittente;
 	}
-	
+
 	public DestinatariDoc getDestinatari() {
 		return destinatari;
 	}
@@ -1579,7 +1847,7 @@ public class Doc extends XmlEntity {
 	public void setDestinatar(DestinatariDoc destinatari) {
 		this.destinatari = destinatari;
 	}
-	
+
 	/**
 	 * Imposta il parametro di invio delle mail di notifica ai rif int in base
 	 * al valore assunto da bozza
@@ -1588,7 +1856,7 @@ public class Doc extends XmlEntity {
 	public void setNotificaAfterBozza(ValueChangeEvent e) {
 		setSendMailRifInterni(!new Boolean(e.getNewValue()+"").booleanValue());
 	}
-	
+
 	/**
 	 * Aggiunta di un nuovo Rif int in CC
 	 */
@@ -1596,12 +1864,12 @@ public class Doc extends XmlEntity {
 		int index = 0;
 		if (rif != null)
 			index = assegnazioneCC.indexOf(rif);
-		
+
 		if (assegnazioneCC != null) {
-			Rif rifToAdd = new Rif();
+			Rif rifToAdd = new Rif(interventoDefaultCC);
 			if (rif != null && rif.getTipo_uff() != null && rif.getTipo_uff().equals("ruolo"))
 				rifToAdd.setTipo_uff("ruolo");
-			
+
 			if (assegnazioneCC.size() > index)
 				assegnazioneCC.add(index+1, rifToAdd);
 			else
@@ -1616,12 +1884,12 @@ public class Doc extends XmlEntity {
 		int index = 0;
 		if (rif != null)
 			index = assegnazioneCDS.indexOf(rif);
-		
+
 		if (assegnazioneCDS != null) {
 			Rif rifToAdd = new Rif();
 			if (rif != null && rif.getTipo_uff() != null && rif.getTipo_uff().equals("ruolo"))
 				rifToAdd.setTipo_uff("ruolo");
-			
+
 			if (assegnazioneCDS.size() > index)
 				assegnazioneCDS.add(index+1, rifToAdd);
 			else
@@ -1637,18 +1905,18 @@ public class Doc extends XmlEntity {
 			assegnazioneCC.remove(rif);
 			// mbernardini 13/02/2015 : se la lista di CC e' vuota o se tutti i CC presenti sono ereditati da un fascicolo
 			// occorre inserire una istanza vuota in modo da permettere l'inserimento all'operatore (i CC ereditati non sono modificabili)
-			if (assegnazioneCC.isEmpty() || assegnazioneCC.size() == countCCFromFasc)  
-				assegnazioneCC.add(new Rif());
+			if (assegnazioneCC.isEmpty() || assegnazioneCC.size() == countCCFromFasc)
+				assegnazioneCC.add(new Rif(interventoDefaultCC));
 		}
 	}
-	
+
 	/**
 	 * Eliminazione di un Rif int in CDS
 	 */
 	public void deleteRifintCDS(Rif rif){
 		if (rif != null) {
 			assegnazioneCDS.remove(rif);
-			if (assegnazioneCDS.isEmpty()) 
+			if (assegnazioneCDS.isEmpty())
 				assegnazioneCDS.add(new Rif());
 		}
 	}
@@ -1678,7 +1946,7 @@ public class Doc extends XmlEntity {
 			}
 		}
 	}
-	
+
 	/**
 	 * Spostamento in alto di un Rif int in CDS
 	 */
@@ -1704,7 +1972,7 @@ public class Doc extends XmlEntity {
 			}
 		}
 	}
-	
+
 	/**
 	 * Aggiunta di un nuovo Rif int vuoto in CC in ultima posizione
 	 */
@@ -1712,14 +1980,14 @@ public class Doc extends XmlEntity {
 		if (assegnazioneCC != null && assegnazioneCC.size() > 0) {
 			Rif previous = assegnazioneCC.get(assegnazioneCC.size()-1);
 			if (!previous.isEmpty()) {
-				Rif rifToAdd = new Rif();
+				Rif rifToAdd = new Rif(interventoDefaultCC);
 				if (previous != null && previous.getTipo_uff() != null && previous.getTipo_uff().equals("ruolo"))
 					rifToAdd.setTipo_uff("ruolo");
 				assegnazioneCC.add(rifToAdd);
 			}
 		}
 	}
-	
+
 	/**
 	 * Aggiunta di un nuovo Rif int vuoto in CDS in ultima posizione
 	 */
@@ -1734,7 +2002,7 @@ public class Doc extends XmlEntity {
 			}
 		}
 	}
-	
+
 	/**
 	 * Eliminazione di un allegato del doc
 	 */
@@ -1742,12 +2010,12 @@ public class Doc extends XmlEntity {
 		Allegato allegato = (Allegato) FacesContext.getCurrentInstance().getExternalContext().getRequestMap().get("allegato");
 		if (allegato != null) {
 			allegati.remove(allegato);
-			if (allegati.isEmpty()) 
+			if (allegati.isEmpty())
 				allegati.add(new Allegato());
 		}
 		return null;
 	}
-	
+
 	/**
 	 * Aggiunta di un allegato del doc
 	 */
@@ -1756,7 +2024,7 @@ public class Doc extends XmlEntity {
 		int index = 0;
 		if (allegato != null)
 			index = allegati.indexOf(allegato);
-		
+
 		if (allegati != null) {
 			if (allegati.size() > index)
 				allegati.add(index+1,  new Allegato());
@@ -1765,7 +2033,7 @@ public class Doc extends XmlEntity {
 		}
 		return null;
 	}
-	
+
 	/**
 	 * Spostamento in alto di un allegato del doc
 	 */
@@ -1795,7 +2063,7 @@ public class Doc extends XmlEntity {
 		}
 		return null;
 	}
-	
+
 	/**
 	 * Eliminazione di un xlink del doc
 	 */
@@ -1803,12 +2071,12 @@ public class Doc extends XmlEntity {
 		Xlink link = (Xlink) FacesContext.getCurrentInstance().getExternalContext().getRequestMap().get("link");
 		if (link != null) {
 			xlink.remove(link);
-			if (xlink.isEmpty()) 
+			if (xlink.isEmpty())
 				xlink.add(new Xlink());
 		}
 		return null;
 	}
-	
+
 	/**
 	 * Aggiunta di un xlink del doc
 	 */
@@ -1817,7 +2085,7 @@ public class Doc extends XmlEntity {
 		int index = 0;
 		if (link != null)
 			index = xlink.indexOf(link);
-		
+
 		if (xlink != null) {
 			if (xlink.size() > index)
 				xlink.add(index+1,  new Xlink());
@@ -1826,7 +2094,7 @@ public class Doc extends XmlEntity {
 		}
 		return null;
 	}
-	
+
 	/**
 	 * Spostamento in alto di un xlink del doc
 	 */
@@ -1864,20 +2132,20 @@ public class Doc extends XmlEntity {
 	public String checkScadenza() {
 		try {
 			String nuovaDataScadenza = "";
-			if (scadenza.getTipo() != null && !scadenza.getTipo().equals("") 
+			if (scadenza.getTipo() != null && !scadenza.getTipo().equals("")
 					&& !scadenza.getTipo().equals("nessuna") && !scadenza.getTipo().equals("fissa")) {
 				String formatoData = Const.DEFAULT_DATE_FORMAT; // TODO Dovrebbe essere caricato dal file di properties dell'applicazione
-				
+
 				String dataPartenza = DateUtil.getCurrentDateNorm();
 				if (scadenza.getData_ultima_revisione() != null && scadenza.getData_ultima_revisione().length() > 0)
 					dataPartenza = DateUtil.formatDate2XW(scadenza.getData_ultima_revisione(), formatoData);
-				
+
 				SimpleDateFormat df = new SimpleDateFormat("yyyyMMdd");
 				Date datePartenza = df.parse(dataPartenza);
 				if (datePartenza != null) {
 					GregorianCalendar gc = new GregorianCalendar();
 					gc.setTime(datePartenza);
-					
+
 					if (scadenza.getTipo().equals("settimanale")) {
 						gc.add(Calendar.DAY_OF_MONTH, 7);
 					}
@@ -1888,7 +2156,7 @@ public class Doc extends XmlEntity {
 						gc.add(Calendar.MONTH, 2);
 					}
 					else if (scadenza.getTipo().equals("trimestrale")) {
-						gc.add(Calendar.MONTH, 3);			
+						gc.add(Calendar.MONTH, 3);
 					}
 					else if (scadenza.getTipo().equals("semestrale")) {
 						gc.add(Calendar.MONTH, 6);
@@ -1896,60 +2164,60 @@ public class Doc extends XmlEntity {
 					else if (scadenza.getTipo().equals("annuale")) {
 						gc.add(Calendar.YEAR, 1);
 					}
-					
+
 					nuovaDataScadenza = new SimpleDateFormat(formatoData).format(gc.getTime());
 				}
 			}
-			
+
 			scadenza.setData_scadenza(nuovaDataScadenza);
 		}
 		catch (Throwable t) {
 			// TODO Gestire l'eccezione
 		}
-		
+
 		return null;
 	}
-	
+
 	public void setKeywords(Keywords keywords) {
 		this.keywords = keywords;
 	}
-	
+
 	public Keywords getKeywords() {
 		return keywords;
 	}
-	
+
 	public void setRiferimenti(Riferimenti riferimenti) {
 		this.riferimenti = riferimenti;
 	}
-	
+
 	public Riferimenti getRiferimenti() {
 		return riferimenti;
 	}
-	
+
 	public void setTipologia(Tipologia tipologia) {
 		this.tipologia = tipologia;
 	}
-	
+
 	public Tipologia getTipologia() {
 		return tipologia;
 	}
-	
+
 	public void setNon_disponibile(Non_disponibile non_disponibile) {
 		this.non_disponibile = non_disponibile;
 	}
-	
+
 	public Non_disponibile getNon_disponibile() {
 		return non_disponibile;
 	}
-	
+
 	public void setProt_differito(Prot_differito prot_differito) {
 		this.prot_differito = prot_differito;
 	}
-	
+
 	public Prot_differito getProt_differito() {
 		return prot_differito;
 	}
-	
+
 	public String getStato_firma() {
 		return stato_firma;
 	}
@@ -1957,7 +2225,7 @@ public class Doc extends XmlEntity {
 	public void setStato_firma(String stato_firma) {
 		this.stato_firma = stato_firma;
 	}
-	
+
 	public Extra getExtra() {
 		return extra;
 	}
@@ -1965,7 +2233,7 @@ public class Doc extends XmlEntity {
 	public void setExtra(Extra extra) {
 		this.extra = extra;
 	}
-	
+
 	public boolean isFilesPrenotati() {
 		return filesPrenotati;
 	}
@@ -1973,7 +2241,7 @@ public class Doc extends XmlEntity {
 	public void setFilesPrenotati(boolean filesPrenotati) {
 		this.filesPrenotati = filesPrenotati;
 	}
-	
+
 	public String getCorpoEmail() {
 		return corpoEmail;
 	}
@@ -1981,7 +2249,7 @@ public class Doc extends XmlEntity {
 	public void setCorpoEmail(String corpoEmail) {
 		this.corpoEmail = corpoEmail;
 	}
-	
+
 	public int getDocInformaticiSize() {
 		return docInformaticiSize;
 	}
@@ -1989,7 +2257,7 @@ public class Doc extends XmlEntity {
 	public void setDocInformaticiSize(int docInformaticiSize) {
 		this.docInformaticiSize = docInformaticiSize;
 	}
-	
+
 	public boolean isCestino() {
 		return cestino;
 	}
@@ -2005,7 +2273,23 @@ public class Doc extends XmlEntity {
 	public void setDatacestino(String datacestino) {
 		this.datacestino = datacestino;
 	}
-	
+
+	public Rifiuto getRifiuto() {
+		return rifiuto;
+	}
+
+	public void setRifiuto(Rifiuto rifiuto) {
+		this.rifiuto = rifiuto;
+	}
+
+	public boolean isReadOnly() {
+		return readOnly;
+	}
+
+	public void setReadOnly(boolean readOnly) {
+		this.readOnly = readOnly;
+	}
+
 	public String getMessageId() {
 		return messageId;
 	}
@@ -2021,7 +2305,7 @@ public class Doc extends XmlEntity {
 	public void setEmailAttachmentIndex(String emailAttachmentIndex) {
 		this.emailAttachmentIndex = emailAttachmentIndex;
 	}
-	
+
 	/**
 	 * ritorna la dimensione totale in KB di doc informatici allegati
 	 * @return
@@ -2029,10 +2313,10 @@ public class Doc extends XmlEntity {
 	public String getDocInformaticiSizeKB() {
 		if (docInformaticiSize > 0)
 			return (docInformaticiSize / 1024) + " KB";
-		else	
+		else
 			return "";
 	}
-	
+
 	/**
 	 * ritorna la dimensione totale in MB di doc informatici allegati
 	 * @return
@@ -2041,10 +2325,10 @@ public class Doc extends XmlEntity {
 		if (docInformaticiSize > 0) {
 			double result = (double) docInformaticiSize / (1024 * 1024);
 			return String.format("%.1f %s", Double.valueOf(result), "MB");
-		} else	
+		} else
 			return "";
 	}
-	
+
 	/**
 	 * Aggiunta di un nuovo Rif est del doc
 	 */
@@ -2052,28 +2336,28 @@ public class Doc extends XmlEntity {
 		int index = 0;
 		if (rifEsterno != null)
 			index = rif_esterni.indexOf(rifEsterno);
-		
+
 		if (rif_esterni != null) {
 			RifEsterno rifEsternoToAdd = new RifEsterno();
-			
+
 			if (rif_esterni.size() > index)
 				rif_esterni.add(index+1, rifEsternoToAdd);
 			else
 				rif_esterni.add(rifEsternoToAdd);
 		}
 	}
-	
+
 	/**
 	 * Eliminazione di un Rif est del doc
 	 */
 	public void deleteRifEst(RifEsterno rifEsterno){
 		if (rifEsterno != null) {
 			rif_esterni.remove(rifEsterno);
-			if (rif_esterni.isEmpty()) 
+			if (rif_esterni.isEmpty())
 				rif_esterni.add(new RifEsterno());
 		}
 	}
-	
+
 	/**
 	 * Spostamento in alto di un Rif est del doc
 	 */
@@ -2098,8 +2382,8 @@ public class Doc extends XmlEntity {
 				rif_esterni.add(index+1, rifEsterno);
 			}
 		}
-	}	
-	
+	}
+
 	/**
 	 * Aggiunta di un nuovo num raccomandata per il documento
 	 */
@@ -2107,54 +2391,54 @@ public class Doc extends XmlEntity {
 		int index = 0;
 		if (numeroRaccomandata != null)
 			index = numero_raccomandata.indexOf(numeroRaccomandata);
-		
+
 		if (numero_raccomandata != null) {
 			NumeroRaccomandata numRaccomandataToAdd = new NumeroRaccomandata();
-			
+
 			if (numero_raccomandata.size() > index)
 				numero_raccomandata.add(index+1, numRaccomandataToAdd);
 			else
 				numero_raccomandata.add(numRaccomandataToAdd);
 		}
 	}
-	
+
 	/**
 	 * Eliminazione di un num raccomandata per il documento
 	 */
 	public void deleteNumeroRaccomandata(NumeroRaccomandata numeroRaccomandata){
 		if (numeroRaccomandata != null) {
 			numero_raccomandata.remove(numeroRaccomandata);
-			if (numero_raccomandata.isEmpty()) 
+			if (numero_raccomandata.isEmpty())
 				numero_raccomandata.add(new NumeroRaccomandata());
 		}
 	}
-	
+
 	/**
 	 * Eliminazione di un xwFile di tipo file del doc
 	 */
 	public String deleteXwFile() {
 		return deleteXwFile((XwFile) FacesContext.getCurrentInstance().getExternalContext().getRequestMap().get("file"));
 	}
-	
+
 	/**
 	 * Eliminazione di un xwFile di tipo file del doc
 	 */
 	public String deleteXwFile(String index) {
 		return deleteXwFile(getXwFileByPosition(index));
     }
-	
+
 	/**
 	 * Eliminazione di un xwFile di tipo file del doc
 	 */
 	public String deleteXwFile(XwFile xwFile) {
 		if (xwFile != null) {
 			files.remove(xwFile);
-			if (files.isEmpty()) 
+			if (files.isEmpty())
 				files.add(new XwFile());
 		}
 		return null;
 	}
-	
+
 	/**
 	 * Eliminazione di tutti gli xwFile di tipo file del doc
 	 */
@@ -2163,7 +2447,7 @@ public class Doc extends XmlEntity {
 		files.add(new XwFile());
 		return null;
 	}
-	
+
 	/**
 	 * Aggiunta di un xwFile di tipo file del doc
 	 */
@@ -2172,7 +2456,7 @@ public class Doc extends XmlEntity {
 		int index = 0;
 		if (xwFile != null)
 			index = files.indexOf(xwFile);
-		
+
 		if (files != null) {
 			if (files.size() > index)
 				files.add(index+1,  new XwFile());
@@ -2181,7 +2465,7 @@ public class Doc extends XmlEntity {
 		}
 		return null;
 	}
-	
+
 	/**
 	 * dato un indice ritorna l'xwFile recuperandolo dalla lista
 	 * @param index
@@ -2196,22 +2480,22 @@ public class Doc extends XmlEntity {
 		}
 		return xwfile;
 	}
-	
+
 	/**
 	 * Spostamento in alto di un xwFile di tipo file del doc
 	 */
 	public String moveUpXwFile() {
 		return moveUpXwFile((XwFile) FacesContext.getCurrentInstance().getExternalContext().getRequestMap().get("file"));
-		
+
 	}
-	
+
 	/**
 	 * Spostamento in alto di un xwFile di tipo file del doc
 	 */
 	public String moveUpXwFile(String index) {
 		return moveUpXwFile(getXwFileByPosition(index));
     }
-	
+
 	/**
 	 * Spostamento in alto di un xwFile di tipo file del doc
 	 */
@@ -2232,14 +2516,14 @@ public class Doc extends XmlEntity {
 	public String moveDownXwFile() {
 		return moveDownXwFile((XwFile) FacesContext.getCurrentInstance().getExternalContext().getRequestMap().get("file"));
 	}
-	
+
 	/**
 	 * Spostamento in basso di un xwFile di tipo file del doc
 	 */
 	public String moveDownXwFile(String index) {
 		return moveDownXwFile(getXwFileByPosition(index));
     }
-	
+
 	/**
 	 * Spostamento in basso di un xwFile di tipo file del doc
 	 */
@@ -2253,33 +2537,33 @@ public class Doc extends XmlEntity {
 		}
 		return null;
 	}
-	
+
 	/**
 	 * Eliminazione di un xwFile di tipo immagine del doc
 	 */
 	public String deleteXwImage() {
 		return deleteXwImage((XwFile) FacesContext.getCurrentInstance().getExternalContext().getRequestMap().get("file"));
 	}
-	
+
 	/**
 	 * Eliminazione di un xwFile di tipo immagine del doc
 	 */
 	public String deleteXwImage(String index) {
 		return deleteXwImage(getXwImageByPosition(index));
     }
-	
+
 	/**
 	 * Eliminazione di un xwFile di tipo immagine del doc
 	 */
 	public String deleteXwImage(XwFile xwFile) {
 		if (xwFile != null) {
 			immagini.remove(xwFile);
-			if (immagini.isEmpty()) 
+			if (immagini.isEmpty())
 				immagini.add(new XwFile());
 		}
 		return null;
 	}
-	
+
 	/**
 	 * Eliminazione di tutti gli xwFile di tipo immagine del doc
 	 */
@@ -2288,7 +2572,7 @@ public class Doc extends XmlEntity {
 		immagini.add(new XwFile());
 		return null;
 	}
-	
+
 	/**
 	 * Aggiunta di un xwFile di tipo immagine del doc
 	 */
@@ -2297,7 +2581,7 @@ public class Doc extends XmlEntity {
 		int index = 0;
 		if (xwFile != null)
 			index = immagini.indexOf(xwFile);
-		
+
 		if (immagini != null) {
 			if (immagini.size() > index)
 				immagini.add(index+1,  new XwFile());
@@ -2306,7 +2590,7 @@ public class Doc extends XmlEntity {
 		}
 		return null;
 	}
-	
+
 	/**
 	 * dato un indice (raltivo ad una immagine) ritorna l'xwFile recuperandolo dalla lista
 	 * @param index
@@ -2321,21 +2605,21 @@ public class Doc extends XmlEntity {
 		}
 		return xwfile;
 	}
-	
+
 	/**
 	 * Spostamento in alto di un xwFile di tipo immagine del doc
 	 */
 	public String moveUpXwImage() {
 		return moveUpXwImage((XwFile) FacesContext.getCurrentInstance().getExternalContext().getRequestMap().get("file"));
 	}
-	
+
 	/**
 	 * Spostamento in alto di un xwFile di tipo immagine del doc
 	 */
 	public String moveUpXwImage(String index) {
 		return moveUpXwImage(getXwImageByPosition(index));
     }
-	
+
 	/**
 	 * Spostamento in alto di un xwFile di tipo immagine del doc
 	 */
@@ -2356,14 +2640,14 @@ public class Doc extends XmlEntity {
 	public String moveDownXwImage() {
 		return moveDownXwImage((XwFile) FacesContext.getCurrentInstance().getExternalContext().getRequestMap().get("file"));
 	}
-	
+
 	/**
 	 * Spostamento in basso di un xwFile di tipo immagine del doc
 	 */
 	public String moveDownXwImage(String index) {
 		return moveDownXwImage(getXwImageByPosition(index));
     }
-	
+
 	/**
 	 * Spostamento in basso di un xwFile di tipo immagine del doc
 	 */
@@ -2377,11 +2661,11 @@ public class Doc extends XmlEntity {
 		}
 		return null;
 	}
-	
+
 	/**
 	 * Aggiunta di files al documento (dopo upload e caricamento
 	 * su xway)
-	 * 
+	 *
 	 * @return
 	 */
 	public String addFiles() {
@@ -2389,50 +2673,50 @@ public class Doc extends XmlEntity {
 			String[] fileIds = StringUtil.split(this.xwFileIdsAttached, "|");
 			String[] fileNames = StringUtil.split(this.xwFileNamesAttached, "|");
 			String[] fileTitles = StringUtil.split(this.xwFileTitlesAttached, "|");
-			if (fileIds != null && fileIds.length > 0 
-					&& fileNames != null && fileNames.length > 0 
+			if (fileIds != null && fileIds.length > 0
+					&& fileNames != null && fileNames.length > 0
 					&& fileIds.length == fileNames.length
-					&& fileTitles != null && fileTitles.length > 0 
+					&& fileTitles != null && fileTitles.length > 0
 					&& fileIds.length == fileTitles.length) {
-				
+
 				// se l'ultima istanza e' vuota deve essere rimossa (solo
 				// per scopo grafico di usabilita' per l'utente)
 				if (files.get(files.size()-1).getXwayId().equals("") && files.get(files.size()-1).getName().equals(""))
 					files.remove(files.size()-1);
-				
+
 				// per ogni file caricato viene istanziato e agganciato l'xwFile
 				for (int i=0; i<fileIds.length; i++) {
 					String id = fileIds[i];
 					String name = fileNames[i];
 					String title = fileTitles[i];
-					if (id != null && !id.equals("") 
+					if (id != null && !id.equals("")
 							&& name != null && !name.equals("")
 							&& title != null && !title.equals("")) {
 						XwFile xwFile = new XwFile(id, name, title);
-						
-						if (files != null && files.size() == 1 && files.get(0) != null 
+
+						if (files != null && files.size() == 1 && files.get(0) != null
 								&& (files.get(0).getName() == null || files.get(0).getName().equals("")))
 							files.remove(0);
 						files.add(xwFile);
 					}
 				}
-				
+
 				files.add(new XwFile()); // aggiunta di una istanza vuota per migliorare usabilita' utente
 			}
 		}
-		
+
 		// azzeramento dei valori relativi a files caricati
 		setXwFileIdsAttached("");
 		setXwFileNamesAttached("");
 		setXwFileTitlesAttached("");
-		
+
 		return null;
 	}
-	
+
 	/**
 	 * Aggiunta di immagini al documento (dopo upload e caricamento
 	 * su xway)
-	 * 
+	 *
 	 * @return
 	 */
 	public String addImages() {
@@ -2440,46 +2724,46 @@ public class Doc extends XmlEntity {
 			String[] imageIds = StringUtil.split(this.xwImageIdsAttached, "|");
 			String[] imageNames = StringUtil.split(this.xwImageNamesAttached, "|");
 			String[] imageTitles = StringUtil.split(this.xwImageTitlesAttached, "|");
-			if (imageIds != null && imageIds.length > 0 
-					&& imageNames != null && imageNames.length > 0 
+			if (imageIds != null && imageIds.length > 0
+					&& imageNames != null && imageNames.length > 0
 					&& imageIds.length == imageNames.length
-					&& imageTitles != null && imageTitles.length > 0 
+					&& imageTitles != null && imageTitles.length > 0
 					&& imageIds.length == imageTitles.length) {
-				
+
 				// se l'ultima istanza e' vuota deve essere rimossa (solo
 				// per scopo grafico di usabilita' per l'utente)
 				if (immagini.get(immagini.size()-1).getXwayId().equals("") && immagini.get(immagini.size()-1).getName().equals(""))
 					immagini.remove(immagini.size()-1);
-				
+
 				// per ogni immagine caricata viene istanziato e agganciato l'xwFile
 				for (int i=0; i<imageIds.length; i++) {
 					String id = imageIds[i];
 					String name = imageNames[i];
 					String title = imageTitles[i];
-					if (id != null && !id.equals("") 
+					if (id != null && !id.equals("")
 							&& name != null && !name.equals("")
 							&& title != null && !title.equals("")) {
 						XwFile xwFile = new XwFile(id, name, title);
-						
-						if (immagini != null && immagini.size() == 1 && immagini.get(0) != null 
+
+						if (immagini != null && immagini.size() == 1 && immagini.get(0) != null
 								&& (immagini.get(0).getName() == null || immagini.get(0).getName().equals("")))
 							immagini.remove(0);
 						immagini.add(xwFile);
 					}
 				}
-				
+
 				immagini.add(new XwFile()); // aggiunta di una istanza vuota per migliorare usabilita' utente
 			}
 		}
-		
+
 		// azzeramento dei valori relativi a immagini caricate
 		setXwImageIdsAttached("");
 		setXwImageNamesAttached("");
 		setXwImageTitlesAttached("");
-		
+
 		return null;
 	}
-	
+
 	/**
 	 * Ritorna true se il documento contiene almeno un file o un immagine allegato, false altrimenti
 	 */
@@ -2490,7 +2774,7 @@ public class Doc extends XmlEntity {
 		else
 			return false;
 	}
-	
+
 	/**
 	 * ritorna il tipo del documento in versione short (iniziale maiuscola)
 	 * @return
@@ -2502,7 +2786,7 @@ public class Doc extends XmlEntity {
 	        else if (tipo.equals("partenza")) return "P" ;
 	        else if (tipo.equals("varie")) return "V" ;
 		}
-		
+
 		return tipo;
 	}
 
@@ -2544,5 +2828,123 @@ public class Doc extends XmlEntity {
 
 	public void setCurrDate(String currDate) {
 		this.currDate = currDate;
+	}
+
+	/**
+	 * Verifica se il documento corrente contiene o meno immagini che devono essere convertite (tramite
+	 * FCA/FCS) e successivamente eliminate
+	 * @return true nel caso in cui il documento contenga immagini da convertire ed eliminare, false altrimenti
+	 */
+	public boolean hasImagesToConvertAndRemove() {
+		boolean imageToRemove = false;
+		if (immagini != null && !immagini.isEmpty()) {
+			// Cerco se almeno una delle immagini contenute nel documento e' marcata come 'da cancellare' (post conversione
+			// tramite FCS)
+			int i = 0;
+			while (!imageToRemove && i < immagini.size()) {
+				XwFile image = immagini.get(i);
+				if (image != null && image.isAgent_delete())
+					imageToRemove = true;
+				i++;
+			}
+		}
+		return imageToRemove;
+	}
+
+	public boolean isRichiestaPresaInCarico() {
+		return richiestaPresaInCarico;
+	}
+
+	public void setRichiestaPresaInCarico(boolean richiestaPresaInCarico) {
+		this.richiestaPresaInCarico = richiestaPresaInCarico;
+	}
+
+	public boolean isEffettuataPresaInCarico() {
+		return effettuataPresaInCarico;
+	}
+
+	public void setEffettuataPresaInCarico(boolean effettuataPresaInCarico) {
+		this.effettuataPresaInCarico = effettuataPresaInCarico;
+	}
+
+	public List<RifPresaInCarico> getIncaricatiPresaInCarico() {
+		return incaricatiPresaInCarico;
+	}
+
+	public void setIncaricatiPresaInCarico(List<RifPresaInCarico> incaricatiPresaInCarico) {
+		this.incaricatiPresaInCarico = incaricatiPresaInCarico;
+	}
+
+	public List<RifPresaInCarico> getRifPresaInCarico() {
+		return rifPresaInCarico;
+	}
+
+	public void setRifPresaInCarico(List<RifPresaInCarico> rifPresaInCarico) {
+		this.rifPresaInCarico = rifPresaInCarico;
+	}
+
+	// metodo per capire se il documento è in inserimento
+	public boolean isNew() {
+		return nrecord == null || nrecord.isEmpty() || nrecord.equals(".");
+	}
+
+	public boolean isProtocollabile() {
+		return protocollabile;
+	}
+
+	public void setProtocollabile(boolean protocollabile) {
+		this.protocollabile = protocollabile;
+	}
+
+	public boolean isRepertoriabile() {
+		return repertoriabile;
+	}
+
+	public void setRepertoriabile(boolean repertoriabile) {
+		this.repertoriabile = repertoriabile;
+	}
+	
+	public TrasformazioneRep getTrasformazioneRep() {
+		return trasformazioneRep;
+	}
+
+	public void setTrasformazioneRep(TrasformazioneRep trasformazioneRep) {
+		this.trasformazioneRep = trasformazioneRep;
+	}
+	
+	public boolean isBozzaArrivoFromPEC() {
+		return bozzaArrivoFromPEC;
+	}
+
+	/**
+	 * Ritorna true se il documento corrente può essere convertito in repertorio tramite pagina di docEdit, false
+	 * altrimenti
+	 * @return
+	 */
+	public boolean isTrasformabileInRepertorio() {
+		return (getTrasformazioneRep() == null || !getTrasformazioneRep().isTrasformato()) 
+					&& (
+							isRepertoriabile() || 
+							getRepertorio() == null || 
+							getRepertorio().getCod() == null || 
+							getRepertorio().getCod().isEmpty()
+						);
+	}
+	
+	/**
+	 * Ritorna true se il documento corrente puo' essere ripristinato dal repertorio (post trasformazioneByDocEdit),
+	 * false altrimenti
+	 * @return
+	 */
+	public boolean isRipristinabileDaRepertorio() {
+		return (getTrasformazioneRep() != null && getTrasformazioneRep().isTrasformato() && isRepertoriabile());
+	}
+	
+	public VerificaVirus getVerificaVirus() {
+		return verificaVirus;
+	}
+
+	public void setVerificaVirus(VerificaVirus verificaVirus) {
+		this.verificaVirus = verificaVirus;
 	}
 }

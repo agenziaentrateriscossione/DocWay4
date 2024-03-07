@@ -8,55 +8,55 @@
 
 <ui:define name="content">
 	<div class="varie raol">
-		
+
 		<!-- toolbar: inizio -->
 		<ui:include src="../buttonBar.xhtml">
 			<ui:param name="bean" value="#{showdocVarieRAOL}"/>
 		</ui:include>
 		<!-- toolbar: fine -->
-		
+
 		<!-- scheda show: inizio -->
 		<div class="contenuto-doc row clearfix">
 			<h:panelGroup rendered="#{!showdocVarieRAOL.popupPage}">
 				<div class="col-xs-12 col-sm-2 col-md-2 col-lg-2 col-sm-push-10 col-md-push-10 col-lg-push-10 text-right">
 					<!-- azioni rapide: inizio -->
-					
+
 					<ui:include src="../smartActions.xhtml">
 						<ui:param name="bean" value="#{showdocVarieRAOL}"/>
 					</ui:include>
-					
+
 					<!-- azioni rapide: fine -->
 				</div>
 			</h:panelGroup>
 			<div class="col-xs-12 #{(showdocVarieRAOL.popupPage) ? 'col-sm-12 col-md-12 col-lg-12' : 'col-sm-10 col-md-10 col-lg-10 col-sm-pull-2 col-md-pull-2 col-lg-pull-2'}">
 				<!-- contenuto doc: inizio -->
-				
+
 				<h:panelGroup rendered="#{empty showdocVarieRAOL.doc.non_disponibile.estremi}">
 					<ui:include src="../showdoc@title.xhtml">
 						<ui:param name="doc" value="#{showdocVarieRAOL.doc}"/>
 					</ui:include>
-					
+
 					<ui:include src="../showdoc@annullato.xhtml"><ui:param name="bean" value="#{showdocVarieRAOL}"/></ui:include>
 					<ui:include src="../showdoc@conservazione.xhtml"><ui:param name="bean" value="#{showdocVarieRAOL}"/></ui:include>
-					
+
 					<div id="fixedshowdoc" class="fixed-showdoc">
 						<ui:include src="../showdoc@statidoc.xhtml">
 							<ui:param name="bean" value="#{showdocVarieRAOL}"/>
 						</ui:include>
-						
+
 						<div class="showdoc-section">
 							<div class="title">
 								#{i18n['dw4.datidoc']}
-								
+
 								<div class="pull-right">
 									<span class="glyphicon glyphicon-envelope" title="#{i18n['dw4.datidoc']}"></span>
 								</div>
 							</div>
-							
+
 							<dl class="dl-horizontal" style="margin-bottom: 15px;">
 								<dt>#{i18n['dw4.pubblicazione']}</dt>
 								<dd>#{i18n['dw4.dal']} &#160;<strong>#{showdocVarieRAOL.doc.pubblicazione.dal}</strong>&#160; #{i18n['dw4.al']} &#160;<strong>#{showdocVarieRAOL.doc.pubblicazione.al}</strong></dd>
-								
+
 								<h:panelGroup rendered="#{!empty showdocVarieRAOL.richiedente.cod}">
 									<dt>#{i18n['dw4.richiedente']}</dt>
 									<dd>
@@ -79,19 +79,19 @@
 											<h:panelGroup rendered="#{!empty showdocVarieRAOL.doc.rif_esterni[0].referente.nominativo}">
 												<em> (#{showdocVarieRAOL.doc.rif_esterni[0].referente.nominativo}<h:outputText value=" - #{showdocVarieRAOL.doc.rif_esterni[0].referente.ruolo}" rendered="#{!empty showdocVarieRAOL.doc.rif_esterni[0].referente.ruolo}"/>)</em>
 											</h:panelGroup>
-											
+
 											<h:outputText value=", #{showdocVarieRAOL.doc.rif_esterni[0].indirizzo}" rendered="#{!empty showdocVarieRAOL.doc.rif_esterni[0].indirizzo}" />
 											<h:panelGroup rendered="#{!empty showdocVarieRAOL.doc.rif_esterni[0].email_certificata}"> [<a href="mailto:#{showdocVarieRAOL.doc.rif_esterni[0].email_certificata}" class="blacklink">#{showdocVarieRAOL.doc.rif_esterni[0].email_certificata}</a>]</h:panelGroup>
 											<h:panelGroup rendered="#{!empty showdocVarieRAOL.doc.rif_esterni[0].email}"> [<a href="mailto:#{showdocVarieRAOL.doc.rif_esterni[0].email}" class="blacklink">#{showdocVarieRAOL.doc.rif_esterni[0].email}</a>]</h:panelGroup>
-											
+
 											<h:outputText value=" - c.f. #{showdocVarieRAOL.doc.rif_esterni[0].codice_fiscale}" rendered="#{!empty showdocVarieRAOL.doc.rif_esterni[0].codice_fiscale}" />
 											<h:outputText value=" - p.iva #{showdocVarieRAOL.doc.rif_esterni[0].partita_iva}" rendered="#{!empty showdocVarieRAOL.doc.rif_esterni[0].partita_iva}" />
 											<h:outputText value=" - codice SAP: #{showdocVarieRAOL.doc.rif_esterni[0].cod_SAP}" rendered="#{!empty showdocVarieRAOL.doc.rif_esterni[0].cod_SAP}" />
 										</div>
 									</dd>
 								</h:panelGroup>
-								
-								
+
+
 								<dt>#{i18n['dw4.forma']}</dt>
 								<dd>
 									<h:outputText rendered="#{showdocVarieRAOL.doc.pubblicazione.tipo eq 'Integrale'}" value="#{i18n['dw4.integrale']}" />
@@ -99,67 +99,71 @@
 									&#160;
 								</dd>
 							</dl>
-							
+
 							<dl class="dl-horizontal">
-								
+
 								<ui:include src="../showdoc@datidoc@content.xhtml">
 									<ui:param name="bean" value="#{showdocVarieRAOL}"/>
 								</ui:include>
-								
+
 							</dl>
 						</div>
-						
+
 						<ui:include src="../showdoc@datiarchivio.xhtml">
 							<ui:param name="bean" value="#{showdocVarieRAOL}"/>
 						</ui:include>
-						
+
 						<ui:include src="../aspects.xhtml">
 							<ui:param name="bean" value="#{showdocVarieRAOL}"/>
 						</ui:include>
-						
+
+						<ui:include src="../../customfields/showdoc@customfields.xhtml">
+							<ui:param name="bean" value="#{showdocVarieRAOL}"/>
+			        	</ui:include>
+
 						<ui:include src="../showdoc@responsabilita.xhtml">
 							<ui:param name="bean" value="#{showdocVarieRAOL}"/>
 						</ui:include>
-						
+
 						<ui:include src="../showdoc@xwfiles.xhtml">
 							<ui:param name="bean" value="#{showdocVarieRAOL}"/>
 						</ui:include>
-						
+
 						<ui:include src="../showdoc@workflow.xhtml">
 							<ui:param name="bean" value="#{showdocVarieRAOL}"/>
 						</ui:include>
-						
+
 						<ui:include src="../showdoc@postit.xhtml">
 							<ui:param name="bean" value="#{showdocVarieRAOL}"/>
 						</ui:include>
-						
+
 						<ui:include src="../showdoc@datialtro.xhtml">
 							<ui:param name="bean" value="#{showdocVarieRAOL}"/>
-						</ui:include>					
-						
+						</ui:include>
+
 						<ui:include src="../history.xhtml">
 							<ui:param name="bean" value="#{showdocVarieRAOL.doc}"/>
 							<ui:param name="viewbean" value="#{showdocVarieRAOL}"/>
 							<ui:param name="visible" value="#{showdocVarieRAOL.formsAdapter.funzionalitaDisponibili['showHistory']}" />
 						</ui:include>
 					</div>
-					
+
 				</h:panelGroup>
 				<h:panelGroup rendered="#{!empty showdocVarieRAOL.doc.non_disponibile.estremi}">
-				
+
 					<ui:include src="../showdoc@docnondisponibile.xhtml">
 						<ui:param name="bean" value="#{showdocVarieRAOL}"/>
 					</ui:include>
-					
+
 				</h:panelGroup>
-				
-				<h:inputTextarea value="#{showdocVarieRAOL.xml}" rendered="#{showdocVarieRAOL.debugMode}" styleClass="form-control" rows="10" />	
-				
+
+				<h:inputTextarea value="#{showdocVarieRAOL.xml}" rendered="#{showdocVarieRAOL.debugMode}" styleClass="form-control debug-textarea" rows="10" />
+
 				<!-- contenuto doc: fine -->
 			</div>
 		</div>
 		<!-- scheda show: fine -->
-		
+
 		<ui:include src="../postit.xhtml"><ui:param name="pageBean" value="#{docwayPostit}"/></ui:include>
 		<ui:include src="../verificaFirma.xhtml"><ui:param name="pageBean" value="#{docwayVerificaFirma}"/></ui:include>
 		<ui:include src="../annullamentoDoc.xhtml"><ui:param name="pageBean" value="#{docwayAnnullamentoDoc}"/></ui:include>
@@ -173,7 +177,10 @@
 		<ui:include src="../rifintLookup.xhtml"> <ui:param name="pageBean" value="#{rifInt}"/></ui:include>
 		<ui:include src="../show@task@vars.xhtml"><ui:param name="bean" value="#{docwayWfTaskVars}"/></ui:include>
 		<ui:include src="../showPersoneRuolo.xhtml"><ui:param name="bean" value="#{docwayShowPersoneRuolo}"/></ui:include>
-		
+		<ui:include src="../modalePresaInCarico.xhtml"><ui:param name="bean" value="#{showdocVarieRAOL}"/></ui:include>
+		<ui:include src="../modalePersoneIncaricate.xhtml"><ui:param name="bean" value="#{docWayShowPersonePresaInCarico}"/></ui:include>
+		<ui:include src="../../customfields/customFields@editPopup.xhtml"><ui:param name="pageBean" value="#{docEditCustomFields}"/></ui:include>
+
 	</div>
 </ui:define>
 

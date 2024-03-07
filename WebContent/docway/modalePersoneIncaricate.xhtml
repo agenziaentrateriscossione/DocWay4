@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	  xmlns:h="http://java.sun.com/jsf/html"
+	  xmlns:ui="http://java.sun.com/jsf/facelets"
+	  xmlns:f="http://java.sun.com/jsf/core"
+	  xmlns:c="http://java.sun.com/jsp/jstl/core">
+<ui:composition>
+
+	<h:panelGroup id="modalePersoneIncaricate" layout="block">
+		<h:panelGroup rendered="#{bean.active}">
+			<!-- Modal -->
+			<div id="personeIncaricateModal" class="modal fade in" aria-hidden="false" aria-labelledby="personeIncaricateModalLabel" role="dialog" tabindex="-1" style="display: block;">
+				<div class="modal-dialog modal-lg">
+					<div class="modal-content jsf-modal">
+						<div class="modal-header">
+							<h:commandButton styleClass="close" title="#{i18n['acl.close']}" action="#{bean.close}" data-dismiss="modal"  value="&#215;" >
+			        			<f:ajax render="templateForm:modalePersoneIncaricate" />
+			        		</h:commandButton>
+			        		
+			        		<h4 class="modal-title" id="personeIncaricateModalLabel">#{i18n['dw4.dettaglio_persone_incaricate']}</h4>
+						</div>
+						<div class="modal-body">
+							<table class="table table-striped">
+								<h:panelGroup rendered="#{not empty bean.personeIncaricate}">
+									<thead>
+										<tr>
+											<th class="incaricato-matricola optional">#{i18n['acl.code']}</th>
+											<th class="incaricato-nome essential">#{i18n['acl.surname_name']}</th>
+											<th class="incaricato-ufficioRuolo optional">#{i18n['dw4.ufficio_ruolo']}</th>
+											<th class="incaricato-email optional">#{i18n['acl.email']}</th>
+											<h:panelGroup rendered="#{not bean.modalitaGruppo}">
+												<th class="incaricato-checkTaken optional">#{i18n['dw4.preso_in_carico']}</th>
+											</h:panelGroup>
+										</tr>
+									</thead>
+									<tbody>
+										<ui:repeat var="persona" value="#{bean.personeIncaricate}" varStatus="status">
+											<tr>
+												<td class="optional">
+													#{persona.matricola}
+												</td>
+												<td class="essential">
+													<h:outputText value="#{persona.nome}" />
+												</td>
+												<td class="optional">
+													#{persona.motivazioni}
+												</td>
+												<td class="optional">
+													#{persona.emails}
+												</td>
+												<h:panelGroup rendered="#{not bean.modalitaGruppo}">
+													<td class="optional text-center">
+														<h:panelGroup rendered="#{persona.incaricoDone}">
+															<span class="glyphicon glyphicon-ok visto-icon normal-size-icon popoveritem"
+																data-toggle="popover" data-placement="top" data-trigger="hover"
+																data-content="#{i18n['dw4.preso_in_carico']}"></span>
+														</h:panelGroup>
+													</td>
+												</h:panelGroup>
+											</tr>
+										</ui:repeat>
+									</tbody>
+								</h:panelGroup>
+								<h:panelGroup rendered="#{empty bean.personeIncaricate}">
+									<div class="alert alert-info">#{i18n['dw4.presa_in_carico_soddisfatta']}</div>
+								</h:panelGroup>
+							</table>
+
+					       	<h:inputTextarea value="#{bean.xml}" rendered="#{bean.debugMode}" styleClass="form-control debug-textarea" rows="10"/>
+						</div>
+						<div class="modal-footer">
+							<h:commandButton styleClass="btn btn-default" title="#{i18n['acl.close']}" action="#{bean.close}" data-dismiss="modal"  value="#{i18n['acl.close']}" >
+			        			<f:ajax render="templateForm:modalePersoneIncaricate" />
+			        		</h:commandButton>
+						</div>
+					</div>
+				</div>
+			</div>
+		</h:panelGroup>
+	</h:panelGroup>
+
+</ui:composition>
+</html>

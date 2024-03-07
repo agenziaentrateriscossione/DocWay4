@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:c="http://java.sun.com/jsp/jstl/core">
+<ui:composition>
+
+	<!--div class="panel panel-primary smartactions-panel affix-top" data-spy="affix" data-offset-top="60"--> <!-- smart actions con affix -->
+	<div class="panel panel-primary smartactions-panel hidden-print">
+		<div class="panel-heading clearfix">
+			<h3 class="panel-title text-left">#{i18n['dw4.azioni_rapide']}</h3>
+		</div>
+		<div class="panel-body text-left">
+			
+			<ul class="list-inline smartactions-list">
+				<h:panelGroup rendered="#{bean.canExport()}">
+					<li>
+						<h:commandLink styleClass="smartactions-link" action="#{bean.exportFolderTree()}" title="#{i18n['dw4.folderExport']}" 
+								onclick="return exportFolderAttachments(#{bean.exportEmpty});">
+							<span class="glyphicons-pro disk_export smartaction-image" title="#{i18n['dw4.folderExport_Tt']}"></span>
+							<p>#{i18n['dw4.folderExport']}</p>
+						</h:commandLink>
+					</li>
+				</h:panelGroup>
+				
+				<h:panelGroup rendered="#{bean.canExportFiltered()}">
+					<li>
+						<h:commandLink styleClass="smartactions-link" action="#{bean.exportFolderTree(true)}" title="#{i18n['dw4.folderExportFiltered']}"
+							onclick="return exportFolderAttachments(#{bean.exportEmpty});">
+							<span class="glyphicons-pro disk_export smartaction-image" title="#{i18n['dw4.folderExportFiltered_Tt']}"></span>
+							<p>#{i18n['dw4.folderExportFiltered']}</p>
+						</h:commandLink>
+					</li>
+				</h:panelGroup>
+				
+				<ui:remove>
+					<h:panelGroup rendered="#{!bean.canExport()}">
+						<li><span class="label label-primary">#{i18n['dw4.nessuna_azione_disponibile']}</span></li>
+					</h:panelGroup>
+				</ui:remove>
+			</ul>
+			
+		</div>
+	</div>
+
+</ui:composition>
+</html>

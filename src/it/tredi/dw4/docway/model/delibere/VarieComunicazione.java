@@ -48,6 +48,7 @@ public class VarieComunicazione extends Varie {
     		params.put(prefix + ".autore", "_PROPONENTE_");
     		params.put(prefix + "wfActionX", "_WF_ACTIVATE_");
     		params.put(prefix + "bwf_Id", datiProposta.getProposta().getWorkflow().getName());
+    		params.put(prefix + "bonitaVersion", datiProposta.getProposta().getWorkflow().getBonitaVersion());
     	}
     	
     	return params;

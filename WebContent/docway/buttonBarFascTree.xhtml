@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:f="http://java.sun.com/jsf/core">
+<ui:composition>
+
+	<div class="hidden-print">
+		<!-- primo livello toolbar: inizio -->
+		<div class="btn-toolbar" role="toolbar">
+			
+			
+			<div class="btn-group">
+				
+					<h:commandLink action="#{docwayHome.gotoTableQFascicoloSpeciale}" styleClass="btn btn-primary openwaitmsg">
+						<f:param name="idFascSpeciale" value="#{qFascicoloSpeciale}" />
+						#{i18n['acl.ricerca']}
+					</h:commandLink>
+				
+			</div>
+		</div>
+		<!-- primo livello toolbar: fine -->
+		<h:panelGroup rendered="#{bean.canExport()}" id="folderTreeButtonBarJsfContainer">
+			<!-- secondo livello toolbar: inizio -->
+			<div class="btn-toolbar" role="toolbar">
+				<div class="btn-group">
+					
+					<h:panelGroup rendered="#{!bean.popupPage}">
+						<div class="btn-group">
+							<button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+								#{i18n['dw4.azioni_sul_albero_fasc']} <span class="caret"></span>
+							</button>
+							<ul class="dropdown-menu">
+								<li>
+									<h:commandLink styleClass="smartactions-link" action="#{bean.exportFolderTree()}" title="#{i18n['dw4.folderExport']}" 
+											onclick="return exportFolderAttachments(#{bean.exportEmpty});">
+										<p>#{i18n['dw4.folderExport']}</p>
+									</h:commandLink>
+								</li>								
+								
+								<h:panelGroup rendered="#{bean.canExportFiltered()}">
+									<li>
+										<h:commandLink styleClass="smartactions-link" action="#{bean.exportFolderTree(true)}" title="#{i18n['dw4.folderExportFiltered']}"
+											onclick="return exportFolderAttachments(#{bean.exportEmpty});">
+											<p>#{i18n['dw4.folderExportFiltered']}</p>
+										</h:commandLink>
+									</li>
+								</h:panelGroup>
+								
+							</ul>
+						</div>
+					</h:panelGroup>
+				</div>
+			</div>
+		<!-- secondo livello toolbar: fine -->
+		</h:panelGroup>
+		
+	</div>
+
+</ui:composition>
+</html>

@@ -1,14 +1,16 @@
 package it.tredi.dw4.docway.model;
 
-import it.tredi.dw4.model.XmlEntity;
-import it.tredi.dw4.utils.XMLUtil;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.faces.event.ValueChangeEvent;
+
 import org.dom4j.Document;
+
+import it.tredi.dw4.model.XmlEntity;
+import it.tredi.dw4.utils.XMLUtil;
 
 public class RifEsterno extends XmlEntity {
 	
@@ -39,6 +41,8 @@ public class RifEsterno extends XmlEntity {
     private boolean interop_webservice = false;
     
     private String tipo = ""; // utilizzato per identificare la dbTable di ritorno di un lookup (persona_esterna, struttura_esterna) 
+    
+    private boolean vincolato = true; // identifica se il rif esterno corrente e' vincolato (lookup su ACL) o libero (registrato sul documento senza record in ACL)
     
 	public RifEsterno() {}
     
@@ -83,6 +87,10 @@ public class RifEsterno extends XmlEntity {
     			}
     		}
     	}
+    	
+    	// mbernardini 26/04/2016 : in caso di codice non valorizzato si assume che il destinatario non sia vincolato (registrazione libera)
+    	if ((this.cod == null || this.cod.isEmpty()) && this.nome != null && !this.nome.isEmpty())
+    		this.vincolato = false;
 
         return this;
     }
@@ -261,6 +269,26 @@ public class RifEsterno extends XmlEntity {
 
 	public void setTipo(String tipo) {
 		this.tipo = tipo;
+	}
+	
+	public boolean isVincolato() {
+		return vincolato;
+	}
+
+	public void setVincolato(boolean vincolato) {
+		this.vincolato = vincolato;
+	}
+	
+	/**
+	 * Passaggio di un destinatario da Vincolato a Libero e viceversa
+	 */
+	public void vincolatoChangeListener(ValueChangeEvent e) {
+		if (e.getNewValue() != null) {
+			if (((Boolean) e.getNewValue()).booleanValue())
+				this.vincolato = true;
+			else
+				this.vincolato = false;
+		}
 	}
 	
 }

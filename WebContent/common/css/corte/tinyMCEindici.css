@@ -1,0 +1,6 @@
+/* stili da applicare alle pagine di preview di campi HTML (sia in edit che in view) */
+div, p {
+	font-size: 12pt;
+	font-family: "Times New Roman", serif;
+	text-align: justify;
+}

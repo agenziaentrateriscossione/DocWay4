@@ -1,13 +1,13 @@
 <!DOCTYPE html>
-<html 
-	xmlns="http://www.w3.org/1999/xhtml" 
-	xmlns:h="http://java.sun.com/jsf/html" 
+<html
+	xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
 	xmlns:ui="http://java.sun.com/jsf/facelets"
 	xmlns:p="http://xmlns.jcp.org/jsf/passthrough">
 <ui:composition>
-		
+
 	<!-- header: inizio -->
-	
+
 	<h:form id="menuForm">
 		<div class="navbar navbar-default navbar-fixed-top" role="navigation">
 			<div class="container-fluid row-navbar-first">
@@ -31,7 +31,7 @@
 						<span class="icon-bar"></span>
 						<span class="icon-bar"></span>
 					</button>
-					<h:commandLink action="#{docwaymenu.loadDocWayMainPage}" styleClass="resizescreen-logo navbar-brand">
+					<h:commandLink action="show@acl_home" styleClass="resizescreen-logo navbar-brand">
 						<img class="application-logo" src="#{facesContext.externalContext.requestContextPath}/common/css/#{(!empty aclHome.customDirCss) ? aclHome.customDirCss.concat('/') : ''}images/logo/acl-small.png" alt="acl" />
 					</h:commandLink>
 				</div>
@@ -50,7 +50,10 @@
 							    <li><h:commandLink value="#{i18n['acl.roles']}" action="#{menu.insTableDocRuolo}" immediate="true" rendered="#{aclHome.formsAdapter.funzionalitaDisponibili['rolesManagement'] and aclHome.formsAdapter.funzionalitaDisponibili['ins_roles']}"/></li>
 							    <li><h:commandLink value="#{i18n['acl.groups']}" action="#{menu.insTableDocGruppo}" immediate="true" rendered="#{aclHome.formsAdapter.funzionalitaDisponibili['ins_gruppi']}"/></li>
 							    <li><h:commandLink value="#{i18n['acl.towns']}" action="#{menu.insTableDocComune}" immediate="true" rendered="#{aclHome.formsAdapter.funzionalitaDisponibili['ins_comuni']}"/></li>
-							    <li><h:commandLink value="#{i18n['acl.pec']}" action="#{menu.insTableDocAoo}" immediate="true" rendered="#{aclHome.formsAdapter.funzionalitaDisponibili['ins_aoo'] and aclHome.adminAcl}"/></li>
+							    <li><h:commandLink value="#{i18n['acl.aoo']}" action="#{menu.insTableDocAoo}" immediate="true" rendered="#{aclHome.formsAdapter.funzionalitaDisponibili['ins_aoo'] and aclHome.adminAcl}"/></li>
+							    <ui:remove>
+							    	<li><h:commandLink value="#{i18n['acl.caselle_di_posta']}" action="#{menu.insTableDocCasellaPostaElettronica}" immediate="true" rendered="#{aclHome.formsAdapter.funzionalitaDisponibili['ins_casellaPostaElettronica']}"/></li>
+							    </ui:remove>
 		    				</ul>
 						</li>
 						<li class="dropdown">
@@ -67,11 +70,12 @@
 							    <li><h:commandLink rendered="#{menu.formsAdapter.funzionalitaDisponibili['rolesManagement']}" value="#{i18n['acl.roles']}" action="#{menu.gotoTableQRuolo}" immediate="true"/></li>
 							    <li><h:commandLink value="#{i18n['acl.groups']}" action="#{menu.gotoTableQGruppo}" immediate="true"/></li>
 							    <li><h:commandLink value="#{i18n['acl.towns']}" action="#{menu.gotoTableQComune}" immediate="true"/></li>
-							    <li><h:commandLink value="#{i18n['acl.pec']}" action="#{menu.gotoTableQAoo}" immediate="true"/></li>
+							    <li><h:commandLink value="#{i18n['acl.aoo']}" action="#{menu.gotoTableQAoo}" immediate="true"/></li>
+							    <li><h:commandLink value="#{i18n['acl.caselle_di_posta']}" action="#{menu.gotoTableQCasellaPostaElettronica}" immediate="true"/></li>
 							    <li><h:commandLink rendered="#{aclHome.formsAdapter.funzionalitaDisponibili['abilitaAccount']}" value="#{i18n['acl.account']}" action="#{menu.queryAccount}" immediate="true"/></li>
 							</ul>
 						</li>
-						<h:panelGroup rendered="#{aclHome.formsAdapter.funzionalitaDisponibili['abilitaAclCrawler']}">
+						<h:panelGroup rendered="#{aclHome.formsAdapter.funzionalitaDisponibili['abilitaAclCrawler'] or aclHome.formsAdapter.funzionalitaDisponibili['controlloDeleghe']}">
 							<li class="dropdown">
 						        <a data-toggle="dropdown" class="dropdown-toggle" href="#">
 						        	<span class="glyphicon glyphicon-th-list navbar-menu-icon"></span>
@@ -81,28 +85,38 @@
 									<h:panelGroup rendered="#{aclHome.formsAdapter.funzionalitaDisponibili['abilitaAclCrawler']}">
 						                <li><a href="#{facesContext.externalContext.requestContextPath}/aclCrawler/home.jsf">#{i18n['aclCrawler.extramenuEntry']}</a></li>
 						            </h:panelGroup>
-								</ul>
-							</li>
-						</h:panelGroup>
-						<h:panelGroup rendered="#{!empty menu.urlPaginaWikiManualeACL}">
-							<li class="dropdown">
-						        <a data-toggle="dropdown" class="dropdown-toggle" href="#">
-						        	<span class="glyphicon glyphicon-book navbar-menu-icon"></span>
-						        	#{i18n['dw4.help']} <b class="caret"></b>
-						        </a>
-								<ul class="dropdown-menu">
-									<h:panelGroup rendered="#{!empty menu.urlPaginaWikiManualeACL}">
-										<li><h:outputLink value="#{menu.urlPaginaWikiManualeACL}" target="manuale" title="#{i18n['dw4.manuale_online']}">#{i18n['dw4.manuale_online']}</h:outputLink></li>
+						            
+						            <h:panelGroup rendered="#{aclHome.formsAdapter.funzionalitaDisponibili['controlloDeleghe']}">
+										<li><h:commandLink action="#{menu.gotoControlloDeleghe}">#{i18n['dw4.pannello_controllo_deleghe']}</h:commandLink></li>
 									</h:panelGroup>
 								</ul>
 							</li>
 						</h:panelGroup>
+						<li class="dropdown">
+					        <a data-toggle="dropdown" class="dropdown-toggle" href="#">
+					        	<span class="glyphicon glyphicon-book navbar-menu-icon"></span>
+					        	#{i18n['dw4.help']} <b class="caret"></b>
+					        </a>
+							<ul class="dropdown-menu">
+								<li><h:commandLink action="#{menu.showVersioni}" value="#{i18n['dw4.about_docway']}" /></li>
+								<h:panelGroup rendered="#{!empty menu.urlPaginaWikiManualeACL}">
+									<li><h:outputLink value="#{menu.urlPaginaWikiManualeACL}" escape="false" target="manuale" title="#{i18n['dw4.manuale_online']}">#{i18n['dw4.manuale_online']}</h:outputLink></li>
+								</h:panelGroup>
+							</ul>
+						</li>
 					</ul>
 					<ul class="nav navbar-nav navbar-right">
 						<li class="dropdown">
-					        <a data-toggle="dropdown" class="dropdown-toggle #{(aclHome.accessoADM) ? 'user-login-adm' : ''}" title="#{userBean.userInfo}" href="#">
+					        <a data-toggle="dropdown" class="dropdown-toggle #{(aclHome.accessoADM) ? 'user-login-adm' : ''} #{docwayHome.accessoDelega ? 'user-login-delega' : ''}" title="#{userBean.userInfo}" href="#">
+					        	<h:panelGroup rendered="#{not aclHome.accessoDelega}">
 					        	<span class="glyphicon glyphicon-user navbar-menu-icon"></span>
-					        	#{fn:substring(userBean.userInfo,0, fn:indexOf(userBean.userInfo, '('))} <h:panelGroup rendered="#{aclHome.logoutFromACL}"><b class="caret"></b></h:panelGroup>
+						        	#{fn:substring(userBean.userInfo,0, fn:indexOf(userBean.userInfo, '('))}
+					        	</h:panelGroup>
+					        	<h:panelGroup rendered="#{aclHome.accessoDelega}">
+						        	<span class="glyphicons-pro parents navbar-menu-icon"></span>
+						        	#{fn:substring(userBean.userInfo,0, fn:indexOf(userBean.userInfo, '('))} (#{i18n['dw4.delega']})
+					        	</h:panelGroup>
+					        	<h:panelGroup rendered="#{aclHome.logoutFromACL}"><b class="caret"></b></h:panelGroup>
 					        </a>
 					        <h:panelGroup rendered="#{aclHome.logoutFromACL}">
 								<ul class="dropdown-menu">
@@ -114,8 +128,10 @@
 				</div>
 			</div>
 		</div>
+
+		<ui:include src="./query@versioni.xhtml"><ui:param name="pageBean" value="#{queryVersioni}"/></ui:include>
 	</h:form>
 	<!-- header: fine -->
-		
+
 </ui:composition>
 </html>

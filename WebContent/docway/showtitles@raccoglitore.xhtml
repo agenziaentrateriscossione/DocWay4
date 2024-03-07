@@ -25,21 +25,26 @@
 					</h:commandLink>
 				</ui:remove>
 				
-				<h:panelGroup rendered="#{docwayTitles.formsAdapter.funzionalitaDisponibili['abilitaEsportazioneCSVBase'] and docwayTitles.formsAdapter.funzionalitaDisponibili['abilitaEsportazioneCSVAvanzata']}">
-					<div class="btn-group">
-						<button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
-							#{i18n['dw4.esportazione_csv']} <span class="caret"></span>
-						</button>
-						<ul class="dropdown-menu">
-							<li><h:commandLink action="#{docwayTitles.exportCSV}" value="#{i18n['dw4.base']}" onclick="return exportCSV(#{docwayTitles.countSelection});" /></li>
-							<li><h:commandLink action="#{docwayTitles.startExportCSVAdvanced}" value="#{i18n['dw4.avanzata']}" onclick="return exportCSV(#{docwayTitles.countSelection});" /></li>
-						</ul>
-					</div>
+				<h:panelGroup rendered="#{!docwayTitles.formsAdapter.elasticsearchEnabled}">
+					<h:panelGroup rendered="#{docwayTitles.formsAdapter.funzionalitaDisponibili['abilitaEsportazioneCSVBase'] and docwayTitles.formsAdapter.funzionalitaDisponibili['abilitaEsportazioneCSVAvanzata']}">
+						<div class="btn-group">
+							<button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+								#{i18n['dw4.esportazione_csv']} <span class="caret"></span>
+							</button>
+							<ul class="dropdown-menu">
+								<li><h:commandLink action="#{docwayTitles.exportCSV}" value="#{i18n['dw4.base']}" onclick="return exportCSV(#{docwayTitles.countSelection});" /></li>
+								<li><h:commandLink action="#{docwayTitles.startExportCSVAdvanced}" value="#{i18n['dw4.avanzata']}" onclick="return exportCSV(#{docwayTitles.countSelection});" /></li>
+							</ul>
+						</div>
+					</h:panelGroup>
+					<h:commandLink rendered="#{!docwayTitles.formsAdapter.funzionalitaDisponibili['abilitaEsportazioneCSVBase'] and docwayTitles.formsAdapter.funzionalitaDisponibili['abilitaEsportazioneCSVAvanzata']}" action="#{docwayTitles.startExportCSVAdvanced}" styleClass="btn btn-default" onclick="return exportCSV(#{docwayTitles.countSelection});">#{i18n['dw4.esportazione_csv']}</h:commandLink>
+	                <h:commandLink rendered="#{docwayTitles.formsAdapter.funzionalitaDisponibili['abilitaEsportazioneCSVBase'] and !docwayTitles.formsAdapter.funzionalitaDisponibili['abilitaEsportazioneCSVAvanzata']}" action="#{docwayTitles.exportCSV}" styleClass="btn btn-default" onclick="return exportCSV(#{docwayTitles.countSelection});">#{i18n['dw4.esportazione_csv']}</h:commandLink>
 				</h:panelGroup>
-				<h:commandLink rendered="#{!docwayTitles.formsAdapter.funzionalitaDisponibili['abilitaEsportazioneCSVBase'] and docwayTitles.formsAdapter.funzionalitaDisponibili['abilitaEsportazioneCSVAvanzata']}" action="#{docwayTitles.startExportCSVAdvanced}" styleClass="btn btn-default" onclick="return exportCSV(#{docwayTitles.countSelection});">#{i18n['dw4.esportazione_csv']}</h:commandLink>
-                <h:commandLink rendered="#{docwayTitles.formsAdapter.funzionalitaDisponibili['abilitaEsportazioneCSVBase'] and !docwayTitles.formsAdapter.funzionalitaDisponibili['abilitaEsportazioneCSVAvanzata']}" action="#{docwayTitles.exportCSV}" styleClass="btn btn-default" onclick="return exportCSV(#{docwayTitles.countSelection});">#{i18n['dw4.esportazione_csv']}</h:commandLink>
+				<h:panelGroup rendered="#{docwayTitles.formsAdapter.elasticsearchEnabled and docwayTitles.formsAdapter.funzionalitaDisponibili['abilitaEsportazioneCSVAvanzata']}">
+					<h:commandLink action="#{docwayTitles.startExportCSVAdvanced}" styleClass="btn btn-default" onclick="return exportCSV(#{docwayTitles.countSelection});">#{i18n['dw4.esportazione_csv']}</h:commandLink>
+				</h:panelGroup>
 					
-				<h:commandLink rendered="#{docwayTitles.formsAdapter.funzionalitaDisponibili['menuMode']}" action="#{docwayTitles.addRPA}" onclick="return confirmTrasferimento(#{docwayTitles.countSelection});" styleClass="btn btn-default">
+				<h:commandLink rendered="#{!docwayTitles.formsAdapter.funzionalitaDisponibili['readOnlyAccessMode'] and docwayTitles.formsAdapter.funzionalitaDisponibili['menuMode']}" action="#{docwayTitles.addRPA}" onclick="return confirmTrasferimento(#{docwayTitles.countSelection});" styleClass="btn btn-default">
 					#{i18n['dw4.trasferisci']}
 				</h:commandLink>
 					
@@ -77,7 +82,8 @@
 								</h:commandLink>
 							</td>
 							<td>
-								<input id="checkTit#{status.index}" type="checkbox" class="titlescheckbox" checked="#{(title.select) ? 'cheched' : ''}" onclick="changeSelectionTitles('#{status.index}');" />
+								<input id="checkTit#{status.index}" type="checkbox" class="titlescheckbox" checked="#{(title.select) ? 'cheched' : ''}" readonly="#{(docwayTitles.selectAll and docwayTitles.formsAdapter.elasticsearchEnabled) ? 'readonly' : ''}" disabled="#{(docwayTitles.selectAll and docwayTitles.formsAdapter.elasticsearchEnabled) ? 'disabled' : ''}" onclick="changeSelectionTitles('#{status.index}');" />
+								<span class="hidden">PHYSDOC: <h:outputText value="#{title.physdoc}" /></span>
 								<h:inputHidden value="#{title.select}" id="tit" />
 								<h:commandLink id="updateTitoliSelezionatiBtn" action="#{docwayTitles.updateSelectionTitles}" style="display:none;">
 									<f:ajax execute="@form" render="@form"/>
@@ -102,7 +108,7 @@
 		<ui:include src="./loadingbar@exportCSV.xhtml"><ui:param name="pageBean" value="#{docwayTitles}"/></ui:include>
 		<ui:include src="./exportCSVAdvanced.xhtml"> <ui:param name="pageBean" value="#{docwayTitles}"/></ui:include>
 		
-		<h:inputTextarea value="#{docwayTitles.xml}" rendered="#{docwayTitles.debugMode}" styleClass="form-control" rows="10" />
+		<h:inputTextarea value="#{docwayTitles.xml}" rendered="#{docwayTitles.debugMode}" styleClass="form-control debug-textarea" rows="10" />
 	</div>
 </ui:define>
 

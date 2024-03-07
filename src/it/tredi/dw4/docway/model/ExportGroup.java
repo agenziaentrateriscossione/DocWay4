@@ -18,13 +18,16 @@ public class ExportGroup extends XmlEntity {
 	public ExportGroup() {
 		this.name = "";
 		this.type = "";
-		this.setSelected(false);
+		this.selected = false;
 	}
 
-	public ExportGroup(Element group, String type) {
+	public ExportGroup(Element group, String type, String exportType) {
 		this();
 		this.name = group.attributeValue("name");
 		this.type = group.attributeValue("type", type);
+		if (exportType != null && type.equals(exportType) && group.attributeValue("selected", "").equals("true")) {
+			this.selected = true;
+		}
 	}
 
 	public String getName() {

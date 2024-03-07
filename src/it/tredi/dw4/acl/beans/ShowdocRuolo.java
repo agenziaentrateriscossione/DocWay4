@@ -4,6 +4,7 @@ import it.tredi.dw4.acl.adapters.AclDocumentFormsAdapter;
 import it.tredi.dw4.adapters.AdaptersConfigurationLocator;
 import it.tredi.dw4.adapters.ErrormsgFormsAdapter;
 
+import javax.faces.context.FacesContext;
 import javax.faces.event.ComponentSystemEvent;
 
 import org.dom4j.Document;
@@ -30,6 +31,9 @@ public class ShowdocRuolo extends AclShowdoc {
     	xml = domDocumento.asXML();
     	ruolo = new it.tredi.dw4.acl.model.Ruolo();
     	ruolo.init(domDocumento);
+    	
+    	// inizializzazione di componenti common
+    	initCommons(domDocumento);
     }	
 	
 	public AclDocumentFormsAdapter getFormsAdapter() {
@@ -41,7 +45,7 @@ public class ShowdocRuolo extends AclShowdoc {
 	}
 	
 	public void reload() throws Exception {
-		super._reload("showdoc@ruolo");
+		super._reload(FacesContext.getCurrentInstance().getExternalContext().getRequestContextPath() + "/acl/showdoc@ruolo");
 	}
 
 	public void setRuolo(it.tredi.dw4.acl.model.Ruolo ruolo) {

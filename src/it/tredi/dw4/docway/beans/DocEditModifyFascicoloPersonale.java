@@ -294,33 +294,35 @@ public class DocEditModifyFascicoloPersonale extends DocEditModifyFascicolo {
 				    result = true;
 				}
 			}
-		}
-		
-		if (!getFormsAdapter().checkBooleanFunzionalitaDisponibile("fascPersNumPos", false)) {
-			// Controllo se il campo 'matricola' e' valorizzato
-			if (getFascicolo().getFascicolo_speciale().getMatricola() == null || "".equals(getFascicolo().getFascicolo_speciale().getMatricola().trim())) {
-				this.setErrorMessage("templateForm:fasc_matricola", I18N.mrs("acl.requiredfield") + " '" + I18N.mrs("acl.code") + "'");
-			    result = true;
+			
+			// mbernardini 21/05/2018 : i controlli su campi specifici del template sono validi solo se si tratta dell'inserimento/modifica di un fascicolo radice
+			
+			if (!getFormsAdapter().checkBooleanFunzionalitaDisponibile("fascPersNumPos", false)) {
+				// Controllo se il campo 'matricola' e' valorizzato
+				if (getFascicolo().getFascicolo_speciale().getMatricola() == null || "".equals(getFascicolo().getFascicolo_speciale().getMatricola().trim())) {
+					this.setErrorMessage("templateForm:fasc_matricola", I18N.mrs("acl.requiredfield") + " '" + I18N.mrs("acl.code") + "'");
+				    result = true;
+				}
 			}
-		}
-		
-		// Controllo sul formato dei campi data
-		if (getFascicolo().getFascicolo_speciale().getData_nascita() != null && getFascicolo().getFascicolo_speciale().getData_nascita().length() > 0) {
-			if (!DateUtil.isValidDate(getFascicolo().getFascicolo_speciale().getData_nascita(), formatoData)) {
-				this.setErrorMessage("templateForm:fasc_data_nascita", I18N.mrs("acl.inserire_una_data_valida_nel_campo") + " '" + I18N.mrs("acl.birthdate") + "': " + formatoData.toLowerCase());
-				result = true;
+			
+			// Controllo sul formato dei campi data
+			if (getFascicolo().getFascicolo_speciale().getData_nascita() != null && getFascicolo().getFascicolo_speciale().getData_nascita().length() > 0) {
+				if (!DateUtil.isValidDate(getFascicolo().getFascicolo_speciale().getData_nascita(), formatoData)) {
+					this.setErrorMessage("templateForm:fasc_data_nascita", I18N.mrs("acl.inserire_una_data_valida_nel_campo") + " '" + I18N.mrs("acl.birthdate") + "': " + formatoData.toLowerCase());
+					result = true;
+				}
 			}
-		}
-		if (getFascicolo().getFascicolo_speciale().getData_assunzione() != null && getFascicolo().getFascicolo_speciale().getData_assunzione().length() > 0) {
-			if (!DateUtil.isValidDate(getFascicolo().getFascicolo_speciale().getData_assunzione(), formatoData)) {
-				this.setErrorMessage("templateForm:fasc_data_assunzione", I18N.mrs("acl.inserire_una_data_valida_nel_campo") + " '" + I18N.mrs("dw4.data_assunzione") + "': " + formatoData.toLowerCase());
-				result = true;
+			if (getFascicolo().getFascicolo_speciale().getData_assunzione() != null && getFascicolo().getFascicolo_speciale().getData_assunzione().length() > 0) {
+				if (!DateUtil.isValidDate(getFascicolo().getFascicolo_speciale().getData_assunzione(), formatoData)) {
+					this.setErrorMessage("templateForm:fasc_data_assunzione", I18N.mrs("acl.inserire_una_data_valida_nel_campo") + " '" + I18N.mrs("dw4.data_assunzione") + "': " + formatoData.toLowerCase());
+					result = true;
+				}
 			}
-		}
-		if (getFascicolo().getFascicolo_speciale().getData_cessazione() != null && getFascicolo().getFascicolo_speciale().getData_cessazione().length() > 0) {
-			if (!DateUtil.isValidDate(getFascicolo().getFascicolo_speciale().getData_cessazione(), formatoData)) {
-				this.setErrorMessage("templateForm:fasc_data_cessazione", I18N.mrs("acl.inserire_una_data_valida_nel_campo") + " '" + I18N.mrs("dw4.data_cessazione") + "': " + formatoData.toLowerCase());
-				result = true;
+			if (getFascicolo().getFascicolo_speciale().getData_cessazione() != null && getFascicolo().getFascicolo_speciale().getData_cessazione().length() > 0) {
+				if (!DateUtil.isValidDate(getFascicolo().getFascicolo_speciale().getData_cessazione(), formatoData)) {
+					this.setErrorMessage("templateForm:fasc_data_cessazione", I18N.mrs("acl.inserire_una_data_valida_nel_campo") + " '" + I18N.mrs("dw4.data_cessazione") + "': " + formatoData.toLowerCase());
+					result = true;
+				}
 			}
 		}
 		

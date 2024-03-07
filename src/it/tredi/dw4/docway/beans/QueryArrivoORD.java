@@ -32,6 +32,7 @@ public class QueryArrivoORD extends QueryGlobale {
 		// forzatura della ricerca su tipo corrente (porzione query generata da QueryGlobale)
 		setRepertori_multipli(true);
 		forceRepertorioSelected("ORD", "A");
+		setCurrentCustomFieldSection("arrivo_ORD");
 		setArrivo(true);
 	}
 	

@@ -1,17 +1,18 @@
 package it.tredi.dw4.docway.beans;
 
-import it.tredi.dw4.utils.XMLDocumento;
+import org.dom4j.Document;
+
 import it.tredi.dw4.adapters.AdaptersConfigurationLocator;
 import it.tredi.dw4.adapters.ErrormsgFormsAdapter;
 import it.tredi.dw4.docway.doc.adapters.DocDocWayDocEditFormsAdapter;
 import it.tredi.dw4.docway.model.Interno;
 import it.tredi.dw4.i18n.I18N;
+import it.tredi.dw4.model.XmlEntity;
 import it.tredi.dw4.utils.AppStringPreferenceUtil;
+import it.tredi.dw4.utils.AppUtil;
 import it.tredi.dw4.utils.ClassifUtil;
 import it.tredi.dw4.utils.Const;
-import it.tredi.dw4.utils.AppUtil;
-
-import org.dom4j.Document;
+import it.tredi.dw4.utils.XMLDocumento;
 
 public class DocEditModifyInterno extends DocEditDoc {
 	private Interno doc = new Interno();
@@ -44,7 +45,7 @@ public class DocEditModifyInterno extends DocEditDoc {
 	 */
 	private void setInsArrivoTitleByCodRepertorio() {
 		if (doceditRep && descrizioneRepertorio != null && descrizioneRepertorio.length() > 0)
-			docEditTitle = descrizioneRepertorio + " - " + I18N.mrs("acl.modify");
+			docEditTitle = descrizioneRepertorio + " - " + (getFormsAdapter().checkBooleanFunzionalitaDisponibile("trasformaByDocEdit", false) ? I18N.mrs("dw4.trasformazioneRepertorio") : I18N.mrs("acl.modify"));
 		else
 			docEditTitle = I18N.mrs(DEFAULT_INTERNO_TITLE);
 	}
@@ -119,7 +120,7 @@ public class DocEditModifyInterno extends DocEditDoc {
 		String value = (getDoc().getMinuta().getClassif() != null && !"".equals(getDoc().getMinuta().getClassif().getFiltroCod())) ? getDoc().getMinuta().getClassif().getFiltroCod() : "";
 		if (value.length() > 0) {
 			// Devo formattare il valore passato in base alla classificazione
-			value = ClassifUtil.formatClassifCode(value);
+			value = ClassifUtil.formatNumberClassifCode(value);
 			
 			keypath = "CLASSIF_FROM_CODE";
 			startkey = "lookupHierFromClassifCode";
@@ -208,6 +209,11 @@ public class DocEditModifyInterno extends DocEditDoc {
 			result = true;
 		
 		return result;
+	}
+	
+	@Override
+	public XmlEntity getModel() {
+		return this.doc;
 	}
 	
 }

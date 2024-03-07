@@ -103,15 +103,37 @@
 								<div class="form-group" style="margin-top:20px;">
 									<label class="col-sm-2 control-label">#{i18n['dw4.file']}</label>
 									<div class="col-sm-1">
-										<span id="swfupload-testoDelibera-control">
-											<span id="swfuploadTestoDeliberaHolder"></span>
-											<h:commandLink id="swfuploadRepertoriBtn" onclick="return false;" styleClass="btn btn-default">#{i18n['dw4.sfoglia']}</h:commandLink>
-										</span>
+										<h:commandLink onclick="return addTestoDeliberaDragAndDrop();" styleClass="btn btn-default sfogliaButton">#{i18n['dw4.sfoglia']}</h:commandLink>
+										<script type="text/javascript">
+										<!--
+										function addTestoDeliberaDragAndDrop() {
+											$('#dropzoneTestoDeliberas').contents().find('#fileupload').trigger('click');
+											return false;
+										}
+										//-->
+										</script>
+										<div style="display: none;">
+											<iframe id="dropzoneTestoDeliberas" class="dropzone-iframe dropzone-images form-control" src="#{facesContext.externalContext.requestContextPath}/docway/dropzoneFileUpload.jsf?dadDbName=#{bean.formsAdapter.db}&amp;dadType=TestoDelibera"></iframe>
+											<script type="text/javascript">
+											var dadTestoDeliberasTypes = "*.rtf";
+											var dadMaxTestoDeliberas = 1;
+											var dadMaxTestoDeliberaSize = #{(!empty bean.formsAdapter.sizeMaxFile) ? bean.formsAdapter.sizeMaxFile : '0'};
+											
+											function updateTestoDeliberasFromDragAndDrop(ids, names) {
+												if (ids &amp;&amp; names) {
+													$('#dadTestoDeliberaFileName').html(names.substring(1));
+												  	$('#templateForm\\:dadTestoDeliberaFileNameHidden').val(names.substring(1));
+												  	$('#templateForm\\:dadTestoDeliberaFileIdHidden').val(ids.substring(1));
+												}
+												hideOpenwaitmsg();
+											}
+											</script>
+										</div>
 									</div>
 									<div class="col-sm-7 text-left">
-										<p class="form-control-static"><span id="swfuploadTestoDeliberaFileName">#{bean.fileNameTestoDelibera}</span></p>
-										<h:inputHidden id="swfuploadTestoDeliberaFileNameHidden" value="#{bean.fileNameTestoDelibera}" />
-										<h:inputHidden id="swfuploadTestoDeliberaFileIdHidden" value="#{bean.fileIdTestoDelibera}" />
+										<p class="form-control-static"><span id="dadTestoDeliberaFileName">#{bean.fileNameTestoDelibera}</span></p>
+										<h:inputHidden id="dadTestoDeliberaFileNameHidden" value="#{bean.fileNameTestoDelibera}" />
+										<h:inputHidden id="dadTestoDeliberaFileIdHidden" value="#{bean.fileIdTestoDelibera}" />
 									</div>
 								</div>
 							</td>
@@ -144,18 +166,6 @@
 						 $('#uploadFileTestoDelibera').hide();
 					} 
 			}); 
-			
-			window.loadSWFUpload = function() {
-					initDeliberaSWFU("swfupload-testoDelibera-control", "swfuploadTestoDeliberaHolder", "swfuploadTestoDeliberaFile", "#{facesContext.externalContext.requestContextPath}/fileupload", "#{userBean.login}", "#{userBean.matricola}","#{bean.formsAdapter.customTupleName}", "#{bean.formsAdapter.db}");
-				}
-				
-				$(window).load(function() {
-					jsf.ajax.addOnEvent(function(data) { 
-						if (data.status == 'success') {
-							initDeliberaSWFU("swfupload-testoDelibera-control", "swfuploadTestoDeliberaHolder", "swfuploadTestoDeliberaFile", "#{facesContext.externalContext.requestContextPath}/fileupload", "#{userBean.login}", "#{userBean.matricola}","#{bean.formsAdapter.customTupleName}", "#{bean.formsAdapter.db}");
-						}
-					});
-				}); 
 		</script>
 		
 	</h:panelGroup>

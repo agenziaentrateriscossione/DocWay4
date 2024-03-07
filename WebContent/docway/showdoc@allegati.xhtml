@@ -5,7 +5,7 @@
 	  xmlns:f="http://java.sun.com/jsf/core">
 <ui:composition>
 
-	<h:panelGroup rendered="#{!bean.customfields.hiddenFields['allegati'] and fn:length(bean.doc.allegati) > 0}">
+	<h:panelGroup rendered="#{!bean.customfields.hiddenFields['allegati'] and fn:length(bean.doc.allegati) > 0 and !empty bean.doc.allegati[0].text}">
 		<dt>#{i18n['dw4.attachments']}</dt>
 		<dd>
 			<h:panelGroup rendered="#{fn:length(bean.doc.allegati) > 1 or (fn:length(bean.doc.allegati) == 1 and not(fn:contains(bean.doc.allegati[0].text, ' - ')))}">

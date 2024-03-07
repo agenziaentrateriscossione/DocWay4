@@ -18,6 +18,9 @@
 			<ui:param name="bean" value="#{showdocFascicoloPersonale}"/>
 			<ui:param name="qFascicoloSpeciale" value="personale" />
 			<ui:param name="hideNuovoDoc" value="true" />
+			<ui:param name="forceInsert" value="true" />
+			<ui:param name="hideAssegnazioni" value="true" />
+			<ui:param name="showFolderTreeButton" value="#{showdocFascicoloPersonale.active}" />
 		</ui:include>
 		<!-- toolbar: fine -->
 		
@@ -29,6 +32,8 @@
 					
 					<ui:include src="./smartActionsFasc.xhtml">
 						<ui:param name="bean" value="#{showdocFascicoloPersonale}"/>
+						<ui:param name="hideAssegnazioni" value="true" />
+						<ui:param name="showFolderTreeButton" value="#{showdocFascicoloPersonale.active}" />
 					</ui:include>
 					
 					<!-- azioni rapide: fine -->
@@ -223,7 +228,7 @@
 					</div>
 					<!-- dati di archivio: fine -->
 					
-					<h:panelGroup rendered="#{!empty showdocFascicoloPersonale.fascicolo.note.text}">
+					<h:panelGroup rendered="#{!empty showdocFascicoloPersonale.fascicolo.note.text or !empty showdocFascicoloPersonale.fascicolo.tagsAsString}">
 						<!-- dati altro: inizio -->
 						<div class="showdoc-section">
 							<div class="title">
@@ -235,6 +240,10 @@
 							</div>
 							
 							<dl class="dl-horizontal">
+								<h:panelGroup rendered="#{!empty showdocFascicoloPersonale.fascicolo.tagsAsString}">
+									<dt>#{i18n['dw4.tags']}</dt>
+									<dd><strong>#{showdocFascicoloPersonale.fascicolo.tagsAsString}</strong></dd>
+								</h:panelGroup>
 								<h:panelGroup rendered="#{!empty showdocFascicoloPersonale.fascicolo.note.text}">
 									<dt>#{i18n['acl.notes']}</dt>
 									<dd><pre>#{showdocFascicoloPersonale.fascicolo.note.text}</pre></dd>
@@ -268,7 +277,7 @@
 		<ui:include src="./showthes.xhtml"> <ui:param name="pageBean" value="#{changeclassif}"/></ui:include>
 		<ui:include src="./showPersoneRuolo.xhtml"><ui:param name="bean" value="#{docwayShowPersoneRuolo}"/></ui:include>
 		
-		<h:inputTextarea value="#{showdocFascicoloPersonale.xml}" rendered="#{showdocFascicoloPersonale.debugMode}" styleClass="form-control" rows="10" />
+		<h:inputTextarea value="#{showdocFascicoloPersonale.xml}" rendered="#{showdocFascicoloPersonale.debugMode}" styleClass="form-control debug-textarea" rows="10" />
 	</div>
 
 	<ui:fragment rendered="#{showdocFascicoloPersonale.close and empty showdocFascicoloPersonale.numFasc}">

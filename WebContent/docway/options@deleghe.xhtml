@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+    template="#{queryProfiloPersonale.pageTemplate}"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:f="http://java.sun.com/jsf/core">
+
+<ui:define name="content">
+
+	<!-- modale selezione nuova delega : inizio -->
+	<h:panelGroup id="delegaForm">
+		<h:panelGroup rendered="#{optionsDeleghe.popupNewDelegaActive or optionsDeleghe.popupEditDelegaActive}">
+			<!-- Modal -->
+			<div id="delegaFormModal" class="modal fade in" aria-hidden="false" aria-labelledby="delegaFormModalLabel" role="dialog" tabindex="-1" style="display: block;">
+				<div class="modal-dialog large">
+					<div class="modal-content jsf-modal">
+						<div class="modal-header">
+							<h:commandLink styleClass="close" action="#{optionsDeleghe.closeDelega}" value="&#215;">
+		                    	<f:ajax render="@form"/>
+		                   	</h:commandLink>
+
+							<h:panelGroup rendered="#{optionsDeleghe.popupNewDelegaActive}">
+								<h4 class="modal-title" id="delegaFormModalLabel">#{i18n['dw4.seleziona_delegati']}</h4>
+							</h:panelGroup>
+							<h:panelGroup rendered="#{optionsDeleghe.popupEditDelegaActive}">
+								<h4 class="modal-title" id="editDelegaModalLabel">#{i18n['dw4.modifica_delega']}</h4>
+							</h:panelGroup>
+						</div>
+						<div class="modal-body">
+
+							<!-- messages: inizio -->
+							<h:panelGroup rendered="#{not empty facesContext.messageList}" layout="block" styleClass="docedit-messages alert alert-danger">
+								<h:messages styleClass="" id="validationMesseges" />
+							</h:panelGroup>
+							<h:inputHidden id="errorFieldIdsNew" value="#{optionsDeleghe.errorFieldIds}" />
+							<!-- messages: fine -->
+
+							<!-- validation: inizio -->
+							<script type="text/javascript">
+								$(document).ready(function() {
+									setInvalidInputFields();
+								});
+							</script>
+							<!-- validation and toggle dates: fine -->
+
+							<h:panelGroup id="delegatiNew_Fields" layout="block" class="delegati-fields margin-top-10" rendered="#{optionsDeleghe.popupNewDelegaActive}" >
+
+								<ui:repeat id="rifint_delega_list_new" var="rif" value="#{optionsDeleghe.delegaForm.rifDelegati}" varStatus="indice">
+									<ui:include src="./rifinterni.xhtml">
+							        	<ui:param name="rifintType" value="delegato" />
+							        	<ui:param name="indice" value="#{indice.index}" />
+						        		<ui:param name="editable" value="true" />
+						        		<ui:param name="pageBean" value="#{optionsDeleghe}" />
+						        		<ui:param name="rifintBean" value="#{rif}" />
+						        		<ui:param name="refresh" value=":templateForm:delegatiNew_Fields :templateForm:rifintLookup :templateForm:lookup :templateForm:errormsg"/>
+						        		<ui:param name="multiple" value="true"/>
+						        		<ui:param name="customLabel" value="#{i18n['dw4.delegato']}" />
+						        		<ui:param name="sendMailSelectedRifInterni" value="false"/> <!-- TODO Verifiare -->
+						        	</ui:include>
+						        </ui:repeat>
+
+						    </h:panelGroup>
+
+						    <h:panelGroup id="delegatiEdit_Fields" layout="block" class="delegati-fields margin-top-10" rendered="#{optionsDeleghe.popupEditDelegaActive}" >
+
+								<ui:repeat id="rifint_delega_list_edit" var="rif" value="#{optionsDeleghe.delegaForm.rifDelegati}" varStatus="indice">
+									<ui:include src="./rifinterni.xhtml">
+							        	<ui:param name="rifintType" value="delegato" />
+							        	<ui:param name="indice" value="#{0}" />
+						        		<ui:param name="editable" value="false" />
+						        		<ui:param name="pageBean" value="#{optionsDeleghe}" />
+						        		<ui:param name="rifintBean" value="#{rif}" />
+						        		<ui:param name="refresh" value=":templateForm:delegatiEdit_Fields :templateForm:rifintLookup :templateForm:lookup :templateForm:errormsg"/>
+						        		<ui:param name="customLabel" value="#{i18n['dw4.delegato']}" />
+						        		<ui:param name="sendMailSelectedRifInterni" value="false"/> <!-- TODO Verifiare -->
+						        	</ui:include>
+						        </ui:repeat>
+
+						    </h:panelGroup>
+
+					    	<div class="form-group margin-top-10">
+								<ui:include src="./rangeField.xhtml">
+									<ui:param name="label" value="#{i18n['dw4.durata']}" />
+									<ui:param name="id" value="durataDelega" />
+									<ui:param name="from_value" value="#{optionsDeleghe.delegaForm.inizio}" />
+									<ui:param name="to_value" value="#{optionsDeleghe.delegaForm.fine}" />
+									<ui:param name="is_date" value="true" />
+									<ui:param name="inputsize" value="4" />
+									<ui:param name="disabled" value="#{optionsDeleghe.delegaForm.permanente}" />
+								</ui:include>
+								<label for="templateForm:check_permanente" class="col-sm-2 control-label">#{i18n['dw4.permanente']}</label>
+								<div class="col-sm-1">
+									<h:selectBooleanCheckbox id="check_permanente" value="#{optionsDeleghe.delegaForm.permanente}">
+										<f:ajax listener="#{optionsDeleghe.updateDataInput}" execute="@form" render="templateForm:delegaForm" />
+									</h:selectBooleanCheckbox>
+								</div>
+							</div>
+
+							<div class="form-group margin-top-10">
+								<label class="col-sm-2 control-label"><span>#{i18n['dw4.attiva']}</span></label>
+								<div class="col-sm-2">
+									<h:selectOneRadio
+										value="#{optionsDeleghe.delegaForm.attiva}"
+										styleClass="radio-selection">
+										<f:selectItem itemLabel="#{i18n['dw4.yes']}" itemValue="true" />
+										<f:selectItem itemLabel="#{i18n['dw4.no']}" itemValue="false" />
+									</h:selectOneRadio>
+								</div>
+							</div>
+
+						</div>
+						<div class="modal-footer">
+							<h:commandButton styleClass="btn btn-primary openwaitmsg" action="#{optionsDeleghe.confirmDelega}" value="#{i18n['dw4.seleziona']}">
+								<f:ajax execute="@form" render="@form" />
+							</h:commandButton>
+
+							<h:commandButton styleClass="btn btn-default" action="#{optionsDeleghe.closeDelega}" value="#{i18n['acl.close']}" >
+			        			<f:ajax execute="@form" render="@form" />
+			        		</h:commandButton>
+						</div>
+					</div>
+				</div>
+			</div>
+			<!--h:outputScript>
+				$('#changepwdModal').modal('show');
+			</h:outputScript-->
+		</h:panelGroup>
+	</h:panelGroup>
+	<!-- modale selezione nuova delega : fine -->
+
+	<div class="deleghe">
+
+		<!-- toolbar: inizio -->
+		<div class="btn-toolbar" role="toolbar">
+			<div class="btn-group">
+				<h:commandLink id="saveBtn" action="#{optionsDeleghe.goToNewDelega}" styleClass="btn btn-primary openwaitmsg">
+					<f:ajax execute="@form" render="@form" />
+					#{i18n['dw4.nuova_delega']}
+				</h:commandLink>
+			</div>
+		</div>
+		<!-- toolbar: fine -->
+
+		<div class="row-fluid" style="margin-top:10px;">
+			<div id="fixedshowdoc" class="box span12 fixed-showdoc">
+				<div class="box-content">
+
+					<div class="fieldset">
+						<div class="sub-header">#{i18n['dw4.deleghe_affidate']}</div>
+
+						<h:panelGroup rendered="#{not empty optionsDeleghe.delegheAffidate}">
+							<table class="table table-striped table-hover deleghe-table">
+								<thead>
+									<tr>
+										<th class="colDelegheTipo va-middle text-center">#{i18n['dw4.state']}</th>
+										<th class="colDelegheSostituto va-middle text-center">#{i18n['dw4.notifiche']}</th>
+										<th class="colDelegheNome va-middle">#{i18n['dw4.cognome_nome']}</th>
+										<th class="colDelegheUfficio va-middle">#{i18n['dw4.ufficio']}</th>
+										<th class="colDelegheDurata va-middle">#{i18n['dw4.durata']}</th>
+										<th class="colDelegheOptions va-middle text-center">#{i18n['dw4.opzioni']}</th>
+									</tr>
+								</thead>
+								<tbody>
+									<ui:repeat id="delegaAffidata" var="delega" value="#{optionsDeleghe.delegheAffidate}" varStatus="indice">
+										<tr class="#{delega.uneditable ? 'uneditable' : ''}">
+											<td class="va-middle text-center col5">
+												<h:panelGroup rendered="#{delega.attiva and not (delega.isDelegaScaduta() or delega.isDelegaInAnticipo())}">
+													<span class="glyphicon glyphicon-ok-circle big-text text-green" title="#{i18n['dw4.attiva']}"></span>
+												</h:panelGroup>
+												<h:panelGroup rendered="#{not delega.attiva}">
+													<span class="glyphicon glyphicon-ban-circle big-text text-red" title="#{i18n['dw4.disattiva']}"></span>
+												</h:panelGroup>
+												<h:panelGroup rendered="#{delega.isDelegaScaduta() and delega.attiva}">
+													<span class="glyphicon glyphicon-remove-circle big-text text-red" title="#{i18n['dw4.delega_scaduta']}"></span>
+												</h:panelGroup>
+												<h:panelGroup rendered="#{delega.isDelegaInAnticipo() and delega.attiva}">
+													<span class="glyphicon glyphicon glyphicon-time big-text text-yellow" title="#{i18n['dw4.delega_non_ancora_attiva']}"></span>
+												</h:panelGroup>
+											</td>
+											<td class="va-middle col10 text-center">
+												<h:selectBooleanCheckbox value="#{delega.sostituto}" title="#{i18n['dw4.sostituto_delega_info']}" disabled="#{delega.uneditable}">
+													<f:ajax listener="#{optionsDeleghe.toggleSostituto}" />
+												</h:selectBooleanCheckbox>
+											</td>
+											<td class="va-middle col25">#{delega.nomePersona}</td>
+											<td class="va-middle col25">#{delega.nomeUfficio}</td>
+											<h:panelGroup rendered="#{!delega.permanente}">
+												<td class="va-middle col25">Dal #{delega.dataInizioToString()} - Al #{delega.dataFineToString()}</td>
+											</h:panelGroup>
+											<h:panelGroup rendered="#{delega.permanente}">
+												<td class="va-middle col25">#{i18n['dw4.permanente']}</td>
+											</h:panelGroup>
+											<td class="va-middle text-center no-br-2-buttons">
+												<div class="btn-group #{delega.uneditable ? 'not-allowed' : ''}">
+													<h:commandLink styleClass="btn btn-xs btn-default #{delega.uneditable ? 'disabled' : ''}" disabled="#{delega.uneditable}" title="#{i18n['dw4.modifica']}" action="#{optionsDeleghe.editDelega('to')}">
+														<f:ajax execute="@form" render="@form" />
+														<span class="glyphicon glyphicon-pencil text-black" /></h:commandLink>
+													<h:commandLink styleClass="btn btn-xs btn-default #{delega.uneditable ? 'disabled' : ''}" disabled="#{delega.uneditable}" title="#{i18n['dw4.remove']}" action="#{optionsDeleghe.removeDelega}">
+														<f:ajax execute="@form" render="@form" />
+														<span class="glyphicon glyphicon-remove" />
+													</h:commandLink>
+												</div>
+											</td>
+										</tr>
+									</ui:repeat>
+								</tbody>
+							</table>
+						</h:panelGroup>
+						<h:panelGroup rendered="#{empty optionsDeleghe.delegheAffidate}">
+							<div class="no-deleghe">#{i18n['dw4.nessuna_delega_affidata']}</div>
+						</h:panelGroup>
+
+					</div>
+
+				</div>
+			</div>
+		</div>
+
+		<ui:include src="./lookup.xhtml"> <ui:param name="pageBean" value="#{optionsDeleghe}"/></ui:include>
+		<ui:include src="./rifintLookup.xhtml"> <ui:param name="pageBean" value="#{optionsDeleghe}"/></ui:include>
+		<ui:include src="./showthes.xhtml"> <ui:param name="pageBean" value="#{optionsDeleghe}"/></ui:include>
+
+		<h:inputTextarea value="#{optionsDeleghe.xml}" rendered="#{optionsDeleghe.debugMode}" styleClass="form-control debug-textarea" rows="10" />
+	</div>
+
+</ui:define>
+
+</ui:composition>

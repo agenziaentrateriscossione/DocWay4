@@ -277,7 +277,7 @@ public class DocEditOrgano extends AclDocEdit {
 		String value = (organo.getClassif() != null && !"".equals(organo.getClassif().getFiltroCod())) ? organo.getClassif().getFiltroCod() : "";
 		if (value.length() > 0) {
 			// Devo formattare il valore passato in base alla classificazione
-			value = ClassifUtil.formatClassifCode(value);
+			value = ClassifUtil.formatNumberClassifCode(value);
 			
 			keypath = "CLASSIF_FROM_CODE";
 			startkey = "lookupHierFromClassifCode";
@@ -370,7 +370,7 @@ public class DocEditOrgano extends AclDocEdit {
 		String aliasName1 	= ""; //aliasName1 
 		String titolo 		= "xml,/bwf_entity/label"; //titolo 
 		String ord 			= "xml(xpart:/bwf_entity/label)"; //ord 
-		String campi 		= ".workflow.@name=xml,/bwf_entity/@name ; .workflow.@label=xml,/bwf_entity/label"; //campi
+		String campi 		= ".workflow.@name=xml,/bwf_entity/@name ; .workflow.@label=xml,/bwf_entity/label ; .workflow.@bonitaVersion=xml,/bwf_entity/@bonitaVersion"; //campi
 		String xq 			= ""; // xq  
 		String db 			= "xdocwayproc"; //db 
 		String newRecord 	= ""; //newRecord

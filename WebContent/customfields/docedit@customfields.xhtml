@@ -8,6 +8,17 @@
 <ui:composition>
 	
 	<h:panelGroup id="customFieldsHolder" layout="block" styleClass="docedit-customfields-holder">
+		<h:commandLink id="customFieldRelationshipBtn" action="#{bean.customfields.evaluateRelationships}" style="display:none;" styleClass="openwaitmsg">
+			<f:ajax execute="@form" render="templateForm:customFieldsHolder templateForm:classif_holder templateForm:rpa_Fields templateForm:errormsg"/> check-relazioni
+		</h:commandLink>
+		<script type="text/javascript">
+		<!--
+		function evaluateCustomFieldsRelationships() {
+			$('#templateForm\\:customFieldRelationshipBtn').trigger('click');
+		}
+		//-->
+		</script>
+		
 		<ui:repeat id="section" var="section" value="#{bean.customfields.sections}" varStatus="sectionStatus">
 			
 			<div class="fieldset">
@@ -123,7 +134,7 @@
 							</h:panelGroup>
 							<h:panelGroup rendered="#{field.type ne 'group'}">
 								
-								<div class="form-group">
+								<h:panelGroup rendered="#{field.visible}" layout="block" styleClass="form-group"> <!-- TODO visible andrebbe gestito anche su logiche di gruppo? -->
 									<label for="templateForm:section:#{sectionStatus.index}:field:#{fieldStatus.index}:fieldInstance:#{fieldInstanceStatus.index}:#{field.type}field" class="col-sm-2 control-label #{(field.required) ? 'required' : ''}">
 										<h:panelGroup rendered="#{!empty field.helpmessage}">
 											<span class="popoveritem" data-toggle="popover" data-placement="bottom" data-trigger="hover" data-content="#{field.helpmessage}">
@@ -146,7 +157,7 @@
 										</ui:include>
 										
 									</div>
-								</div>
+								</h:panelGroup>
 								
 							</h:panelGroup>
 						</h:panelGroup>

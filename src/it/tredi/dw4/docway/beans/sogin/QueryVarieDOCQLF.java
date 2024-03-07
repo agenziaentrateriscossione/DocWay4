@@ -34,6 +34,7 @@ public class QueryVarieDOCQLF extends QueryGlobale {
 	private void forzaRepertorio() {
 		setRepertori_multipli(true);
 		forceRepertorioSelected("DOCQLF", "V");
+		setCurrentCustomFieldSection("varie_DOCQLF");
 		setVarie(true);
 	}
 	

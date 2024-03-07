@@ -38,6 +38,10 @@
 						<span>#{i18n['acl.clone']}</span>
 					</h:commandLink>
 					
+					<ui:include src="../azionimassive/startAzioniMassiveButtons.xhtml">
+	                    <ui:param name="pageBean" value="#{showdocPersonaInterna}" />
+	                </ui:include>
+
 					<h:panelGroup rendered="#{showdocPersonaInterna.formsAdapter.funzionalitaDisponibili['abilitaConfrontoDiritti']}" layout="block" styleClass="btn-group">
 						<button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
 							#{i18n['acl.confronta']} <span class="caret"></span>
@@ -66,7 +70,7 @@
 
 			<h5 class="sub-header" title="#{showdocPersonaInterna.persona_interna.titolo_deferenza} #{showdocPersonaInterna.persona_interna.titolo} #{showdocPersonaInterna.persona_interna.cognome} #{showdocPersonaInterna.persona_interna.nome} #{showdocPersonaInterna.persona_interna.secondo_nome}">
 				<span class="persone-interne glyphicons-pro"></span>&#160;
-				<h:outputText value="#{showdocPersonaInterna.persona_interna.titolo_deferenza} #{showdocPersonaInterna.persona_interna.titolo} #{showdocPersonaInterna.persona_interna.cognome} #{showdocPersonaInterna.persona_interna.nome} #{showdocPersonaInterna.persona_interna.secondo_nome}" escape="false" />
+				<h:outputText value="#{showdocPersonaInterna.persona_interna.titolo_deferenza} #{showdocPersonaInterna.persona_interna.titolo} #{showdocPersonaInterna.persona_interna.cognome} #{showdocPersonaInterna.persona_interna.nome} #{showdocPersonaInterna.persona_interna.secondo_nome}" />
 			</h5>
 
 			<!-- scheda show: inizio -->
@@ -74,7 +78,7 @@
 				<div class="showdoc-section">
 					<div class="title">
 						#{i18n['acl.informazioni_di_base']}
-						
+
 						<div class="pull-right">
 							<span class="glyphicons-pro user" title="#{i18n['acl.informazioni_di_base']}"></span>
 						</div>
@@ -83,7 +87,7 @@
 					<dl class="dl-horizontal">
 						<dt>#{i18n['acl.name']}</dt>
 						<dd>#{showdocPersonaInterna.persona_interna.cognome} #{showdocPersonaInterna.persona_interna.nome}</dd>
-					
+
 						<h:panelGroup rendered="#{! empty showdocPersonaInterna.persona_interna.soprannome}">
 							<dt>#{i18n['acl.nickname']}</dt>
 							<dd>#{showdocPersonaInterna.persona_interna.soprannome}</dd>
@@ -91,7 +95,7 @@
 
 						<dt>#{i18n['acl.aoo']}</dt>
 						<dd>#{showdocPersonaInterna.persona_interna.cod_amm}#{showdocPersonaInterna.persona_interna.cod_aoo}</dd>
-						
+
 						<dt>#{i18n['acl.code']}</dt>
 						<dd>#{showdocPersonaInterna.persona_interna.matricola}</dd>
 
@@ -168,7 +172,7 @@
 							<dt>#{i18n['acl.profile']}</dt>
 							<dd>
 								<h:commandLink styleClass="openwaitmsg" value="#{showdocPersonaInterna.persona_interna.profile_name}" title="#{showdocPersonaInterna.persona_interna.profile_name}" action="#{showdocPersonaInterna.navigateProfile}" />
-								
+
 								<h:panelGroup rendered="#{showdocPersonaInterna.formsAdapter.funzionalitaDisponibili['abilitaConfrontoDiritti'] and showdocPersonaInterna.persona_interna.profile_changed}">
 									&#160; <span class="label label-info">#{i18n['acl.diritti_personalizzati_rispetto_al_profilo_di_appertenenza']}</span>
 								</h:panelGroup>
@@ -187,7 +191,7 @@
 						</h:panelGroup>
 					</dl>
 				</div>
-				
+
 				<ui:include src="./aspects.xhtml">
 					<ui:param name="bean" value="#{showdocPersonaInterna}" />
 				</ui:include>
@@ -246,6 +250,53 @@
 						</dl>
 					</div>
 				</h:panelGroup>
+				
+				<h:panelGroup rendered="#{not empty showdocPersonaInterna.persona_interna.firmeRemote}">
+					<div class="showdoc-section">
+						<div class="title">
+							#{i18n['dw4.firma_remota']}
+							<div class="pull-right">
+								<span class="glyphicons-pro pen firma-digitale" title="#{i18n['dw4.firma_remota']}"></span>
+							</div>
+						</div>
+
+						<dl class="dl-horizontal">
+							<ui:repeat var="credenzialeFirmaRemota" value="#{showdocPersonaInterna.persona_interna.firmeRemote}" varStatus="index">
+								<dt>#{credenzialeFirmaRemota.provider}</dt>
+								<dd>#{credenzialeFirmaRemota.username}</dd>
+							</ui:repeat>
+						</dl>
+					</div>
+				</h:panelGroup>
+
+				<h:panelGroup rendered="#{not empty showdocPersonaInterna.persona_interna.deleghe and showdocPersonaInterna.formsAdapter.funzionalitaDisponibili['adminDelegheAcl']}">
+					<div class="showdoc-section">
+						<div class="title">
+							#{i18n['dw4.deleghe']}
+							<div class="pull-right">
+								<span class="glyphicons-pro parents" title="#{i18n['dw4.deleghe']}"></span>
+							</div>
+						</div>
+
+						<dl class="dl-horizontal">
+							<ui:repeat var="delega" value="#{showdocPersonaInterna.persona_interna.deleghe}" varStatus="index">
+								<dt>#{i18n['dw4.delegato']}</dt>
+								<dd><a target="acl" href="#{facesContext.externalContext.requestContextPath}/acl/loadrif.pf?db=#{showdocPersonaInterna.formsAdapter.aclDb}&amp;codammaoo=#{showdocPersonaInterna.persona_interna.cod_amm}#{showdocPersonaInterna.persona_interna.cod_aoo}&amp;searchKey=persint_matricola&amp;value=#{delega.codPersona}">
+								<strong>#{delega.nomePersona}</strong></a> (#{delega.nomeUfficio})</dd>
+								<dd>#{i18n['dw4.durata']}:
+									<h:panelGroup rendered="#{delega.permanente}">
+										<span>#{i18n['dw4.permanente']}</span>
+									</h:panelGroup>
+									<h:panelGroup rendered="#{not delega.permanente}">
+										<span>#{delega.dataInizioToString()} - #{delega.dataFineToString()}</span>
+									</h:panelGroup>
+								</dd>
+								<dd>#{i18n['dw4.state']}: <span class="#{delega.attiva ? 'text-green' : 'text-red'}">#{delega.attiva ? i18n['dw4.attiva'] : i18n['dw4.disattiva']}</span></dd>
+								<dd>#{i18n['dw4.notifiche']}: <span class="#{delega.sostituto ? 'text-green' : 'text-red'}">#{delega.sostituto ? i18n['dw4.abilitate'] : i18n['dw4.disabilitate']}</span></dd>
+							</ui:repeat>
+						</dl>
+					</div>
+				</h:panelGroup>
 
 				<ui:include src="./rightsManager.xhtml">
 					<ui:param name="bean" value="#{showdocPersonaInterna.persona_interna}" />
@@ -265,7 +316,7 @@
 
 	<ui:include src="./compareRights.xhtml"> <ui:param name="pageBean" value="#{showdocPersonaInterna}"/></ui:include>
 
-	<h:inputTextarea value="#{showdocPersonaInterna.xml}" rendered="#{showdocPersonaInterna.debugMode}" styleClass="form-control" rows="10" />
+	<h:inputTextarea value="#{showdocPersonaInterna.xml}" rendered="#{showdocPersonaInterna.debugMode}" styleClass="form-control debug-textarea" rows="10" />
 
 </ui:define>
 

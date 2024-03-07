@@ -25,7 +25,7 @@
 
 		<h5 class="sub-header">
 			<span class="organo glyphicons-pro"></span>&#160;
-			<h:outputText value="#{i18n['dw4.modifica_organi']}" escape="false" />
+			<h:outputText value="#{i18n['dw4.modifica_organi']}" />
 		</h5>
 
 			<!-- messages: inizio -->
@@ -77,18 +77,6 @@
 						<ui:param name="organo" value="#{docEditModifyOrgano.organo}" />
 						<ui:param name="readOnly" value="false" />
 					</ui:include>
-
-					<ui:remove>
-						<ui:include src="./modelli.xhtml">
-							<ui:param name="bean" value="#{docEditModifyOrgano}" />
-			        		<ui:param name="bean.doc" value="#{docEditModifyOrgano.organo}" />
-			        		<ui:param name="beanDoc.files" value="#{docEditModifyOrgano.organo.modelli}" />
-			        		<ui:param name="enableFiles" value="true" />
-			        		<ui:param name="enableImages" value="false" />
-			        		<ui:param name="enableFileAgentPDF" value="false" />
-			        		<ui:param name="enableImageAgentPDF" value="false" />
-						</ui:include>
-					</ui:remove>
 					
 					<div class="fieldset">
 						<div class="legend">
@@ -105,14 +93,36 @@
 										<div class="form-group" style="margin-top:20px;">
 											<label class="col-sm-2 control-label">#{modello.nome}</label>
 											<div class="col-sm-1">
-												<span id="swfupload-#{modello.nome}-control">
-													<span id="swfupload#{modello.nome}Holder"></span>
-													<h:commandLink id="swfuploadRepertoriBtn" onclick="return false;" styleClass="btn btn-default">#{i18n['dw4.sfoglia']}</h:commandLink>
-												</span>
+												<h:commandLink onclick="return add#{modello.nome}DragAndDrop();" styleClass="btn btn-default sfogliaButton">#{i18n['dw4.sfoglia']}</h:commandLink>
+												<script type="text/javascript">
+												<!--
+												function add#{modello.nome}DragAndDrop() {
+													$('#dropzone#{modello.nome}s').contents().find('#fileupload').trigger('click');
+													return false;
+												}
+												//-->
+												</script>
+												<div style="display: none;">
+													<iframe id="dropzone#{modello.nome}s" class="dropzone-iframe dropzone-images form-control" src="#{facesContext.externalContext.requestContextPath}/docway/dropzoneFileUpload.jsf?dadDbName=#{docEditModifyOrgano.formsAdapter.db}&amp;dadType=#{modello.nome}"></iframe>
+													<script type="text/javascript">
+													var dad#{modello.nome}sTypes = "*.rtf";
+													var dadMax#{modello.nome}s = 1;
+													var dadMax#{modello.nome}Size = #{(!empty bean.formsAdapter.sizeMaxFile) ? bean.formsAdapter.sizeMaxFile : '0'};
+													
+													function update#{modello.nome}sFromDragAndDrop(ids, names) {
+														if (ids &amp;&amp; names) {
+															$('#dad#{modello.nome}FileName').html(names.substring(1));
+														  	$('#templateForm\\:dad#{modello.nome}FileNameHidden').val(names.substring(1));
+														  	$('#templateForm\\:dad#{modello.nome}FileIdHidden').val(ids.substring(1));
+														}
+														hideOpenwaitmsg();
+													}
+													</script>
+												</div>
 											</div>
 											<div class="col-sm-7 text-left">
 												<p class="form-control-static">
-													<span id="swfupload#{modello.nome}FileName">#{modello.file.title}</span>
+													<span id="dad#{modello.nome}FileName">#{modello.file.title}</span>
 													<span class="btn-group">
 														<h:commandLink action="#{docEditModifyOrgano.organo.removeFileModello(indice.index)}" title="#{i18n['dw4.elimina_istanza']}" onclick="if (!owmConfirm('#{i18n['dw4.confermi_cancellazione_allegato']}')) return false;" styleClass="btn btn-default btn-xs">
 															<f:ajax execute="@form" render="modelli" />
@@ -120,8 +130,8 @@
 														</h:commandLink>
 													</span>
 												</p>
-												<h:inputHidden id="swfupload#{modello.nome}FileNameHidden" value="#{modello.file.title}" />
-												<h:inputHidden id="swfupload#{modello.nome}FileIdHidden" value="#{modello.file.name}" />
+												<h:inputHidden id="dad#{modello.nome}FileNameHidden" value="#{modello.file.title}" />
+												<h:inputHidden id="dad#{modello.nome}FileIdHidden" value="#{modello.file.name}" />
 											</div>
 										</div>
 								</h:panelGroup>
@@ -133,42 +143,12 @@
 			</div>
 		</div>
 	</div>
-		<!-- scheda edit: fine -->
+	<!-- scheda edit: fine -->
 
-	<h:panelGroup rendered="#{ !bean.enableIW }">
-				<script type="text/javascript">
-				var docInformaticiUploadUrl = "#{facesContext.externalContext.requestContextPath}/fileupload";
-				var docInformaticiFileLimit = "0"; // TODO dim massima files, recuperarla da file di properties
-				var docInformaticiFileDescription = "#{bean.docInformaticiFileDescription}";
-				var docInformaticiFileTypes = "#{bean.docInformaticiFileTypes}";
-				
-				window.loadSWFUpload = function() {
-					initDeliberaSWFU("swfupload-proposta-control", "swfuploadpropostaHolder", "swfuploadpropostaFile", "#{facesContext.externalContext.requestContextPath}/fileupload", "#{userBean.login}", "#{userBean.matricola}","#{docEditModifyOrgano.formsAdapter.customTupleName}", "#{docEditModifyOrgano.formsAdapter.db}");
-					initDeliberaSWFU("swfupload-odg-control", "swfuploadodgHolder", "swfuploadodgFile", "#{facesContext.externalContext.requestContextPath}/fileupload", "#{userBean.login}", "#{userBean.matricola}","#{docEditModifyOrgano.formsAdapter.customTupleName}", "#{docEditModifyOrgano.formsAdapter.db}");
-					initDeliberaSWFU("swfupload-risultati-control", "swfuploadrisultatiHolder", "swfuploadrisultatiFile", "#{facesContext.externalContext.requestContextPath}/fileupload", "#{userBean.login}", "#{userBean.matricola}","#{docEditModifyOrgano.formsAdapter.customTupleName}", "#{docEditModifyOrgano.formsAdapter.db}");
-					initDeliberaSWFU("swfupload-delibera-control", "swfuploaddeliberaHolder", "swfuploaddeliberaFile", "#{facesContext.externalContext.requestContextPath}/fileupload", "#{userBean.login}", "#{userBean.matricola}","#{docEditModifyOrgano.formsAdapter.customTupleName}", "#{docEditModifyOrgano.formsAdapter.db}");
-					initDeliberaSWFU("swfupload-verbale-control", "swfuploadverbaleHolder", "swfuploadverbaleFile", "#{facesContext.externalContext.requestContextPath}/fileupload", "#{userBean.login}", "#{userBean.matricola}","#{docEditModifyOrgano.formsAdapter.customTupleName}", "#{docEditModifyOrgano.formsAdapter.db}");
-					
-				}
-				
-				$(window).load(function() {
-					jsf.ajax.addOnEvent(function(data) { 
-						if (data.status == 'success') {
-							initDeliberaSWFU("swfupload-proposta-control", "swfuploadpropostaHolder", "swfuploadpropostaFile", "#{facesContext.externalContext.requestContextPath}/fileupload", "#{userBean.login}", "#{userBean.matricola}","#{docEditModifyOrgano.formsAdapter.customTupleName}", "#{docEditModifyOrgano.formsAdapter.db}");
-							initDeliberaSWFU("swfupload-odg-control", "swfuploadodgHolder", "swfuploadodgFile", "#{facesContext.externalContext.requestContextPath}/fileupload", "#{userBean.login}", "#{userBean.matricola}","#{docEditModifyOrgano.formsAdapter.customTupleName}", "#{docEditModifyOrgano.formsAdapter.db}");
-							initDeliberaSWFU("swfupload-risultati-control", "swfuploadrisultatiHolder", "swfuploadrisultatiFile", "#{facesContext.externalContext.requestContextPath}/fileupload", "#{userBean.login}", "#{userBean.matricola}","#{docEditModifyOrgano.formsAdapter.customTupleName}", "#{docEditModifyOrgano.formsAdapter.db}");
-							initDeliberaSWFU("swfupload-delibera-control", "swfuploaddeliberaHolder", "swfuploaddeliberaFile", "#{facesContext.externalContext.requestContextPath}/fileupload", "#{userBean.login}", "#{userBean.matricola}","#{docEditModifyOrgano.formsAdapter.customTupleName}", "#{docEditModifyOrgano.formsAdapter.db}");
-							initDeliberaSWFU("swfupload-verbale-control", "swfuploadverbaleHolder", "swfuploadverbaleFile", "#{facesContext.externalContext.requestContextPath}/fileupload", "#{userBean.login}", "#{userBean.matricola}","#{docEditModifyOrgano.formsAdapter.customTupleName}", "#{docEditModifyOrgano.formsAdapter.db}");
-						}
-					});
-				}); 
-				</script>
-			</h:panelGroup>
-	
-		<ui:include src="./../docway/showthes.xhtml"> <ui:param name="pageBean" value="#{docEditModifyOrgano}"/></ui:include>
-		<ui:include src="./lookup.xhtml"> <ui:param name="pageBean" value="#{docEditModifyOrgano}"/></ui:include>
+	<ui:include src="./../docway/showthes.xhtml"> <ui:param name="pageBean" value="#{docEditModifyOrgano}"/></ui:include>
+	<ui:include src="./lookup.xhtml"> <ui:param name="pageBean" value="#{docEditModifyOrgano}"/></ui:include>
 
-	<h:inputTextarea value="#{docEditModifyOrgano.xml}" rendered="#{docEditModifyOrgano.debugMode}" styleClass="form-control" rows="10" />
+	<h:inputTextarea value="#{docEditModifyOrgano.xml}" rendered="#{docEditModifyOrgano.debugMode}" styleClass="form-control debug-textarea" rows="10" />
 </ui:define>
 
 </ui:composition>

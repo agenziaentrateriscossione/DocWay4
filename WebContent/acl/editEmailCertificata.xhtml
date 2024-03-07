@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" 
+	  xmlns:h="http://java.sun.com/jsf/html" 
+	  xmlns:ui="http://java.sun.com/jsf/facelets" 
+	  xmlns:f="http://java.sun.com/jsf/core">
+<ui:composition>
+	
+	<h:panelGroup id="emailCertsHolder" layout="block">
+		<ui:repeat id="emailCert" var="emailCert" value="#{pageBean.emailCerts}" varStatus="indiceEmailCert">
+			<div class="form-group">
+				<label for="templateForm:emailCert:#{indiceEmailCert.index}:strutint_pec_email" class="col-sm-2 control-label">#{(empty labelEmailCert) ? i18n['acl.email'] : labelEmailCert}</label>
+				<div class="col-sm-9">
+					<div class="input-group">
+						<h:inputText id="strutint_pec_email" value="#{emailCert.addr}" styleClass="form-control" />
+						
+						<div class="input-group-btn">
+							<h:commandLink action="#{pageBean.deleteEmailCert}" title="#{i18n['dw4.elimina_istanza']}" styleClass="btn btn-default">
+			        			<f:ajax execute="@form" render="templateForm:emailCertsHolder"/>
+			        			<span class="glyphicon glyphicon-minus"></span>
+			       			</h:commandLink>
+			       			<h:commandLink action="#{pageBean.addEmailCert}" title="#{i18n['dw4.aggiungi_istanza']}" styleClass="btn btn-default">
+			        			<f:ajax execute="@form" render="templateForm:emailCertsHolder"/>
+			        			<span class="glyphicon glyphicon-plus"></span>
+			       			</h:commandLink>
+							
+							<h:commandLink action="#{pageBean.moveUpEmailCert}" title="#{i18n['dw4.sposta_su']}" styleClass="btn btn-default #{(indiceEmailCert.index) > 0 ? '' : 'disabled'}">
+								<f:ajax execute="@form" render="templateForm:emailCertsHolder"/>
+			        			<span class="glyphicon glyphicon-chevron-up"></span>
+			       			</h:commandLink>
+			       			<h:commandLink action="#{pageBean.moveDownEmailCert}" title="#{i18n['dw4.sposta_giu']}" styleClass="btn btn-default #{fn:length(pageBean.emailCerts) > (indiceEmailCert.index+1) ? '' : 'disabled'}">
+			       				<f:ajax execute="@form" render="templateForm:emailCertsHolder"/>
+			        			<span class="glyphicon glyphicon-chevron-down"></span>
+			       			</h:commandLink>
+	   					</div>
+	  				</div>
+				</div>
+			</div>
+
+			<ui:remove>
+				<div class="form-group" style="margin-bottom: 20px;">
+					<label for="templateForm:emailCert:#{indiceEmailCert.index}:strutint_pec_login" class="col-sm-2 control-label">#{i18n['acl.login']}</label>
+					<div class="col-sm-4">
+						<h:inputText id="strutint_pec_login" value="#{emailCert.login}" styleClass="form-control" />
+					</div>
+					<label for="templateForm:emailCert:#{indiceEmailCert.index}:strutint_pec_pwd" class="col-sm-1 control-label">#{i18n['acl.password']}</label>
+					<div class="col-sm-4">
+						<h:inputSecret id="strutint_pec_pwd" value="#{emailCert.password}" redisplay="true" styleClass="form-control" />
+					</div>
+				</div>
+			</ui:remove>
+	 	</ui:repeat>
+ 	</h:panelGroup>
+
+</ui:composition>
+</html>

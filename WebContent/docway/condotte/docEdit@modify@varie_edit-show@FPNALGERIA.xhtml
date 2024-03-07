@@ -19,10 +19,14 @@
 					#{i18n['acl.save']}
 				</h:commandLink>
 				
-				<h:commandLink action="#{docEditModifyVarieEditshowFPNALGERIA.clearDocument}" 
-							onclick="IwxRuntime.Client.resetJobIWX();" styleClass="btn btn-default">
+				<h:commandLink rendered="#{!docEditModifyVarieEditshowFPNALGERIA.formsAdapter.funzionalitaDisponibili['trasformaByDocEdit']}" action="#{docEditModifyVarieEditshowFPNALGERIA.clearDocument}"
+						onclick="IwxRuntime.Client.resetJobIWX();" styleClass="btn btn-default">
 					#{i18n['acl.back']}
-				</h:commandLink>	
+				</h:commandLink>
+				<h:commandLink rendered="#{docEditModifyVarieEditshowFPNALGERIA.formsAdapter.funzionalitaDisponibili['trasformaByDocEdit']}" action="#{docEditModifyVarieEditshowFPNALGERIA.clearTrasformaRep}"
+							onclick="IwxRuntime.Client.resetJobIWX();" styleClass="btn btn-default">
+					#{i18n['acl.cancel']}
+				</h:commandLink>
 			</div>
 		</div>
 		<!-- toolbar: fine -->
@@ -36,7 +40,7 @@
 		
 		<h5 class="sub-header">
 			<span class="doc-tipo-varie glyphicon glyphicon-file"></span>&#160;
-			<h:outputText value="#{docEditModifyVarieEditshowFPNALGERIA.docEditTitle}" escape="false" />
+			<h:outputText value="#{docEditModifyVarieEditshowFPNALGERIA.docEditTitle}" />
 		</h5>
 	
 		<script type="text/javascript">
@@ -74,14 +78,14 @@
 						<div class="form-group">
 							<label for="templateForm:doc_oggetto" class="col-sm-2 control-label"><span>#{i18n['acl.society']}</span></label>
 							<div class="col-sm-9">
-								<p class="form-control-static"><h:outputText value="#{docEditModifyVarieEditshowFPNALGERIA.doc.societa}" escape="false" /></p>
+								<p class="form-control-static"><h:outputText value="#{docEditModifyVarieEditshowFPNALGERIA.doc.societa}" /></p>
 							</div>
 						</div>
 						
 						<div class="form-group">
 							<label for="templateForm:doc_oggetto" class="col-sm-2 control-label"><span>#{i18n['dw4.object']}</span></label>
 							<div class="col-sm-9">
-								<p class="form-control-static"><h:outputText value="#{docEditModifyVarieEditshowFPNALGERIA.doc.oggetto}" escape="false" /></p>
+								<p class="form-control-static"><h:outputText value="#{docEditModifyVarieEditshowFPNALGERIA.doc.oggetto}" /></p>
 							</div>
 						</div>
 					</div> <!-- /fieldset -->
@@ -109,11 +113,21 @@
 		</div>
 		<!-- scheda edit: fine -->
 			
-		<h:inputTextarea value="#{docEditModifyVarieEditshowFPNALGERIA.xml}" rendered="#{docEditModifyVarieEditshowFPNALGERIA.debugMode}" styleClass="form-control" rows="10" />
+		<h:inputTextarea value="#{docEditModifyVarieEditshowFPNALGERIA.xml}" rendered="#{docEditModifyVarieEditshowFPNALGERIA.debugMode}" styleClass="form-control debug-textarea" rows="10" />
 			
 		<ui:include src="../lookup.xhtml"> <ui:param name="pageBean" value="#{docEditModifyVarieEditshowFPNALGERIA}"/></ui:include>
 		<ui:include src="../rifintLookup.xhtml"> <ui:param name="pageBean" value="#{docEditModifyVarieEditshowFPNALGERIA}"/></ui:include>
 		<ui:include src="../showthes.xhtml"> <ui:param name="pageBean" value="#{docEditModifyVarieEditshowFPNALGERIA}"/></ui:include>
+		<ui:remove>
+			<!-- template per upload e la decompressione di archivi ZIP -->
+			<ui:param name="currentBean" value="#{docEditModifyVarieEditshowFPNALGERIA}" />
+			<ui:include src="../docUploadArchive.xhtml">
+				<ui:param name="bean" value="#{docWayUploadArchive}"/>
+				<ui:param name="beanDoc" value="#{currentBean}" />
+				<ui:param name="doc" value="#{currentBean.doc}" />
+				<ui:param name="enableFiles" value="#{currentBean.docInformaticiEnabled and currentBean.formsAdapter.funzionalitaDisponibili['addFile']}" />
+			</ui:include>
+		</ui:remove>
 	</div>
 </ui:define>
 

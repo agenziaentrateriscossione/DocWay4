@@ -15,9 +15,9 @@ import java.util.List;
 import org.dom4j.Document;
 
 public abstract class AclQuery extends AclPage {
-	
+
 	public final String CODSEDE_KEY = "%CODSEDE%";
-	
+
 	public abstract void init(Document dom);
 
 	public abstract QueryFormsAdapter getFormsAdapter();
@@ -38,15 +38,15 @@ public abstract class AclQuery extends AclPage {
 			}
 		}
 	}
-	
+
 	public XMLDocumento _queryPlain(String query, String verbo, String xverb)
 			throws Exception {
-		
+
 		// caricamento di tutte le porzioni di query relative ad addons caricati
 		// nella pagina di ricerca
 		if (query != null && query.length() > 0)
 			query = "(" + query + ")";
-		
+
 		List<BaseAddOn> addons = getAspects();
 		if (addons != null && addons.size() > 0) {
 			for (int i=0; i<addons.size(); i++) {
@@ -62,7 +62,7 @@ public abstract class AclQuery extends AclPage {
 				}
 			}
 		}
-		
+
 		getFormsAdapter().queryPlain(query, verbo, xverb);
 
 		return getFormsAdapter().getDefaultForm().executePOST(getUserBean());
@@ -85,7 +85,7 @@ public abstract class AclQuery extends AclPage {
 	public void openIndex(String inputName, String keyPath, String value, String startKey, String common) throws Exception {
 		openIndex(this, inputName, keyPath, value, startKey, common);
 	}
-	
+
 	public void openIndex(Object model, String inputName, String keyPath, String value, String startKey, String common) throws Exception {
 		AclShowindex aclShowindex = new AclShowindex();
 		setShowindex(aclShowindex);
@@ -123,7 +123,7 @@ public abstract class AclQuery extends AclPage {
 			boolean removeStopListWord = true; // TODO Andrebbe letto da un file di properties dell'applicazione
 			if (removeStopListWord && query.indexOf("SrcStp:") == -1)
 				query = query + "|SrcStp:null"; // In questo modo viene imposto di non utilizzare le stoplist
-			
+
 			return "([" + query + "]=" + value + ") " + operator + " "; // fcappelli 20120906 - rimossi i doppi apici dalla query, vanno aggiunti dall'utente eventualmente
 		}
 	}
@@ -131,7 +131,7 @@ public abstract class AclQuery extends AclPage {
 	/**
 	 * Appende alla query un filtro su range di date in base ai parametri
 	 * specificati
-	 * 
+	 *
 	 * @param searchName chiave di ricerca (es. creaz, mod)
 	 * @param dataFrom data di inizio dell'intervallo di ricerca
 	 * @param dataTo data di fine dell'intervallo di ricerca
@@ -144,7 +144,7 @@ public abstract class AclQuery extends AclPage {
 	/**
 	 * Appende alla query un filtro su range di date in base ai parametri
 	 * specificati
-	 * 
+	 *
 	 * @param searchName chiave di ricerca (es. creaz, mod)
 	 * @param dataFrom data di inizio dell'intervallo di ricerca
 	 * @param dataTo data di fine dell'intervallo di ricerca
@@ -194,7 +194,7 @@ public abstract class AclQuery extends AclPage {
 			}
 			if (response.getAttributeValue("//response/@verbo", "").equals("showdoc")) {
 				return buildSpecificShowdocPageAndReturnNavigationRule(response.getRootElement().attributeValue("dbTable"), response);
-			} 
+			}
 			else {
 				return buildTitlePageAndReturnNavigationRule(response);
 			}
@@ -204,7 +204,7 @@ public abstract class AclQuery extends AclPage {
 			return null;
 		}
 	}
-	
+
 	/**
 	 * Ritorna true in caso di warning delle restrizioni parziali abilitato, false altrimenti.
 	 * Per restrizioni parziali si intende il fatto che un operatore sia privo di restrizioni su anagrafica interna ma non sull'esterna o viceversa.
@@ -216,7 +216,7 @@ public abstract class AclQuery extends AclPage {
 			return StringUtil.booleanValue(DocWayProperties.readProperty("abilitaWarningSuRestrizioniParziali", "no"));
 		}
 		catch (Exception e) {
-			Logger.error(e.getMessage(), e);			
+			Logger.error(e.getMessage(), e);
 			return false;
 		}
 	}

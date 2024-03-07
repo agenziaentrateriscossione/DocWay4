@@ -1,7 +1,7 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml" 
-	  xmlns:h="http://java.sun.com/jsf/html" 
-	  xmlns:ui="http://java.sun.com/jsf/facelets" 
+<html xmlns="http://www.w3.org/1999/xhtml"
+	  xmlns:h="http://java.sun.com/jsf/html"
+	  xmlns:ui="http://java.sun.com/jsf/facelets"
 	  xmlns:f="http://java.sun.com/jsf/core">
 
 	<ui:composition>
@@ -13,10 +13,13 @@
 					<span class="glyphicon glyphicon-user" title="#{i18n['dw4.assegnatari']}"></span>
 				</div>
 			</div>
-     		
-			<h:panelGroup rendered="#{(bean.copyIfNotRipetiInFascicolo or (!bean.copyIfNotRipetiInFascicolo and bean.notRaccoglitore)) or (bean.formsAdapter.funzionalitaDisponibili['cds'] and bean.copyIfNotRipetiInFascicolo)}">
+
+			<h:panelGroup rendered="#{((bean.copyIfNotRipetiInFascicolo
+					or (!bean.copyIfNotRipetiInFascicolo and bean.notRaccoglitore)) and !bean.doc.sendMailSelectedRifInterni)
+					or (bean.formsAdapter.funzionalitaDisponibili['cds'] and bean.copyIfNotRipetiInFascicolo)
+					or bean.formsAdapter.funzionalitaDisponibili['presaInCaricoAbilitata']}">
 				<div class="form-group">
-					<h:panelGroup rendered="#{ bean.copyIfNotRipetiInFascicolo or (!bean.copyIfNotRipetiInFascicolo and bean.notRaccoglitore) }">
+					<h:panelGroup rendered="#{ (bean.copyIfNotRipetiInFascicolo or (!bean.copyIfNotRipetiInFascicolo and bean.notRaccoglitore)) and !bean.doc.sendMailSelectedRifInterni }">
 						<label for="templateForm:sendMailRifInterniCheck" class="col-sm-2 control-label">#{i18n['dw4.invia_email_di_notifica']}</label>
 						<div class="col-sm-1">
 							<h:selectBooleanCheckbox value="#{bean.doc.sendMailRifInterni}" id="sendMailRifInterniCheck" />
@@ -30,9 +33,15 @@
 							</h:selectBooleanCheckbox>
 						</div>
 					</h:panelGroup>
+					<h:panelGroup rendered="#{bean.formsAdapter.funzionalitaDisponibili['presaInCaricoAbilitata']}">
+						<label for="templateForm:presaInCaricoCheck" class="col-sm-2 control-label">#{i18n['dw4.richiedi_presa_in_carico']}</label>
+						<div class="col-sm-1">
+							<h:selectBooleanCheckbox value="#{bean.doc.richiestaPresaInCarico}" id="presaInCaricoCheck" disabled="#{bean.isDocEditModify() and not empty bean.doc.richiestaPresaInCarico and bean.doc.richiestaPresaInCarico}"/>
+						</div>
+					</h:panelGroup>
 				</div>
 			</h:panelGroup>
-			
+
 			<h:panelGroup rendered="#{bean.doc.tipo eq 'interno'}" id="rpam_Fields" layout="block" styleClass="responsabilita-fields">
 				<h:panelGroup rendered="#{!bean.copyIfNotRipetiInFascicolo}">
 					<div class="form-group">
@@ -45,7 +54,7 @@
 						</div>
 					</div>
 				</h:panelGroup>
-				
+
 				<ui:include src="./rifinterni.xhtml">
 		        	<ui:param name="rifintType" value="rpam" />
 	        		<ui:param name="editable" value="#{ bean.copyIfNotRipetiInFascicolo }" />
@@ -53,10 +62,23 @@
 	        		<ui:param name="rifintBean" value="#{ bean.doc.assegnazioneRPAM }" />
 	        		<ui:param name="refresh" value="templateForm:rpam_Fields templateForm:rifintLookup templateForm:lookup templateForm:errormsg"/>
 	        		<ui:param name="customLabel" value="#{customLabelRPAM}" />
+	        		<ui:param name="sendMailSelectedRifInterni" value="#{bean.doc.sendMailSelectedRifInterni}"/>
 	        	</ui:include>
         	</h:panelGroup>
-	
+
 			<h:panelGroup id="rpa_Fields" layout="block" styleClass="responsabilita-fields">
+				
+				<!-- hidden button per invocare metodo di controllo sul bean -->
+				<h:panelGroup rendered="#{bean.overrideLivelloVisibilitaNeeded}">
+					<div class="form-group">
+						<div class="col-xs-offset-2 col-xs-8">
+							<span class="label label-info">
+								#{bean.infoMessageLivelloVisibilitaUff}
+							</span>
+						</div>
+					</div>
+				</h:panelGroup>
+			
 				<h:panelGroup rendered="#{ bean.doc.tipo ne 'interno' and !bean.copyIfNotRipetiInFascicolo }">
 					<div class="form-group">
 						<label class="col-sm-2 control-label"><span>#{i18n['dw4.fasc']}</span></label>
@@ -68,18 +90,19 @@
 						</div>
 					</div>
 				</h:panelGroup>
-		
+
 				<ui:include src="./rifinterni.xhtml">
 					<ui:param name="rifintType" value="rpa" />
 					<ui:param name="editable" value="#{ bean.doc.tipo eq 'interno' or bean.copyIfNotRipetiInFascicolo }" />
 					<ui:param name="pageBean" value="#{bean}" />
 					<ui:param name="requiredField" value="#{bean.formsAdapter.funzionalitaDisponibili['docRPAEreditabile'] ? 'false' : 'true'}" />
 					<ui:param name="rifintBean" value="#{bean.doc.assegnazioneRPA}" />
-					<ui:param name="refresh" value="templateForm:rpa_Fields templateForm:rifintLookup templateForm:lookup templateForm:errormsg"/>
+					<ui:param name="refresh" value="templateForm:rpa_Fields templateForm:rifintLookup templateForm:lookup templateForm:errormsg templateForm:visibilitaHolder"/>
 					<ui:param name="customLabel" value="#{customLabelRPA}" />
+	        		<ui:param name="sendMailSelectedRifInterni" value="#{bean.doc.sendMailSelectedRifInterni}"/>
 				</ui:include>
 			</h:panelGroup>
-      	
+
 			<h:panelGroup rendered="#{bean.copyIfNotRipetiInFascicolo}" layout="block" id="cds_Fields" styleClass="responsabilita-fields">
 				<h:panelGroup rendered="#{bean.formsAdapter.funzionalitaDisponibili['cds'] and bean.doc.showCDSSection}">
 					<ui:repeat id="rifint_cds_list" var="rif" value="#{bean.doc.assegnazioneCDS}" varStatus="indice">
@@ -92,11 +115,12 @@
 			        		<ui:param name="refresh" value=":templateForm:cds_Fields :templateForm:rifintLookup :templateForm:lookup :templateForm:errormsg"/>
 			        		<ui:param name="multiple" value="true"/>
 			        		<ui:param name="customLabel" value="#{customLabelCDS}" />
+			        		<ui:param name="sendMailSelectedRifInterni" value="#{bean.doc.sendMailSelectedRifInterni}"/>
 			        	</ui:include>
 	        		</ui:repeat>
 				</h:panelGroup>
 			</h:panelGroup>
-			
+
 			<h:panelGroup rendered="#{bean.doc.tipo eq 'interno'}" layout="block" id="opm_Fields" styleClass="responsabilita-fields">
 	        	<h:panelGroup rendered="#{bean.formsAdapter.funzionalitaDisponibili['operatoreIncaricato']}">
 	        		<ui:include src="./rifinterni.xhtml">
@@ -106,10 +130,11 @@
 		        		<ui:param name="rifintBean" value="#{bean.doc.assegnazioneOPM}" />
 		        		<ui:param name="refresh" value="templateForm:opm_Fields templateForm:rifintLookup templateForm:lookup templateForm:errormsg"/>
 		        		<ui:param name="customLabel" value="#{customLabelOPM}" />
+		        		<ui:param name="sendMailSelectedRifInterni" value="#{bean.doc.sendMailSelectedRifInterni}"/>
 		        	</ui:include>
 	        	</h:panelGroup>
 	        </h:panelGroup>
-	
+
 			<h:panelGroup layout="block" id="op_Fields" styleClass="responsabilita-fields">
 				<h:panelGroup rendered="#{bean.formsAdapter.funzionalitaDisponibili['operatoreIncaricato']}">
 		       		<ui:include src="./rifinterni.xhtml">
@@ -119,13 +144,14 @@
 		        		<ui:param name="rifintBean" value="#{bean.doc.assegnazioneOP}" />
 		        		<ui:param name="refresh" value="templateForm:op_Fields templateForm:rifintLookup templateForm:lookup templateForm:errormsg"/>
 		        		<ui:param name="customLabel" value="#{customLabelOP}" />
+		        		<ui:param name="sendMailSelectedRifInterni" value="#{bean.doc.sendMailSelectedRifInterni}"/>
 		        	</ui:include>
 				</h:panelGroup>
 			</h:panelGroup>
-      	
+
 			<h:panelGroup id="cc_Fields" layout="block" class="responsabilita-fields" >
 				<h:inputHidden value="#{bean.alertForTutti}" id="cc_alertForTutti" />
-		
+
 				<ui:repeat id="rifint_cc_list" var="rif" value="#{bean.doc.assegnazioneCC}" varStatus="indice">
 					<ui:include src="./rifinterni.xhtml">
 			        	<ui:param name="rifintType" value="cc" />
@@ -136,11 +162,12 @@
 		        		<ui:param name="refresh" value=":templateForm:cc_Fields :templateForm:rifintLookup :templateForm:lookup :templateForm:errormsg"/>
 		        		<ui:param name="multiple" value="true"/>
 		        		<ui:param name="customLabel" value="#{customLabelCC}" />
+		        		<ui:param name="sendMailSelectedRifInterni" value="#{bean.doc.sendMailSelectedRifInterni}"/>
 		        	</ui:include>
 		        </ui:repeat>
 			</h:panelGroup>
 		</div> <!-- /fieldset -->
-		
+
 	</ui:composition>
 
 </html>

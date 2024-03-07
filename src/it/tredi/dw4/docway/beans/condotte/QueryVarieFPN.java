@@ -46,6 +46,7 @@ public class QueryVarieFPN extends QueryGlobale {
 	private void forzaRepertorio() {
 		setRepertori_multipli(true);
 		forceRepertorioSelected("FPN", "V");
+		setCurrentCustomFieldSection("varie_FPN");
 		setVarie(true);
 	}
 	

@@ -9,14 +9,16 @@
 	<h:panelGroup rendered="#{!currentThes.radice}">
 		<h:panelGroup rendered="#{fn:length(currentThes.childrens) == 0}">
 			<div class="thes_#{codBreadcrumbsStyle} parent_#{levStyle} showThesNode#{levStyle eq '0' ? 'FirstLevel' : 'InLevel'}" style="#{levStyle ne '0' ? 'display:none;' : ''}">
-				<c:forEach begin="1" end="#{currentThes.level}" varStatus="idxLevel">
-					<h:panelGroup rendered="#{idxLevel.index != currentThes.level}" layout="block" style="width:20px; float:left;">
-						<img src="#{facesContext.externalContext.requestContextPath}/docway/css/images/spazio.png" id="cmd_open_img_#{codBreadcrumbsStyle}" style="height:18px; width:18px; vertical-align:middle;" alt="tree icon" />
-					</h:panelGroup>
-					<h:panelGroup rendered="#{idxLevel.index == currentThes.level}" layout="block" style="width:20px; float:left;">
-						<img src="#{facesContext.externalContext.requestContextPath}/docway/css/images/spazio.png" id="cmd_open_img_#{codBreadcrumbsStyle}" style="height:18px; width:18px; vertical-align:middle;" alt="tree icon" />
-					</h:panelGroup>
-				</c:forEach>
+				<c:if test="#{currentThes != null}">
+					<c:forEach begin="1" end="#{currentThes.level}" varStatus="idxLevel">
+						<h:panelGroup rendered="#{idxLevel.index != currentThes.level}" layout="block" style="width:20px; float:left;">
+							<img src="#{facesContext.externalContext.requestContextPath}/docway/css/images/spazio.png" id="cmd_open_img_#{codBreadcrumbsStyle}" style="height:18px; width:18px; vertical-align:middle;" alt="tree icon" />
+						</h:panelGroup>
+						<h:panelGroup rendered="#{idxLevel.index == currentThes.level}" layout="block" style="width:20px; float:left;">
+							<img src="#{facesContext.externalContext.requestContextPath}/docway/css/images/spazio.png" id="cmd_open_img_#{codBreadcrumbsStyle}" style="height:18px; width:18px; vertical-align:middle;" alt="tree icon" />
+						</h:panelGroup>
+					</c:forEach>
+				</c:if>
 				<h:commandLink action="#{showthes.assignClassifAndClose}" actionListener="#{showthes.attrListener}" styleClass="thesIconLink openwaitmsg">
 					<div class="labelShowThes" style="width:30px; float: left;">#{currentThes.codice}</div> 
 					<div class="labelShowThes" style="width:#{675 - (20 * currentThes.level )}px; float: left;">#{currentThes.titolo}</div>
@@ -30,45 +32,51 @@
 					
 		<h:panelGroup rendered="#{fn:length(currentThes.childrens) > 0}">
 			<div class="thes_#{codBreadcrumbsStyle} parent_#{levStyle} showThesNode#{levStyle eq '0' ? 'FirstLevel' : 'InLevel'}" style="#{levStyle ne '0' ? 'display:none;' : ''}">
-				<c:forEach begin="1" end="#{currentThes.level}" varStatus="idxLevel">
-					<h:panelGroup rendered="#{(idxLevel.index != currentThes.level)}" layout="block" style="width: 20px; float: left;">
-						<img src="#{facesContext.externalContext.requestContextPath}/docway/css/images/spazio.png" style="height:18px; width:18px; vertical-align:middle;" alt="tree icon" />
-					</h:panelGroup>
-					<h:panelGroup rendered="#{(idxLevel.index == currentThes.level)}" layout="block" style="width: 20px; float: left;">
-						<a href="#" onclick="openCloseGerarchiaThesauro('#{codBreadcrumbsStyle}', '#{levStyle}'); return false;" title="open/close" >
-							<span class="glyphicon glyphicon-plus showThesGerarchiaPlus" id="cmd_open_img_#{codBreadcrumbsStyle}" style="height:18px; width:18px; vertical-align:middle;"></span>
-							<span class="glyphicon glyphicon-minus showThesGerarchiaMinus" id="cmd_close_img_#{codBreadcrumbsStyle}"  style="height:18px; width:18px; vertical-align:middle; display:none;"></span>
-						</a>
-					</h:panelGroup>
-				</c:forEach>
+				<c:if test="#{currentThes != null}">
+					<c:forEach begin="1" end="#{currentThes.level}" varStatus="idxLevel">
+						<h:panelGroup rendered="#{(idxLevel.index != currentThes.level)}" layout="block" style="width: 20px; float: left;">
+							<img src="#{facesContext.externalContext.requestContextPath}/docway/css/images/spazio.png" style="height:18px; width:18px; vertical-align:middle;" alt="tree icon" />
+						</h:panelGroup>
+						<h:panelGroup rendered="#{(idxLevel.index == currentThes.level)}" layout="block" style="width: 20px; float: left;">
+							<a href="#" onclick="openCloseGerarchiaThesauro('#{codBreadcrumbsStyle}', '#{levStyle}'); return false;" title="open/close" >
+								<span class="glyphicon glyphicon-plus showThesGerarchiaPlus" id="cmd_open_img_#{codBreadcrumbsStyle}" style="height:18px; width:18px; vertical-align:middle;"></span>
+								<span class="glyphicon glyphicon-minus showThesGerarchiaMinus" id="cmd_close_img_#{codBreadcrumbsStyle}"  style="height:18px; width:18px; vertical-align:middle; display:none;"></span>
+							</a>
+						</h:panelGroup>
+					</c:forEach>
+				</c:if>
 				<div class="labelShowThes" style="width:30px; float: left;">#{currentThes.codice}</div> 
 				<div class="labelShowThes" style="width:#{410 - (20 * currentThes.level )}px; float: left;">#{currentThes.titolo}</div>
 				
 				<div style="clear:both; height:0px; visibility: hidden;"></div>
 			</div>
 			
-			<c:forEach var="tmpThes" items="#{currentThes.childrens}" varStatus="indice">
-				<ui:include src="./showthesNodoGerarchia.xhtml">
-					<ui:param name="showthes" value="#{showthes}"/>
-					<ui:param name="currentThes" value="#{tmpThes}"/>
-					<ui:param name="codBreadcrumbs" value="#{codBreadcrumbs}/#{currentThes.indice}" />
-					<ui:param name="codBreadcrumbsStyle" value="#{codBreadcrumbsStyle}_#{currentThes.indice}"/>
-					<ui:param name="levStyle" value="#{levStyle + 1}"/>
-				</ui:include>
-			</c:forEach>
+			<c:if test="#{currentThes != null}">
+				<c:forEach var="tmpThes" items="#{currentThes.childrens}" varStatus="indice">
+					<ui:include src="./showthesNodoGerarchia.xhtml">
+						<ui:param name="showthes" value="#{showthes}"/>
+						<ui:param name="currentThes" value="#{tmpThes}"/>
+						<ui:param name="codBreadcrumbs" value="#{codBreadcrumbs}/#{currentThes.indice}" />
+						<ui:param name="codBreadcrumbsStyle" value="#{codBreadcrumbsStyle}_#{currentThes.indice}"/>
+						<ui:param name="levStyle" value="#{levStyle + 1}"/>
+					</ui:include>
+				</c:forEach>
+			</c:if>
 		</h:panelGroup>
 	</h:panelGroup>
 	
 	<h:panelGroup rendered="#{currentThes.radice}">
-		<c:forEach var="tmpThes" items="#{currentThes.childrens}" varStatus="indice">
-			<ui:include src="./showthesNodoGerarchia.xhtml">
-				<ui:param name="showthes" value="#{showthes}"/>
-				<ui:param name="currentThes" value="#{tmpThes}"/>
-				<ui:param name="codBreadcrumbs" value="#{tmpThes.indice}"/>
-				<ui:param name="codBreadcrumbsStyle" value="#{tmpThes.indice}"/>
-				<ui:param name="levStyle" value="0"/>
-			</ui:include>
-		</c:forEach>
+		<c:if test="#{currentThes != null}">
+			<c:forEach var="tmpThes" items="#{currentThes.childrens}" varStatus="indice">
+				<ui:include src="./showthesNodoGerarchia.xhtml">
+					<ui:param name="showthes" value="#{showthes}"/>
+					<ui:param name="currentThes" value="#{tmpThes}"/>
+					<ui:param name="codBreadcrumbs" value="#{tmpThes.indice}"/>
+					<ui:param name="codBreadcrumbsStyle" value="#{tmpThes.indice}"/>
+					<ui:param name="levStyle" value="0"/>
+				</ui:include>
+			</c:forEach>
+		</c:if>
 	</h:panelGroup>
 		
 </ui:composition>

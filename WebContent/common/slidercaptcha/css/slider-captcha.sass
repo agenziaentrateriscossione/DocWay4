@@ -1,0 +1,131 @@
+/*
+ * Modules and Variables
+ */
+
+@import "partials/base"
+@import "partials/entypo"
+
+/*
+ * GENERAL STYLES
+ */
+
+.slider_captcha
+	font-size: 16px
+	font-weight: 400
+	text-align: center
+	color: #A3A3A3
+	background: #eee
+	display: inline-block
+	position: relative
+
+	overflow: hidden
+
+	width: 100%
+	height: $slider-height
+	padding: 0
+
+	+rect-left-radius()
+	+rect-right-radius()
+	+text-not-selectable()
+
+	span
+		cursor: default
+		position: relative
+		line-height: $slider-height
+	
+	& > span
+		margin: 0 auto
+
+.swipe-knob
+	position: absolute
+	top: 0
+	left: 0
+	cursor: move
+
+	width: $slider-height
+	height: $slider-height
+
+	background-color: #72D5EE
+	color: #fff
+
+	+rect-radius()
+
+	&:not(.type_filled)
+
+		&[class*=" sc-icon-"] > span:after
+			display: none
+
+		span
+			display: table
+			width: 100%
+			height: 100%
+			cursor: move
+
+			&:after
+				font-family: 'sc_fontello'
+				font-size: $font-face-size
+				content: "\e875"
+				cursor: move
+
+		&.swipe_ended
+
+			background-color: #868D8F
+			right: 0
+			cursor: auto
+
+			span
+				width: 100%
+				height: 100%
+				&[class*=" sc-icon-"]:after
+					display: none
+				&:after
+					content: "\e812"
+
+	&.type_filled
+		left: $slider-height
+		margin-left: -100%
+		width: 100%
+		cursor: move
+
+		+text-not-selectable()
+
+		&[class*=" sc-icon-"]
+			span
+				position: absolute
+				right: 19px
+				top: 0
+				cursor: move
+
+				&:after
+					display: none
+
+				&:before
+					display: block
+					vertical-align: none
+	
+		span
+			position: absolute
+			right: 19px
+			top: 0
+			cursor: move
+			&:after
+				font-family: 'sc_fontello'
+				font-size: $font-face-size
+				content: "\e875"
+			
+
+		&.swipe_ended
+			background-color: #868D8F
+			right: 0
+			cursor: auto
+
+			span:after
+				content: "\e812"
+
+
+.knob-destiny
+	position: absolute
+	top: 0
+	right: 0
+	width: $slider-height
+	height: $slider-height

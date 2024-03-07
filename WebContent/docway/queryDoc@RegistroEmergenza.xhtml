@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" 
+	  xmlns:h="http://java.sun.com/jsf/html" 
+	  xmlns:ui="http://java.sun.com/jsf/facelets" 
+	  xmlns:f="http://java.sun.com/jsf/core"
+	  xmlns:p="http://xmlns.jcp.org/jsf/passthrough">
+<ui:composition>
+
+	<h:panelGroup rendered="#{!bean.formsAdapter.funzionalitaDisponibili['nascondiprotocollo']}" id="registroEmergenzaPanel" layout="block">
+		<div class="fieldset">
+			<div class="legend">
+				<h:commandLink action="#{bean.openCloseWidgetRegEmergenza}" styleClass="legend-link">
+					<f:ajax render="templateForm:registroEmergenzaPanel"/>
+					#{i18n['dw4.registro_emergenza']}
+					<span class="pull-right">
+						<span class="glyphicon #{bean.registro_emergenza ? 'glyphicon-collapse-up' : 'glyphicon-collapse-down'}"></span>
+					</span>
+				</h:commandLink>
+			</div>
+			
+			<h:panelGroup rendered="#{bean.registro_emergenza}" id="registroEmergenzaCPanel" layout="block">
+				<div class="form-group">
+	        		<label for="templateForm:regem_anno" class="col-sm-2 control-label">#{i18n['dw4.anno']}</label>
+					<div class="col-sm-2">
+						<div class="input-group">
+							<h:inputText styleClass="form-control" value="#{bean.regem_anno}" id="regem_anno" />
+							<div class="input-group-btn">
+								<h:commandLink title="#{i18n['acl.vocabulary']}" action="#{bean.openIndexAnnoRegEm}" styleClass="btn btn-default">
+									<f:ajax execute="@form" render="@form"/>
+									<span class="glyphicon glyphicon-search"></span>
+								</h:commandLink>
+							</div>
+						</div>
+					</div>
+					
+					<ui:include src="./rangeField.xhtml">
+						<ui:param name="label" value="#{i18n['dw4.numero_protocollo']}" />
+						<ui:param name="id" value="regem_numprot" />
+						<ui:param name="from_value" value="#{bean.regem_numprot_from}" />
+						<ui:param name="to_value" value="#{bean.regem_numprot_to}" />
+						<ui:param name="is_date" value="false" />
+					</ui:include>
+	        	</div>
+	        </h:panelGroup>
+		</div> <!-- /fieldset -->
+	</h:panelGroup>
+
+</ui:composition>
+</html>

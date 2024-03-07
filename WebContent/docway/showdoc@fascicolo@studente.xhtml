@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+    template="#{showdocFascicoloStudente.pageTemplate}"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:f="http://java.sun.com/jsf/core">
+
+<ui:define name="content">
+	<div class="fascicolo">
+		
+		<ui:remove>
+			<h5 class="sub-header">#{i18n['dw4.view_fascicolo_dello_studente']}</h5>
+		</ui:remove>
+		
+		<!-- toolbar: inizio -->
+		<ui:include src="./buttonBarFasc.xhtml">
+			<ui:param name="bean" value="#{showdocFascicoloStudente}"/>
+			<ui:param name="qFascicoloSpeciale" value="studente" />
+			<ui:param name="hideNuovoDoc" value="true" />
+			<ui:param name="forceInsert" value="true" />
+			<ui:param name="hideAssegnazioni" value="true" />
+		</ui:include>
+		<!-- toolbar: fine -->
+		
+		<!-- scheda show: inizio -->
+		<div class="contenuto-doc row clearfix">
+			<h:panelGroup rendered="#{!showdocFascicoloStudente.popupPage}">
+				<div class="col-xs-12 col-sm-2 col-md-2 col-lg-2 col-sm-push-10 col-md-push-10 col-lg-push-10 text-right">
+					<!-- azioni rapide: inizio -->
+					
+					<ui:include src="./smartActionsFasc.xhtml">
+						<ui:param name="bean" value="#{showdocFascicoloStudente}"/>
+						<ui:param name="hideAssegnazioni" value="true" />
+					</ui:include>
+					
+					<!-- azioni rapide: fine -->
+				</div>
+			</h:panelGroup>
+			<div class="col-xs-12 #{(showdocFascicoloStudente.popupPage) ? 'col-sm-12 col-md-12 col-lg-12' : 'col-sm-10 col-md-10 col-lg-10 col-sm-pull-2 col-md-pull-2 col-lg-pull-2'}">
+				<!-- contenuto fascicolo: inizio -->
+				
+				<!-- titolo del fascicolo: inizio -->
+				<div class="showdoc-title doc-tipo-fascicolo clearfix">
+					<div class="row">
+						<div class="col-xs-1">
+							<span class="doc-tipo-fascicolo glyphicons-pro #{(showdocFascicoloStudente.fascicolo.stato == 'deposito') ? 'folder_flag' : ((showdocFascicoloStudente.fascicolo.stato == 'chiuso') ? 'folder_closed' : 'folder_open')}"></span>
+						</div>
+						<div class="col-xs-11">
+							<div class="showdoc-first-row-title">
+								<h:outputText value="#{showdocFascicoloStudente.fascicolo.numero}" styleClass="showdoc-title-numfasc"><f:converter converterId="NumFascConverter" /></h:outputText>
+							</div>
+							<div class="showdoc-second-row-title" title="#{showdocFascicoloStudente.fascicolo.oggetto}">
+								#{showdocFascicoloStudente.fascicolo.oggetto}
+							</div>
+						</div>
+					</div>
+				</div>
+				<!-- titolo del fascicolo: fine -->
+				
+				<div id="fixedshowdoc" class="fixed-showdoc">
+					<ui:include src="./showdoc@gerarchiafascicoli.xhtml">
+						<ui:param name="bean" value="#{showdocFascicoloStudente}" />
+					</ui:include>
+					
+					<ui:include src="./showdoc@statifasc.xhtml">
+						<ui:param name="bean" value="#{showdocFascicoloStudente}" />
+					</ui:include>
+					
+					<!-- dati del fascicolo: inizio -->
+					<div class="showdoc-section">
+						<div class="title">
+							#{i18n['dw4.datifasc']}
+							
+							<div class="pull-right">
+								<span class="glyphicon glyphicon-folder-close" title="#{i18n['dw4.datifasc']}"></span>
+							</div>
+						</div>
+						<dl class="dl-horizontal">
+							<h:panelGroup rendered="#{!empty showdocFascicoloStudente.fascicolo.fascicolo_speciale.matricola}">
+								<dt>#{i18n['acl.code']}</dt>
+								<dd>#{showdocFascicoloStudente.fascicolo.fascicolo_speciale.matricola}</dd>
+							</h:panelGroup>
+							<h:panelGroup rendered="#{!empty showdocFascicoloStudente.fascicolo.fascicolo_speciale.codice_fiscale}">
+								<dt>#{i18n['dw4.codicefiscale']}</dt>
+								<dd>#{showdocFascicoloStudente.fascicolo.fascicolo_speciale.codice_fiscale}</dd>
+							</h:panelGroup>
+							<h:panelGroup rendered="#{!empty showdocFascicoloStudente.fascicolo.fascicolo_speciale.data_nascita}">
+								<dt>#{i18n['acl.birthdate']}</dt>
+								<dd>
+									#{showdocFascicoloStudente.fascicolo.fascicolo_speciale.data_nascita}
+									<h:panelGroup rendered="#{!empty showdocFascicoloStudente.fascicolo.fascicolo_speciale.luogo_nascita}">
+										&#160;-&#160;#{showdocFascicoloStudente.fascicolo.fascicolo_speciale.luogo_nascita}
+									</h:panelGroup>
+								</dd>
+							</h:panelGroup>
+							<h:panelGroup rendered="#{!empty showdocFascicoloStudente.fascicolo.fascicolo_speciale.data_immatricolazione}">
+								<dt>#{i18n['dw4.data_immatr']}</dt>
+								<dd>#{showdocFascicoloStudente.fascicolo.fascicolo_speciale.data_immatricolazione}</dd>
+							</h:panelGroup>
+							<dt>#{i18n['dw4.opendate']}</dt>
+							<dd><h:outputText value="#{showdocFascicoloStudente.fascicolo.creazione.dateLong}" /></dd>
+							<h:panelGroup rendered="#{showdocFascicoloStudente.fascicolo.stato == 'chiuso'}">
+								<dt>#{i18n['dw4.closedate']}</dt>
+								<dd><h:outputText value="#{showdocFascicoloStudente.fascicolo.chiusura.dateLong}"><f:converter converterId="DateConverter"/></h:outputText></dd>
+							</h:panelGroup>
+						</dl>
+					</div>
+					<!-- dati del fascicolo: fine -->
+					
+					<!-- dati di archivio: inizio -->
+					<div class="showdoc-section">
+						<div class="title">
+							#{i18n['dw4.archivio']}
+							
+							<div class="pull-right">
+								<span class="glyphicon glyphicon-inbox" title="#{i18n['dw4.archivio']}"></span>
+							</div>
+						</div>
+						<dl class="dl-horizontal">
+							<dt>#{i18n['dw4.classif']}</dt>
+							<dd><h:outputText value="#{showdocFascicoloStudente.fascicolo.classif.text}"><f:converter converterId="ClassifConverter"/></h:outputText></dd>
+							<h:panelGroup rendered="#{!empty showdocFascicoloStudente.fascicolo.nuovo_repertorio.cod}">
+								<dt>#{i18n['dw4.repnuovo']}</dt>
+								<dd>
+									<h:commandLink action="#{showdocFascicoloStudente.navigateNuovoRep}">
+										<h:outputText value="#{showdocFascicoloStudente.fascicolo.nuovo_repertorio.cod}" >
+											<f:converter converterId="NumFascConverter"/>	
+										</h:outputText>
+									</h:commandLink>
+								</dd>
+							</h:panelGroup>
+							<h:panelGroup rendered="#{!empty showdocFascicoloStudente.fascicolo.repertorio_precedente.cod}">
+								<dt>#{i18n['dw4.repprec']}</dt>
+								<dd>
+									<h:commandLink action="#{showdocFascicoloStudente.navigateRepPrecedente}">
+										<h:outputText value="#{showdocFascicoloStudente.fascicolo.repertorio_precedente.cod}" >
+											<f:converter converterId="NumFascConverter"/>	
+										</h:outputText>
+									</h:commandLink>
+								</dd>
+							</h:panelGroup>
+							<h:panelGroup rendered="#{showdocFascicoloStudente.formsAdapter.funzionalitaDisponibili['enableRaccoglitori'] and fn:length(showdocFascicoloStudente.fascicolo.contenuto_in) > 0}">
+								<dt>#{i18n['dw4.contenutoin']}</dt>
+								<dd>
+									<ui:repeat var="contenuto" value="#{showdocFascicoloStudente.fascicolo.contenuto_in}">
+										<h:panelGroup rendered="#{!empty contenuto.cod}">
+											<h:commandLink value="#{contenuto.text}" action="#{showdocFascicoloStudente.navigateToRac}" />
+											&#160;
+											<h:panelGroup rendered="#{showdocFascicoloStudente.formsAdapter.funzionalitaDisponibili['raccoglitorigestione'] and showdocFascicoloStudente.formsAdapter.funzionalitaDisponibili['disableSegnatura']}">
+												<span class="btn-group">
+													<h:commandLink action="#{showdocFascicoloStudente.removeFromRac}" title="#{i18n['dw4.removeFromRac']}" styleClass="btn btn-default btn-xs">
+														<span class="glyphicon glyphicon-remove"></span>
+													</h:commandLink>
+												</span>
+											</h:panelGroup>
+											<br/>
+										</h:panelGroup>
+									</ui:repeat>
+								</dd>
+							</h:panelGroup>
+							<h:panelGroup rendered="#{showdocFascicoloStudente.fascicolo.archiviato}">
+								<dt>#{i18n['dw4.collocazione']}</dt>
+								<dd class="fasc-collocazione-archivio">#{i18n['dw4.archivio']}</dd>
+							</h:panelGroup>
+							<dt>#{i18n['dw4.docs']}</dt>
+							<dd>
+								<h:panelGroup rendered="#{showdocFascicoloStudente.formsAdapter.funzionalitaDisponibili['showdocsinfasc'] and showdocFascicoloStudente.fascicolo.doc_contenuti.numero != 0}">
+									<h:commandLink action="#{showdocFascicoloStudente.fascContent}"><strong>#{showdocFascicoloStudente.fascicolo.doc_contenuti.numero}</strong></h:commandLink>
+								</h:panelGroup>
+								<h:panelGroup rendered="#{!showdocFascicoloStudente.formsAdapter.funzionalitaDisponibili['showdocsinfasc'] or showdocFascicoloStudente.fascicolo.doc_contenuti.numero == 0}">
+									#{showdocFascicoloStudente.fascicolo.doc_contenuti.numero}
+								</h:panelGroup>
+							</dd>
+							<h:panelGroup rendered="#{!empty showdocFascicoloStudente.fascicolo.doc_contenuti.primo_doc_prot}">
+								<dt>#{i18n['dw4.primodoc']}</dt>
+								<dd>#{i18n['dw4.prot_n']} #{showdocFascicoloStudente.fascicolo.doc_contenuti.primo_doc_prot} #{i18n['dw4.del']} #{showdocFascicoloStudente.fascicolo.doc_contenuti.primo_doc_data_prot}</dd>
+							</h:panelGroup>
+							<h:panelGroup rendered="#{!empty showdocFascicoloStudente.fascicolo.doc_contenuti.ultimo_doc_prot}">
+								<dt>#{i18n['dw4.ultimodoc']}</dt>
+								<dd>#{i18n['dw4.prot_n']} #{showdocFascicoloStudente.fascicolo.doc_contenuti.ultimo_doc_prot} #{i18n['dw4.del']} #{showdocFascicoloStudente.fascicolo.doc_contenuti.ultimo_doc_data_prot}</dd>
+							</h:panelGroup>
+							<h:panelGroup rendered="#{fn:length(showdocFascicoloStudente.fascicolo.link_interni) > 0}">
+								<dt>#{i18n['dw4.collegamenti']}</dt>
+								<dd>
+									<ui:repeat var="link_interno" value="#{showdocFascicoloStudente.fascicolo.link_interni}">
+										<h:panelGroup rendered="#{!empty link_interno.href}">
+											<h:commandLink action="#{showdocFascicoloStudente.navigateInternalLink}">
+												#{link_interno.text}
+											</h:commandLink>
+											&#160;
+											<h:panelGroup rendered="#{link_interno.remove =='true'}">
+												<span class="btn-group">
+													<h:commandLink action="#{showdocFascicoloStudente.removeInternalLink}" title="#{i18n['dw4.removeLink']}" onclick="if (!owmConfirm('#{i18n['dw4.rimuovi_collegamento_procedere_con_l_operazione']}')) return false;" styleClass="btn btn-default btn-xs">
+														<span class="glyphicon glyphicon-remove"></span>
+													</h:commandLink>
+												</span>
+											</h:panelGroup>
+											<br/>
+										</h:panelGroup>
+									</ui:repeat>
+								</dd>
+							</h:panelGroup>
+						</dl>
+					</div>
+					<!-- dati di archivio: fine -->
+					
+					<h:panelGroup rendered="#{!empty showdocFascicoloStudente.fascicolo.note.text or !empty showdocFascicoloStudente.fascicolo.tagsAsString}">
+						<!-- dati altro: inizio -->
+						<div class="showdoc-section">
+							<div class="title">
+								#{i18n['dw4.other']}
+								
+								<div class="pull-right">
+									<span class="glyphicon glyphicon-list-alt" title="#{i18n['dw4.other']}"></span>
+								</div>
+							</div>
+							
+							<dl class="dl-horizontal">
+								<h:panelGroup rendered="#{!empty showdocFascicoloStudente.fascicolo.tagsAsString}">
+									<dt>#{i18n['dw4.tags']}</dt>
+									<dd><strong>#{showdocFascicoloStudente.fascicolo.tagsAsString}</strong></dd>
+								</h:panelGroup>
+								<h:panelGroup rendered="#{!empty showdocFascicoloStudente.fascicolo.note.text}">
+									<dt>#{i18n['acl.notes']}</dt>
+									<dd><pre>#{showdocFascicoloStudente.fascicolo.note.text}</pre></dd>
+								</h:panelGroup>
+							</dl>
+						</div>
+						<!-- dati altro: fine -->
+					</h:panelGroup>
+					
+					<ui:include src="./history.xhtml">
+						<ui:param name="bean" value="#{showdocFascicoloStudente.fascicolo}"/>
+						<ui:param name="viewbean" value="#{showdocFascicoloStudente}"/>
+						<ui:param name="visible" value="#{showdocFascicoloStudente.formsAdapter.funzionalitaDisponibili['showHistory']}" />
+					</ui:include>
+				</div>
+				
+				<!-- contenuto fascicolo: fine -->
+			</div>
+		</div>
+		<!-- scheda show: fine -->
+		
+		<ui:include src="./rifinterni@fasc@RPA.xhtml"><ui:param name="bean" value="#{rifIntFasc}"/></ui:include>
+		<ui:include src="./rifinterni@fasc@CC.xhtml"><ui:param name="bean" value="#{rifIntFasc}"/></ui:include>
+		<ui:include src="./loadingbar@assegnazioneRPA.xhtml"><ui:param name="pageBean" value="#{rifIntFasc}"/></ui:include>
+		<ui:include src="./loadingbar@aggiornamentoCCfasc.xhtml"><ui:param name="pageBean" value="#{rifIntFasc}"/></ui:include>
+		<ui:include src="./lookup.xhtml"> <ui:param name="pageBean" value="#{rifIntFasc}"/></ui:include>
+		<ui:include src="./rifintLookup.xhtml"> <ui:param name="pageBean" value="#{rifIntFasc}"/></ui:include>
+		<ui:include src="./changeclassif.xhtml"> <ui:param name="pageBean" value="#{changeclassif}"/></ui:include>
+		<ui:include src="./loadingbar@ripristinaClassif.xhtml"> <ui:param name="pageBean" value="#{showdocFascicoloStudente}"/></ui:include>
+		<ui:include src="./loadingbar@if.xhtml"><ui:param name="pageBean" value="#{showdocFascicoloStudente}"/></ui:include>
+		<ui:include src="./showthes.xhtml"> <ui:param name="pageBean" value="#{changeclassif}"/></ui:include>
+		<ui:include src="./showPersoneRuolo.xhtml"><ui:param name="bean" value="#{docwayShowPersoneRuolo}"/></ui:include>
+		
+		<h:inputTextarea value="#{showdocFascicoloStudente.xml}" rendered="#{showdocFascicoloStudente.debugMode}" styleClass="form-control debug-textarea" rows="10" />
+	</div>
+
+	<ui:fragment rendered="#{showdocFascicoloStudente.close and empty showdocFascicoloStudente.numFasc}">
+		<script type="text/javascript">
+		window.opener.$('#templateForm\\:reloadPage').trigger("click");
+		self.close();
+		</script>
+	</ui:fragment>
+	<ui:fragment rendered="#{showdocFascicoloStudente.close and ! empty showdocFascicoloStudente.numFasc}">
+		<script type="text/javascript">
+		window.opener.$('#templateForm\\:numFascCollegato').val('#{showdocFascicoloStudente.numFasc}');
+		window.opener.$('#templateForm\\:assegnaFascicoloCollegato').trigger("click");
+		self.close();
+		</script>
+	</ui:fragment>
+</ui:define>
+	
+</ui:composition>

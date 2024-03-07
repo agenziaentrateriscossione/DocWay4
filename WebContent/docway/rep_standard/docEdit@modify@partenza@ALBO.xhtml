@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+    template="../#{docEditModifyPartenzaALBO.pageTemplate}"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:c="http://java.sun.com/jsp/jstl/core"
+    xmlns:p="http://xmlns.jcp.org/jsf/passthrough">
+
+<ui:define name="content">
+	<div class="partenza docedit">
+	
+		<!-- toolbar: inizio -->
+		<div class="btn-toolbar" role="toolbar">
+			<div class="btn-group">
+				<h:commandLink rendered="#{!docEditModifyPartenzaALBO.doc.bozza or !docEditModifyPartenzaALBO.formsAdapter.funzionalitaDisponibili['disabilitaBozzeInModifica']}" id="saveBtn" action="#{docEditModifyPartenzaALBO.saveDocument}" 
+							styleClass="btn btn-primary openwaitmsg">
+					#{i18n['acl.save']}
+				</h:commandLink>
+				<h:commandLink rendered="#{docEditModifyPartenzaALBO.doc.bozza and docEditModifyPartenzaALBO.formsAdapter.funzionalitaDisponibili['protocollaRight'] and docEditModifyPartenzaALBO.doc.protocollabile}" id="protocollaBtn" action="#{docEditModifyPartenzaALBO.protocollaDoc}"
+							styleClass="btn #{(!docEditModifyPartenzaALBO.formsAdapter.funzionalitaDisponibili['disabilitaBozzeInModifica']) ? 'btn-default' : 'btn-primary'} openwaitmsg #{(!docEditModifyPartenzaALBO.formsAdapter.funzionalitaDisponibili['docClassifEreditabile'] and (docEditModifyPartenzaALBO.doc.classif eq null or docEditModifyPartenzaALBO.doc.classif.cod eq null or empty docEditModifyPartenzaALBO.doc.classif.cod)) ? 'disabled' : ''}"
+							disabled="#{!docEditModifyPartenzaALBO.formsAdapter.funzionalitaDisponibili['docClassifEreditabile'] and (docEditModifyPartenzaALBO.doc.classif eq null or docEditModifyPartenzaALBO.doc.classif.cod eq null or empty docEditModifyPartenzaALBO.doc.classif.cod)}">
+					#{i18n['dw4.protocolla']}
+				</h:commandLink>
+				<h:commandLink rendered="#{!docEditModifyPartenzaALBO.formsAdapter.funzionalitaDisponibili['trasformaByDocEdit']}" action="#{docEditModifyPartenzaALBO.clearDocument}"
+						onclick="IwxRuntime.Client.resetJobIWX();" styleClass="btn btn-default">
+					#{i18n['acl.back']}
+				</h:commandLink>
+				<h:commandLink rendered="#{docEditModifyPartenzaALBO.formsAdapter.funzionalitaDisponibili['trasformaByDocEdit']}" action="#{docEditModifyPartenzaALBO.clearTrasformaRep}"
+							onclick="IwxRuntime.Client.resetJobIWX();" styleClass="btn btn-default">
+					#{i18n['acl.cancel']}
+				</h:commandLink>
+			</div>
+		</div>
+		<!-- toolbar: fine -->
+		
+		<h5 class="sub-header">
+			<span class="doc-tipo-partenza glyphicons-pro"></span>&#160;
+			<h:outputText value="#{docEditModifyPartenzaALBO.docEditTitle}" />
+		</h5>
+	
+		<!-- messages: inizio -->
+		<h:panelGroup rendered="#{not empty facesContext.messageList}" layout="block" styleClass="docedit-messages alert alert-danger">
+			<h:messages styleClass="" id="validationMesseges" />
+		</h:panelGroup>
+		<h:inputHidden id="errorFieldIds" value="#{docEditModifyPartenzaALBO.errorFieldIds}" />
+		<!-- messages: fine -->
+	
+		<script type="text/javascript">
+		$(document).ready(function() {
+			setInvalidInputFields();
+			
+			// disabilita link esterni al form per rilascio del lock sul documento
+			disableNoTemplateFormLinks("#{i18n['dw4.abbandona_alert_msg']}");
+		});
+		</script>
+			
+		<!-- scheda edit: inizio -->
+		<div class="row-fluid" style="margin-top:10px;">
+			<div id="fixedshowdoc" class="box span12 fixed-showdoc">
+				<div class="box-content">
+				
+					<div class="fieldset">
+						<div class="legend">
+							#{i18n['dw4.datidoc']}
+							
+							<div class="pull-right">
+								<span class="glyphicon glyphicon-envelope" title="#{i18n['dw4.datidoc']}"></span>
+							</div>
+						</div>
+						
+						<h:panelGroup rendered="#{!empty docEditModifyPartenzaALBO.doc.repertorio.numero and docEditModifyPartenzaALBO.doc.repertorio.numero ne '.'}" layout="block" styleClass="form-group">
+							<label class="col-sm-2 control-label">#{i18n['dw4.repertorio_n']}</label>
+							<div class="col-sm-9">
+								<p class="form-control-static"><h:outputText value="#{docEditModifyPartenzaALBO.doc.repertorio.numero}"><f:converter converterId="NumRepConverter"/></h:outputText></p>
+							</div>
+						</h:panelGroup>
+						
+						<h:panelGroup rendered="#{fn:length(docEditModifyPartenzaALBO.doc.repTipologiaSelect) > 0}" layout="block" styleClass="form-group">
+							<label for="templateForm:repTipoDocumento" class="col-sm-2 control-label">#{i18n['dw4.tipodocumento']}</label>
+							<div class="col-sm-3">
+								<h:selectOneMenu id="repTipoDocumento" value="#{docEditModifyPartenzaALBO.doc.extra.tipo_repertorio}" styleClass="form-control">
+									<f:selectItems value="#{docEditModifyPartenzaALBO.doc.repTipologiaSelect}" var="tipologia" itemValue="#{tipologia.text}" itemLabel="#{tipologia.text}"></f:selectItems>
+								</h:selectOneMenu>
+							</div>
+						</h:panelGroup>
+						
+						<h:panelGroup rendered="#{docEditModifyPartenzaALBO.doc.num_prot ne '' and docEditModifyPartenzaALBO.doc.num_prot ne '.'}" layout="block" styleClass="form-group">
+							<h:panelGroup rendered="#{docEditModifyPartenzaALBO.formsAdapter.funzionalitaDisponibili['nonModDataprot']}">
+								<label class="col-sm-2 control-label">#{i18n['dw4.protocollo_n']}</label>
+								<div class="col-sm-9">
+									<p class="form-control-static">
+										<strong>
+											<h:outputText value="#{fn:substringAfter(fn:substringAfter(docEditModifyPartenzaALBO.doc.num_prot, '-'), '-')}">
+												<f:converter converterId="NumConverter"/>
+											</h:outputText>
+										</strong>
+										
+										#{i18n['dw4.del']}
+										<strong>
+											<h:outputText value="#{docEditModifyPartenzaALBO.doc.data_prot}" styleClass="outputField">
+												<f:converter converterId="DateConverter"/>
+											</h:outputText>
+										</strong>
+										
+										(<h:outputText value="#{docEditModifyPartenzaALBO.doc.num_prot}" />)
+									</p>
+								</div>
+							</h:panelGroup>
+							<h:panelGroup rendered="#{docEditModifyPartenzaALBO.formsAdapter.funzionalitaDisponibili['modDataprot']}">
+								<label class="col-sm-2 control-label">#{i18n['dw4.protocollo_n']}</label>
+								<div class="col-sm-5">
+									<p class="form-control-static">
+										<strong>
+											<h:outputText value="#{fn:substringAfter(fn:substringAfter(docEditModifyPartenzaALBO.doc.num_prot, '-'), '-')}">
+												<f:converter converterId="NumConverter"/>
+											</h:outputText>
+										</strong>
+																				
+										(<h:outputText value="#{docEditModifyPartenzaALBO.doc.num_prot}" />)
+									</p>
+								</div>
+								
+								<ui:include src="../dateField.xhtml">
+									<ui:param name="label" value="#{i18n['dw4.data_protocollo']}" />
+									<ui:param name="id" value="dataProt" />
+									<ui:param name="value" value="#{docEditModifyPartenzaALBO.doc.data_prot}" />
+									<ui:param name="labelsize" value="1" />
+								</ui:include>
+							</h:panelGroup>
+						</h:panelGroup>
+						
+						<h:panelGroup rendered="#{docEditModifyPartenzaALBO.doc.bozza and docEditModifyPartenzaALBO.doc.creazione.dateLong != null and docEditModifyPartenzaALBO.doc.creazione.dateLong ne ''}" layout="block" styleClass="form-group">
+							<label class="col-sm-2 control-label">#{i18n['dw4.bozza']} #{i18n['dw4.del']}</label>
+							<div class="col-sm-2">
+								<p class="form-control-static">
+									<h:outputText value="#{docEditModifyPartenzaALBO.doc.creazione.dateLong}" />
+								</p>
+							</div>
+						</h:panelGroup>
+						
+						<h:panelGroup rendered="#{docEditModifyPartenzaALBO.doc.num_prot eq '' or docEditModifyPartenzaALBO.doc.bozza}" layout="block" styleClass="form-group">
+							<ui:include src="../dateField.xhtml">
+								<ui:param name="label" value="#{i18n['dw4.pubblicazione_dal']}" />
+								<ui:param name="id" value="dataPubblicazioneDal" />
+								<ui:param name="value" value="#{docEditModifyPartenzaALBO.doc.pubblicazione.dal}" />
+								<ui:param name="fromToday" value="true" />
+								<ui:param name="readonly" value="true" />
+							</ui:include>
+							
+							<ui:include src="../dateField.xhtml">
+								<ui:param name="label" value="* #{i18n['dw4.al']}" />
+								<ui:param name="id" value="dataPubblicazioneAl" />
+								<ui:param name="value" value="#{docEditModifyPartenzaALBO.doc.pubblicazione.al}" />
+								<ui:param name="labelsize" value="1" />
+								<ui:param name="fromToday" value="true" />
+							</ui:include>
+						</h:panelGroup>
+						<h:panelGroup rendered="#{docEditModifyPartenzaALBO.doc.num_prot ne '' and !docEditModifyPartenzaALBO.doc.bozza}">
+							<div class="form-group">
+								<label class="col-sm-2 control-label">#{i18n['dw4.pubblicazione']}</label>
+								<div class="col-sm-9">
+									<p class="form-control-static">
+										#{i18n['dw4.dal']}
+										<strong><h:outputText value="#{docEditModifyPartenzaALBO.doc.pubblicazione.dal}"><f:converter converterId="DateConverter"/></h:outputText></strong>
+										#{i18n['dw4.al']}
+										<strong><h:outputText value="#{docEditModifyPartenzaALBO.doc.pubblicazione.al}"><f:converter converterId="DateConverter"/></h:outputText></strong>
+									</p>
+								</div>
+							</div>
+							<h:panelGroup rendered="#{!empty docEditModifyPartenzaALBO.doc.pubblicazione.dataRitiro}" layout="block" styleClass="form-group">
+								<label class="col-sm-2 control-label">#{i18n['dw4.ritirato_il']}</label>
+								<div class="col-sm-9">
+									<p class="form-control-static">
+										<strong><h:outputText value="#{docEditModifyPartenzaALBO.doc.pubblicazione.dataRitiro}"><f:converter converterId="DateConverter"/></h:outputText></strong>
+									</p>
+								</div>
+							</h:panelGroup>
+						</h:panelGroup>
+						
+						<div class="endsection">
+							<h:panelGroup rendered="#{ !docEditModifyPartenzaALBO.formsAdapter.funzionalitaDisponibili['abilitaModificaDatiDiProtocollo'] and docEditModifyPartenzaALBO.doc.num_prot ne '' and !docEditModifyPartenzaALBO.doc.bozza }">
+								<h:panelGroup rendered="#{!empty docEditModifyPartenzaALBO.richiedente.nome}">
+									<div class="form-group">
+										<label class="col-sm-2 control-label">#{(docEditModifyPartenzaALBO.formsAdapter.funzionalitaDisponibili['abilitaRichiedenteInternoEsterno']) ? i18n['dw4.richiedente_interno'] : i18n['dw4.richiedente']}</label>
+										<div class="col-sm-9">
+											<p class="form-control-static"><h:outputText value="#{docEditModifyPartenzaALBO.richiedente.nome}" /></p>
+										</div>
+									</div>
+								</h:panelGroup>
+								<h:panelGroup rendered="#{fn:length(docEditModifyPartenzaALBO.doc.rif_esterni) > 0 and !empty docEditModifyPartenzaALBO.doc.rif_esterni[0].nome}">
+									<ui:repeat var="rif" value="#{docEditModifyPartenzaALBO.doc.rif_esterni}">
+										<div class="form-group">
+											<label class="col-sm-2 control-label">#{(docEditModifyPartenzaALBO.formsAdapter.funzionalitaDisponibili['abilitaRichiedenteInternoEsterno']) ? i18n['dw4.richiedente_esterno'] : i18n['dw4.richiedente']}</label>
+											<div class="col-sm-9">
+												<p class="form-control-static">
+													<input type="hidden" id="templateForm:nomeMittente_input" value="#{rif.nome}" />
+													<h:outputText value="#{rif.nome}" />
+													<h:panelGroup rendered="#{!empty rif.referente.nominativo}">
+														<em> (#{rif.referente.nominativo}<h:outputText value=" - #{rif.referente.ruolo}" rendered="#{!empty rif.referente.ruolo}"/>)</em>
+													</h:panelGroup>
+													<h:outputText value=", #{rif.indirizzo}" rendered="#{!empty rif.indirizzo}" />
+													<h:panelGroup rendered="#{!empty rif.email_certificata}"> [#{rif.email_certificata}]</h:panelGroup>
+													<h:panelGroup rendered="#{!empty rif.email}"> [#{rif.email}]</h:panelGroup>
+													<h:outputText value=" - c.f. #{rif.codice_fiscale}" rendered="#{!empty rif.codice_fiscale}" />
+													<h:outputText value=" - p.iva #{rif.partita_iva}" rendered="#{!empty rif.partita_iva}" />
+													<h:outputText value=" - codice SAP: #{rif.cod_SAP}" rendered="#{!empty rif.cod_SAP}" />
+												</p>
+											</div>
+										</div>
+									</ui:repeat>
+								</h:panelGroup>
+							</h:panelGroup>
+							
+							<h:panelGroup rendered="#{ docEditModifyPartenzaALBO.formsAdapter.funzionalitaDisponibili['abilitaModificaDatiDiProtocollo'] or docEditModifyPartenzaALBO.doc.bozza }">
+								<h:panelGroup rendered="#{docEditModifyPartenzaALBO.formsAdapter.funzionalitaDisponibili['abilitaRichiedenteInterno'] or docEditModifyPartenzaALBO.formsAdapter.funzionalitaDisponibili['abilitaRichiedenteInternoEsterno']}" id="richiedenteInterno_holder" layout="block" styleClass="form-group">
+									<label for="templateForm:richiedenteInterno_input" class="col-sm-2 control-label"><span>#{(docEditModifyPartenzaALBO.formsAdapter.funzionalitaDisponibili['abilitaRichiedenteInternoEsterno']) ? i18n['dw4.richiedente_interno'] : i18n['dw4.richiedente']}</span></label>
+									<div class="col-sm-4">
+										<ui:include src="../lookupField.xhtml">
+							        		<ui:param name="id" value="richiedenteInterno" />
+							        		<ui:param name="field" value="#{docEditModifyPartenzaALBO.richiedente.nome}" />
+							        		<ui:param name="bean" value="#{docEditModifyPartenzaALBO}" />
+							        		<ui:param name="action" value="lookupRichiedenteInterno"/>
+							        		<ui:param name="clearaction" value="clearLookupRichiedenteInterno"/>
+							        		<ui:param name="title" value="#{i18n['dw4.lookup_richiedente']}"/>
+							        		<ui:param name="styleclass" value="form-control"/>
+							        		<ui:param name="refresh" value="templateForm:richiedenteInterno_holder templateForm:lookup templateForm:errormsg" />
+							        	</ui:include>
+						        	</div>
+								</h:panelGroup>
+									
+								<h:panelGroup rendered="#{docEditModifyPartenzaALBO.formsAdapter.funzionalitaDisponibili['abilitaRichiedenteEsterno'] or docEditModifyPartenzaALBO.formsAdapter.funzionalitaDisponibili['abilitaRichiedenteInternoEsterno']}" id="richiedenteEsterno_holder" layout="block">
+									<div class="form-group">
+										<label for="templateForm:richiedenteEsterno_input" class="col-sm-2 control-label"><span>#{(docEditModifyPartenzaALBO.formsAdapter.funzionalitaDisponibili['abilitaRichiedenteInternoEsterno']) ? i18n['dw4.richiedente_esterno'] : i18n['dw4.richiedente']}</span></label>
+										<div class="col-sm-4">
+											<ui:include src="../lookupRepeatField.xhtml">
+							        			<ui:param name="id" value="richiedenteEsterno" />
+							        			<ui:param name="field" value="#{docEditModifyPartenzaALBO.doc.rif_esterni[0].nome}" />
+								        		<ui:param name="element" value="#{docEditModifyPartenzaALBO.doc.rif_esterni[0]}" />
+								        		<ui:param name="bean" value="#{docEditModifyPartenzaALBO}" />
+								        		<ui:param name="action" value="lookupRichiedenteEsterno"/>
+								        		<ui:param name="clearaction" value="clearLookupRichiedenteEsterno"/>
+								        		<ui:param name="title" value="#{i18n['dw4.lookup_mittente']}"/>
+								        		<ui:param name="styleclass" value="#{ component.valid ? '' : 'invalidinput' } form-control"/>
+								        		<ui:param name="refresh" value="templateForm:richiedenteEsterno_holder templateForm:lookup templateForm:errormsg" />
+								        	</ui:include>
+								        </div>
+								        <h:panelGroup rendered="#{docEditModifyPartenzaALBO.formsAdapter.funzionalitaDisponibili['abilitaGestioneSAP']}" >
+											<label for="templateForm:codsap_mittente" class="col-sm-3 control-label"><span>#{i18n['acl.sapcod']}</span></label>
+											<div class="col-sm-2">
+												<h:inputText id="codsap_mittente" value="#{docEditModifyPartenzaALBO.doc.rif_esterni[0].cod_SAP}" styleClass="form-control" disabled="true" readonly="true" />
+											</div>
+										</h:panelGroup>
+									</div>
+									
+									<div class="form-group">
+										<label for="templateForm:firmatario_input" class="col-sm-2 control-label"><span>#{i18n['dw4.firmatario']}</span></label>
+										<div class="col-sm-4">
+											<ui:include src="../lookupRepeatField.xhtml">
+							        			<ui:param name="id" value="firmatario" />
+								        		<ui:param name="field" value="#{docEditModifyPartenzaALBO.doc.rif_esterni[0].referente.nominativo}" />
+								        		<ui:param name="element" value="#{docEditModifyPartenzaALBO.doc.rif_esterni[0]}" />
+								        		<ui:param name="bean" value="#{docEditModifyPartenzaALBO}" />
+								        		<ui:param name="action" value="lookupFirmatario"/>
+								        		<ui:param name="clearaction" value="clearLookupFirmatario"/>
+								        		<ui:param name="title" value="#{i18n['dw4.lookup_firmatario']}"/>
+								        		<ui:param name="styleclass" value="form-control"/>
+								        		<ui:param name="refresh" value="@form"/>
+								        		<ui:param name="notConstraint" value="#{!docEditModifyPartenzaALBO.formsAdapter.funzionalitaDisponibili['firmatarioVincolato']}"/>
+								        	</ui:include>
+								        </div>
+										<label for="templateForm:firmatarioRole" class="col-sm-2 control-label"><span>#{i18n['acl.role']}</span></label>
+										<div class="col-sm-3">
+											<h:inputText id="firmatarioRole" value="#{docEditModifyPartenzaALBO.doc.rif_esterni[0].referente.ruolo}" styleClass="form-control" />
+										</div>
+									</div>
+									
+									<h:panelGroup rendered="#{empty docEditModifyPartenzaALBO.hideDivs or not fn:contains(docEditModifyPartenzaALBO.hideDivs, 'indirizzo_fax')}">
+										<h:panelGroup rendered="#{docEditModifyPartenzaALBO.formsAdapter.funzionalitaDisponibili['abilitaLookupFaxArrivo']}">
+											<div class="form-group">
+												<label class="col-sm-2 control-label"><span>#{i18n['acl.fax']}</span></label>
+												<div class="col-sm-2">
+													<h:panelGroup rendered="#{docEditModifyPartenzaALBO.formsAdapter.funzionalitaDisponibili['abilitaLookupFaxArrivo']}">
+														<ui:include src="../lookupRepeatField.xhtml">
+										        			<ui:param name="id" value="fax" />
+											        		<ui:param name="field" value="#{docEditModifyPartenzaALBO.doc.rif_esterni[0].fax}" />
+											        		<ui:param name="element" value="#{docEditModifyPartenzaALBO.doc.rif_esterni[0]}" />
+											        		<ui:param name="bean" value="#{docEditModifyPartenzaALBO}" />
+											        		<ui:param name="action" value="lookupFax"/>
+											        		<ui:param name="clearaction" value="clearLookupFax"/>
+											        		<ui:param name="title" value="#{i18n['dw4.lookup_fax']}"/>
+											        		<ui:param name="styleclass" value="form-control"/>
+											        		<ui:param name="refresh" value="templateForm:nomeMittente_input templateForm:address templateForm:emailCert templateForm:email templateForm:fax_input templateForm:piva templateForm:cf templateForm:lookup templateForm:errormsg"/>
+											        	</ui:include>
+													</h:panelGroup>
+												</div>
+											</div>
+										</h:panelGroup>
+										<h:panelGroup rendered="#{!empty docEditModifyPartenzaALBO.doc.rif_esterni[0].cod}">
+											<div class="form-group">
+												<label for="templateForm:address" class="col-sm-2 control-label"><span>#{i18n['acl.address']}</span></label>
+												<div class="col-sm-4">
+													<h:inputText id="address" value="#{docEditModifyPartenzaALBO.doc.rif_esterni[0].indirizzo}" styleClass="form-control" disabled="true" readonly="true" />
+												</div>
+											</div>
+											<div class="form-group">
+												<label class="col-sm-2 control-label"><span>#{i18n['dw4.email_cert']}</span></label>
+												<div class="col-sm-2">
+													<h:inputText id="emailCert" value="#{docEditModifyPartenzaALBO.doc.rif_esterni[0].email_certificata}" styleClass="form-control" disabled="true" readonly="true" />
+												</div>
+												<label class="col-sm-1 control-label"><span>#{i18n['acl.email']}</span></label>
+												<div class="col-sm-2">
+													<h:inputText id="email" value="#{docEditModifyPartenzaALBO.doc.rif_esterni[0].email}" styleClass="form-control" disabled="true" readonly="true" />
+												</div>
+												<h:panelGroup rendered="#{!docEditModifyPartenzaALBO.formsAdapter.funzionalitaDisponibili['abilitaLookupFaxArrivo']}">
+													<label class="col-sm-1 control-label"><span>#{i18n['acl.fax']}</span></label>
+													<div class="col-sm-3">
+														<h:inputText id="fax" value="#{docEditModifyPartenzaALBO.doc.rif_esterni[0].fax}" styleClass="form-control" />
+													</div>
+												</h:panelGroup>
+											</div>
+											<div class="form-group">
+												<label class="col-sm-2 control-label"><span>#{i18n['dw4.piva']}</span></label>
+												<div class="col-sm-2">
+													<h:inputText id="piva" value="#{docEditModifyPartenzaALBO.doc.rif_esterni[0].partita_iva}" styleClass="readonlyinput form-control" disabled="true" readonly="true" />
+												</div>
+												<label class="col-sm-1 control-label"><span>#{i18n['dw4.cf']}</span></label>
+												<div class="col-sm-2">
+													<h:inputText id="cf" value="#{docEditModifyPartenzaALBO.doc.rif_esterni[0].codice_fiscale}" styleClass="readonlyinput form-control" disabled="true" readonly="true" />
+												</div>
+											</div>
+										</h:panelGroup>
+									</h:panelGroup>
+								</h:panelGroup>
+							</h:panelGroup>
+						</div>
+						
+						<div class="form-group">
+							<label for="templateForm:doc_oggetto" class="col-sm-2 control-label #{ (docEditModifyPartenzaALBO.formsAdapter.funzionalitaDisponibili['oggettoModificabile']) ? 'requiredField' : '' }">#{ (docEditModifyPartenzaALBO.formsAdapter.funzionalitaDisponibili['oggettoModificabile']) ? '*' : '' } #{i18n['dw4.object']}</label>
+							<div class="col-sm-9">
+								<h:panelGroup rendered="#{docEditModifyPartenzaALBO.formsAdapter.funzionalitaDisponibili['oggettoNonModificabile']}">
+									<p class="form-control-static oggetto-documento-value"><h:outputText value="#{docEditModifyPartenzaALBO.doc.oggetto}" /></p>
+								</h:panelGroup>
+								<h:inputTextarea rendered="#{docEditModifyPartenzaALBO.formsAdapter.funzionalitaDisponibili['oggettoModificabile']}" id="doc_oggetto" value="#{docEditModifyPartenzaALBO.doc.oggetto}" rows="4" cols="120" styleClass="#{ component.valid ? '' : 'invalidinput' } form-control" />
+							</div>
+						</div>
+						
+						<ui:include src="../allegatiFields.xhtml">
+							<ui:param name="bean" value="#{docEditModifyPartenzaALBO}" />
+			        		<ui:param name="beanDoc" value="#{docEditModifyPartenzaALBO.doc}" />
+			        		<ui:param name="readOnly" value="#{ !docEditModifyPartenzaALBO.formsAdapter.funzionalitaDisponibili['abilitaModificaDatiDiProtocollo'] and !docEditModifyPartenzaALBO.doc.bozza }" />
+			        	</ui:include>
+			        	
+						<h:panelGroup id="classif_holder" layout="block">
+							<ui:include src="../classifFields.xhtml">
+				        		<ui:param name="id" value="classif" />
+				        		<ui:param name="editable" value="false" />
+				        		<ui:param name="bean" value="#{docEditModifyPartenzaALBO}" />
+				        		<ui:param name="beanDoc" value="#{docEditModifyPartenzaALBO.doc}" />
+				        		<ui:param name="actionTitolario" value="thVincolatoTitolarioClassificazione"/>
+				        		<ui:param name="actionGerarchia" value="gerarchiaTitolarioClassificazione"/>
+				        		<ui:param name="refresh" value="templateForm:classif_holder templateForm:showthes templateForm:errormsg templateForm:protocollaBtn"/>
+				        		<ui:param name="readOnlyConservazione" value="true" />
+				        		<ui:param name="optionalField" value="#{docEditModifyPartenzaALBO.formsAdapter.funzionalitaDisponibili['docClassifEreditabile']}" />
+				        	</ui:include>
+			        	</h:panelGroup>
+			        	
+			        	<ui:include src="../visibilitaFields.xhtml">
+							<ui:param name="bean" value="#{docEditModifyPartenzaALBO}" />
+			        		<ui:param name="beanDoc" value="#{docEditModifyPartenzaALBO.doc}" />
+			        	</ui:include>
+					</div> <!-- /fieldset -->
+		        	
+		        	<ui:include src="../../customfields/docedit@customfields.xhtml">
+						<ui:param name="bean" value="#{docEditModifyPartenzaALBO}" />
+		        	</ui:include>
+				
+					<h:panelGroup rendered="#{docEditModifyPartenzaALBO.docIsNotInFascicolo and docEditModifyPartenzaALBO.doc.bozza}">
+						<ui:include src="../docEdit@rifinterni@doc.xhtml">
+							<ui:param name="bean" value="#{docEditModifyPartenzaALBO}" />
+			        	</ui:include>
+		        	</h:panelGroup>
+					
+	        		<h:panelGroup rendered="#{!docEditModifyPartenzaALBO.customfields.hiddenSections['altro']}">
+		        		<div class="fieldset">
+							<div class="legend">
+								#{i18n['dw4.other']}
+								
+								<div class="pull-right">
+									<span class="glyphicon glyphicon-list-alt" title="#{i18n['dw4.other']}"></span>
+								</div>
+							</div>
+							
+							<h:panelGroup rendered="#{!docEditModifyPartenzaALBO.customfields.hiddenFields['riferimenti']}" layout="block" styleClass="form-group">
+				               	<label for="templateForm:riferimentiDoc" class="col-sm-2 control-label">#{i18n['dw4.riferimenti']}</label>
+				               	<div class="col-sm-4">
+				               		<h:inputText id="riferimentiDoc" value="#{docEditModifyPartenzaALBO.doc.riferimenti.text}" styleClass="form-control" />
+				               	</div>
+							</h:panelGroup>
+							
+							<h:panelGroup rendered="#{!docEditModifyPartenzaALBO.customfields.hiddenFields['note']}">
+								<div class="form-group">
+					               	<label for="templateForm:note" class="col-sm-2 control-label">#{i18n['acl.notes']}</label>
+					               	<div class="col-sm-9">
+					               		<h:inputTextarea id="note" value="#{docEditModifyPartenzaALBO.doc.note.text}" rows="4" cols="120" styleClass="form-control" />
+					               	</div>		
+								</div>
+							</h:panelGroup>
+							
+							<h:panelGroup rendered="#{!docEditModifyPartenzaALBO.customfields.hiddenFields['parolechiave']}">
+								<div class="form-group">
+									<label for="templateForm:keywordsDoc" class="col-sm-2 control-label">#{i18n['dw4.keywords']}</label>
+									<div class="col-sm-9">
+										<h:inputText id="keywordsDoc" value="#{docEditModifyPartenzaALBO.doc.keywords.text}" styleClass="form-control" />
+									</div>			
+								</div>
+							</h:panelGroup>
+						</div> <!-- /fieldset -->
+					</h:panelGroup>
+					
+		        	<ui:include src="../docInformaticiFields.xhtml">
+						<ui:param name="bean" value="#{docEditModifyPartenzaALBO}" />
+		        		<ui:param name="beanDoc" value="#{docEditModifyPartenzaALBO.doc}" />
+		        		<ui:param name="enableFiles" value="#{docEditModifyPartenzaALBO.docInformaticiEnabledSenzaFiles and docEditModifyPartenzaALBO.formsAdapter.funzionalitaDisponibili['addFile']}" />
+		        		<ui:param name="enableImages" value="#{docEditModifyPartenzaALBO.docInformaticiEnabled and docEditModifyPartenzaALBO.formsAdapter.funzionalitaDisponibili['addImg']}" />
+		        		<ui:param name="enableFileAgentPDF" value="true" />
+		        		<ui:param name="enableImageAgentPDF" value="true" />
+		        	</ui:include>
+				</div>
+			</div>
+		</div>
+		<!-- scheda edit: fine -->
+		
+		<h:inputTextarea value="#{docEditModifyPartenzaALBO.xml}" rendered="#{docEditModifyPartenzaALBO.debugMode}" styleClass="form-control debug-textarea" rows="10" />
+			
+		<ui:include src="../lookup.xhtml"> <ui:param name="pageBean" value="#{docEditModifyPartenzaALBO}"/></ui:include>
+		<ui:include src="../rifintLookup.xhtml"> <ui:param name="pageBean" value="#{docEditModifyPartenzaALBO}"/></ui:include>
+		<ui:include src="../showthes.xhtml"> <ui:param name="pageBean" value="#{docEditModifyPartenzaALBO}"/></ui:include>
+		<!-- template per upload e la decompressione di archivi ZIP -->
+		<ui:param name="currentBean" value="#{docEditModifyPartenzaALBO}" />
+		<ui:include src="../docUploadArchive.xhtml">
+			<ui:param name="bean" value="#{docWayUploadArchive}"/>
+			<ui:param name="beanDoc" value="#{currentBean}" />
+			<ui:param name="doc" value="#{currentBean.doc}" />
+			<ui:param name="enableFiles" value="#{currentBean.docInformaticiEnabled and currentBean.formsAdapter.funzionalitaDisponibili['addFile']}" />
+		</ui:include>
+	</div>
+</ui:define>
+
+</ui:composition>

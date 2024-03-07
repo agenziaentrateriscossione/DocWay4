@@ -23,12 +23,14 @@
 						<div class="modal-body">
 							
 							<div id="rpa_Fields">
-								<div class="form-group">
-									<label for="templateForm:rpa_sendMailRifInterniCheck" class="col-sm-2 control-label">#{i18n['dw4.invia_email_di_notifica']}</label>
-									<div class="col-sm-1">
-										<h:selectBooleanCheckbox value="#{bean.fascicolo.sendMailRifInterni}" id="rpa_sendMailRifInterniCheck" styleClass="#{ component.valid ? '' : 'invalidinput' }"  />
+								<h:panelGroup rendered="#{!bean.fascicolo.sendMailSelectedRifInterni}">
+									<div class="form-group">
+										<label for="templateForm:rpa_sendMailRifInterniCheck" class="col-sm-2 control-label">#{i18n['dw4.invia_email_di_notifica']}</label>
+										<div class="col-sm-1">
+											<h:selectBooleanCheckbox value="#{bean.fascicolo.sendMailRifInterni}" id="rpa_sendMailRifInterniCheck" styleClass="#{ component.valid ? '' : 'invalidinput' }" />
+										</div>
 									</div>
-								</div>
+								</h:panelGroup>
 								
 								<div class="form-group">
 									<label for="templateForm:rpa_controllaNomiCheck" class="col-sm-2 control-label">#{i18n['dw4.controlla_variazione_nome_ufficio_persona']}</label>
@@ -43,6 +45,7 @@
 					        		<ui:param name="pageBean" value="#{bean}" />
 					        		<ui:param name="rifintBean" value="#{bean.fascicolo.assegnazioneRPA}" />
 					        		<ui:param name="refresh" value="@form"/>
+					        		<ui:param name="sendMailSelectedRifInterni" value="#{bean.fascicolo.sendMailSelectedRifInterni}"/>
 					        	</ui:include>
 							</div>
 							

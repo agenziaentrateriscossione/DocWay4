@@ -4,15 +4,16 @@ import java.util.List;
 
 import javax.faces.context.FacesContext;
 
-import it.tredi.dw4.utils.XMLDocumento;
+import org.dom4j.Document;
+
 import it.tredi.dw4.adapters.AdaptersConfigurationLocator;
 import it.tredi.dw4.adapters.DocEditFormsAdapter;
 import it.tredi.dw4.adapters.ErrormsgFormsAdapter;
 import it.tredi.dw4.docway.doc.adapters.delibere.PropostaDocDocWayDocEditFormsAdapter;
 import it.tredi.dw4.docway.model.delibere.Proposta;
+import it.tredi.dw4.model.XmlEntity;
+import it.tredi.dw4.utils.XMLDocumento;
 import it.tredi.dw4.utils.XMLUtil;
-
-import org.dom4j.Document;
 
 public class DocEditProposta extends DocWayDocedit {
 	
@@ -84,5 +85,10 @@ public class DocEditProposta extends DocWayDocedit {
 
 	public void setListof_proposte(List<Proposta> listof_proposte) {
 		this.listof_proposte = listof_proposte;
+	}
+	
+	@Override
+	public XmlEntity getModel() {
+		return null;
 	}
 }

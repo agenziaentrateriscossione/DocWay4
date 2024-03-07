@@ -1,6 +1,7 @@
 package it.tredi.dw4.docwayproc.beans;
 
-import it.tredi.dw4.utils.XMLDocumento;
+import org.dom4j.Document;
+
 import it.tredi.dw4.adapters.AdaptersConfigurationLocator;
 import it.tredi.dw4.adapters.DocEditFormsAdapter;
 import it.tredi.dw4.adapters.ErrormsgFormsAdapter;
@@ -9,8 +10,8 @@ import it.tredi.dw4.docwayproc.model.Indice_Titolario;
 import it.tredi.dw4.docwayproc.model.Oggetto;
 import it.tredi.dw4.docwayproc.model.workflow.WorkflowsTitolario;
 import it.tredi.dw4.i18n.I18N;
-
-import org.dom4j.Document;
+import it.tredi.dw4.model.XmlEntity;
+import it.tredi.dw4.utils.XMLDocumento;
 
 public class DocEditIndiceTitolario extends EditVoceIndice  {
 	private Indice_Titolario indice_titolario = new Indice_Titolario();
@@ -156,6 +157,11 @@ public class DocEditIndiceTitolario extends EditVoceIndice  {
 	@Override
 	public WorkflowsTitolario getWorkflowTitolario() {
 		return this.workflowTitolario;
+	}
+	
+	@Override
+	public XmlEntity getModel() {
+		return this.indice_titolario;
 	}
 	
 }

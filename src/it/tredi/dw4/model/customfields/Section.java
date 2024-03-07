@@ -1,8 +1,5 @@
 package it.tredi.dw4.model.customfields;
 
-import it.tredi.dw4.model.XmlEntity;
-import it.tredi.dw4.utils.XMLUtil;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -11,6 +8,9 @@ import java.util.Map;
 import javax.faces.context.FacesContext;
 
 import org.dom4j.Document;
+
+import it.tredi.dw4.model.XmlEntity;
+import it.tredi.dw4.utils.XMLUtil;
 
 public class Section extends XmlEntity {
 
@@ -196,6 +196,57 @@ public class Section extends XmlEntity {
 			String []fieldParams = propertyName.split("_");
 			
 			this.getFields().get(new Integer(fieldParams[1]).intValue()).setFieldValueFromLookup(lookupXpath, value);
+		}
+	}
+	
+	/**
+	 * Recupera il valore associato ad un campo identificato da un path.
+	 * Formato del campo custom: section[0].field_2[0].field_3[2]
+	 * 
+	 * @param fieldPath definizione del campo per il quale recuperare il valore (es. section[0].field_2[0].field_3[2])
+	 * @return Valore associato al campo
+	 */
+	public String getValueFromPath(String fieldPath) {
+		String value = null;
+		if (fieldPath != null && !fieldPath.equals("")) {
+			String propertyName = fieldPath;
+			
+			int fieldIndex = fieldPath.indexOf(".");
+			if (fieldIndex != -1) 
+				propertyName = fieldPath.substring(0, fieldIndex);
+			
+			if (propertyName.indexOf("[") != -1)
+				propertyName = propertyName.substring(0, propertyName.indexOf("["));
+			
+			String []fieldParams = propertyName.split("_");
+			
+			value = this.getFields().get(new Integer(fieldParams[1]).intValue()).getValueFromPath(fieldPath);
+		}
+		return value;
+	}
+	
+	/**
+	 * Esecuzione di una azione su un campo identificato da un path.
+	 * Formato del campo custom: section[0].field_2[0].field_3[2]
+	 * 
+	 * @param fieldPath definizione del campo da aggiornare (es. section[0].field_2[0].field_3[2])
+	 * @param action azione da svolgere sul campo
+	 * @param value Valore da settare in base all'azione
+	 */
+	public void processActionOnField(String fieldPath, RelationshipAction action, Object value) {
+		if (fieldPath != null && !fieldPath.equals("") && action != null) {
+			String propertyName = fieldPath;
+			
+			int fieldIndex = fieldPath.indexOf(".");
+			if (fieldIndex != -1) 
+				propertyName = fieldPath.substring(0, fieldIndex);
+			
+			if (propertyName.indexOf("[") != -1)
+				propertyName = propertyName.substring(0, propertyName.indexOf("["));
+			
+			String []fieldParams = propertyName.split("_");
+			
+			this.getFields().get(new Integer(fieldParams[1]).intValue()).processActionOnField(fieldPath, action, value);
 		}
 	}
 

@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	  xmlns:h="http://java.sun.com/jsf/html"
+	  xmlns:ui="http://java.sun.com/jsf/facelets"
+	  xmlns:f="http://java.sun.com/jsf/core"
+	  xmlns:c="http://java.sun.com/jsp/jstl/core"
+	  xmlns:p="http://xmlns.jcp.org/jsf/passthrough">
+<ui:composition>
+
+	<h:panelGroup layout="block" id="editCustomFieldsPopup">
+		<h:panelGroup rendered="#{pageBean.visible}">
+			<!-- Modal -->
+			<div id="editCustomFieldsModal" class="modal fade in" aria-hidden="false" aria-labelledby="editCustomFieldsModalLabel" role="dialog" tabindex="-1" style="display: block;">
+			<!--div class="modal fade" id="editCustomFieldsModal" tabindex="-1" role="dialog" aria-labelledby="editCustomFieldsModalLabel" aria-hidden="true"-->
+				<div class="modal-dialog modal-lg docedit">
+					<div class="modal-content jsf-modal">
+						<div class="modal-header">
+							<h:commandLink styleClass="close" action="#{pageBean.clearDocument}" value="&#215;" />
+
+							<h4 class="modal-title" id="editCustomFieldsModalLabel">#{i18n['dw4.modify_campi_custom']}</h4>
+						</div>
+						<div class="modal-body">
+
+							<h:panelGroup rendered="#{not empty facesContext.messageList}" layout="block" styleClass="alert alert-danger">
+								<h:messages styleClass="" id="editCustomFieldsValidationMesseges" />
+							</h:panelGroup>
+
+							<ui:include src="./docedit@customfields.xhtml">
+								<ui:param name="bean" value="#{pageBean}" />
+				        	</ui:include>
+
+							<h:inputTextarea styleClass="form-control" rows="10" value="#{pageBean.xml}" rendered="#{pageBean.debugMode}"/>
+
+						</div>
+						<div class="modal-footer">
+							<h:commandLink action="#{pageBean.saveDocument}" styleClass="btn btn-primary openwaitmsg" value="#{i18n['acl.save']}">
+								<f:ajax execute="@form" render="@form" />
+							</h:commandLink>
+
+							<h:commandLink styleClass="btn btn-default" action="#{pageBean.clearDocument}"  value="#{i18n['acl.close']}">
+								<f:ajax execute="@form" render="@form" />
+							</h:commandLink>
+
+						</div>
+					</div>
+				</div>
+			</div>
+			<!--h:outputScript>
+				$('#editCustomFieldsModal').modal('show');
+			</h:outputScript-->
+		</h:panelGroup>
+	</h:panelGroup>
+
+</ui:composition>
+</html>

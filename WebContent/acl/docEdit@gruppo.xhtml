@@ -19,7 +19,7 @@
             
             <h5 class="sub-header">
                 <span class="gruppi glyphicons-pro"></span>&#160;
-                <h:outputText value="#{i18n['acl.ins_groups']}" escape="false" />
+                <h:outputText value="#{i18n['acl.ins_groups']}" />
             </h5>
         
             <!-- messages: inizio -->
@@ -92,7 +92,7 @@
            </div>
 	    </div>
 	
-		<h:inputTextarea value="#{docEditGruppo.xml}" rendered="#{docEditGruppo.debugMode}" styleClass="form-control" rows="10" />
+		<h:inputTextarea value="#{docEditGruppo.xml}" rendered="#{docEditGruppo.debugMode}" styleClass="form-control debug-textarea" rows="10" />
 		
 		<ui:include src="./lookup.xhtml"> <ui:param name="pageBean" value="#{docEditGruppo}"/></ui:include>
 	</ui:define>

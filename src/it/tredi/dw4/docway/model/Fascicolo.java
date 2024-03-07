@@ -1,13 +1,5 @@
 package it.tredi.dw4.docway.model;
 
-import it.tredi.dw4.acl.model.Chiusura;
-import it.tredi.dw4.acl.model.Creazione;
-import it.tredi.dw4.acl.model.Note;
-import it.tredi.dw4.acl.model.UltimaModifica;
-import it.tredi.dw4.model.XmlEntity;
-import it.tredi.dw4.utils.Const;
-import it.tredi.dw4.utils.XMLUtil;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -15,6 +7,14 @@ import java.util.List;
 import java.util.Map;
 
 import org.dom4j.Document;
+
+import it.tredi.dw4.acl.model.Chiusura;
+import it.tredi.dw4.acl.model.Creazione;
+import it.tredi.dw4.acl.model.Note;
+import it.tredi.dw4.acl.model.UltimaModifica;
+import it.tredi.dw4.model.XmlEntity;
+import it.tredi.dw4.utils.Const;
+import it.tredi.dw4.utils.XMLUtil;
 
 public class Fascicolo extends XmlEntity {
 	private String nrecord;
@@ -36,6 +36,8 @@ public class Fascicolo extends XmlEntity {
 	private List<Rif> rif_interni;
 	private List<Link_interno> link_interni;
 	private boolean sendMailRifInterni = true; // Indica se inviare o meno la mail di avviso ai rif interni
+	// rtirabassi - 20190911 - ERM012596 - Abilita l'invio capillare
+	protected boolean sendMailSelectedRifInterni = false;
 	private boolean checkNomi = true; // controllo nomi in caso di trasferimento fascicolo
 	
 	private boolean archiviato = false; // indica se il fascicolo e' stato archiviato o meno
@@ -55,8 +57,10 @@ public class Fascicolo extends XmlEntity {
 	// gestione CC in showdoc
 	private List<Rif> cc_list = new ArrayList<Rif>();
 	private List<Rif> cc_fasc_list = new ArrayList<Rif>();
+	private List<Rif> cc_racc_list = new ArrayList<Rif>();
 	private HashMap<String, List<Rif>> cc_ufficio = new HashMap<String, List<Rif>>();
 	private HashMap<String, List<Rif>> cc_fasc_ufficio = new HashMap<String, List<Rif>>();
+	private HashMap<String, List<Rif>> cc_racc_ufficio = new HashMap<String, List<Rif>>();
 	
 	private Note note = new Note();
 	private Creazione creazione = new Creazione();
@@ -75,8 +79,15 @@ public class Fascicolo extends XmlEntity {
 	private int countCcTotali;
 	private int countCcFascicoloPadre;
 	private int countCcTotaliPersonali;
+	private int countCcRaccoglitore;
 	
 	private Extra extra = new Extra(); // gestione dei campi extra interni al fascicolo
+	
+	// tiommi 19/04/2018 : controllo se deve essere inserito il diritto di intervento di default ai cc
+    private boolean interventoDefaultCC = false;
+
+    // mbernardini 14/06/2019 : tags associati al fascicolo
+    private List<Tag> tags;
 	
 	@SuppressWarnings("unchecked")
 	@Override
@@ -120,7 +131,9 @@ public class Fascicolo extends XmlEntity {
 			this.archiviato = true;
 		else
 			this.archiviato = false;
-		this.archiviato_before_saving = this.archiviato; 
+		this.archiviato_before_saving = this.archiviato;
+		
+		this.interventoDefaultCC = Boolean.parseBoolean(XMLUtil.parseStrictAttribute(dom, "response/funzionalita_disponibili/@interventoDefaultCC"));
 		
 		// Suddivido i rif_interni in base al diritto (rpa, itf, cc)
 		if (this.rif_interni != null && this.rif_interni.size() > 0) {
@@ -144,7 +157,7 @@ public class Fascicolo extends XmlEntity {
 			for (int i=0; i<this.assegnazioneCC.size(); i++) {
 				Rif tmpRif = (Rif) assegnazioneCC.get(i);
 				if (tmpRif != null && tmpRif.getDiritto() != null && !tmpRif.getDiritto().equals("")) {
-					if (tmpRif.getCod_fasc() == null || tmpRif.getCod_fasc().trim().length() == 0) { // cc specifici del documento
+					if (tmpRif.getCod_fasc().equals("") && tmpRif.getCc_from_racc().equals("")) { // cc specifici del fascicolo
 						cc_list.add(tmpRif);
 						if (tmpRif.getCod_uff() != null && !tmpRif.getCod_uff().equals("")) {
 							if (cc_ufficio.containsKey(tmpRif.getCod_uff())) { // ufficio gia' presente nell'hashmap
@@ -158,7 +171,20 @@ public class Fascicolo extends XmlEntity {
 						}
 							
 					}
-					else if (tmpRif.getCod_fasc() != null && tmpRif.getCod_fasc().trim().length() > 0) { // cc ereditati dal fascicolo
+					else if (!tmpRif.getCc_from_racc().equals("")) { // cc ereditati da un raccoglitore
+						cc_racc_list.add(tmpRif);
+						if (tmpRif.getCod_uff() != null && !tmpRif.getCod_uff().equals("")) {
+							if (cc_racc_ufficio.containsKey(tmpRif.getCod_uff())) { // ufficio gia' presente nell'hashmap
+								cc_racc_ufficio.get(tmpRif.getCod_uff()).add(tmpRif);
+							}
+							else { // nuovo ufficio nell'hashmap
+								ArrayList<Rif> new_list_ufficio = new ArrayList<Rif>();
+								new_list_ufficio.add(tmpRif);
+								cc_racc_ufficio.put(tmpRif.getCod_uff(), new_list_ufficio);
+							}
+						}
+					}
+					else if (tmpRif.getCod_fasc().trim().length() > 0) { // cc ereditati dal fascicolo
 						cc_fasc_list.add(tmpRif);
 						if (tmpRif.getCod_uff() != null && !tmpRif.getCod_uff().equals("")) {
 							if (cc_fasc_ufficio.containsKey(tmpRif.getCod_uff())) { // ufficio gia' presente nell'hashmap
@@ -175,16 +201,26 @@ public class Fascicolo extends XmlEntity {
 			}
 		}
 		
+		// tiommi aggiunto per settare intervento default
+		if (this.assegnazioneCC.size() == 0) {
+			assegnazioneCC.add(new Rif(interventoDefaultCC));
+		}
+		
 		// campi specifici dei fascicoli speciali
 		num_pos = XMLUtil.parseAttribute(dom, "fascicolo/@num_pos", "");
 		fascicolo_speciale.init(XMLUtil.createDocument(dom, "//fascicolo/fascicolo_speciale"));
 		nominativo.init(XMLUtil.createDocument(dom, "//fascicolo/nominativo"));
 		
-		this.countCcTotali = dom.selectNodes("//fascicolo/rif_interni/rif[@diritto='CC'][not(@cod_fasc) or @cod_fasc='']").size();
+		this.countCcTotali = dom.selectNodes("//fascicolo/rif_interni/rif[@diritto='CC'][not(@cod_fasc) or @cod_fasc=''][not(@cc_from_racc) or @cc_from_racc='']").size();
 		this.countCcFascicoloPadre = dom.selectNodes("//fascicolo/rif_interni/rif[@diritto='CC'][@cod_fasc!='']").size();
-		this.countCcTotaliPersonali = dom.selectNodes("//fascicolo/rif_interni/rif[@diritto='CC' and @personale='true'][not(@cod_fasc) or @cod_fasc='']").size();
+		this.countCcTotaliPersonali = dom.selectNodes("//fascicolo/rif_interni/rif[@diritto='CC' and @personale='true'][not(@cod_fasc) or @cod_fasc=''][not(@cc_from_racc) or @cc_from_racc='']").size();
+		this.countCcRaccoglitore = dom.selectNodes("//fascicolo/rif_interni/rif[@diritto='CC'][@cc_from_racc!='']").size();
 		
 		extra.init(XMLUtil.createDocument(dom, "//fascicolo/extra")); // gestione dei campi extra
+		
+		this.tags = XMLUtil.parseSetOfElement(dom, "//fascicolo/tags/tag", new Tag());
+		if (this.tags.size() == 0)
+			this.tags.add(new Tag());
 		
 		return this;
 	}
@@ -262,8 +298,19 @@ public class Fascicolo extends XmlEntity {
 		
 		params.putAll(extra.asFormAdapterParams(prefix+".extra")); // gestione dei campi extra
 		
+		if (tags != null && tags.size() > 0 && tags.get(0).getValue() != null && !tags.get(0).getValue().trim().isEmpty()) {
+			for (int i=0; i<tags.size(); i++) {
+				params.putAll(tags.get(i).asFormAdapterParams(prefix+".tags.tag["+String.valueOf(i)+"]"));
+			}
+		}
+		
 		// Imposto il parametro relativo all'invio della mail di notifica ai rif int
 		params.put("*sendMailRifInterni", sendMailRifInterni+"");
+		// ERM012596 - rtirabassi - notifica capillare
+		params.put("*sendMailSelectedRifInterni", this.sendMailSelectedRifInterni+"");
+		if ( this.sendMailSelectedRifInterni ) {
+			params.put("*invioCapillareNotifiche", this.getNotificheCapillariParam());
+		}
     	
     	return params;
 	}
@@ -305,6 +352,43 @@ public class Fascicolo extends XmlEntity {
 			}
 		}
 		return params;
+	}
+
+	/**
+	 * Codifica i riferimenti interni selezionati per l'invio al servizio
+	 * @return la codifica del singolo riferimento
+	 */
+	private String encodeNotificaCapillare(Rif r) {
+		if ( null == r ) return "" ;
+		if ( r.isUfficio_completo() ) {
+			return "$U$"+r.getCod_uff();
+		}
+		if ( "ruolo" == r.getTipo_uff() ) {
+			return "$R$"+r.getNome_uff();
+		}
+		return "$P$"+r.getCod_persona();
+	}
+	
+	/**
+	 * Elenca i riferimenti interni selezionati per la notifica capillare in forma codificata
+	 * @return 
+	 */
+	public String getNotificheCapillariParam(){
+        String capillari = "";
+		if (assegnazioneRPA.isNotifica_capillare() ) capillari += "|" + encodeNotificaCapillare(assegnazioneRPA) ;
+		if (assegnazioneITF.isNotifica_capillare() ) capillari += "|" + encodeNotificaCapillare(assegnazioneITF) ;
+		if (assegnazioneCC != null && assegnazioneCC.size() > 0) {
+			for (int i=0; i<assegnazioneCC.size(); i++) {
+				Rif rif = (Rif) assegnazioneCC.get(i);
+				if (rif != null && rif.isNotifica_capillare()) {
+					String cod = encodeNotificaCapillare(rif);
+					if ( !cod.isEmpty() ) { 
+						capillari += "|" + cod ;
+					}
+				}
+			}
+		}
+		return (capillari.length() > 0 ? capillari.substring(1) : capillari);
 	}
 
 	public void setNrecord(String nrecord) {
@@ -443,6 +527,22 @@ public class Fascicolo extends XmlEntity {
 		this.cc_ufficio = cc_ufficio;
 	}
 
+	public List<Rif> getCc_racc_list() {
+		return cc_racc_list;
+	}
+
+	public void setCc_racc_list(List<Rif> cc_racc_list) {
+		this.cc_racc_list = cc_racc_list;
+	}
+	
+	public HashMap<String, List<Rif>> getCc_racc_ufficio() {
+		return cc_racc_ufficio;
+	}
+
+	public void setCc_racc_ufficio(HashMap<String, List<Rif>> cc_racc_ufficio) {
+		this.cc_racc_ufficio = cc_racc_ufficio;
+	}
+	
 	public void setDoc_contenuti(Doc_contenuti doc_contenuti) {
 		this.doc_contenuti = doc_contenuti;
 	}
@@ -595,6 +695,14 @@ public class Fascicolo extends XmlEntity {
 		this.sendMailRifInterni = sendMail;
 	}
 	
+	public void setSendMailSelectedRifInterni(boolean sendMailSelectedRifInterni) {
+		this.sendMailSelectedRifInterni = sendMailSelectedRifInterni;
+	}
+	
+	public boolean isSendMailSelectedRifInterni() {
+		return sendMailSelectedRifInterni;
+	}
+
 	public boolean isCheckNomi() {
 		return checkNomi;
 	}
@@ -628,7 +736,7 @@ public class Fascicolo extends XmlEntity {
 			index = assegnazioneCC.indexOf(rif);
 		
 		if (assegnazioneCC != null) {
-			Rif rifToAdd = new Rif();
+			Rif rifToAdd = new Rif(interventoDefaultCC);
 			if (rif != null && rif.getTipo_uff() != null && rif.getTipo_uff().equals("ruolo"))
 				rifToAdd.setTipo_uff("ruolo");
 			
@@ -646,7 +754,7 @@ public class Fascicolo extends XmlEntity {
 		if (rif != null) {
 			assegnazioneCC.remove(rif);
 			if (assegnazioneCC.isEmpty()) 
-				assegnazioneCC.add(new Rif());
+				assegnazioneCC.add(new Rif(interventoDefaultCC));
 		}
 	}
 
@@ -683,7 +791,7 @@ public class Fascicolo extends XmlEntity {
 		if (assegnazioneCC != null && assegnazioneCC.size() > 0) {
 			Rif previous = assegnazioneCC.get(assegnazioneCC.size()-1);
 			if (!previous.isEmpty()) {
-				Rif rifToAdd = new Rif();
+				Rif rifToAdd = new Rif(interventoDefaultCC);
 				if (previous != null && previous.getTipo_uff() != null && previous.getTipo_uff().equals("ruolo"))
 					rifToAdd.setTipo_uff("ruolo");
 				assegnazioneCC.add(rifToAdd);
@@ -730,6 +838,14 @@ public class Fascicolo extends XmlEntity {
 	public void setCountCcFascicoloPadre(int countCcFascicoloPadre) {
 		this.countCcFascicoloPadre = countCcFascicoloPadre;
 	}
+	
+	public int getCountCcRaccoglitore() {
+		return countCcRaccoglitore;
+	}
+
+	public void setCountCcRaccoglitore(int countCcRaccoglitore) {
+		this.countCcRaccoglitore = countCcRaccoglitore;
+	}
 
 	public String getCodiceFascicoloCustom() {
 		return codiceFascicoloCustom;
@@ -747,4 +863,47 @@ public class Fascicolo extends XmlEntity {
 		this.descrizioneFascicoloCustom = descrizioneFascicoloCustom;
 	}
 	
+	public List<Tag> getTags() {
+		return tags;
+	}
+
+	public void setTags(List<Tag> tags) {
+		this.tags = tags;
+	}
+	
+	/**
+	 * Ritorna i tags associati al fascicolo in formato Stringa
+	 * @return
+	 */
+	public String getTagsAsString() {
+		if (this.tags != null) {
+			String value = "";
+			for (Tag tag : tags) {
+				if (tag != null && tag.getValue() != null)
+					value += tag.getValue() + " ";
+			}
+			return value.trim();
+		}
+		return null;
+	}
+	
+	/**
+	 * Aggiornamento dei tags da associare al fascicolo
+	 * @param tags
+	 */
+	public void setTagsAsString(String tags) {
+		if (tags != null && !tags.trim().isEmpty()) {
+			String[] split = tags.trim().split(" ");
+			if (split != null && split.length > 0) {
+				this.tags = new ArrayList<Tag>();
+				for (String tag : split) {
+					if (tag != null && !tag.isEmpty()) {
+						if (!tag.startsWith("#"))
+							tag  = "#" + tag;
+						this.tags.add(new Tag(tag));
+					}
+				}
+			}
+		}
+	}
 }

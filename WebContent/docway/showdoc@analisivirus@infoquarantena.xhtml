@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" 
+	  xmlns:h="http://java.sun.com/jsf/html" 
+	  xmlns:ui="http://java.sun.com/jsf/facelets" 
+	  xmlns:f="http://java.sun.com/jsf/core"
+	  xmlns:c="http://java.sun.com/jsp/jstl/core">
+<ui:composition>
+
+	<h:panelGroup layout="block" id="esitoVirusQuarantena">
+		<h:panelGroup id="verificaVirusInfoQuarantena" rendered="#{pageBean.active}">
+			<!-- Modal -->
+			<div id="verificaVirusInfoQuarantenaModal" class="modal fade in" aria-hidden="false" aria-labelledby="verificaVirusInfoQuarantenaModalLabel" role="dialog" tabindex="-1" style="display: block;">
+				<div class="modal-dialog modal-lg">
+					<div class="modal-content jsf-modal">
+						<div class="modal-header">
+							<h:commandLink styleClass="close" action="#{pageBean.close}" value="&#215;">
+		                    	<f:ajax render="esitoVirusQuarantena"/>
+		                   	</h:commandLink>
+							
+							<h4 class="modal-title" id="verificaVirusInfoQuarantenaModalLabel">#{i18n['dw4.virus_rilevati_Info_aggiuntive']}</h4>
+						</div>
+						<div class="modal-body">
+							<h:panelGroup rendered="#{not empty facesContext.messageList}" layout="block" styleClass="alert alert-danger">
+								<h:messages styleClass="" id="validationAnalisiVirusQuarantena" />
+							</h:panelGroup>
+						
+							<fieldset>
+								<div class="form-group">
+									<label class="col-sm-2 control-label">#{i18n['dw4.note']}</label>
+									<div class="col-sm-9">
+										<h:inputTextarea id="annotazione_quarantena_text" value="#{pageBean.note}" rows="4" cols="120" styleClass="form-control" />
+									</div>
+								</div>
+								<div class="form-group">
+									<label class="col-sm-2 control-label requiredField">* #{i18n['dw4.file_infetti']}</label>
+									<div class="col-sm-9">
+										<h:selectManyCheckbox id="fileInfettiCheck" value="#{pageBean.fileIdsInfetti}" layout="pageDirection" styleClass="radio-selection">
+											<f:selectItems value="#{pageBean.xwfilesInDoc}" var="xwfile" itemLabel="#{xwfile.title}" itemValue="#{xwfile.name}" />
+										</h:selectManyCheckbox>
+									</div>
+								</div>
+							</fieldset>
+						</div>
+						<div class="modal-footer">
+							<h:commandLink action="#{pageBean.save}" styleClass="btn btn-danger openwaitmsg" value="#{i18n['acl.save']}" />
+							
+							<h:commandLink styleClass="btn btn-default" action="#{pageBean.close}" value="#{i18n['acl.close']}">
+		                    	<f:ajax render="esitoVirusQuarantena"/>
+		                   	</h:commandLink>
+						</div>
+					</div>
+				</div>
+			</div>
+			<!--h:outputScript>
+				$('#verificaVirusInfoQuarantenaModal').modal('show');
+			</h:outputScript-->
+		</h:panelGroup>
+	</h:panelGroup>
+
+</ui:composition>   
+</html>

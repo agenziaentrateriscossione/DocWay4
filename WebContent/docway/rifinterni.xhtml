@@ -33,18 +33,24 @@
 							#{i18n['dw4.operatore_incaricato_m']}
 						</c:when>
 						<c:when test="#{rifintType eq 'cc'}">
-							<h:panelGroup rendered="#{empty rifintBean.cod_fasc}">
+							<h:panelGroup rendered="#{empty rifintBean.cod_fasc and empty rifintBean.cc_from_racc}">
 								#{i18n['dw4.cc']}
 							</h:panelGroup>
-							<h:panelGroup rendered="#{!empty rifintBean.cod_fasc}">
+							<h:panelGroup rendered="#{!empty rifintBean.cod_fasc and empty rifintBean.cc_from_racc}">
 								#{i18n['dw4.cc_fasc']}
 							</h:panelGroup>
+							<h:panelGroup rendered="#{empty rifintBean.cod_fasc and !empty rifintBean.cc_from_racc}">
+								#{i18n['dw4.cc_racc']}
+							</h:panelGroup>
+						</c:when>
+						<c:when test="#{rifintType eq 'itf'}">
+							#{i18n['dw4.incaricato_tenuta_fascicolo']}
 						</c:when>
 					</c:choose>
 				</label>
 				
-				<h:panelGroup rendered="#{rifintType eq 'cc' and !empty rifintBean.cod_fasc}">
-					<!-- in caso di CC ereditati da fascicolo -->
+				<h:panelGroup rendered="#{rifintType eq 'cc' and (!empty rifintBean.cod_fasc or !empty rifintBean.cc_from_racc)}">
+					<!-- in caso di CC ereditati da fascicolo/raccoglitore -->
 					<div class="col-sm-9">
 						<p class="form-control-static">
 							<h:outputText value="#{rifintBean.nome_uff}" />
@@ -53,17 +59,25 @@
 						</p>
 					</div>
 				</h:panelGroup>
-				<h:panelGroup rendered="#{rifintType ne 'cc' or empty rifintBean.cod_fasc}">
+				<h:panelGroup rendered="#{rifintType ne 'cc' or (empty rifintBean.cod_fasc and empty rifintBean.cc_from_racc)}">
 					<div class="col-sm-4">
 						<div class="input-group">
+							<ui:include src="./rifinterni@capillare.xhtml">
+					        	<ui:param name="rifintType" value="#{rifintType}" />
+					        	<ui:param name="indice" value="#{indice}" />
+				        		<ui:param name="rifintBean" value="#{rifintBean}" />
+				        		<ui:param name="sendMailSelectedRifInterni" value="#{sendMailSelectedRifInterni}" />
+				        		<ui:param name="tail" value="" />
+				        	</ui:include>
+							
 							<h:panelGroup rendered="#{(rifintType eq 'cc' or rifintType eq 'cds' or rifintType eq 'rpam') and pageBean.formsAdapter.funzionalitaDisponibili['interventoConfigurabileSuDoc']}">
 								<span class="input-group-addon addon-with-icon popoveritem" data-toggle="popover" data-placement="bottom" data-trigger="hover" data-content="#{i18n['dw4.assegna_intervento']}">
-									<label for="templateForm:rifint_#{rifintType}_list:#{indice}:#{rifintType}_intCheck"><span class="glyphicons-pro pencil normla-size-icon"></span></label>&#160;
+									<label for="templateForm:rifint_#{rifintType}_list:#{indice}:#{rifintType}_intCheck"><span class="glyphicons-pro pencil normal-size-icon"></span></label>&#160;
 						        	<h:selectBooleanCheckbox id="#{rifintType}#{indice}_intCheck" value="#{rifintBean.intervento}" styleClass="#{ component.valid ? '' : 'invalidinput' }" />
 						      	</span>
 					      	</h:panelGroup>
 					      	
-							<h:inputText id="#{rifintType}#{indice}_nome_uff_input" value="#{rifintBean.nome_uff}" p:placeholder="#{i18n['acl.uff']}" title="#{i18n['acl.uff']}" onblur="executeAction(this);" onfocus="setDefaultValue(this);" styleClass="#{ component.valid ? '' : 'invalidinput' } lookup-field form-control">
+							<h:inputText id="#{rifintType}#{indice}_nome_uff_input" value="#{rifintBean.nome_uff}" p:placeholder="#{i18n['acl.uff']}" title="#{i18n['acl.uff']}" onblur="executeAction(this);" onfocus="setDefaultValue(this);" styleClass="#{ component.valid ? '' : 'invalidinput' } lookup-field form-control #{rifintType}_nome_uff">
 								<f:ajax execute="@form" render="#{refresh}"/>
 							</h:inputText>
 							
@@ -86,18 +100,18 @@
 						<div class="input-group">
 							<h:panelGroup rendered="#{((rifintType eq 'cc' or rifintType eq 'cds') and pageBean.formsAdapter.funzionalitaDisponibili['enTutti'])}">
 						      	<span class="input-group-addon addon-with-icon popoveritem" data-toggle="popover" data-placement="bottom" data-trigger="hover" data-content="#{i18n['dw4.assegna_all_ufficio']}">
-						      		<label for="templateForm:rifint_#{rifintType}_list:#{indice}:#{rifintType}_tuttiCheck"><span class="glyphicons-pro group normla-size-icon"></span></label>&#160;
+						      		<label for="templateForm:rifint_#{rifintType}_list:#{indice}:#{rifintType}_tuttiCheck"><span class="glyphicons-pro group normal-size-icon"></span></label>&#160;
 							      	<h:selectBooleanCheckbox id="#{rifintType}#{indice}_tuttiCheck" value="#{rifintBean.ufficio_completo}" onclick="checkTutti('#{rifintType}#{indice}_ufficioCompletoBtn', '#{i18n['dw4.stai_mandando_un_email_a_tutte_le_persone_dell_ufficio']}.\n#{i18n['dw4.premere_ok_per_non_far_apparire_piu_questo_messaggio']}');" />
 									<h:commandLink styleClass="#{rifintType}#{indice}_ufficioCompletoBtn" action="#{pageBean.ufficioCompleto}" style="display:none;">
 										<f:ajax execute="@form" render="#{refresh}" />
 									</h:commandLink>
 								</span>
 							</h:panelGroup>
-							
+
 							<h:inputText id="#{rifintType}#{indice}_nome_persona_input" value="#{rifintBean.nome_persona}" p:placeholder="#{i18n['acl.oper']}" title="#{i18n['acl.oper']}" onblur="executeAction(this);" onfocus="setDefaultValue(this);" styleClass="#{ component.valid ? '' : 'invalidinput' } lookup-field form-control">
 								<f:ajax execute="@form" render="#{refresh}"/>
 							</h:inputText>
-							
+
 							<span class="input-group-btn">
 								<ui:param name="action" value="clearPersona_#{rifintType}" />
 						   		<h:commandLink style="display:none;" title="#{i18n['dw4.lookup_persona']}" action="#{pageBean[action]}" id="#{rifintType}#{indice}_nome_persona_clear">
@@ -110,13 +124,13 @@
 						   			<span class="glyphicon glyphicon-search"></span>
 						   		</h:commandLink>
 						   		
-						   		<h:panelGroup rendered="#{pageBean.formsAdapter.funzionalitaDisponibili['rolesManagement']}">
+						   		<h:panelGroup rendered="#{pageBean.formsAdapter.funzionalitaDisponibili['rolesManagement'] and rifintType ne 'delegato'}">
 					        		<h:commandLink action="#{rifintBean.changeToRuolo}" title="#{i18n['dw4.passa_a_ruolo']}" styleClass="btn btn-default">
 					        			<f:ajax execute="@form" render="#{refresh}" />
 					        			<span class="glyphicon glyphicon-briefcase"></span>
 					        		</h:commandLink>
-					        	</h:panelGroup>	   		
-					  		</span>
+					        	</h:panelGroup>
+							</span>
 						</div>
 						<h:inputHidden value="#{rifintBean.cod_persona}" id="#{rifintType}#{indice}_cod_persona" />
 					</div>
@@ -145,27 +159,40 @@
 							#{i18n['dw4.operatore_incaricato_m']}
 						</c:when>
 						<c:when test="#{rifintType eq 'cc'}">
-							<h:panelGroup rendered="#{empty rifintBean.cod_fasc}">
+							<h:panelGroup rendered="#{empty rifintBean.cod_fasc and empty rifintBean.cc_from_racc}">
 								#{i18n['dw4.cc']}
 							</h:panelGroup>
-							<h:panelGroup rendered="#{!empty rifintBean.cod_fasc}">
+							<h:panelGroup rendered="#{!empty rifintBean.cod_fasc and empty rifintBean.cc_from_racc}">
 								#{i18n['dw4.cc_fasc']}
 							</h:panelGroup>
+							<h:panelGroup rendered="#{empty rifintBean.cod_fasc and !empty rifintBean.cc_from_racc}">
+								#{i18n['dw4.cc_racc']}
+							</h:panelGroup>
+						</c:when>
+						<c:when test="#{rifintType eq 'itf'}">
+							#{i18n['dw4.incaricato_tenuta_fascicolo']}
 						</c:when>
 					</c:choose>
 				</label>
-				<h:panelGroup rendered="#{rifintType eq 'cc' and !empty rifintBean.cod_fasc}">
-					<!-- in caso di CC ereditati da fascicolo -->
+				<h:panelGroup rendered="#{rifintType eq 'cc' and (!empty rifintBean.cod_fasc or !empty rifintBean.cc_from_racc)}">
+					<!-- in caso di CC ereditati da fascicolo/raccoglitore -->
 					<div class="col-sm-9">
 						<p class="form-control-static">
 							<h:outputText value="#{rifintBean.nome_uff}" />
 						</p>
 					</div>
 				</h:panelGroup>
-				<h:panelGroup rendered="#{rifintType ne 'cc' or empty rifintBean.cod_fasc}">
+				<h:panelGroup rendered="#{rifintType ne 'cc' or (empty rifintBean.cod_fasc and empty rifintBean.cc_from_racc)}">
 					<div class="col-sm-9">
 						<div class="input-group">
-							<h:inputText id="#{rifintType}#{indice}_nome_ruolo_input" value="#{rifintBean.nome_uff}" p:placeholder="#{i18n['acl.role']}" title="#{i18n['acl.role']}" onblur="executeAction(this);" onfocus="setDefaultValue(this);" styleClass="#{ component.valid ? '' : 'invalidinput' } lookup-field form-control">
+							<ui:include src="./rifinterni@capillare.xhtml">
+					        	<ui:param name="rifintType" value="#{rifintType}" />
+					        	<ui:param name="indice" value="#{indice}" />
+				        		<ui:param name="rifintBean" value="#{rifintBean}" />
+				        		<ui:param name="sendMailSelectedRifInterni" value="#{sendMailSelectedRifInterni}" />
+				        		<ui:param name="tail" value="Role" />
+				        	</ui:include>
+							<h:inputText id="#{rifintType}#{indice}_nome_ruolo_input" value="#{rifintBean.nome_uff}" p:placeholder="#{i18n['acl.role']}" title="#{i18n['acl.role']}" onblur="executeAction(this);" onfocus="setDefaultValue(this);" styleClass="#{ component.valid ? '' : 'invalidinput' }  lookup-field form-control #{rifintType}_nome_ruolo">
 								<f:ajax execute="@form" render="#{refresh}"/>
 							</h:inputText>
 							
@@ -193,8 +220,8 @@
 					</div>
 				</h:panelGroup>
 			</h:panelGroup>
-		
-			<h:panelGroup rendered="#{multiple and rifintType eq 'cc' and empty rifintBean.cod_fasc}">
+
+			<h:panelGroup rendered="#{multiple and rifintType eq 'cc' and (empty rifintBean.cod_fasc and empty rifintBean.cc_from_racc)}">
 				<div class="col-sm-1 input-group">
 					<div class="btn-group">
 						<h:commandLink action="#{pageBean.deleteRifInt_cc}" title="#{i18n['dw4.elimina_istanza']}" styleClass="btn btn-default">
@@ -206,6 +233,7 @@
 				 			<f:ajax execute="@form" render="#{refresh}"/>
 				 			<span class="glyphicon glyphicon-plus"></span>
 						</h:commandLink>
+						
 					</div>
 				</div>
 			</h:panelGroup>
@@ -224,6 +252,22 @@
 					</div>
 				</div>
 			</h:panelGroup>
+			<h:panelGroup rendered="#{multiple and rifintType eq 'delegato'}">
+				<div class="col-sm-1 input-group">
+					<div class="btn-group">
+						<h:commandLink action="#{pageBean.deleteRifInt_delegato}" title="#{i18n['dw4.elimina_istanza']}" styleClass="btn btn-default">
+				 			<f:ajax execute="@form" render="#{refresh}"/>
+				 			<span class="glyphicon glyphicon-minus"></span>
+						</h:commandLink>
+
+						<h:commandLink action="#{pageBean.addRifInt_delegato}" title="#{i18n['dw4.aggiungi_istanza']}" styleClass="btn btn-default">
+				 			<f:ajax execute="@form" render="#{refresh}"/>
+				 			<span class="glyphicon glyphicon-plus"></span>
+						</h:commandLink>
+					</div>
+				</div>
+			</h:panelGroup>
+
 		</div>
 	</h:panelGroup>
 	
@@ -253,6 +297,9 @@
 					</c:when>
 					<c:when test="#{rifintType eq 'cc'}">
 						#{i18n['dw4.cc']} 
+					</c:when>
+					<c:when test="#{rifintType eq 'itf'}">
+						#{i18n['dw4.incaricato_tenuta_fascicolo']}
 					</c:when>
 				</c:choose>
 			</label>

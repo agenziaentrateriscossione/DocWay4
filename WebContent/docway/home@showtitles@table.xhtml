@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	  xmlns:h="http://java.sun.com/jsf/html"
+	  xmlns:ui="http://java.sun.com/jsf/facelets"
+	  xmlns:f="http://java.sun.com/jsf/core">
+<ui:composition>
+
+	<table class="table table-striped table-hover doc-titles-table">
+		<thead>
+			<tr>
+				<th class="coltipo essential">&#160;</th>
+				<th class="colinfo optional">#{i18n['dw4.info']}</th>
+				<h:panelGroup rendered="#{bean.formsAdapter.funzionalitaDisponibili['multiSocieta']}">
+					<th class="colsocieta optional">#{i18n['acl.society']}</th>
+				</h:panelGroup>
+				<h:panelGroup rendered="#{!bean.formsAdapter.funzionalitaDisponibili['nascondiprotocollo']}">
+					<th class="colprot optional">#{i18n['dw4.n_rep_n']}</th>
+				</h:panelGroup>
+				<th class="coldata optional">
+					<h:outputText value="#{(bean.formsAdapter.funzionalitaDisponibili['nascondiprotocollo']) ? i18n['dw4.datadoc'] : i18n['dw4.dataprot']}" />
+				</th>
+				<th class="colsoggetto optional">#{i18n['dw4.subject']}</th>
+				<th class="cologgetto essential">#{i18n['dw4.object']}</th>
+				<th class="colscad optional">#{i18n['dw4.scadenza']}</th>
+				<th class="colconservato optional">#{i18n['dw4.conservato']}</th>
+			</tr>
+		</thead>
+		<tbody>
+			<ui:repeat id="title" var="title" value="#{titles}" varStatus="varstatus">
+				<h:panelGroup rendered="#{empty title.hashSplit['U'] or title.hashSplit['U'] eq 'doc'}">
+					<tr>
+						<h:panelGroup rendered="#{title.visible != 'false'}">
+							<td class="coltipo essential">
+								<h:panelGroup rendered="#{title.icon ne ''}">
+									<h:commandLink action="#{bean[action]}" title="#{fn:toUpperCase(title.dbTable)} - #{i18n['dw4.vai_al_record']}" styleClass="openwaitmsg">
+										<span class="doc-tipo-custom #{title.icon} #{(title.split[12]=='annullato=si') ? 'annullato' : ''}" title="#{fn:toUpperCase(title.split[11])} - #{i18n['dw4.vai_al_record']}"></span>
+										<ui:remove>
+											<h:graphicImage url="#{title.split[12]=='annullato=si' ? fn:replace(title.icon, '.png', 'annullato.png') : title.icon}" title="#{fn:toUpperCase(title.split[11])} - #{i18n['dw4.vai_al_record']}" alt="#{fn:toUpperCase(title.dbTable)} - #{i18n['dw4.vai_al_record']}" />
+										</ui:remove>
+									</h:commandLink>
+								</h:panelGroup>
+								<h:panelGroup rendered="#{title.icon eq ''}">
+									<h:commandLink action="#{bean[action]}" title="#{fn:toUpperCase(title.dbTable)} - #{i18n['dw4.vai_al_record']}" styleClass="openwaitmsg">
+										<span class="doc-tipo-#{title.dbTable} glyphicons-pro #{title.split[12]=='annullato=si' ? 'annullato' : ''}"></span>
+									</h:commandLink>
+								</h:panelGroup>
+							</td>
+							<td class="colinfo optional">
+								<ui:include src="./showtitles@docinfo.xhtml">
+									<ui:param name="bean" value="#{bean}" />
+									<ui:param name="title" value="#{title}" />
+									<ui:param name="indice" value="#{varstatus.index}" />
+									<ui:param name="direction" value="#{(!empty bean.languageOrientation and bean.languageOrientation eq 'rtl') ? 'top' : 'right'}" />
+					        	</ui:include>
+							</td>
+							<h:panelGroup rendered="#{bean.formsAdapter.funzionalitaDisponibili['multiSocieta']}">
+								<td class="colsocieta optional">
+									#{bean.getSocietaName(title.hashSplit['S'])}
+								</td>
+							</h:panelGroup>
+							<h:panelGroup rendered="#{!bean.formsAdapter.funzionalitaDisponibili['nascondiprotocollo']}">
+								<td class="colprot optional">
+									<ui:param name="var" value="#{fn:substring(title.split[1], (fn:indexOf(title.split[1], '-')+1), fn:length(title.split[1]))}"/>
+									<h:outputText value="#{fn:substring(var, (fn:indexOf(var, '-')+1), fn:length(var))}">
+										<f:converter converterId="NumConverter"/>
+									</h:outputText>
+									<h:panelGroup rendered="#{!empty title.split[2]}">
+										<br/>
+										<h:outputText value="(" />
+										<h:outputText value="#{fn:substring(title.split[2], (fn:indexOf(title.split[2], '-')+5), fn:length(title.split[2]))}" >
+											<f:converter converterId="NumConverter"/>
+										</h:outputText>
+										<h:outputText value="-"/>
+										<h:outputText value="#{fn:substring(title.split[2], (fn:indexOf(title.split[2], '-')+1), (fn:indexOf(title.split[2], '-')+5))}" />
+										<h:outputText value=")"/>
+									</h:panelGroup>
+									<h:panelGroup rendered="#{title.split[10] eq 'bozza=si'}">
+										<h:outputText value="#{i18n['dw4.bozza']}" style="font-weight:bold;"/>
+									</h:panelGroup>
+								</td>
+							</h:panelGroup>
+							<td class="coldata optional">
+								<h:outputText value="#{title.split[3]}"><f:converter converterId="DateConverter"/></h:outputText>
+							</td>
+							<td class="colsoggetto optional">
+								<ui:param name="subject" value="#{(!empty title.split[4] and fn:length(title.split[4]) > 100) ? fn:substring(title.split[4], 0, 99) : title.split[4]}" />
+								<span title="#{title.split[4]}">#{subject} #{(!empty title.split[4] and fn:length(title.split[4]) > 100) ? '...' : ''}</span>
+							</td>
+							<td class="cologgetto essential">
+								<span class="first-row-oggetto">#{title.split[11]}</span>
+								<h:panelGroup rendered="#{!empty title.split[11] and !empty title.split[5]}"><br/></h:panelGroup>
+								<h:commandLink action="#{bean[action]}" styleClass="openwaitmsg">
+									<ui:param name="object" value="#{(!empty title.split[5] and (bean.lunghezzaMaxOggetto > 0) and (fn:length(title.split[5]) > bean.lunghezzaMaxOggetto)) ? fn:substring(title.split[5], 0, bean.lunghezzaMaxOggetto - 1) : title.split[5]}" />
+									<span class="second-row-oggetto #{(title.hashSplit['TRASH'] eq 'si') ? 'doc-in-cestino' : ''}" title="#{title.split[5]}">
+										<h:panelGroup rendered="#{title.visto == 'true'}">
+											<h:outputText value="#{object}" /> #{(!empty title.split[5] and (bean.lunghezzaMaxOggetto > 0) and (fn:length(title.split[5]) > bean.lunghezzaMaxOggetto)) ? '...' : ''}
+										</h:panelGroup>
+										<h:panelGroup rendered="#{title.visto != 'true'}">
+											<span class="showtitles-documento-non-visto"><h:outputText value="#{object}" /> #{(!empty title.split[5] and (bean.lunghezzaMaxOggetto > 0) and (fn:length(title.split[5]) > bean.lunghezzaMaxOggetto)) ? '...' : ''}</span>
+										</h:panelGroup>
+									</span>
+								</h:commandLink>
+							</td>
+							<td class="colscad optional">
+								<div><h:outputText value="#{title.hashSplit['DS']}"><f:converter converterId="DateConverter"/></h:outputText></div>
+							</td>
+							<td class="colconservato optional">
+								<h:panelGroup rendered="#{title.hashSplit['CONSID'] != null and title.hashSplit['CONSID'] ne ''}" layout="block">
+									<span class="visto-icon glyphicon glyphicon-ok normal-size-icon" title="#{i18n['dw4.documento_inviato_in_conservazione']}"></span>
+								</h:panelGroup>
+							</td>
+						</h:panelGroup>
+						<h:panelGroup rendered="#{title.visible == 'false'}">
+							<td class="coltipo essential">&#160;</td>
+							<h:panelGroup rendered="#{hidecheckbox != 'true'}">
+								<td class="colcheck essential">&#160;</td>
+							</h:panelGroup>
+							<td class="colinfo optional">&#160;</td>
+							<td class="cologgetto essential" colspan="#{(!bean.formsAdapter.funzionalitaDisponibili['nascondiprotocollo']) ? '7' : '6'}">
+								<span class="showtitles-documento-non-visibile">#{title.testo}</span>
+							</td>
+						</h:panelGroup>
+					</tr>
+				</h:panelGroup>
+				<h:panelGroup rendered="#{title.hashSplit['U'] eq 'fascicolo'}">
+					<tr>
+						<td class="coltipo essential">
+							<h:commandLink action="#{bean[action]}" title="#{i18n['dw4.vai_al_fascicolo']}" styleClass="openwaitmsg">
+								<f:param name="titolo" value="#{title}"></f:param>
+								<span class="doc-tipo-fascicolo glyphicon #{(title.split[9] eq 'aperto') ? 'glyphicon-folder-open': 'glyphicon-folder-close'}"></span>
+							</h:commandLink>
+						</td>
+						<td class="cologgetto essential" colspan="#{bean.colspanOggettoTitlesTableFascOrRacc}">
+							<h:commandLink action="#{bean[action]}" styleClass="openwaitmsg">
+								<div><h:outputText value="#{title.split[7]}"><f:converter converterId="NumFascConverter"/></h:outputText> - «#{title.split[8]}»</div>
+							</h:commandLink>
+						</td>
+						<td class="optional">&#160;</td>
+					</tr>
+				</h:panelGroup>
+				<h:panelGroup rendered="#{title.hashSplit['U'] eq 'raccoglitore'}">
+					<tr>
+						<td class="coltipo essential">
+							<h:commandLink action="#{bean[action]}" title="#{i18n['dw4.vai_al_raccoglitore']}" styleClass="openwaitmsg">
+								<f:param name="titolo" value="#{title}"></f:param>
+								<span class="doc-tipo-fascicolo glyphicon glyphicon-inbox"></span>
+							</h:commandLink>
+						</td>
+						<td class="cologgetto essential" colspan="#{bean.colspanOggettoTitlesTableFascOrRacc}">
+							<h:commandLink action="#{bean[action]}" styleClass="openwaitmsg">
+								#{title.split[13]}
+							</h:commandLink>
+						</td>
+						<td class="optional">&#160;</td>
+					</tr>
+				</h:panelGroup>
+			</ui:repeat>
+		</tbody>
+	</table>
+
+</ui:composition>
+</html>

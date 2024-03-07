@@ -1,6 +1,7 @@
 package it.tredi.dw4.docway.model;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import it.tredi.dw4.model.XmlEntity;
@@ -14,22 +15,29 @@ public class Postit extends XmlEntity {
 	private String data;
 	private String ora;
 	private String text;
-    
+	private String delegato;
+	private List<PostitFile> files;
+
 	public Postit() {}
-    
+
 	public Postit(String xml) throws Exception {
         this.init(XMLUtil.getDOM(xml));
     }
-    
+
     public Postit init(Document dom) {
     	this.operatore = XMLUtil.parseAttribute(dom, "postit/@operatore");
     	this.cod_operatore = XMLUtil.parseAttribute(dom, "postit/@cod_operatore");
     	this.data = XMLUtil.parseAttribute(dom, "postit/@data");
     	this.ora = XMLUtil.parseAttribute(dom, "postit/@ora");
+    	this.delegato = XMLUtil.parseAttribute(dom, "postit/@delegato");
     	this.text = XMLUtil.parseElement(dom, "postit", false);
+
+    	this.files = XMLUtil.parseSetOfElement(dom, "postit/postit_file", new PostitFile());
+
+
         return this;
     }
-    
+
     public Map<String, String> asFormAdapterParams(String prefix){
     	if (null == prefix) prefix = "";
     	Map<String, String> params = new HashMap<String, String>();
@@ -37,10 +45,11 @@ public class Postit extends XmlEntity {
     	params.put(prefix+".@cod_operatore", this.cod_operatore);
     	params.put(prefix+".@data", this.data);
     	params.put(prefix+".@ora", this.ora);
+    	params.put(prefix+".@delegato", this.delegato);
     	params.put(prefix, this.text);
     	return params;
     }
-    
+
     public String getOperatore() {
 		return operatore;
 	}
@@ -79,6 +88,22 @@ public class Postit extends XmlEntity {
 
 	public String getText() {
 		return text;
+	}
+
+	public String getDelegato() {
+		return delegato;
+	}
+
+	public void setDelegato(String delegato) {
+		this.delegato = delegato;
+	}
+
+	public List<PostitFile> getFiles() {
+		return files;
+	}
+
+	public void setFiles(List<PostitFile> files) {
+		this.files = files;
 	}
 }
 

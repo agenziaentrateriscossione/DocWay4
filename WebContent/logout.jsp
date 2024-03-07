@@ -23,6 +23,10 @@ String repCode = "";
 if (request.getParameter("repCode") != null)
 	repCode = (String) request.getParameter("repCode");
 
+String mutiarchEnabled = "";
+if (request.getParameter("mutiarchEnabled") != null)
+	mutiarchEnabled = (String) request.getParameter("mutiarchEnabled");
+
 String extraParams = "";
 if (!db.equals(""))
 	extraParams = "db=" + db + "&";
@@ -51,6 +55,8 @@ String customDir = DocWayProperties.readProperty("docway.custom.dir.css", "");
         <!-- javascript -->
 		<script src="<%= request.getContextPath() %>/common/js/jquery.js"></script>
 		<script src="<%= request.getContextPath() %>/bootstrap/js/bootstrap.js"></script>
+		
+		<link href="<%= request.getContextPath() %>/favicon.ico" type="image/png" rel="icon"/>
 		
 		<!-- styles -->
 		<link href="<%= request.getContextPath() %>/bootstrap/css/bootstrap.css" rel="stylesheet" />
@@ -84,7 +90,18 @@ String customDir = DocWayProperties.readProperty("docway.custom.dir.css", "");
 				</div>
 				
 				<p>
-					<fmt:message key="dw4.torna_alla" /> &#160; <a class="loginLinkBlack" href="<%= request.getContextPath() %>/<%= appName %><%= (extraParams.length() > 0) ? "/home.jsf?" + extraParams : "" %>"><fmt:message key="dw4.pagina_di_login" /></a>
+					<%
+					if (mutiarchEnabled.equals("true")) {
+					%>
+						<fmt:message key="dw4.torna_alla" /> &#160; <a class="loginLinkBlack" href="<%= request.getContextPath() %>/<%= appName %>/indexmultiarch.jsp"><fmt:message key="dw4.pagina_di_login" /></a>
+					<%
+					}
+					else {
+					%>
+						<fmt:message key="dw4.torna_alla" /> &#160; <a class="loginLinkBlack" href="<%= request.getContextPath() %>/<%= appName %><%= (extraParams.length() > 0) ? "/home.jsf?" + extraParams : "" %>"><fmt:message key="dw4.pagina_di_login" /></a>
+					<%
+					}
+					%>
 				</p>
 			</div>
 		</div>

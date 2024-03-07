@@ -52,6 +52,7 @@ public class InternoProposta extends Interno {
     		params.put(prefix + ".proposta.proponente.@nome_uff", "_PROPONENTEUFF_");
     		params.put(prefix + "wfActionX", "_WF_ACTIVATE_");
     		params.put(prefix + "bwf_Id", datiProposta.getProposta().getWorkflow().getName());
+    		params.put(prefix + "bonitaVersion", datiProposta.getProposta().getWorkflow().getBonitaVersion());
     	}
     	
     	return params;

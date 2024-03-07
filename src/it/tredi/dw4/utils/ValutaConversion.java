@@ -53,7 +53,7 @@ public class ValutaConversion {
 			return new Double(num).doubleValue();
 		}
 		catch (Throwable t) {
-			Logger.error("Errore in conversione della valuta", t);
+			Logger.warn("ValutaConversion.getDoubleValuta(): conversion failed (" + t.getMessage() + ")... use 0.0");
 			return 0.0;
 		}
 	}
@@ -64,11 +64,21 @@ public class ValutaConversion {
 	 * @return
 	 */
 	public static String formatValuta(String num) {
-		java.text.NumberFormat nf = java.text.DecimalFormat.getInstance(java.util.Locale.ITALIAN); // TODO recuperare da properties
-		nf.setMinimumFractionDigits(2);
-		nf.setMaximumFractionDigits(2);
-		
-		return nf.format(new Double(num).doubleValue());
+		String out = "";
+		try {
+			Logger.debug("ValutaConversion.formatValuta(): input num = " + num);
+			
+			java.text.NumberFormat nf = java.text.DecimalFormat.getInstance(java.util.Locale.ITALIAN); // TODO recuperare da properties
+			nf.setMinimumFractionDigits(2);
+			nf.setMaximumFractionDigits(2);
+			
+			out = nf.format(new Double(num).doubleValue());
+		}
+		catch (Exception e) {
+			Logger.warn("ValutaConversion.formatValuta(): conversion failed (" + e.getMessage() + ")... use " + num);
+			out = num;
+		}
+		return out;
 	}
 	
 	/**
@@ -346,7 +356,7 @@ public class ValutaConversion {
 			return df.format(value);
 		}
 		catch (Exception ex) {
-			Logger.error("Fattura.formatImporto(): " + ex.getMessage());
+			Logger.warn("ValutaConversion.formatImporto(): conversion failed (" + ex.getMessage() + ")... use " + value);
 			return value + "";
 		}
 	}

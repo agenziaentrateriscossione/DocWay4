@@ -202,7 +202,7 @@ public class AclCrawlerHome extends AclPage {
 						query += " AND ";
 					query += "(([/persona_interna/personal_rights/right/@cod/]=\"" + repInfo.get("cod") + "-CompRep" + "\") ADJ ([/persona_interna/personal_rights/right]=\"TRUE\"))";
 				}
-				else if (((String) repInfo.get("checkedC")).equals("true")) {
+				else if (((String) repInfo.get("checkedC")).equals("false")) {
 					if (query.length() > 0)
 						query += " AND ";
 					query += "NOT (([/persona_interna/personal_rights/right/@cod/]=\"" + repInfo.get("cod") + "-CompRep" + "\") ADJ ([/persona_interna/personal_rights/right]=\"TRUE\"))";

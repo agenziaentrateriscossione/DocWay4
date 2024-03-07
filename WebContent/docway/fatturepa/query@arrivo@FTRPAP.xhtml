@@ -224,6 +224,14 @@
 									<h:inputText styleClass="form-control" value="#{queryArrivoFTRPAP.custom_numeri_rep}" id="custom_numeri_rep" p:placeholder="#{i18n['dw4.separare_i_valori_da_virgola']}" title="#{i18n['dw4.separare_i_valori_da_virgola']}" />
 								</div>
 							</div>
+							
+							<c:if test="#{!empty queryArrivoFTRPAP.currentCustomFieldSection and queryArrivoFTRPAP.currentCustomFieldSection.contains('_')}">
+								<hr/>
+								<ui:include src="../../customfields/query@customfields.xhtml">
+									<ui:param name="key" value="#{queryArrivoFTRPAP.currentCustomFieldSection}" />
+									<ui:param name="bean" value="#{queryArrivoFTRPAP}"/>
+					        	</ui:include>
+							</c:if>
 						</h:panelGroup>
 					</div>
 				</h:panelGroup>
@@ -366,7 +374,7 @@
 		});
 		</script>
 
-		<h:inputTextarea value="#{queryArrivoFTRPAP.xml}" rendered="#{queryArrivoFTRPAP.debugMode}" styleClass="form-control" rows="10" />
+		<h:inputTextarea value="#{queryArrivoFTRPAP.xml}" rendered="#{queryArrivoFTRPAP.debugMode}" styleClass="form-control debug-textarea" rows="10" />
 	</div>
 	
 	<ui:include src="../showindex.xhtml"><ui:param name="pageBean" value="#{queryArrivoFTRPAP}"/></ui:include>

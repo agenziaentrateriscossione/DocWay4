@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" 
+	  xmlns:h="http://java.sun.com/jsf/html" 
+	  xmlns:ui="http://java.sun.com/jsf/facelets" 
+	  xmlns:f="http://java.sun.com/jsf/core"
+	  xmlns:c="http://java.sun.com/jsp/jstl/core">
+<ui:composition>
+
+		<h:panelGroup id="uploadArchive" layout="block">
+			<h:panelGroup rendered="#{bean.visible}">
+				<!-- Modal -->
+				<div id="uploadArchiveModal" class="modal fade in" aria-hidden="false" aria-labelledby="uploadArchiveModalLabel" role="dialog" tabindex="-1" style="display: block;">
+				<!--div class="modal fade" id="loadingbarModal" tabindex="-1" role="dialog" aria-labelledby="loadingbarModalLabel" aria-hidden="true"-->
+					<div class="modal-dialog modal-lg">
+						<div class="modal-content jsf-modal">
+							<div class="modal-header">
+								<h:commandButton styleClass="close" title="#{i18n['acl.close']}" action="#{bean.close}" data-dismiss="modal"  value="&#215;" >
+				        			<f:ajax render="uploadArchive"/>
+				        		</h:commandButton>
+				        		
+				        		<h4 class="modal-title" id="uploadArchiveModalLabel">#{i18n['dw4.upload_archive']}</h4>
+							</div>
+							<div class="modal-body">
+								<div class="form-group">
+									<label class="col-sm-2 control-label emphasis-title">#{i18n['dw4.zip']}</label>
+								</div>
+								
+								<div class="form-group">
+									<label class="col-sm-2 control-label">#{i18n['acl.title']}</label>
+									<div class="col-sm-10">
+										<div class="input-group">
+											<h:panelGroup rendered="#{beanDoc.formsAdapter.funzionalitaDisponibili['abilitaLibroFirma']}">
+												<span class="input-group-addon firma-digitale-addon popoveritem" title="#{i18n['dw4.da_firmare']}" data-toggle="popover" data-placement="top" data-trigger="hover" data-content="#{i18n['dw4.richiesta_di_firma_digitale_sul_file_da_parte_del_responsabile']}" >
+													<label for="templateForm:xwFiles_archive_checkFirma"><span class="glyphicons-pro pen firma-digitale normal-size-icon"></span></label>&#160;
+													<h:selectBooleanCheckbox id="xwFiles_archive_checkFirma" value="#{bean.archive.da_firmare}" label="#{i18n['dw4.da_firmare']}" title="#{i18n['dw4.da_firmare']}" />
+												</span>
+											</h:panelGroup>
+											<h:inputText id="xwFiles_archive_fileTitle" value="#{bean.archive.title}" styleClass="#{ component.valid ? '' : 'invalidinput' } form-control" />
+											<div class="input-group-btn">
+												<h:commandLink onclick="return addArchiveDragAndDrop();" styleClass="btn btn-default sfogliaButton">#{i18n['dw4.sfoglia']}</h:commandLink>
+												<script type="text/javascript">
+													function addArchiveDragAndDrop() {
+														$('#dropzoneArchives').contents().find('#fileupload').trigger('click');
+														return false;
+													}
+												</script>
+											</div>
+										</div>
+									</div>
+								</div>
+								<h:panelGroup rendered="#{!beanDoc.enableIW or forceDisableIWX or !beanDoc.formsAdapter.funzionalitaDisponibili['enableDragAndDropUploadArchive']}" layout="block" styleClass="form-group">
+									<label class="col-sm-2 control-label">#{i18n['dw4.drag_and_drop']}</label>
+									<div class="col-sm-10">
+										<iframe id="dropzoneArchives" class="dropzone-iframe dropzone-files form-control" src="#{facesContext.externalContext.requestContextPath}/docway/dropzoneFileUpload.jsf?dadType=Archive&amp;dadTempUpload=true"></iframe>
+										<script type="text/javascript">
+											var dadArchivesTypes = "#{(!empty bean.docInformaticiArchiveTypes) ? bean.docInformaticiArchiveTypes : '*.zip;' }"; 
+											var dadMaxArchiveSize = #{beanDoc.formsAdapter.sizeMaxFile};
+											var dadMaxArchives = 1;
+											
+											function updateArchivesFromDragAndDrop(dadArchiveIds, dadArchiveNames, lastFileName) {
+												if (dadArchiveIds &amp;&amp; dadArchiveNames &amp;&amp; lastFileName) {
+													$('#templateForm\\:xwFiles_archive_fileTitle').val(lastFileName);
+													$('#dropzoneArchives').contents().find('#progress').hide();
+												}
+												hideOpenwaitmsg();
+											}
+										</script>
+									</div>
+								</h:panelGroup>
+							</div>
+							<div class="modal-footer">
+								<h:commandButton styleClass="btn btn-default" title="#{i18n['acl.close']}" action="#{bean.close}" data-dismiss="modal"  value="#{i18n['acl.close']}" >
+				        			<f:ajax render="uploadArchive"/>
+				        		</h:commandButton>
+				        		<h:commandButton styleClass="btn btn-success" title="#{i18n['acl.confirm']}" action="#{bean.confirmUpload}" data-dismiss="modal"  value="#{i18n['acl.confirm']}" >
+				        			<f:ajax execute="@form" render="@form"/>
+				        		</h:commandButton>
+							</div>
+						</div>
+					</div>
+				</div>
+			</h:panelGroup>
+			<h:panelGroup rendered="#{bean.reportVisible}">
+				<!-- Modal -->
+				<div id="resultMsgArchiveModal" class="modal fade in" aria-hidden="false" aria-labelledby="resultMsgArchiveModalLabel" role="dialog" tabindex="-1" style="display: block;">
+				<!--div class="modal fade" id="loadingbarModal" tabindex="-1" role="dialog" aria-labelledby="loadingbarModalLabel" aria-hidden="true"-->
+					<div class="modal-dialog modal-lg">
+						<div class="modal-content jsf-modal">
+							<div class="modal-header">
+								<h:commandButton styleClass="close" title="#{i18n['acl.close']}" action="#{bean.closeReport}" data-dismiss="modal"  value="&#215;" >
+				        			<f:ajax render="uploadArchive"/>
+				        		</h:commandButton>
+				        		
+				        		<h4 class="modal-title" id="resultMsgArchiveModalLabel">#{i18n['dw4.result_msg_archive']}</h4>
+							</div>
+							<div class="modal-body">
+								<div class="row">
+									<div class="col-xs-12">
+										<div class="alert alert-info">
+											<h:outputFormat value="#{i18n['dw4.decompressi_X_su_Y']}">
+											   <f:param value="#{bean.uplFiles}" />
+											   <f:param value="#{bean.totFiles}" />
+											</h:outputFormat>
+										</div>
+									</div>
+								</div>
+								<h:panelGroup rendered="#{bean.errFiles gt 0}">
+									<div id="errorReport" style="display: none;">
+										<div class="row">
+											<div class="col-xs-12">
+												Report:
+												<table class="table table-striped">
+													<thead>
+														<tr>
+															<th>#{i18n['dw4.nome_file']}</th>
+															<th>#{i18n['dw4.error_log']}</th>
+														</tr>
+													</thead>
+													<tbody>
+														<ui:repeat var="fileErrorLog" value="#{bean.fileErrorList}" varStatus="index" >
+															<tr>
+																<td class="essential"><span>#{fileErrorLog.fileName}</span></td>
+																<td class="essential"><span>#{fileErrorLog.errorDetail}</span></td>
+															</tr>
+														</ui:repeat>
+													</tbody>
+												</table>
+											</div>
+										</div>
+									</div>
+								</h:panelGroup>
+								<script type="text/javascript">
+									function toggleErrorReport() {
+										$('#errorReport').toggle();
+									}
+								</script>
+							</div>
+							<div class="modal-footer">
+								<h:panelGroup rendered="#{bean.errFiles gt 0}">
+				        			<button type="button" id="openReport" onclick="toggleErrorReport()" class="btn btn-default">#{i18n['dw4.mostra_report_errori']}</button>
+				        		</h:panelGroup>
+								<h:commandButton styleClass="btn btn-default" title="#{i18n['acl.ok']}" action="#{bean.closeReport}" data-dismiss="modal"  value="#{i18n['acl.ok']}" >
+				        			<f:ajax render="uploadArchive"/>
+				        		</h:commandButton>
+							</div>
+						</div>
+					</div>
+				</div>
+			</h:panelGroup>
+		</h:panelGroup>
+</ui:composition>
+</html>

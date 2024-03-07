@@ -19,6 +19,7 @@ public class Rif extends XmlEntity {
 	private String diritto = "";
 	private String tipo_uff = "";
 	private String cc_from_fasc = "";
+	private String cc_from_racc = "";
 	private String totale_uff = "";
 	private String scartabile = "";
 	private String scartato = "";
@@ -40,7 +41,8 @@ public class Rif extends XmlEntity {
     	this.cod_fasc = XMLUtil.parseAttribute(domDiritto, "rif/@cod_fasc");
     	this.diritto = XMLUtil.parseAttribute(domDiritto, "rif/@diritto");
     	this.tipo_uff = XMLUtil.parseAttribute(domDiritto, "rif/@tipo_uff");
-    	this.cc_from_fasc= XMLUtil.parseAttribute(domDiritto, "rif/@cc_from_fasc");
+    	this.cc_from_fasc = XMLUtil.parseAttribute(domDiritto, "rif/@cc_from_fasc");
+    	this.cc_from_racc = XMLUtil.parseAttribute(domDiritto, "rif/@cc_from_racc");
     	this.totale_uff= XMLUtil.parseAttribute(domDiritto, "rif/@totale_uff");
     	this.scartabile = XMLUtil.parseAttribute(domDiritto, "rif/@scartabile");
     	this.scartato = XMLUtil.parseAttribute(domDiritto, "rif/@scartato");    	
@@ -68,6 +70,7 @@ public class Rif extends XmlEntity {
     	params.put(prefix+".@cod_fasc", this.cod_fasc);
     	params.put(prefix+".@tipo_uff", this.tipo_uff);
     	params.put(prefix+".@cc_from_fasc", this.cc_from_fasc);
+    	params.put(prefix+".@cc_from_racc", this.cc_from_racc);
     	params.put(prefix+".@totale_uff", this.totale_uff);
     	params.put(prefix+".@diritto", this.diritto);
     	params.put(prefix+".@scartabile", this.scartabile);
@@ -88,7 +91,8 @@ public class Rif extends XmlEntity {
     	this.cod_fasc = "";
     	this.diritto = "";
     	this.tipo_uff = "";
-    	this.cc_from_fasc= "";
+    	this.cc_from_fasc = "";
+    	this.cc_from_racc = "";
     	this.totale_uff= "";
     	this.scartabile = "";
     	this.scartato = "";
@@ -190,6 +194,14 @@ public class Rif extends XmlEntity {
 
 	public String getCc_from_fasc() {
 		return cc_from_fasc;
+	}
+	
+	public String getCc_from_racc() {
+		return cc_from_racc;
+	}
+
+	public void setCc_from_racc(String cc_from_racc) {
+		this.cc_from_racc = cc_from_racc;
 	}
 
 	public void setTotale_uff(String totale_uff) {

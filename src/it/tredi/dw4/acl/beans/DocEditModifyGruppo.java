@@ -2,15 +2,15 @@ package it.tredi.dw4.acl.beans;
 
 import javax.faces.event.ValueChangeEvent;
 
-import it.tredi.dw4.utils.XMLDocumento;
+import org.dom4j.Document;
+
 import it.tredi.dw4.acl.adapters.AclDocEditFormsAdapter;
 import it.tredi.dw4.acl.model.Gruppo;
 import it.tredi.dw4.adapters.AdaptersConfigurationLocator;
 import it.tredi.dw4.adapters.ErrormsgFormsAdapter;
 import it.tredi.dw4.i18n.I18N;
 import it.tredi.dw4.utils.Const;
-
-import org.dom4j.Document;
+import it.tredi.dw4.utils.XMLDocumento;
 
 public class DocEditModifyGruppo extends AclDocEdit {
 	private AclDocEditFormsAdapter formsAdapter;
@@ -119,7 +119,7 @@ public class DocEditModifyGruppo extends AclDocEdit {
 		
 		String aliasName 	= "persint_nomcogn";
 		String aliasName1 	= "persint_cognome";
-		String titolo 		= "xml,/persona_interna/@cognome xml,/persona_interna/@nome &quot;- ~&quot; XML,/persona_interna/recapito/email/@addr &quot;- ~&quot; XML,/persona_interna/@soprannome";
+		String titolo 		= "xml,/persona_interna/@cognome xml,/persona_interna/@nome \"- ~\" XML,/persona_interna/recapito/email/@addr \"- ~\" XML,/persona_interna/@soprannome";
 		String ord 			= "xml(xpart:/persona_interna/@cognome)";
 		String campi 		= "nomeresponsabile=xml,/persona_interna/@cognome xml,/persona_interna/@nome ; .@cod_responsabile=xml,/persona_interna/@matricola";
 		String db 			= "";

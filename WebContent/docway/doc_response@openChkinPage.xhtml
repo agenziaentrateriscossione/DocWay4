@@ -15,7 +15,7 @@
 				<div class="modal-dialog modal-lg">
 					<div class="modal-content jsf-modal">
 						<div class="modal-header">
-							<h:commandLink class="close" action="#{pageBean.clearDocument}" value="&#215;">
+							<h:commandLink styleClass="close" action="#{pageBean.clearDocument}" value="&#215;">
 		                    	<f:ajax render="checkinFilePopup"/>
 		                   	</h:commandLink>
 		                   	
@@ -86,15 +86,43 @@
 												<h:commandLink onclick="return IwxRuntime.Client.addDocIWX();" styleClass="btn btn-default sfogliaButton">#{i18n['dw4.sfoglia']}</h:commandLink>
 											</h:panelGroup>
 											<h:panelGroup rendered="#{!pageBean.enableIW}">
-												<span id="swfupload-files-control">
-													<span id="swfuploadFilesHolder"></span>
-													<h:commandLink id="swfuploadFilesBtn" onclick="return false;" styleClass="btn btn-default sfogliaButton">#{i18n['dw4.sfoglia']}</h:commandLink>
-												</span>
+												<h:commandLink onclick="return addDocDragAndDrop();" styleClass="btn btn-default sfogliaButton">#{i18n['dw4.sfoglia']}</h:commandLink>
+												<script type="text/javascript">
+												function addDocDragAndDrop() {
+													$('#dropzoneFiles').contents().find('#fileupload').trigger('click');
+													return false;
+												}
+												</script>
 											</h:panelGroup>
 										</div>
 									</div>
 								</div>
 							</div>
+							
+							<h:panelGroup rendered="#{!pageBean.enableIW or forceDisableIWX or pageBean.formsAdapter.funzionalitaDisponibili['enableDragAndDropUploadFiles']}" layout="block" styleClass="form-group">
+								<label class="col-sm-2 control-label">#{i18n['dw4.drag_and_drop']}</label>
+								<div class="col-sm-9">
+									<iframe id="dropzoneFiles" class="dropzone-iframe form-control" src="#{facesContext.externalContext.requestContextPath}/docway/dropzoneFileUpload.jsf"></iframe>
+									<script type="text/javascript">
+									var dadFilesTypes = "#{pageBean.docInformaticiFileTypes}";
+									var dadMaxFiles = 1;
+									var dadMaxFileSize = #{pageBean.formsAdapter.sizeMaxFile};
+									
+									function updateFilesFromDragAndDrop(dadFilesIds, dadFilesNames) {
+										if (dadFilesIds &amp;&amp; dadFilesNames) {
+											$('#templateForm\\:nFileId').val(dadFilesIds);
+											$('#templateForm\\:nFileName').val(dadFilesNames);
+											$('#templateForm\\:nFileTitle').val(dadFilesNames);
+											
+											$('#templateForm\\:addFilesButton').trigger('click');
+										}
+										else {
+											hideOpenwaitmsg();
+										}
+									}
+									</script>
+								</div>
+							</h:panelGroup>
 							
 							<ui:remove>
 								<h:panelGroup rendered="#{pageBean.formsAdapter.toDo != null and pageBean.formsAdapter.toDo == '@openChkinPage' and pageBean.attach != null}">
@@ -114,12 +142,12 @@
 							<h:panelGroup rendered="#{ !pageBean.enableIW }">
 								<script type="text/javascript">
 								var docInformaticiUploadUrl = "#{facesContext.externalContext.requestContextPath}/fileupload";
-								var docInformaticiFileLimit = "0"; // TODO dim massima files, recuperarla da file di properties
+								var docInformaticiFileLimit = #{pageBean.formsAdapter.sizeMaxFile}; // dim massima files, recuperarla da file di properties
 								//var docInformaticiFileDescription = "#{i18n['dw4.all_files']}";
 				                var docInformaticiFileDescription = "#{pageBean.docInformaticiFileDescription}";
 				                //var docInformaticiFileTypes = "*.*";
 				                var docInformaticiFileTypes = "#{pageBean.docInformaticiFileTypes}";
-				                var docInformaticiImageLimit = "0"; // TODO dim massima images, recuperarla da file di properties
+				                var docInformaticiImageLimit = #{pageBean.formsAdapter.sizeMaxImg}; // dim massima images, recuperarla da file di properties
 				                //var docInformaticiImageTypesDescription = "#{i18n['dw4.image_files']}";
 				                var docInformaticiImageTypesDescription = "#{pageBean.docInformaticiImageDescription}";
 				                //var docInformaticiImageTypes = "*.tif; *.tiff; *.jpg; *.jpeg; *.bmp; *.png";

@@ -44,6 +44,7 @@ public class QueryVarieDSGA extends QueryGlobale {
 	private void forzaRepertorio() {
 		setRepertori_multipli(true);
 		forceRepertorioSelected("DSGA", "V");
+		setCurrentCustomFieldSection("varie_DSGA");
 		setVarie(true);
 	}
 	

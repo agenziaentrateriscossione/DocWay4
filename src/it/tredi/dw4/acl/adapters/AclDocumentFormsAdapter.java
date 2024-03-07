@@ -57,6 +57,25 @@ public class AclDocumentFormsAdapter extends DocumentFormsAdapter {
 		this.defaultForm.addParam("pos", "0");
 		this.defaultForm.addParam("selid", "");
 	}
+
+	/**
+	 * Creazione di una nuova casella di posta elettronica (mailbox di interoperabilita'/archiviazione gestita da mailArchiver)
+	 * @param cod_amm cod_amm dell'aoo di appartenenza
+	 * @param cod_aoo cod_aoo dell'aoo di appartenenza
+	 */
+	public void insCasellaPostaElettronica(String cod_amm, String cod_aoo) {
+		this.defaultForm.addParam("verbo", "docEdit");
+
+		this.defaultForm.addParam("xverb", "@" + cod_amm + "|" + cod_aoo);
+		this.defaultForm.addParam("dbTable", "@casellaPostaElettronica");
+
+		this.defaultForm.addParam("physDoc_struint", this.defaultForm.getParam("physDoc"));
+		this.defaultForm.addParam("pos_struint", this.defaultForm.getParam("pos"));
+		this.defaultForm.addParam("selid_struint", this.defaultForm.getParam("selid"));
+		this.defaultForm.addParam("physDoc", "0");
+		this.defaultForm.addParam("pos", "0");
+		this.defaultForm.addParam("selid", "");
+	}
 	
 	public void getFilePost(String name, String title, String db){
 		defaultForm.addParam("verbo", "attach");
@@ -118,6 +137,14 @@ public class AclDocumentFormsAdapter extends DocumentFormsAdapter {
 		
 		defaultForm.addParam("_cd",FormsAdapter.setParameterFromCustomTupleValue("cOInsSedSosp", codOrgano, defaultForm.getParam("_cd")));
 		defaultForm.addParam("_cd",FormsAdapter.setParameterFromCustomTupleValue("nOInsSedSosp", nomeOrgano, defaultForm.getParam("_cd")));
+	}
+	
+	/**
+	 * Test di connessione ad una casella di posta elettronica
+	 */
+	public void testConnectionMailbox(String mailboxType) {
+		defaultForm.addParam("verbo", "casellapostaelettronica_response");
+		defaultForm.addParam("xverb", "testConnection|" + mailboxType);
 	}
 	
 }

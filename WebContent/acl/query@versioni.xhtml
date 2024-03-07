@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" 
+	  xmlns:h="http://java.sun.com/jsf/html" 
+	  xmlns:ui="http://java.sun.com/jsf/facelets" 
+	  xmlns:f="http://java.sun.com/jsf/core"
+	  xmlns:p="http://xmlns.jcp.org/jsf/passthrough">
+<ui:composition>
+
+	<h:panelGroup id="productVersions" layout="block">
+		<h:panelGroup rendered="#{pageBean.visible}">
+			<!-- Modal -->
+			<!--div id="sceltaUorModal" class="modal fade in" aria-hidden="false" aria-labelledby="sceltaUorModalLabel" role="dialog" tabindex="-1" style="display: block;"-->
+			<div class="modal fade" id="productVersionsModal" role="dialog" aria-labelledby="productVersionsModalLabel" aria-hidden="true">
+				<div class="modal-dialog modal-lg">
+					<div class="modal-content jsf-modal">
+						<div class="modal-header">
+							<h:commandButton styleClass="close" title="#{i18n['acl.close']}" action="#{pageBean.closeVersioni}" value="&#215;" />
+			        		
+			        		<h4 class="modal-title" id="productVersionsModalLabel">
+			        			<h:panelGroup rendered="#{empty queryVersioni.appName}">#{i18n['dw4.about_docway']}</h:panelGroup>
+			        			<h:panelGroup rendered="#{!empty queryVersioni.appName}">#{i18n['dw4.about']} #{queryVersioni.appName}</h:panelGroup>
+			        		</h4>
+						</div>
+						<div class="modal-body">
+							
+							<h:panelGroup rendered="#{empty queryVersioni.appName}"><h4>#{i18n['dw4.docway']} #{i18n['dw4.versione']} #{pageBean.versions[0].version_num}</h4></h:panelGroup>
+							<h:panelGroup rendered="#{!empty queryVersioni.appName}"><h4>#{queryVersioni.appName} #{i18n['dw4.versione']} #{pageBean.versions[0].version_num}</h4></h:panelGroup>
+							
+							<h5 style="margin-top:10px;">#{i18n['dw4.storia_delle_versioni']}</h5>
+							
+							<script type="text/javascript">
+							function showFunzioneProdottoDetails(id_dettaglio) {
+								if ($("#"+id_dettaglio).is(":hidden"))
+									$("#"+id_dettaglio).show();
+								else
+									$("#"+id_dettaglio).hide();
+								return false;
+							}
+							</script>
+							<div style="height:300px; overflow:auto; margin-top:10px; padding: 0 3px;">
+								<ui:repeat var="versione" value="#{pageBean.versions}" varStatus="indice">
+									<div class="panel panel-default">
+										<div class="panel-heading">
+											<h:outputText value="#{versione.version_num}" style="font-weight:bold;" /> 
+											<h:panelGroup rendered="#{versione.version_date eq 'SNAPSHOT' or versione.version_date eq 'R.C.'}">
+												- <h:outputText value="#{versione.version_date}" style="font-weight:bold;" />
+											</h:panelGroup>
+											<h:panelGroup rendered="#{versione.version_date ne 'SNAPSHOT' and versione.version_date ne 'R.C.'}">
+												#{i18n['dw4.rilasciata_il']} <h:outputText value="#{versione.version_date}" style="font-weight:bold;" />
+											</h:panelGroup>
+										</div>
+										<div class="panel-body">
+											<h:panelGroup rendered="#{! empty versione.news }" layout="block" styleClass="news-versione">
+												<div style="font-weight:bold;">#{i18n['dw4.novita']}:</div>
+												<ul>
+													<ui:repeat var="novita" value="#{versione.news}" varStatus="indiceNews">
+														<li>
+															<div class="news-title">
+																#{novita.title}
+																<h:commandLink rendered="#{novita.details ne ''}" onclick="return showFunzioneProdottoDetails('news_details_#{indice.index}_#{indiceNews.index}');">[#{i18n['dw4.dettagli']}]</h:commandLink>
+															</div>
+															<h:panelGroup rendered="#{novita.details ne ''}">
+																<div id="news_details_#{indice.index}_#{indiceNews.index}" class="news-details well" style="display:none;">
+																	<h:outputText value="#{novita.details}" escape="false" />
+																</div>
+															</h:panelGroup>
+														</li>
+													</ui:repeat>
+												</ul>
+											</h:panelGroup>
+											<h:panelGroup rendered="#{! empty versione.fixes }" layout="block" styleClass="fixes-versione">
+												<div style="font-weight:bold; margin-top:5px;">#{i18n['dw4.risoluzione_di_errori']}:</div>
+												<ul>
+													<ui:repeat var="risErrore" value="#{versione.fixes}" varStatus="indiceFixes">
+														<li>
+															<div class="fixes-title">
+																#{risErrore.title}
+																<h:commandLink rendered="#{risErrore.details ne ''}" onclick="return showFunzioneProdottoDetails('fixes_details_#{indice.index}_#{indiceFixes.index}');">[#{i18n['dw4.dettagli']}]</h:commandLink>
+															</div>
+															<h:panelGroup rendered="#{risErrore.details ne ''}">
+																<div id="fixes_details_#{indice.index}_#{indiceFixes.index}" class="fixes-details well" style="display:none;">
+																	<h:outputText value="#{risErrore.details}" escape="false" />
+																</div>
+															</h:panelGroup>
+														</li>
+													</ui:repeat>
+												</ul>
+											</h:panelGroup>
+    									</div>
+									</div>
+								</ui:repeat>
+							</div>
+									
+						</div>
+						<div class="modal-footer">
+							<h:commandButton styleClass="btn btn-default" title="#{i18n['acl.close']}" action="#{pageBean.closeVersioni}" value="#{i18n['acl.close']}" />
+						</div>
+					</div>
+				</div>
+			</div>
+			<script type="text/javascript">
+			$('#productVersionsModal').modal('show');
+			</script>
+		</h:panelGroup>
+	</h:panelGroup>
+
+</ui:composition>   
+</html>

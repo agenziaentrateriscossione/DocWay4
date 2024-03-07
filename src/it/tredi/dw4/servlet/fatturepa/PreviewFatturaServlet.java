@@ -1,16 +1,9 @@
 package it.tredi.dw4.servlet.fatturepa;
 
-import it.tredi.utils.bom.UTFBOMStringCleaner;
-import it.tredi.dw4.acl.beans.UserBean;
-import it.tredi.dw4.adapters.AdaptersConfigurationLocator;
-import it.tredi.dw4.adapters.AdaptersConfigurationLocator.AdapterConfig;
-import it.tredi.dw4.adapters.FormAdapter;
-import it.tredi.dw4.beans.AttachFile;
-import it.tredi.dw4.utils.DocWayProperties;
-import it.tredi.dw4.utils.Logger;
-
+import java.io.ByteArrayInputStream;
+import java.io.File;
 import java.io.IOException;
-import java.io.StringReader;
+import java.net.URLDecoder;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -22,11 +15,34 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import javax.xml.transform.Result;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.sax.SAXResult;
+import javax.xml.transform.stream.StreamSource;
 
+import org.apache.fop.apps.FOUserAgent;
+import org.apache.fop.apps.Fop;
+import org.apache.fop.apps.FopFactory;
+import org.apache.fop.apps.MimeConstants;
 import org.dom4j.Document;
 import org.dom4j.DocumentFactory;
+import org.dom4j.DocumentHelper;
+import org.dom4j.Element;
 import org.dom4j.ProcessingInstruction;
 import org.dom4j.io.SAXReader;
+
+import it.tredi.configurator.reader.FileReader;
+import it.tredi.dw4.acl.beans.UserBean;
+import it.tredi.dw4.adapters.AdaptersConfigurationLocator;
+import it.tredi.dw4.adapters.AdaptersConfigurationLocator.AdapterConfig;
+import it.tredi.dw4.adapters.FormAdapter;
+import it.tredi.dw4.beans.AttachFile;
+import it.tredi.dw4.utils.Const;
+import it.tredi.dw4.utils.DocWayProperties;
+import it.tredi.dw4.utils.Logger;
+import it.tredi.utils.bom.UTFBOMStringCleaner;
+import it.tredi.utils.bom.UnicodeBOMInputStream;
 
 /**
  * Servlet di visualizzazione in anteprima di una fatturaPA. Applicazione di un foglio di stile XSLT
@@ -39,6 +55,8 @@ import org.dom4j.io.SAXReader;
 public class PreviewFatturaServlet extends HttpServlet {
 
 	private static final long serialVersionUID = -4464710984659819807L;
+	
+	private static final String XSLT_FOP_PATH = "/it/tredi/dw4/servlet/fatturepa/xslfo/";
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		doPost(request, response);
@@ -74,6 +92,7 @@ public class PreviewFatturaServlet extends HttpServlet {
 			String customTupleName = (String) request.getParameter("_cd"); // parametro necessario in caso di multisocieta'
 			
 			String xsltFileName = (String) request.getParameter("xsltFileName");
+			String xslFopFileName = (String) request.getParameter("xslFopFileName");
 			
 			Logger.info("PreviewFatturaServlet - Param login = " + login);
 			Logger.info("PreviewFatturaServlet - Param matricola = " + matricola);
@@ -83,32 +102,110 @@ public class PreviewFatturaServlet extends HttpServlet {
 			// recupero del file tramite chiamata al service
 			AttachFile attachFile = this.redirectRequestToService(login, matricola, customTupleName, db, fileName); // TODO gestire il caso di ritono con errore?
 			
-			// applicazione del foglio di stile XSLT all'XML della fattura
-			byte[] fattura = transformFattura(request, attachFile.getContent(), xsltFileName);
+			boolean fop = Boolean.parseBoolean(request.getParameter("xslFOP"));
+			// genera il PDf con FOP
+			byte[] fattura;
+			if (fop) {
+				
+				// nuovi parametri per visualizzazione XSL FOP
+				Map <String, String> signatureParams = new HashMap<String, String>();
+				if (fop) {
+					signatureParams.put("NumeroProtocollo", (String) request.getParameter("numProt"));
+					signatureParams.put("DataProtocollo", (String) request.getParameter("dataProt"));
+					signatureParams.put("TipoDocumento", (String) request.getParameter("tipoDoc"));
+					signatureParams.put("ClassificazioneDocumento", (String) request.getParameter("cassif"));
+				}
 			
-			// modifica dell'estensione del nome/titolo del file per corretta gestione del mimetype
-			// l'estensione dei file p7m viene convertita in xml perche' in realta' viene scaricato dal 
-			// service il contenuto dei file (fattura xml)
-			if (fileName.toLowerCase().endsWith(".p7m"))
-				fileName = fileName.replace(".p7m", ".xml");
-			if (fileTitle.toLowerCase().endsWith(".p7m"))
-				fileTitle = fileTitle.replace(".p7m", ".xml");
-			
-			outStream = response.getOutputStream();
-			ServletContext context = getServletConfig().getServletContext();
-			String mimetype = context.getMimeType(fileName);
+				// estra il file di stile xsl da conf 
+				File xsltFile;
+				String pathTemplateFattura = "/fatturePA/xslFOP/" + xslFopFileName;
+				FileReader fileReader = new FileReader(Const.RESOURCE_APP_CONTEXT);
+				try {
+					xsltFile = fileReader.getCustomResource(pathTemplateFattura);
+					// se non presente in conf lo estrae come resource dal progetto
+					if (xsltFile == null) {
+						ClassLoader classLoader = getClass().getClassLoader();
+						xsltFile = new File(URLDecoder.decode(classLoader.getResource(XSLT_FOP_PATH + xslFopFileName).getPath(), "utf-8"));
+					}
+				}
+				catch (Exception ex) {
+					Logger.error("Impossibile caricare il foglio di stile XSLT necessario per la genarazione del PDF con FOP", ex);
+					throw ex;
+				}
+				
+				StreamSource xmlSource;
+				
+				// modifica dell'estensione del nome/titolo del file per corretta gestione del mimetype
+				int index = fileTitle.indexOf(".");
+				if (index != -1)
+					fileTitle = fileTitle.substring(0, index);
+				fileTitle += ".pdf";
+				
+				// ottiene il byte array del file xml da mostrare
+				fattura = transformFatturaFOP(attachFile.getContent(), signatureParams);
+				xmlSource = new StreamSource(new ByteArrayInputStream(fattura));
+				
+				// crea un instanza del FOP factory
+				FopFactory fopFactory = FopFactory.newInstance(new File(".").toURI());
+				// user agent necessario per la trasformazione
+				FOUserAgent foUserAgent = fopFactory.newFOUserAgent();
+				// setpup output
+				outStream = response.getOutputStream();
+				
+				response.setContentType(MimeConstants.MIME_PDF);
+				response.setHeader("Content-Disposition", "inline; filename=\"" + fileTitle + "\"");
+				
+				try {
+					// Construct fop with desired output format
+					Fop fopFile = fopFactory.newFop(MimeConstants.MIME_PDF, foUserAgent, outStream);
 
-			// imposta il content type della response
-			if (mimetype == null) {
-				mimetype = "application/octet-stream";
+					// Setup XSLT
+					TransformerFactory factory = TransformerFactory.newInstance();
+					Transformer transformer = factory.newTransformer(new StreamSource(xsltFile));
+
+					// Resulting SAX events (the generated FO) must be piped through to
+					// FOP
+					Result res = new SAXResult(fopFile.getDefaultHandler());
+
+					// Start XSLT transformation and FOP processing
+					// That's where the XML is first transformed to XSL-FO and then
+					// PDF is created
+					transformer.transform(xmlSource, res);
+				} 
+				catch (Exception ex) {
+					Logger.error("Errore nella creazione del PDF con FOP", ex);
+					throw ex;
+				}
 			}
-			response.setContentType(mimetype);
-			response.setContentLength(fattura.length);
-			
-			// imposta l'header HTTP
-			response.setHeader("Content-Disposition", "inline; filename=\"" + fileTitle + "\"");
+			// applicazione del foglio di stile XSLT all'XML della fattura
+			else {
 
-			outStream.write(fattura);
+				fattura = transformFatturaXSLT(request, attachFile.getContent(), xsltFileName);
+				
+				// modifica dell'estensione del nome/titolo del file per corretta gestione del mimetype
+				// l'estensione dei file p7m viene convertita in xml perche' in realta' viene scaricato dal 
+				// service il contenuto dei file (fattura xml)
+				if (fileName.toLowerCase().endsWith(".p7m"))
+					fileName = fileName.replace(".p7m", ".xml");
+				if (fileTitle.toLowerCase().endsWith(".p7m"))
+					fileTitle = fileTitle.replace(".p7m", ".xml");
+				
+				outStream = response.getOutputStream();
+				ServletContext context = getServletConfig().getServletContext();
+				String mimetype = context.getMimeType(fileName);
+	
+				// imposta il content type della response
+				if (mimetype == null) {
+					mimetype = "application/octet-stream";
+				}
+				response.setContentType(mimetype);
+				response.setContentLength(fattura.length);
+				
+				// imposta l'header HTTP
+				response.setHeader("Content-Disposition", "inline; filename=\"" + fileTitle + "\"");
+	
+				outStream.write(fattura);
+			}
 		} catch (Throwable t) {
 			Logger.error("Errore in download del file da DocWay-service", t);
 			// TODO gestire il caso di eccezione con il ritorno di errore a IWX
@@ -158,7 +255,7 @@ public class PreviewFatturaServlet extends HttpServlet {
 	 * @throws Exception
 	 */
 	@SuppressWarnings({ "rawtypes", "unchecked" })
-	private byte[] transformFattura(HttpServletRequest req, byte[] bytesfattura, String xsltFileName) throws Exception {
+	private byte[] transformFatturaXSLT(HttpServletRequest req, byte[] bytesfattura, String xsltFileName) throws Exception {
 		
 		// in caso di mancata indicazione del file xslt da applicare viene utilizzato l'ultimo
 		if (xsltFileName == null || xsltFileName.length() == 0) {
@@ -175,8 +272,12 @@ public class PreviewFatturaServlet extends HttpServlet {
 		// mbernardini 14/04/2015 : eventuale eliminazione di riferimenti a XSL gia' presenti all'interno della fattura
 		try {
 			SAXReader reader = new SAXReader();
-			String strxml = new String(bytesfattura, "UTF-8");
-			Document docFattura = reader.read(new StringReader(cleanXMLString(strxml)));
+			// mbernardini 10/04/2019 : problema di enconding su contenuto del file XML
+			//String strxml = new String(bytesfattura, "UTF-8");
+			//Document docFattura = reader.read(new StringReader(cleanXMLString(strxml)));
+			UnicodeBOMInputStream is = new UnicodeBOMInputStream(new ByteArrayInputStream(bytesfattura));
+			is.skipBOM();
+			Document docFattura = reader.read(is);
 			
 			List<?> pis = docFattura.processingInstructions();
 			if (pis.size() > 0) {
@@ -216,7 +317,48 @@ public class PreviewFatturaServlet extends HttpServlet {
 			xmlFattura = xmlDeclaration + "<?xml-stylesheet type=\"text/xsl\" href=\"" + xslt + "\"?>" + xmlFattura;
 		}
 		
-		return xmlFattura.getBytes("UTF-8");
+		return xmlFattura.getBytes(/*"UTF-8"*/); // mbernardini 10/04/2019 : corretto problema di enconding su contenuto del file XML
+	}
+	
+	/**
+	 * generazione dell'byte array con i dati di segnatura necessario per la creazione del PDF con FOP
+	 * 
+	 * @param bytesfattura
+	 * @return
+	 * @throws Exception
+	 */
+	private byte[] transformFatturaFOP(byte[] bytesfattura, Map<String, String> signatureParams) throws Exception {
+		
+		String xmlFattura = "";
+		
+		// mbernardini 14/04/2015 : eventuale eliminazione di riferimenti a XSL gia' presenti all'interno della fattura
+		try {
+			SAXReader reader = new SAXReader();
+			// mbernardini 10/04/2019 : problema di enconding su contenuto del file XML
+			//String strxml = new String(bytesfattura, "UTF-8");
+			//Document docFattura = reader.read(new StringReader(cleanXMLString(strxml)));
+			UnicodeBOMInputStream is = new UnicodeBOMInputStream(new ByteArrayInputStream(bytesfattura));
+			is.skipBOM();
+			Document docFattura = reader.read(is);
+			
+			// Aggiunta dei dati di segnatura
+			if (signatureParams != null) {
+				Element datiSegnatura = DocumentHelper.createElement("DatiSegnatura");
+				for (Map.Entry<String, String> entry : signatureParams.entrySet()) {
+					Element keyElement = DocumentHelper.createElement(entry.getKey());
+					keyElement.addText((entry.getValue() != null) ? entry.getValue() : "");
+					datiSegnatura.add(keyElement);
+				}
+				docFattura.getRootElement().add(datiSegnatura);
+			}
+			
+			xmlFattura = docFattura.asXML();
+		}
+		catch (Exception e) {
+			Logger.error("PreviewFattura.transformFatturaFOP(): got exception... " + e.getMessage(), e);
+		}
+		
+		return xmlFattura.getBytes(/*"UTF-8"*/); // mbernardini 10/04/2019 : corretto problema di enconding su contenuto del file XML
 	}
 	
 	

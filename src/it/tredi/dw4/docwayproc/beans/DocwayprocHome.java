@@ -4,6 +4,7 @@ import it.tredi.dw4.utils.XMLDocumento;
 import it.tredi.dw4.adapters.AdaptersConfigurationLocator;
 import it.tredi.dw4.adapters.ErrormsgFormsAdapter;
 import it.tredi.dw4.adapters.QueryFormsAdapter;
+import it.tredi.dw4.beans.ClassifFormatManager;
 import it.tredi.dw4.docway.beans.DocWayQuery;
 import it.tredi.dw4.docway.doc.adapters.DocDocWayQueryFormsAdapter;
 import it.tredi.dw4.docway.model.Option;
@@ -19,7 +20,7 @@ public class DocwayprocHome extends DocWayQuery {
 	private String xml = "";
 	private DocDocWayQueryFormsAdapter formsAdapter;
 	private String focusElement;
-	
+
 	// campi di ricerca su voci di indice
 	private String search_globale = "";
 	private String search_tit_voce = "";
@@ -27,29 +28,34 @@ public class DocwayprocHome extends DocWayQuery {
 	private String search_rpa = "";
 	private String ordinamento = "";
 	private Ordinamento_select ordinamentoIndiceTitolario_select = new Ordinamento_select();
-	
+
 	public DocwayprocHome() throws Exception {
 		this.formsAdapter = new DocDocWayQueryFormsAdapter(AdaptersConfigurationLocator.getInstance().getAdapterConfiguration("docwayService"));
 		clearForm();
 	}
-	
+
 	@Override
 	public void init(Document dom) {
 		xml = dom.asXML();
-		
+
 		ordinamentoIndiceTitolario_select.init(XMLUtil.createDocument(dom, "/response/ordinamentoIndiceTitolario_select"));
 		for (Iterator<Option> iterator = ordinamentoIndiceTitolario_select.getOptions().iterator(); iterator.hasNext();) {
 			Option option = (Option) iterator.next();
 			if (option.getSelected().length()>0)
 				ordinamento = option.getValue();
 		}
+
+		// mbernardini 16/12/2016 : gestione del formato della classificazione
+		String classifFormat = XMLUtil.parseStrictAttribute(dom, "/response/@classifFormat");
+		if (classifFormat != null && !classifFormat.isEmpty())
+			ClassifFormatManager.getInstance().setClassifFormat(classifFormat);
 	}
 
 	@Override
 	public QueryFormsAdapter getFormsAdapter() {
 		return formsAdapter;
 	}
-	
+
 	public String getXml() {
 		return xml;
 	}
@@ -57,7 +63,7 @@ public class DocwayprocHome extends DocWayQuery {
 	public void setXml(String xml) {
 		this.xml = xml;
 	}
-	
+
 	public String getFocusElement() {
 		return focusElement;
 	}
@@ -97,7 +103,7 @@ public class DocwayprocHome extends DocWayQuery {
 	public void setSearch_rpa(String search_rpa) {
 		this.search_rpa = search_rpa;
 	}
-	
+
 	public String getOrdinamento() {
 		return ordinamento;
 	}
@@ -114,17 +120,17 @@ public class DocwayprocHome extends DocWayQuery {
 			Ordinamento_select ordinamentoIndiceTitolario_select) {
 		this.ordinamentoIndiceTitolario_select = ordinamentoIndiceTitolario_select;
 	}
-	
+
 	/**
 	 * costruzione della query su voci di indice
 	 * @return
 	 */
 	private String createQuery() {
 		String query = "[UD,/xw/@UdType]=\"indice_titolario\" AND ";
-		
+
 		query +=  addQueryField("@", this.search_globale);
 		query +=  addQueryField("tit_voce", this.escapeQueryValue(this.search_tit_voce));
-		
+
 		if (this.search_uor != null && this.search_uor.length() > 0) {
 			query += "(";
 			if (this.search_uor.contains(" or "))
@@ -143,15 +149,15 @@ public class DocwayprocHome extends DocWayQuery {
 			query += "([tit_rifinternirifdiritto]=RPA)";
 			query += ") AND ";
 		}
-		
+
 		if (query.endsWith(" AND "))
 			query = query.substring(0, query.length()-4);
-		
+
 		this.formsAdapter.getDefaultForm().addParam("qord", ordinamento);
-		
+
 		return query;
 	}
-	
+
 	@Override
 	public String queryPlain() throws Exception {
 		try {
@@ -159,7 +165,7 @@ public class DocwayprocHome extends DocWayQuery {
 			if("error".equals(query)) return null;
 			formsAdapter.findplain();
 			return queryPlain(query);
-			
+
 		}
 		catch (Throwable t) {
 			handleErrorResponse(ErrormsgFormsAdapter.buildErrorResponse(t));
@@ -167,16 +173,16 @@ public class DocwayprocHome extends DocWayQuery {
 			return null;
 		}
 	}
-	
+
 	/**
 	 * Esecuzione della query di ricerca costruita
 	 */
 	public String queryPlain(String query) throws Exception {
 		try {
 			XMLDocumento response = super._queryPlain(query, "", "");
-			if (handleErrorResponse(response)) 
+			if (handleErrorResponse(response))
 				return null;
-			
+
 			return navigateResponse(response);
 		}
 		catch (Throwable t) {
@@ -185,12 +191,12 @@ public class DocwayprocHome extends DocWayQuery {
 			return null;
 		}
 	}
-	
+
 	/**
-	 * Data la response derivante da una ricerca carica la pagina di destinazione 
-	 * corretta: pagina dei titoli in caso di piu' risultati, showdoc in caso di un 
+	 * Data la response derivante da una ricerca carica la pagina di destinazione
+	 * corretta: pagina dei titoli in caso di piu' risultati, showdoc in caso di un
 	 * solo documento restituito
-	 * 
+	 *
 	 * @param response
 	 * @return
 	 * @throws Exception
@@ -214,7 +220,7 @@ public class DocwayprocHome extends DocWayQuery {
 			return "docwayproc@showtitles";
 		}
 	}
-	
+
 	/**
 	 * reset del form
 	 * @return
@@ -224,10 +230,10 @@ public class DocwayprocHome extends DocWayQuery {
 		search_tit_voce = "";
 		search_uor = "";
 		search_rpa = "";
-		
+
 		return null;
 	}
-	
+
 	/**
 	 * apertura del vocabolario su voce di indice
 	 * @return
@@ -238,7 +244,7 @@ public class DocwayprocHome extends DocWayQuery {
 		this.openIndex("search_tit_voce", "tit_voce", this.search_tit_voce, "0", " ", false);
 		return null;
 	}
-	
+
 	/**
 	 * apertura del vocabolario su UOR
 	 * @return
@@ -249,7 +255,7 @@ public class DocwayprocHome extends DocWayQuery {
 		this.openIndex("search_uor", "tit_rifinternirifdirittonomeuff", this.search_uor, "0", "RPA|^| ", false);
 		return null;
 	}
-	
+
 	/**
 	 * apertura del vocabolario su RPA
 	 * @return

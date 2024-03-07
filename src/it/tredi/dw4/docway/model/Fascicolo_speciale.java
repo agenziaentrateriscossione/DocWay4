@@ -19,6 +19,7 @@ public class Fascicolo_speciale extends XmlEntity {
 	private String luogo_nascita = "";
 	private String data_assunzione = "";
 	private String data_cessazione = "";
+	private String data_immatricolazione = "";
 	
 	@Override
 	public XmlEntity init(Document dom) {
@@ -30,6 +31,7 @@ public class Fascicolo_speciale extends XmlEntity {
 		luogo_nascita 	= XMLUtil.parseAttribute(dom, "fascicolo_speciale/@luogo_nascita", "");
 		data_assunzione = XMLUtil.parseAttribute(dom, "fascicolo_speciale/@data_assunzione", "");
 		data_cessazione = XMLUtil.parseAttribute(dom, "fascicolo_speciale/@data_cessazione", "");
+		data_immatricolazione = XMLUtil.parseAttribute(dom, "fascicolo_speciale/@data_immatricolazione", "");
 		
 		return this;
 	}
@@ -55,6 +57,8 @@ public class Fascicolo_speciale extends XmlEntity {
     		params.put(prefix+".@data_assunzione", data_assunzione);
     	if (data_cessazione != null && data_cessazione.length() > 0)
     		params.put(prefix+".@data_cessazione", data_cessazione);
+    	if (data_immatricolazione != null && data_immatricolazione.length() > 0)
+    		params.put(prefix+".@data_immatricolazione", data_immatricolazione);
     	
     	return params;
 	}
@@ -121,6 +125,14 @@ public class Fascicolo_speciale extends XmlEntity {
 
 	public void setData_cessazione(String data_cessazione) {
 		this.data_cessazione = data_cessazione;
+	}
+	
+	public String getData_immatricolazione() {
+		return data_immatricolazione;
+	}
+
+	public void setData_immatricolazione(String data_immatricolazione) {
+		this.data_immatricolazione = data_immatricolazione;
 	}
 	
 }

@@ -44,6 +44,7 @@ public class QueryVariePRU extends QueryGlobale {
 	private void forzaRepertorio() {
 		setRepertori_multipli(true);
 		forceRepertorioSelected("PRU", "V");
+		setCurrentCustomFieldSection("varie_PRU");
 		setVarie(true);
 	}
 	

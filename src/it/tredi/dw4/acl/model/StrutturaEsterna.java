@@ -99,12 +99,12 @@ public class StrutturaEsterna extends XmlEntity {
     	params.put(prefix + ".nome", this.nome);
     	params.put(prefix + ".@nrecord", this.nrecord);
     	params.put(prefix + ".@codice_fiscale", this.codice_fiscale);
-    	params.put(prefix + ".@cod_SAP", this.cod_SAP);
+    	params.put(prefix + ".@cod_SAP", (this.cod_SAP != null) ? this.cod_SAP.trim() : null);
     	params.put(prefix + ".@partita_iva", this.partita_iva);
-    	params.put(prefix + ".@cod_amm", this.cod_amm);
-    	params.put(prefix + ".@cod_aoo", this.cod_aoo);
-    	params.put(prefix + ".@cod_uff", this.cod_uff);
-    	params.put(prefix + ".@cod_responsabile", this.cod_responsabile);
+    	params.put(prefix + ".@cod_amm", (this.cod_amm != null) ? this.cod_amm.trim() : null);
+    	params.put(prefix + ".@cod_aoo", (this.cod_aoo != null) ? this.cod_aoo.trim() : null);
+    	params.put(prefix + ".@cod_uff", (this.cod_uff != null) ? this.cod_uff.trim() : null);
+    	params.put(prefix + ".@cod_responsabile", (this.cod_responsabile != null) ? this.cod_responsabile.trim() : null);
     	params.put(prefix + ".@tipologia", this.tipologia);
     	params.putAll(indirizzo.asFormAdapterParams(".indirizzo"));
     	for (int i = 0; i < telefoni.size(); i++) {

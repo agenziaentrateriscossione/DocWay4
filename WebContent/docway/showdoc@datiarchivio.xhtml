@@ -6,7 +6,7 @@
 <ui:composition>
 
 	<ui:param name="datiClassif" value="#{(!empty bean.doc.minuta.voce_indice.text or !empty bean.doc.minuta.voce_indice.text or (!bean.customfields.hiddenFields['classificazione'] and !empty bean.doc.minuta.classif.text and (empty hideClassificazione or hideClassificazione ne 'true')) or (!bean.formsAdapter.funzionalitaDisponibili['nascondifascicoli'] and !empty bean.doc.fasc_rpam.num) or !empty bean.doc.voce_indice.text or (!bean.customfields.hiddenFields['classificazione'] and !empty bean.doc.classif.text  and (empty hideClassificazione or hideClassificazione ne 'true'))) ? 'true' : 'false'}" />
-	<ui:param name="datiFascicoli" value="#{(!bean.formsAdapter.funzionalitaDisponibili['nascondifascicoli'] and ((bean.doc.tipo eq 'interno' and !empty bean.doc.fasc_rpa.num and !empty bean.doc.assegnazioneRPAM.diritto) or (bean.doc.tipo ne 'interno' and !empty bean.doc.fasc_rpa.num and empty bean.doc.assegnazioneRPAM.diritto) or fn:length(bean.doc.fascicoli_collegati) > 0)) ? 'true' : 'false'}" />
+	<ui:param name="datiFascicoli" value="#{!bean.formsAdapter.funzionalitaDisponibili['nascondifascicoli'] and (!empty bean.doc.fasc_rpa.num or fn:length(bean.doc.fascicoli_collegati) > 0) ? 'true' : 'false'}" />
 	<ui:param name="datiRaccoglitore" value="#{(bean.formsAdapter.funzionalitaDisponibili['enableRaccoglitori'] and fn:length(bean.doc.contenuto_in) > 0) ? 'true' : 'false'}" />
 	<ui:param name="datiDocumentiCollegati" value="#{(fn:length(bean.doc.link_interni) > 0) ? 'true' : 'false'}" />
 
@@ -35,8 +35,8 @@
 				<h:panelGroup rendered="#{!bean.customfields.hiddenFields['classificazione'] and !empty bean.doc.minuta.classif.text and (empty hideClassificazione or hideClassificazione ne 'true')}">
 					<dt>#{i18n['dw4.classif_minuta']}</dt>
 					<dd>
-						<h:outputText value="#{bean.doc.minuta.classif.text}" escape="false"><f:converter converterId="ClassifConverter"/></h:outputText>
-						<h:panelGroup rendered="#{!empty bean.doc.minuta.scarto}">
+						<h:outputText value="#{bean.doc.minuta.classif.text}" ><f:converter converterId="ClassifConverter"><f:attribute name="classifFormat" value="#{bean.classifFormat}" /></f:converter></h:outputText>
+						<h:panelGroup rendered="#{bean.formsAdapter.funzionalitaDisponibili['visualizzaScarto'] and !empty bean.doc.minuta.scarto}">
 							&#160;
 							<h:outputText value="(#{i18n['dw4.scartomsg']} "/>
 							<h:panelGroup rendered="#{bean.doc.minuta.scarto == '99'}"><h:outputText value="#{i18n['dw4.illimitato']}"/></h:panelGroup>
@@ -83,8 +83,8 @@
 				<h:panelGroup rendered="#{!bean.customfields.hiddenFields['classificazione'] and !empty bean.doc.classif.text and (empty hideClassificazione or hideClassificazione ne 'true')}">
 					<dt>#{i18n['dw4.classif']}</dt>
 					<dd>
-						<h:outputText value="#{bean.doc.classif.text}" escape="false"><f:converter converterId="ClassifConverter"/><f:attribute name="classifFormat" value="#{bean.classifFormat}" /></h:outputText>
-						<h:panelGroup rendered="#{!empty bean.doc.scarto}">
+						<h:outputText value="#{bean.doc.classif.text}" ><f:converter converterId="ClassifConverter"/><f:attribute name="classifFormat" value="#{bean.classifFormat}" /></h:outputText>
+						<h:panelGroup rendered="#{bean.formsAdapter.funzionalitaDisponibili['visualizzaScarto'] and !empty bean.doc.scarto}">
 							&#160;
 							<h:outputText value="(#{i18n['dw4.scartomsg']} "/>
 							<h:panelGroup rendered="#{bean.doc.scarto == '99'}"><h:outputText value="illimitato"/></h:panelGroup>
@@ -101,7 +101,7 @@
 				</h:panelGroup>
 				
 				<h:panelGroup rendered="#{!bean.formsAdapter.funzionalitaDisponibili['nascondifascicoli']}">
-					<h:panelGroup rendered="#{bean.doc.tipo eq 'interno' and !empty bean.doc.fasc_rpa.num and !empty bean.doc.assegnazioneRPAM.diritto}">
+					<h:panelGroup rendered="#{!empty bean.doc.fasc_rpa.num}">
 						<dt><h:outputText value="#{i18n['dw4.fasc']}" /></dt>
 						<dd>
 							<h:outputText value="#{bean.doc.fasc_rpa.num}">
@@ -112,28 +112,6 @@
 									<h:commandLink value="#{bean.doc.fasc_rpa.oggetto}" action="#{bean.queryFasc}"/>
 								</h:panelGroup>
 								<h:panelGroup rendered="#{!bean.formsAdapter.funzionalitaDisponibili['disableSegnatura']}">#{bean.doc.fasc_rpa.oggetto}</h:panelGroup>
-							<span>&#187;</span>
-							<h:panelGroup rendered="#{bean.formsAdapter.funzionalitaDisponibili['removedocfromfascicolo']}">
-								<span class="btn-group">
-									<h:commandLink action="#{bean.removeFromFasc}" title="#{i18n['dw4.rimuovidalfascicolo']}" styleClass="btn btn-default btn-xs">
-										<f:ajax execute="@form" render="@form" />
-										<span class="glyphicon glyphicon-remove"></span>
-									</h:commandLink>
-								</span>
-							</h:panelGroup>
-						</dd>
-					</h:panelGroup>
-					<h:panelGroup rendered="#{bean.doc.tipo ne 'interno' and !empty bean.doc.fasc_rpa.num and empty bean.doc.assegnazioneRPAM.diritto}">
-						<dt><h:outputText value="#{i18n['dw4.fasc']}" /></dt>
-						<dd>
-							<h:outputText value="#{bean.doc.fasc_rpa.num}">
-								<f:converter converterId="NumFascConverter" />
-							</h:outputText> 
-							<span>&#171;</span>
-							<h:panelGroup rendered="#{bean.formsAdapter.funzionalitaDisponibili['disableSegnatura']}">
-								<h:commandLink value="#{bean.doc.fasc_rpa.oggetto}" action="#{bean.queryFasc}"/>
-							</h:panelGroup>
-							<h:panelGroup rendered="#{!bean.formsAdapter.funzionalitaDisponibili['disableSegnatura']}">#{bean.doc.fasc_rpa.oggetto}</h:panelGroup>
 							<span>&#187;</span>
 							<h:panelGroup rendered="#{bean.formsAdapter.funzionalitaDisponibili['removedocfromfascicolo']}">
 								<span class="btn-group">
@@ -179,11 +157,11 @@
 					<dd>
 						<ui:repeat var="contenuto" value="#{bean.doc.contenuto_in}">
 							<h:commandLink value="#{contenuto.text}" action="#{bean.navigateToRac}" />
-							<span class="btn-group">
+							<h:panelGroup rendered="#{!bean.doc.readOnly}" styleClass="btn-group">
 								<h:commandLink action="#{bean.removeFromRac}" title="#{i18n['dw4.removeFromRac']}" styleClass="btn btn-default btn-xs">
 									<span class="glyphicon glyphicon-remove"></span>
 								</h:commandLink>
-							</span>
+							</h:panelGroup>
 							<br/>
 						</ui:repeat>
 					</dd>

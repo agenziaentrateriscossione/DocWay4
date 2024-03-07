@@ -1,11 +1,11 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml" 
-	  xmlns:h="http://java.sun.com/jsf/html" 
-	  xmlns:ui="http://java.sun.com/jsf/facelets" 
+<html xmlns="http://www.w3.org/1999/xhtml"
+	  xmlns:h="http://java.sun.com/jsf/html"
+	  xmlns:ui="http://java.sun.com/jsf/facelets"
 	  xmlns:f="http://java.sun.com/jsf/core"
 	  xmlns:p="http://xmlns.jcp.org/jsf/passthrough">
 <ui:composition>
-	
+
 	<h:panelGroup layout="block" id="errormsg">
 		<h:panelGroup rendered="#{errormsg.active}">
 			<!-- Modal -->
@@ -14,21 +14,21 @@
 				<div class="modal-dialog">
 					<div class="modal-content jsf-modal">
 						<div class="modal-header">
-							<h:commandButton rendered="#{errormsg.errore.level ne 'fatal'}"
-									class="close" action="#{errormsg.close}" value="&#215;">
+							<h:commandButton rendered="#{errormsg.errore.level ne 'fatal'}" onclick="saveScrollbarPosition()"
+									styleClass="close" action="#{errormsg.close}" value="&#215;">
 								<f:ajax execute="@form" render="@form" />
 							</h:commandButton>
 							<h:commandButton rendered="#{errormsg.errore.level eq 'fatal'}"
-									class="close" title="Logout"
+									styleClass="close" title="Logout"
 									action="#{userBean.logout}" value="&#215;" />
-							
+
 							<h4 class="modal-title" id="errorModalLabel">
 								<ui:fragment rendered="#{errormsg.errore.level eq 'fatal' or errormsg.errore.level eq 'error' or errormsg.errore.level eq 'errore'}">#{i18n['dw4.errore']}</ui:fragment>
 		                		<ui:fragment rendered="#{errormsg.errore.level ne 'fatal' and errormsg.errore.level ne 'error' and errormsg.errore.level ne 'errore'}">#{i18n['dw4.avviso']}</ui:fragment>
 							</h4>
 						</div>
 						<div class="modal-body">
-						
+
 							<h:panelGroup rendered="#{errormsg.errore.level eq 'fatal'}" layout="block" styleClass="alert alert-danger">
 								<h:panelGroup rendered="#{errormsg.errore.unexpected}">
 									#{i18n['dw4.il_sistema_ha_incontrato_un_errore_temporaneo_che_non_consente_di_portare_a_termine_la_richiesta']}<br />
@@ -40,12 +40,16 @@
 									<br />
 									<h:outputText value="#{errormsg.errore.errtype}" escape="false" />
 								</h:panelGroup>
+								
+								<ui:remove>
+									<div class="margin-top-10">Server info:<br/>remote_addr = #{request.getRemoteAddr()}</div>
+								</ui:remove>
 							</h:panelGroup>
-							
+
 							<h:panelGroup rendered="#{errormsg.errore.level ne 'fatal'}"
 									layout="block"
-									styleClass="alert #{(errormsg.errore.level eq 'fatal' or errormsg.errore.level eq 'error') ? 'alert-danger' : ''} #{(errormsg.errore.level eq 'warning') ? 'alert-warning' : ''} #{(errormsg.errore.level eq 'info' or errormsg.errore.level eq '') ? 'alert-info' : ''}">
-									
+									styleClass="alert #{(errormsg.errore.level eq 'errore' or errormsg.errore.level eq 'error') ? 'alert-danger' : ''} #{(errormsg.errore.level eq 'warning') ? 'alert-warning' : ''} #{(errormsg.errore.level eq 'info' or errormsg.errore.level eq '') ? 'alert-info' : ''}">
+
 								<h:panelGroup rendered="#{errormsg.errore.unexpected}">
 									#{i18n['dw4.il_sistema_ha_incontrato_un_errore_temporaneo_che_non_consente_di_portare_a_termine_la_richiesta']}<br />
 									#{i18n['dw4.possibile_inviare_la_segnalazione_di_errore_all_assistenza_premendo_il_pulsante_invia_segnalazione']}<br />
@@ -54,8 +58,12 @@
 								<h:panelGroup rendered="#{not empty errormsg.errore.errtype}">
 									<h:outputText value="#{errormsg.errore.errtype}" escape="false" />
 								</h:panelGroup>
+								
+								<ui:remove>
+									<div class="margin-top-10">Server info:<br/>remote_addr = #{request.getRemoteAddr()}</div>
+								</ui:remove>
 							</h:panelGroup>
-							
+
 							<h:panelGroup rendered="#{errormsg.errore.unexpected or not empty errormsg.errore.extra}">
 								<h:panelGroup rendered="#{!errormsg.errorEmailSent}">
 									<div class="btn-group">
@@ -63,7 +71,7 @@
 										<h:commandButton rendered="#{not empty errormsg.errore.extra}" onclick="return mostraErrorExtra();" styleClass="btn btn-default" value="#{i18n['dw4.mostra_dettaglio']}" />
 		  							</div>
 								</h:panelGroup>
-								
+
 								<h:panelGroup rendered="#{errormsg.errorEmailSent}" layout="block" styleClass="well">
 									<h:outputText
 											rendered="#{errormsg.errorEmailSentOK}"
@@ -73,23 +81,23 @@
 											value="#{i18n['dw4.errore_nell_invio_della_segnalazione']}" />
 								</h:panelGroup>
 							</h:panelGroup>
-							
+
 							<div id="dialogErrorExtra" style="display:none; margin-top:15px;">
 								<h:panelGroup rendered="#{not empty errormsg.errore.extra}" layout="block">
 									<div>#{i18n['dw4.dettaglio']}:</div>
 									<h:inputTextarea value="#{errormsg.errore.extra}" rows="10" cols="50" readonly="true" styleClass="form-control" />
 								</h:panelGroup>
 							</div>
-		
-							<h:inputTextarea value="#{errormsg.xml}" rendered="#{errormsg.debugMode}" styleClass="form-control" rows="10"/>
+
+							<h:inputTextarea value="#{errormsg.xml}" rendered="#{errormsg.debugMode}" styleClass="form-control debug-textarea" rows="10"/>
 						</div>
 						<div class="modal-footer">
-							<h:commandButton rendered="#{errormsg.errore.level ne 'fatal'}"
-									class="btn btn-default" action="#{errormsg.close}" value="#{i18n['acl.close']}">
+							<h:commandButton rendered="#{errormsg.errore.level ne 'fatal'}" onclick="saveScrollbarPosition()"
+									styleClass="btn btn-default" action="#{errormsg.close}" value="#{i18n['acl.close']}">
 								<f:ajax execute="@form" render="@form" />
 							</h:commandButton>
 							<h:commandButton rendered="#{errormsg.errore.level eq 'fatal'}"
-									class="btn btn-default" title="Logout"
+									styleClass="btn btn-default" title="Logout"
 									action="#{userBean.logout}" value="#{i18n['acl.close']}" />
 						</div>
 					</div>
@@ -101,5 +109,5 @@
 		</h:panelGroup>
 	</h:panelGroup>
 
-</ui:composition>	
+</ui:composition>
 </html>

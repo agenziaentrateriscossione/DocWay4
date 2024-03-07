@@ -13,7 +13,7 @@
 				<div class="modal-dialog">
 					<div class="modal-content jsf-modal">
 						<div class="modal-header">
-							<h:commandLink class="close" action="#{reloadmsg.close}" value="&#215;">
+							<h:commandLink styleClass="close" action="#{reloadmsg.close}" value="&#215;">
 		                    	<f:ajax render="@form"/>
 		                   	</h:commandLink>
 							
@@ -25,7 +25,7 @@
 								#{reloadmsg.message}
 							</h:panelGroup>
 							
-							<h:inputTextarea value="#{reloadmsg.xml}" rendered="#{reloadmsg.debugMode}" styleClass="form-control" rows="10"/>
+							<h:inputTextarea value="#{reloadmsg.xml}" rendered="#{reloadmsg.debugMode}" styleClass="form-control debug-textarea" rows="10"/>
 							
 						</div>
 						<div class="modal-footer">

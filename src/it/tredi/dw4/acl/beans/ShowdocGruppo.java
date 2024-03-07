@@ -5,6 +5,7 @@ import it.tredi.dw4.acl.model.Gruppo;
 import it.tredi.dw4.adapters.AdaptersConfigurationLocator;
 import it.tredi.dw4.adapters.ErrormsgFormsAdapter;
 
+import javax.faces.context.FacesContext;
 import javax.faces.event.ComponentSystemEvent;
 
 import org.dom4j.Document;
@@ -31,6 +32,9 @@ public class ShowdocGruppo extends AclShowdoc {
     	xml = domDocumento.asXML();
     	gruppo = new Gruppo();
     	gruppo.init(domDocumento);
+    	
+    	// inizializzazione di componenti common
+    	initCommons(domDocumento);
     }	
 	
 	public AclDocumentFormsAdapter getFormsAdapter() {
@@ -42,7 +46,7 @@ public class ShowdocGruppo extends AclShowdoc {
 	}
 	
 	public void reload() throws Exception {
-		super._reload("showdoc@gruppo");
+		super._reload(FacesContext.getCurrentInstance().getExternalContext().getRequestContextPath() + "/acl/showdoc@gruppo");
 	}
 
 	public void setGruppo(Gruppo gruppo) {

@@ -14,8 +14,8 @@
 			<div class="modal-dialog modal-lg">
 				<div class="modal-content jsf-modal">
 					<div class="modal-header">
-						<h:commandButton rendered="#{!pageBean.loadingbar.reloadFascicolo}" class="close" action="#{pageBean.loadingbar.close}" value="&#215;" />
-						<h:commandButton rendered="#{pageBean.loadingbar.reloadFascicolo}" class="close" action="#{pageBean.loadingbar.closeAndReloadFascicolo}" value="&#215;" />
+						<h:commandButton rendered="#{!pageBean.loadingbar.reloadFascicolo}" styleClass="close" action="#{pageBean.loadingbar.close}" value="&#215;" />
+						<h:commandButton rendered="#{pageBean.loadingbar.reloadFascicolo}" styleClass="close" action="#{pageBean.loadingbar.closeAndReloadFascicolo}" value="&#215;" />
 						
 						<h4 class="modal-title" id="loadingbarAssegnazioneRpaModalLabel">#{pageBean.loadingbar.title}</h4>
 					</div>
@@ -83,11 +83,11 @@
 						}
 						</script>
 						
-						<h:inputTextarea value="#{pageBean.loadingbar.xml}" rendered="#{pageBean.debugMode}" styleClass="form-control" rows="10" />
+						<h:inputTextarea value="#{pageBean.loadingbar.xml}" rendered="#{pageBean.debugMode}" styleClass="form-control debug-textarea" rows="10" />
 					</div>
 					<div class="modal-footer">
-						<h:commandButton rendered="#{!pageBean.loadingbar.reloadFascicolo}" class="btn btn-default" action="#{pageBean.loadingbar.close}" value="#{i18n['acl.close']}" />
-						<h:commandButton rendered="#{pageBean.loadingbar.reloadFascicolo}" class="btn btn-default" action="#{pageBean.loadingbar.closeAndReloadFascicolo}" value="#{i18n['acl.close']}" />
+						<h:commandButton rendered="#{!pageBean.loadingbar.reloadFascicolo}" styleClass="btn btn-default" action="#{pageBean.loadingbar.close}" value="#{i18n['acl.close']}" />
+						<h:commandButton rendered="#{pageBean.loadingbar.reloadFascicolo}" styleClass="btn btn-default" action="#{pageBean.loadingbar.closeAndReloadFascicolo}" value="#{i18n['acl.close']}" />
 					</div>
 				</div>
 			</div>

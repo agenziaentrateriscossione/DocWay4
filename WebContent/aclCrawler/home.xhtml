@@ -94,7 +94,7 @@
     </h:panelGroup>
         
     <ui:include src="../acl/showindex.xhtml"><ui:param name="pageBean" value="#{aclCrawlerHome}"/></ui:include>
-    <h:inputTextarea value="#{aclCrawlerHome.xml}" rendered="#{aclCrawlerHome.debugMode}" styleClass="form-control" rows="10"/>
+    <h:inputTextarea value="#{aclCrawlerHome.xml}" rendered="#{aclCrawlerHome.debugMode}" styleClass="form-control debug-textarea" rows="10"/>
         
     </ui:define>
 </ui:composition>

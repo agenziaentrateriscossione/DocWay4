@@ -18,26 +18,28 @@ public class Annullamento extends XmlEntity {
 	private Date data;
 	private String ora;
 	private String motivazione;
-    
+	private String delegato;
+
 	public Annullamento() {}
-    
+
 	public Annullamento(String xmlCreazione) throws Exception {
         this.init(XMLUtil.getDOM(xmlCreazione));
     }
-    
+
     public Annullamento init(Document domCreazione) {
     	this.operatore 			= XMLUtil.parseAttribute(domCreazione, "annullamento/@operatore");
     	this.cod_operatore 		= XMLUtil.parseAttribute(domCreazione, "annullamento/@cod_operatore");
     	this.motivazione 		= XMLUtil.parseElement(domCreazione, "annullamento", false);
     	this.data 				= XMLUtil.parseAttributeDate(domCreazione, "annullamento/@data");
     	this.ora 				= XMLUtil.parseAttribute(domCreazione, "annullamento/@ora");
+    	this.delegato			= XMLUtil.parseAttribute(domCreazione, "annullamento/@delegato");
         return this;
     }
-    
+
     public Map<String, String> asFormAdapterParams(String prefix){
     	return new HashMap<String, String>();
     }
-    
+
     public String getOperatore() {
 		return operatore;
 	}
@@ -69,12 +71,12 @@ public class Annullamento extends XmlEntity {
 	public Date getData() {
 		return data;
 	}
-	
+
 	public String getDateLong(){
 		if ( null != data ) return DateUtil.getLongDate(data);
 		else				return null;
 	}
-	
+
 
 	public void setOra(String ora) {
 		this.ora = ora;
@@ -90,6 +92,14 @@ public class Annullamento extends XmlEntity {
 
 	public String getMotivazione() {
 		return motivazione;
+	}
+
+	public String getDelegato() {
+		return delegato;
+	}
+
+	public void setDelegato(String delegato) {
+		this.delegato = delegato;
 	}
 }
 

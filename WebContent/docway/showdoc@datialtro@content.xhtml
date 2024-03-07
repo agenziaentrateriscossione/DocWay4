@@ -36,17 +36,23 @@
 		<dt>#{i18n['dw4.keywords']}</dt>
 		<dd>#{bean.doc.keywords.text}</dd>
 	</h:panelGroup>
+	<h:panelGroup rendered="#{!empty bean.doc.mezzo_trasmissione.costo}">
+		<dt>#{i18n['dw4.spesa']}</dt>
+		<dd>#{bean.doc.mezzo_trasmissione.costo}</dd>
+	</h:panelGroup>
 	<h:panelGroup rendered="#{!empty bean.doc.tipologia.cod and bean.doc.tipo!='varie'}">
 		<dt>#{i18n['acl.tipologia']}</dt>
-		<dd><h:outputText value="#{bean.doc.tipologia.cod}" escape="false" /></dd>
+		<dd><h:outputText value="#{bean.doc.tipologia.cod}" /></dd>
 	</h:panelGroup>
-	<h:panelGroup rendered="#{!empty bean.doc.extra.custom_select_1}"> 
-		<dt>#{i18n['dw4.custom_select_1_label']}</dt>
-		<dd>#{bean.doc.extra.custom_select_1}</dd>
-	</h:panelGroup>
-	<h:panelGroup rendered="#{!empty bean.doc.extra.custom_select_2}">
-		<dt>#{i18n['dw4.custom_select_2_label']}</dt>
-		<dd>#{bean.doc.extra.custom_select_2}</dd>
+	<h:panelGroup rendered="#{bean.formsAdapter.funzionalitaDisponibili['customSelectFields']}">
+		<h:panelGroup rendered="#{!empty bean.doc.extra.custom_select_1}"> 
+			<dt>#{i18n['dw4.custom_select_1_label']}</dt>
+			<dd>#{bean.doc.extra.custom_select_1}</dd>
+		</h:panelGroup>
+		<h:panelGroup rendered="#{!empty bean.doc.extra.custom_select_2}">
+			<dt>#{i18n['dw4.custom_select_2_label']}</dt>
+			<dd>#{bean.doc.extra.custom_select_2}</dd>
+		</h:panelGroup>
 	</h:panelGroup>
 
 </ui:composition>   

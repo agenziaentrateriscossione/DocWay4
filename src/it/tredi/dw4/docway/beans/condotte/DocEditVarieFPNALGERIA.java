@@ -217,6 +217,11 @@ public class DocEditVarieFPNALGERIA extends DocEditVarie {
 	public boolean checkRequiredField() {
 		boolean result = false;
 		
+		String formatoData = Const.DEFAULT_DATE_FORMAT; // TODO Dovrebbe essere caricato dal file di properties dell'applicazione
+		
+		// validazione dei campi custom caricati nella pagina
+		result = getCustomfields().checkRequiredFields(false, formatoData, this);
+		
 		// Controllo che l'RPA sia stato selezionato
 		if (!getFormsAdapter().checkBooleanFunzionalitaDisponibile("docRPAEreditabile", false)) {
 			if (getDoc().getAssegnazioneRPA() == null || 
@@ -230,8 +235,6 @@ public class DocEditVarieFPNALGERIA extends DocEditVarie {
 		}
 		
 		// controllo sui campi specifici del repertorio
-		
-		String formatoData = Const.DEFAULT_DATE_FORMAT; // TODO Dovrebbe essere caricato dal file di properties dell'applicazione
 		
 		// ragione sociale del fornitore
 		if (getDoc().getRif_esterni().get(0).getNome() == null || getDoc().getRif_esterni().get(0).getNome().length() == 0) {

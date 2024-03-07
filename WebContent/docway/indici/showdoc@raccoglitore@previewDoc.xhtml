@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	  xmlns:h="http://java.sun.com/jsf/html"
+	  xmlns:ui="http://java.sun.com/jsf/facelets"
+	  xmlns:f="http://java.sun.com/jsf/core"
+	  xmlns:c="http://java.sun.com/jsp/jstl/core"
+	  xmlns:p="http://xmlns.jcp.org/jsf/passthrough">
+<ui:composition>
+
+	<c:choose>
+		<c:when test="#{!bean.previewVisible or !empty bean.doc.non_disponibile.text}">
+
+			<div class="preview-doc-in-raccoglitore" style="margin: 10px 0;">
+				<h:panelGroup rendered="#{!bean.previewVisible}">
+					<span class="label label-info">#{i18n['dw4.selezionare_un_documento_dalla_colonna_di_sx_per_visualizzarne_l_anteprima']}</span>
+				</h:panelGroup>
+				<h:panelGroup rendered="#{!empty bean.doc.non_disponibile.text}">
+					<span class="label label-warning">#{bean.doc.non_disponibile.text}</span>
+				</h:panelGroup>
+			</div>
+
+		</c:when>
+		<c:otherwise>
+
+			<div class="panel panel-default panel-racc-indice">
+				<div class="panel-heading clearfix">
+					<h3 class="panel-title">
+						<!--#{i18n['dw4.anteprima_documento']}-->
+						#{bean.doc.oggetto}
+						&#160;
+						<h:commandLink action="#{containerBean.loadDoc(bean.doc.nrecord)}" title="#{i18n['dw4.vai_al_documento']}" styleClass="btn btn-default btn-xs">
+							<span class="glyphicon glyphicon-new-window"></span>
+						</h:commandLink>
+					</h3>
+				</div>
+				<div class="panel-body">
+					<h:panelGroup rendered="#{!bean.formsAdapter.funzionalitaDisponibili['docConservato'] and bean.formsAdapter.funzionalitaDisponibili['modifica']}">
+						<dl class="dl-horizontal" style="padding-bottom:15px;">
+							<dt>&#160;</dt>
+							<dd>
+								<div class="doc-in-racc-item-actions">
+									<h:commandLink rendered="#{!bean.formsAdapter.funzionalitaDisponibili['docConservato'] and bean.formsAdapter.funzionalitaDisponibili['modifica']}" action="#{bean.modifyTableDoc}" class="btn btn-xs btn-default uppercase" value="#{i18n['dw4.modifica_rapida']}">
+										<f:ajax execute="@form" render="templateForm:editPreviewDocPopup templateForm:errormsg" />
+									</h:commandLink>
+									&#160;
+									<h:commandLink rendered="#{!bean.formsAdapter.funzionalitaDisponibili['docConservato'] and bean.formsAdapter.funzionalitaDisponibili['modifica'] and bean.formsAdapter.funzionalitaDisponibili['importWebRaccIndice']}" action="#{bean.importFromWebURL}" class="btn btn-xs btn-default uppercase" value="#{i18n['dw4.importa_da_url_esterno']}">
+										<f:ajax execute="@form" render="templateForm:importFromWebUrlPopup templateForm:errormsg" />
+									</h:commandLink>
+								</div>
+							</dd>
+						</dl>
+					</h:panelGroup>
+
+					<dl class="dl-horizontal">
+						<dt>#{i18n['dw4.object']}</dt>
+						<dd><h:commandLink value="#{bean.doc.oggetto}" action="#{containerBean.loadDoc(bean.doc.nrecord)}" title="#{i18n['dw4.vai_al_documento']}" /></dd>
+					</dl>
+
+					<h:panelGroup rendered="#{bean.showOggettoStampa and not empty bean.doc.oggetto_stampa}">
+						<dl class="dl-horizontal">
+							<dt>#{i18n['dw4.object_per_la_stampa']}</dt>
+							<dd><h:inputTextarea id="doc_oggetto_stampa_readonly" value="#{bean.doc.oggetto_stampa}" rows="4" cols="120" styleClass="#{ component.valid ? '' : 'invalidinput' } form-control html-readonly-field" /></dd>
+						</dl>
+					</h:panelGroup>
+
+					<ui:include src="../../customfields/showdoc@customfields.xhtml">
+						<ui:param name="bean" value="#{bean}"/>
+						<ui:param name="hideSection" value="true" />
+						<ui:param name="prefix" value="previewDoc_" />
+			        </ui:include>
+
+					<dl class="dl-horizontal">
+						<dt>#{i18n['dw4.attachments']}</dt>
+						<dd>
+							<h:panelGroup rendered="#{fn:length(bean.doc.files) == 0 or empty bean.doc.files[0].title}">
+								<span class="doc-preview-label-alert">#{i18n['dw4.nessun_file_caricato_sul_documento']}</span>
+							</h:panelGroup>
+							<h:panelGroup rendered="#{fn:length(bean.doc.files) > 0 and !empty bean.doc.files[0].title}">
+								<ui:repeat id="xwfiles" var="xwfile" value="#{bean.doc.files}" varStatus="status">
+									<h:panelGroup rendered="#{empty xwfile.der_from}">
+										<h:outputLink value="#{facesContext.externalContext.requestContextPath}/filedownload?name=#{xwfile.urlEncodedName}&amp;title=#{xwfile.urlEncodedTitle}&amp;mode=inline&amp;db=#{bean.formsAdapter.db}&amp;_cd=#{bean.formsAdapter.urlEncodedCustomTupleName}&amp;physDoc=#{bean.formsAdapter.physDoc}&amp;selid=&amp;pos=" title="#{i18n['dw4.apri_il_file']}" styleClass="pull-left #{(xwfile.da_firmare) ? 'daFirmareLink' : ''}" target="_blank">
+											#{xwfile.title}
+										</h:outputLink>
+										<br/>
+									</h:panelGroup>
+								</ui:repeat>
+							</h:panelGroup>
+						</dd>
+						<h:panelGroup rendered="#{fn:length(bean.doc.immagini) > 0 and !empty bean.doc.immagini[0].title}">
+							<dt>#{i18n['dw4.images']}</dt>
+							<dd>
+								<ui:repeat id="xwimages" var="xwfile" value="#{bean.doc.immagini}" varStatus="status">
+									<h:panelGroup rendered="#{empty xwfile.der_from}">
+										<h:outputLink value="#{facesContext.externalContext.requestContextPath}/filedownload?name=#{xwfile.urlEncodedName}&amp;title=#{xwfile.urlEncodedTitle}&amp;mode=inline&amp;db=#{bean.formsAdapter.db}&amp;_cd=#{bean.formsAdapter.urlEncodedCustomTupleName}&amp;physDoc=#{bean.formsAdapter.physDoc}&amp;selid=&amp;pos=" title="#{i18n['dw4.apri_il_file']}" styleClass="pull-left #{(xwfile.da_firmare) ? 'daFirmareLink' : ''}" target="_blank">
+											#{xwfile.title}
+										</h:outputLink>
+										<br/>
+									</h:panelGroup>
+								</ui:repeat>
+							</dd>
+						</h:panelGroup>
+					</dl>
+				</div>
+			</div>
+
+		</c:otherwise>
+	</c:choose>
+
+</ui:composition>
+</html>

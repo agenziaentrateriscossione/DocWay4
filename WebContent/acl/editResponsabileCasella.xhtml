@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	  xmlns:h="http://java.sun.com/jsf/html"
+	  xmlns:ui="http://java.sun.com/jsf/facelets"
+	  xmlns:f="http://java.sun.com/jsf/core"
+	  xmlns:p="http://xmlns.jcp.org/jsf/passthrough">
+<ui:composition>
+
+	<h:panelGroup rendered="#{pageBean.lookupResponsabileSuPersona}">
+		<div class="form-group">
+			<label for="templateForm:resp_nome_pers_input" class="control-label col-sm-2">#{i18n['acl.oper']}</label>
+			<div class="col-sm-4">
+				<div class="input-group">
+					<h:inputText id="resp_nome_uff_input" value="#{pageBean.casellaPostaElettronica.responsabile.nome_uff}" p:placeholder="#{i18n['acl.uff']}" title="#{i18n['acl.uff']}" onblur="executeAction(this);" onfocus="setDefaultValue(this);" styleClass="#{ component.valid ? '' : 'invalidinput' } lookup-field form-control">
+						<f:ajax execute="@form" render="templateForm:responsabileCasella templateForm:errormsg templateForm:lookup templateForm:rifintLookup"/>
+					</h:inputText>
+
+					<span class="input-group-btn">
+				   		<h:commandLink style="display:none;" title="#{i18n['dw4.lookup_ufficio']}" action="#{pageBean.clearUfficioResponsabile}" id="resp_nome_uff_clear">
+				  			<f:ajax execute="@form" render="templateForm:responsabileCasella templateForm:errormsg templateForm:lookup templateForm:rifintLookup"/>
+						</h:commandLink>
+
+						<h:commandLink title="#{i18n['dw4.lookup_ufficio']}" action="#{pageBean.lookupUfficioResponsabile}" id="resp_nome_uff_button" onclick="setFocusLookup(this);" styleClass="btn btn-default">
+				   			<f:ajax execute="@form" render="templateForm:responsabileCasella templateForm:errormsg templateForm:lookup templateForm:rifintLookup"/>
+				   			<span class="glyphicon glyphicon-search"></span>
+				   		</h:commandLink>
+			  		</span>
+				</div>
+			</div>
+			<div class="col-sm-5">
+				<div class="input-group">
+					<h:inputText id="resp_nome_pers_input" value="#{pageBean.casellaPostaElettronica.responsabile.nome_pers}" p:placeholder="#{i18n['acl.oper']}" title="#{i18n['acl.oper']}" onblur="executeAction(this);" onfocus="setDefaultValue(this);" styleClass="#{ component.valid ? '' : 'invalidinput' } lookup-field form-control">
+						<f:ajax execute="@form" render="templateForm:responsabileCasella templateForm:errormsg templateForm:lookup templateForm:rifintLookup"/>
+					</h:inputText>
+
+					<span class="input-group-btn">
+				   		<h:commandLink style="display:none;" title="#{i18n['dw4.lookup_persona']}" action="#{pageBean.clearPersonaResponsabile}" id="resp_nome_pers_clear">
+				  			<f:ajax execute="@form" render="templateForm:responsabileCasella templateForm:errormsg templateForm:lookup templateForm:rifintLookup"/>
+						</h:commandLink>
+
+						<h:commandLink title="#{i18n['dw4.lookup_persona']}" action="#{pageBean.lookupPersonaResponsabile}" id="resp_nome_pers_button" onclick="setFocusLookup(this);" styleClass="btn btn-default">
+				   			<f:ajax execute="@form" render="templateForm:responsabileCasella templateForm:errormsg templateForm:lookup templateForm:rifintLookup"/>
+				   			<span class="glyphicon glyphicon-search"></span>
+				   		</h:commandLink>
+
+				   		<h:panelGroup rendered="#{pageBean.formsAdapter.funzionalitaDisponibili['rolesManagement']}">
+			        		<h:commandLink action="#{pageBean.changeResponsabilePersonaRuolo}" title="#{i18n['dw4.passa_a_ruolo']}" styleClass="btn btn-default">
+			        			<f:ajax execute="@form" render="templateForm:responsabileCasella templateForm:errormsg templateForm:lookup templateForm:rifintLookup" />
+			        			<span class="glyphicon glyphicon-briefcase"></span>
+			        		</h:commandLink>
+			        	</h:panelGroup>
+			  		</span>
+				</div>
+			</div>
+		</div>
+		<div class="form-group">
+			<label for="templateForm:resp_nome_pers_input" class="control-label col-sm-2">#{i18n['acl.code']}</label>
+			<div class="col-sm-9">
+				<h:inputText id="resp_matricola_lookup" value="#{pageBean.casellaPostaElettronica.responsabile.matricola}" readonly="true" styleClass="#{ component.valid ? '' : 'invalidinput' } readonly form-control" />
+			</div>
+		</div>
+		<div class="form-group">
+			<label for="templateForm:resp_nome_pers_input" class="control-label col-sm-2">#{i18n['acl.codice_ufficio']}</label>
+			<div class="col-sm-9">
+				<h:inputText id="resp_cod_uff_lookup" value="#{pageBean.casellaPostaElettronica.responsabile.cod_uff}" readonly="true" styleClass="#{ component.valid ? '' : 'invalidinput' } readonly form-control" />
+			</div>
+		</div>
+	</h:panelGroup>
+
+	<h:panelGroup rendered="#{!pageBean.lookupResponsabileSuPersona and pageBean.formsAdapter.funzionalitaDisponibili['rolesManagement']}">
+		<div class="form-group">
+			<label for="templateForm:resp_nome_ruolo_input" class="control-label col-sm-2">#{i18n['acl.role']}</label>
+			<div class="col-sm-9">
+				<div class="input-group">
+					<h:inputText id="resp_nome_ruolo_input" value="#{pageBean.casellaPostaElettronica.responsabile.nome_ruolo}" p:placeholder="#{i18n['acl.role']}" title="#{i18n['acl.role']}" onblur="executeAction(this);" onfocus="setDefaultValue(this);" styleClass="#{ component.valid ? '' : 'invalidinput' }  lookup-field form-control">
+						<f:ajax execute="@form" render="templateForm:responsabileCasella templateForm:errormsg templateForm:lookup templateForm:rifintLookup"/>
+					</h:inputText>
+
+					<span class="input-group-btn">
+				   		<h:commandLink style="display:none;" title="#{i18n['dw4.lookup_ruolo']}" action="#{pageBean.clearRuoloResponsabile}" id="resp_nome_ruolo_clear">
+				  			<f:ajax execute="@form" render="templateForm:responsabileCasella templateForm:errormsg templateForm:lookup templateForm:rifintLookup"/>
+						</h:commandLink>
+
+						<h:commandLink title="#{i18n['dw4.lookup_ruolo']}" action="#{pageBean.lookupRuoloResponsabile}" id="resp_nome_ruolo_button" onclick="setFocusLookup(this);" styleClass="btn btn-default">
+				   			<f:ajax execute="@form" render="templateForm:responsabileCasella templateForm:errormsg templateForm:lookup templateForm:rifintLookup"/>
+				   			<span class="glyphicon glyphicon-search"></span>
+				   		</h:commandLink>
+
+		        		<h:commandLink action="#{pageBean.changeResponsabilePersonaRuolo}" title="#{i18n['dw4.passa_a_ufficio_persona']}" styleClass="btn btn-default">
+			        		<f:ajax execute="@form" render="templateForm:responsabileCasella templateForm:errormsg templateForm:lookup templateForm:rifintLookup" />
+			        		<span class="glyphicon glyphicon-user"></span>
+			        	</h:commandLink>
+			  		</span>
+				</div>
+			</div>
+		</div>
+		<div class="form-group">
+			<label for="templateForm:resp_nome_pers_input" class="control-label col-sm-2">#{i18n['acl.codice_ruolo']}</label>
+			<div class="col-sm-9">
+				<h:inputText id="resp_cod_ruolo_lookup" value="#{pageBean.casellaPostaElettronica.responsabile.cod_ruolo}" readonly="true" styleClass="#{ component.valid ? '' : 'invalidinput' } readonly form-control" />
+			</div>
+		</div>
+	</h:panelGroup>
+
+</ui:composition>
+</html>

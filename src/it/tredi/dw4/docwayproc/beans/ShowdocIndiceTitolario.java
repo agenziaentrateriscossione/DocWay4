@@ -8,6 +8,8 @@ import it.tredi.dw4.docway.doc.adapters.DocDocWayDocumentFormsAdapter;
 import it.tredi.dw4.docwayproc.model.Indice_Titolario;
 import it.tredi.dw4.docwayproc.model.workflow.WorkflowsTitolario;
 
+import javax.faces.context.FacesContext;
+
 import org.dom4j.Document;
 
 public class ShowdocIndiceTitolario extends Showdoc {
@@ -83,7 +85,7 @@ public class ShowdocIndiceTitolario extends Showdoc {
 
 	@Override
 	public void reload() throws Exception {
-		super._reload("showdoc@indice_titolario");
+		super._reload(FacesContext.getCurrentInstance().getExternalContext().getRequestContextPath() + "/docwayproc/showdoc@indice_titolario");
 	}
 
 	@Override

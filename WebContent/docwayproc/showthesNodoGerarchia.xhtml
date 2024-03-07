@@ -9,7 +9,7 @@
 	<h:panelGroup rendered="#{!currentThes.radice}">
 		<h:panelGroup rendered="#{fn:length(currentThes.childrens) == 0}">
 			<div class="thes_#{codBreadcrumbsStyle} parent_#{levStyle} showThesNode#{levStyle eq '0' ? 'FirstLevel' : 'InLevel'}" style="#{levStyle ne '0' ? 'display:none;' : ''}">
-				<c:forEach begin="1" end="#{currentThes.level}" varStatus="idxLevel">
+				<c:forEach begin="1" end="#{currentThes != null ? currentThes.level : '0'}" varStatus="idxLevel">
 					<h:panelGroup rendered="#{idxLevel.index != currentThes.level}" layout="block" style="width:20px; float:left;">
 						<img src="#{facesContext.externalContext.requestContextPath}/docway/css/images/spazio.png" id="cmd_open_img_#{codBreadcrumbsStyle}" style="height:18px; width:18px; vertical-align:middle;" alt="tree icon" />
 					</h:panelGroup>
@@ -30,7 +30,7 @@
 					
 		<h:panelGroup rendered="#{fn:length(currentThes.childrens) > 0}">
 			<div class="thes_#{codBreadcrumbsStyle} parent_#{levStyle} showThesNode#{levStyle eq '0' ? 'FirstLevel' : 'InLevel'}" style="#{levStyle ne '0' ? 'display:none;' : ''}">
-				<c:forEach begin="1" end="#{currentThes.level}" varStatus="idxLevel">
+				<c:forEach begin="1" end="#{currentThes != null ? currentThes.level : '0'}" varStatus="idxLevel">
 					<h:panelGroup rendered="#{(idxLevel.index != currentThes.level)}" layout="block" style="width: 20px; float: left;">
 						<img src="#{facesContext.externalContext.requestContextPath}/docway/css/images/spazio.png" style="height:18px; width:18px; vertical-align:middle;" alt="tree icon" />
 					</h:panelGroup>

@@ -96,13 +96,20 @@ public class ErrormsgFormsAdapter extends FormsAdapter {
 	}
 	
 	public static XMLDocumento buildErrorResponse(Throwable t) throws Exception {
+		return buildErrorResponse(t, ErrormsgFormsAdapter.FATAL, true);
+	}
+	
+	public static XMLDocumento buildErrorResponse(Throwable t, String level, boolean unexpected) throws Exception {
 		String message = t.getMessage() == null? "" : t.getMessage();
 		
 		Logger.error(message, t);
 		
    	 	java.io.ByteArrayOutputStream detailedOut = new java.io.ByteArrayOutputStream();
-   	 	t.printStackTrace(new java.io.PrintStream(detailedOut));		
-		return buildErrorResponse(message, detailedOut.toString(), ErrormsgFormsAdapter.FATAL, null, true);
+   	 	t.printStackTrace(new java.io.PrintStream(detailedOut));
+   	 	
+   	 	if (level == null || level.isEmpty())
+   	 		level = ErrormsgFormsAdapter.FATAL;
+   	 	return buildErrorResponse(message, detailedOut.toString(), level, null, unexpected);
 	}
 	
 	

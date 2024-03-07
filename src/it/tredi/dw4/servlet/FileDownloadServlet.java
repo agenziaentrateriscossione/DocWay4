@@ -9,6 +9,7 @@ import it.tredi.dw4.utils.Logger;
 import it.tredi.dw4.utils.StringUtil;
 import it.tredi.dw4.utils.UploadFileUtil;
 
+import java.io.File;
 import java.io.IOException;
 
 import javax.servlet.ServletContext;
@@ -19,6 +20,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.tika.config.TikaConfig;
 import org.apache.tika.io.TikaInputStream;
 import org.apache.tika.metadata.Metadata;
@@ -81,6 +83,9 @@ public class FileDownloadServlet extends HttpServlet {
 			if (!mode.equals("attachment") && !mode.equals("inline"))
 				mode = "attachment";
 			
+			// eventuale scaricamento di file temporanei (caricati all'interno della TEMP dir di Tomcat)
+			boolean tempDir = StringUtil.booleanValue((String) request.getParameter("tempDir"));
+			
 			Logger.info("FileDownloadServlet - Param login = " + login);
 			Logger.info("FileDownloadServlet - Param matricola = " + matricola);
 			Logger.info("FileDownloadServlet - Param db = " + db);
@@ -89,9 +94,21 @@ public class FileDownloadServlet extends HttpServlet {
 			Logger.info("FileDownloadServlet - Param selid = " + selid);
 			Logger.info("FileDownloadServlet - Param pos = " + pos);
 			Logger.info("FileDownloadServlet - Param extractIfP7M = " + extractIfP7M);
+			Logger.info("FileDownloadServlet - Param tempDir = " + tempDir);
 			
-			// recupero del file tramite chiamata al service
-			AttachFile attachFile = this.redirectRequestToService(login, matricola, customTupleName, physDoc, selid, pos, db, fileName, extractIfP7M); // TODO gestire il caso di ritono con errore?
+			AttachFile attachFile = null;
+			if (tempDir) {
+				// scaricamento di un file caricato nella TEMP dir di Tomcat
+				File tmpDir = new File(System.getProperty("java.io.tmpdir"));
+				File tmpFile = new File(tmpDir, fileName);
+				byte[] b = FileUtils.readFileToByteArray(tmpFile);
+				attachFile = new AttachFile(fileName, b);
+				tmpFile.delete();
+			}
+			else {
+				// recupero del file tramite chiamata al service
+				attachFile = this.redirectRequestToService(login, matricola, customTupleName, physDoc, selid, pos, db, fileName, extractIfP7M); // TODO gestire il caso di ritono con errore?
+			}
 			
 			if (extractIfP7M) {
 				// in caso di estrazione di p7m occorre eliminare l'estensione del file P7M

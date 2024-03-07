@@ -4,6 +4,7 @@ import it.tredi.dw4.acl.adapters.AclDocumentFormsAdapter;
 import it.tredi.dw4.acl.model.Comune;
 import it.tredi.dw4.adapters.AdaptersConfigurationLocator;
 
+import javax.faces.context.FacesContext;
 import javax.faces.event.ComponentSystemEvent;
 
 import org.dom4j.Document;
@@ -30,6 +31,9 @@ public class ShowdocComune extends AclShowdoc {
     	xml = domDocumento.asXML();
     	comune = new Comune();
     	comune.init(domDocumento);
+    	
+    	// inizializzazione di componenti common
+    	initCommons(domDocumento);
     }	
 	
 	public AclDocumentFormsAdapter getFormsAdapter() {
@@ -41,7 +45,7 @@ public class ShowdocComune extends AclShowdoc {
 	}
 	
 	public void reload() throws Exception {
-		super._reload("showdoc@comune");
+		super._reload(FacesContext.getCurrentInstance().getExternalContext().getRequestContextPath() + "/acl/showdoc@comune");
 	}
 
 	public void setComune(Comune comune) {

@@ -21,7 +21,7 @@
 		
 		<h5 class="sub-header">
 			<span class="doc-tipo-fascicolo glyphicon glyphicon-folder-open"></span>&#160;
-			<h:outputText value="#{docEditModifyFascicolo.modFascicoloTitle}" escape="false" />
+			<h:outputText value="#{docEditModifyFascicolo.modFascicoloTitle}" />
 		</h5>
 		
 		<!-- messages: inizio -->
@@ -116,10 +116,12 @@
 	        			</div>
 	        			
 	        			<div class="form-group">
+							<h:panelGroup rendered="#{ !docEditModifyFascicolo.fascicolo.sendMailSelectedRifInterni }">
 	        				<label for="templateForm:sendMailRifInterniCheck" class="col-sm-2 control-label">#{i18n['dw4.invia_email_di_notifica']}</label>
 							<div class="col-sm-1">
 								<h:selectBooleanCheckbox value="#{docEditModifyFascicolo.fascicolo.sendMailRifInterni}" id="sendMailRifInterniCheck" />
 							</div>
+							</h:panelGroup>
 	        			</div>
 	        			
 	        			<h:panelGroup id="rpa_Fields" layout="block" styleClass="responsabilita-fields">
@@ -129,6 +131,7 @@
 				        		<ui:param name="pageBean" value="#{docEditModifyFascicolo}" />
 				        		<ui:param name="rifintBean" value="#{docEditModifyFascicolo.fascicolo.assegnazioneRPA}" />
 				        		<ui:param name="refresh" value="templateForm:rpa_Fields templateForm:rifintLookup templateForm:lookup templateForm:errormsg"/>
+				        		<ui:param name="sendMailSelectedRifInterni" value="#{docEditModifyFascicolo.fascicolo.sendMailSelectedRifInterni}"/>
 				        	</ui:include>
 			        	</h:panelGroup>
 			        	
@@ -140,6 +143,7 @@
 					        		<ui:param name="pageBean" value="#{docEditModifyFascicolo}" />
 					        		<ui:param name="rifintBean" value="#{docEditModifyFascicolo.fascicolo.assegnazioneITF}" />
 					        		<ui:param name="refresh" value="templateForm:itf_Fields templateForm:rifintLookup templateForm:lookup templateForm:errormsg"/>
+					        		<ui:param name="sendMailSelectedRifInterni" value="#{docEditModifyFascicolo.fascicolo.sendMailSelectedRifInterni}"/>
 					        	</ui:include>
 					        </h:panelGroup>
 				        </h:panelGroup>
@@ -154,6 +158,11 @@
 							</div>
 	        			</div>
 	        			
+	        			<ui:include src="./docEditTags.xhtml">
+				        	<ui:param name="bean" value="#{docEditModifyFascicolo.fascicolo}" />
+				        	<ui:param name="pageBean" value="#{docEditModifyFascicolo}" />
+			        	</ui:include>
+	        			
 	        			<div class="form-group">
 			               	<label for="templateForm:note" class="col-sm-2 control-label">#{i18n['acl.notes']}</label>
 			               	<div class="col-sm-9">
@@ -166,7 +175,7 @@
 		</div>
 		<!-- scheda edit: fine -->
 		
-		<h:inputTextarea value="#{docEditModifyFascicolo.xml}" rendered="#{docEditModifyFascicolo.debugMode}" styleClass="form-control" rows="10" />
+		<h:inputTextarea value="#{docEditModifyFascicolo.xml}" rendered="#{docEditModifyFascicolo.debugMode}" styleClass="form-control debug-textarea" rows="10" />
 			
 		<ui:include src="./lookup.xhtml"> <ui:param name="pageBean" value="#{docEditModifyFascicolo}"/></ui:include>
 		<ui:include src="./rifintLookup.xhtml"> <ui:param name="pageBean" value="#{docEditModifyFascicolo}"/></ui:include>

@@ -41,24 +41,23 @@
 
                             <ul class="nav nav-tabs">
                                 <ui:repeat var="export" value="#{pageBean.exportCSVAdvancedTabs}" varStatus="index0">
-                                    <li class="#{index0.index == 0 ? 'active' : ''}"><a data-toggle="tab" href="#csvgroup_#{index0.index}">#{export.name}</a></li>
+                                    <li class="#{(export.type eq pageBean.exportType) ? 'active' : ''}"><a data-toggle="tab" href="#csvgroup_#{index0.index}">#{export.name}</a></li>
                                 </ui:repeat>
                             </ul>
                             <div class="tab-content" style=" height: 150px; margin-top: 10px; overflow: auto;">
-                            <ui:repeat var="export" value="#{pageBean.exportCSVAdvancedTabs}" varStatus="index0" id="exportsCSV">
-                              <div id="csvgroup_#{index0.index}" class="tab-pane #{index0.index == 0 ? 'active' : ''}">
-                              <ui:repeat var="group" value="#{export.groups}" varStatus="index1" id="exportsCSVGroups">
-	                              <div class="checkbox">
-	                                  <label>
-	                                  <input id="csvgroupselect_#{index0.index}_#{index1.index}" type="checkbox" checked="#{(group.selected) ? 'checked' : ''}" onclick="changeSelectionAdvancedCSV('#{index0.index}','#{index1.index}');" />
-	                                  #{group.name}
-	                                  </label>
-	                                  
-	                                  <h:inputHidden value="#{group.selected}" id="csvGroup" />
-	                              </div>
-                              </ui:repeat>
-                              </div>
-                            </ui:repeat>
+                            	<ui:repeat var="export" value="#{pageBean.exportCSVAdvancedTabs}" varStatus="index0" id="exportsCSV">
+									<div id="csvgroup_#{index0.index}" class="tab-pane #{(export.type eq pageBean.exportType) ? 'active' : ''}">
+										<ui:repeat var="group" value="#{export.groups}" varStatus="index1" id="exportsCSVGroups">
+											<div class="checkbox">
+												<label>
+													<input id="csvgroupselect_#{index0.index}_#{index1.index}" type="checkbox" checked="#{(group.selected) ? 'checked' : ''}" onclick="changeSelectionAdvancedCSV('#{index0.index}','#{index1.index}');" />
+													#{group.name}
+												</label>
+												<h:inputHidden value="#{group.selected}" id="csvGroup" />
+											</div>
+										</ui:repeat>
+									</div>
+								</ui:repeat>
                             </div>
                             
                             <h:panelGroup rendered="#{pageBean.formsAdapter.funzionalitaDisponibili['queryInSearchHierarchy'] and pageBean.formsAdapter.funzionalitaDisponibili['enableSalvataggioEsportazioniPersonalizzate']}">

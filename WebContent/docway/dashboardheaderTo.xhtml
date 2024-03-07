@@ -108,14 +108,32 @@
 					<ul class="nav navbar-nav navbar-right">
 						<!-- INFO UTENTE -->
 						<li class="dropdown">
-					        <a data-toggle="dropdown" class="dropdown-toggle #{(docwayHome.accessoADM) ? 'user-login-adm' : ''}" title="#{userBean.userInfo}" href="#">
+					        <a data-toggle="dropdown" class="dropdown-toggle #{docwayHome.accessoADM ? 'user-login-adm' : ''} #{docwayHome.accessoDelega ? 'user-login-delega' : ''}" title="#{userBean.userInfo}" href="#">
+					        	<h:panelGroup rendered="#{not docwayHome.accessoDelega}">
 					        	<span class="glyphicon glyphicon-user navbar-menu-icon"></span>
 					        	#{fn:substring(userBean.userInfo,0, fn:indexOf(userBean.userInfo, '('))} <b class="caret"></b>
+					        	</h:panelGroup>
+					        	<h:panelGroup rendered="#{docwayHome.accessoDelega}">
+						        	<span class="glyphicons-pro parents navbar-menu-icon"></span>
+						        	#{fn:substring(userBean.userInfo,0, fn:indexOf(userBean.userInfo, '('))} (#{i18n['dw4.delega']}) <b class="caret"></b>
+					        	</h:panelGroup>
 					        </a>
 							<ul class="dropdown-menu">
-								<li><h:commandLink action="#{docwaymenu.gotoTableQProfiloPersonale}" value="#{i18n['dw4.profilo_personale']}" styleClass="openwaitmsg"/></li>
+								<h:panelGroup rendered="#{not docwayHome.accessoDelega}">
+									<li><h:commandLink action="#{docwaymenu.gotoTableQProfiloPersonale}" value="#{i18n['dw4.profilo_personale']}" /></li>
+									<li class="divider"></li>
+									<h:panelGroup rendered="#{docwayHome.formsAdapter.funzionalitaDisponibili['deleghePersonaliAttive']}">
+										<h:panelGroup rendered="#{not docwayHome.accessoDelega}">
+											<li><h:commandLink action="#{docwaymenu.gotoTableQDeleghe}" value="#{i18n['dw4.gestione_deleghe']}" /></li>
+										</h:panelGroup>
+
 								<li class="divider"></li>
-								<li><h:commandLink action="#{userBean.logout}" value="#{i18n['dw4.esci']}" styleClass="openwaitmsg"/></li>
+									</h:panelGroup>
+									<li><h:commandLink action="#{userBean.logout}" value="#{i18n['dw4.esci']}" /></li>
+								</h:panelGroup>
+								<h:panelGroup rendered="#{docwayHome.accessoDelega}">
+									<li><h:commandLink action="#{docwayHome.rilasciaDelega}" value="#{i18n['dw4.rilascia_delega']}" /></li>
+								</h:panelGroup>
 							</ul>
 						</li>
 					</ul>

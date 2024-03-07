@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:f="http://java.sun.com/jsf/core"
+   	xmlns:p="http://xmlns.jcp.org/jsf/passthrough"
+   	xmlns:c="http://java.sun.com/jsp/jstl/core">
+   	
+   	<!-- modale dei document list: inizio  -->
+	<h:panelGroup id="folderDocumentsModal" layout="block">
+		<h:panelGroup rendered="${pageBean.visible}">
+			<!-- Modal -->
+			<div id="folderDocumentsModalDiv" class="modal fade in" aria-hidden="false" aria-labelledby="folderDocumentsModalLabel" role="dialog" tabindex="-1" style="display: block;">
+				<div class="modal-dialog modal-lg">
+					<div class="modal-content jsf-modal">
+						<div class="modal-header">
+							<h:commandButton styleClass="close" title="${i18n['acl.close']}" action="${pageBean.closeModal}" p:data-dismiss="modal"  value="&#215;" >
+			        			<f:ajax render="@form"/>
+			        		</h:commandButton>
+			        		
+			        		<h4 class="modal-title" id="folderDocumentsModalLabel">${i18n['dw4.foldersDocuments']}&#160;${pageBean.title}&#160;-&#160;<h:outputText value="${pageBean.folderId}" styleClass="showdoc-title-numfasc"><f:converter converterId="NumFascConverter" /></h:outputText></h4>
+			        		
+			        		
+						</div>
+						<div class="modal-body fspc-list-modal-body">
+							<div class="btn-toolbar dw-modal-content-buttons margin-bottom" style="margin-right:-5px">
+								<ui:include src="./ajaxNavigationBarDocumentiFascicolo.xhtml"><ui:param name="folderTreeBean" value="#{folderTreeBean}"/><ui:param name="customPage" value="true"/><ui:param name="customPageId" value="docsListId"/></ui:include>
+							</div>
+							
+							<div id="cc_Fields">
+								<table class="table fspc-list doc-titles-table">
+									<thead>
+										<tr>
+											<th>Tipo</th>
+											<th>Documenti</th>
+										</tr>
+									</thead>
+									<tbody>
+										<ui:repeat var="doc" value="${pageBean.documents}" varStatus="vs">
+								            <tr>
+												<td class="coltipo essential">
+													<h:panelGroup rendered="${doc.tipo eq ''}">
+														<span class="doc-tipo-custom glyphicons-pro" title="${doc.tipo}"></span>
+													</h:panelGroup>
+													<h:panelGroup rendered="${doc.tipo ne ''}">
+														<span class="doc-tipo-${doc.tipo} glyphicons-pro"></span>
+													</h:panelGroup>
+												</td>
+												<td>
+													<div>
+														<h:outputText value="${doc.title}" escape="false"/>
+													</div>
+													<div>
+														<ui:repeat value="${doc.xwFiles}" var="xwfile">
+															<h:outputLink value="${facesContext.externalContext.requestContextPath}/filedownload?name=${xwfile.urlEncodedName}&amp;title=${xwfile.urlEncodedTitle}&amp;mode=inline&amp;db=${pageBean.formsAdapter.db}&amp;_cd=${pageBean.formsAdapter.urlEncodedCustomTupleName}&amp;physDoc=${doc.physDoc}&amp;selid=${pageBean.seleId}&amp;pos=${doc.selPos}" title="${i18n['dw4.apri_il_file']}" styleClass="pull-left ${(xwfile.da_firmare) ? 'daFirmareLink' : ''}" target="_blank">
+																<span class="glyphicon glyphicon-paperclip fspc-clip-icon"/><span>${xwfile.title}&#160;</span>	
+															</h:outputLink>
+														</ui:repeat>
+													</div>
+												</td>
+											</tr>
+								        </ui:repeat>											
+									</tbody>
+								</table>
+							
+								
+							</div>
+							
+						</div>
+						<div class="modal-footer">
+							
+							<h:commandButton styleClass="btn btn-default" title="${i18n['acl.close']}" action="${pageBean.closeModal}" p:data-dismiss="modal"  value="${i18n['acl.close']}" >
+			        			<f:ajax render="folderDocumentsModal"/>
+			        		</h:commandButton>
+						</div>
+					</div>
+				</div>
+			</div>
+		</h:panelGroup>
+	</h:panelGroup>
+	<!-- modale dei document list: fine  -->		
+
+</ui:composition>

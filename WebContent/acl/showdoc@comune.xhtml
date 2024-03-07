@@ -28,6 +28,10 @@
 					<div class="btn-group">
 						<h:commandLink rendered="#{showdocComune.formsAdapter.funzionalitaDisponibili['ins_comuni']}" action="#{showdocComune.modifyTableDoc}" styleClass="btn btn-primary openwaitmsg"><span>#{i18n['acl.modify']}</span></h:commandLink>
 			            <h:commandLink rendered="#{showdocComune.formsAdapter.funzionalitaDisponibili['canc_comuni']}" action="#{showdocComune.remove}" onclick="if (!owmConfirm('#{i18n['acl.deleteconfirm']}')) return false;" styleClass="btn btn-danger"><span>#{i18n['acl.delete']}</span></h:commandLink>
+			            
+			            <ui:include src="../azionimassive/startAzioniMassiveButtons.xhtml">
+		                    <ui:param name="pageBean" value="#{showdocComune}" />
+		                </ui:include>
 					</div>
 				</div>
 				<!-- secondo livello toolbar: fine -->
@@ -39,7 +43,7 @@
             
             <h5 class="sub-header" title="#{showdocComune.comune.nome}">
                 <span class="comuni glyphicons-pro"></span>&#160;
-                <h:outputText value="#{showdocComune.comune.nome}" escape="false" />
+                <h:outputText value="#{showdocComune.comune.nome}" />
             </h5>
             
             <!-- scheda show: inizio -->
