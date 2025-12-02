@@ -54,7 +54,7 @@ maintenance:
   type: contract
   contractors:
     - name: 3D Informatica srl
-      until: 2022-06-30
+      until: 2026-12-31
       website: http://www.3di.it
 localisation:
   localisationReady: true
@@ -78,3 +78,4 @@ IT:
     anpr: false
     pagopa: false
     io: false
+
