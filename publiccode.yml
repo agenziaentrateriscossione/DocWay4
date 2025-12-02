@@ -33,23 +33,23 @@ description:
       management e un folder management.
     documentation: https://github.com/agenziaentrateriscossione/DocWay4
     features:
-      - (T) Database Layer: basato su NOSQL Database o Object Database (MongoDB) in grado di archiviare e conservare, nativamente, formati aperti quali XML e JSON e dotato di tecniche di indicizzazione avanzate e relative funzionalità di Information Retrieval;
-      - (T) Servizi Web: per l’integrazione con altri sistemi informatici dell’amministrazione
-      - (T) Architettura applicativa: FULL WEB, Java Web Application realizzata adottando gli Open Standard di riferimento (XML, JSON, JEE, SOA) per un utilizzo garantito sui più recenti internet browser;
-      - (T) Architettura infrastruttura: virtualizzata e scalabile;
-      - (F) Gestione dell’archivio documentale corrente multi AOO: registrazione di protocollo e fascicolazione dei documenti (protocollo informatico e archivio), pubblicità legale e trasparenza (albo ufficiale on-line), gestione delle caselle di posta elettronica certificata e non (PEC), sottoscrizione dei documenti con firma digitale, gestione dell’iter di approvazione degli atti amministrativi;
+      - (T) Database Layer basato su NOSQL Database o Object Database (MongoDB) in grado di archiviare e conservare, nativamente, formati aperti quali XML e JSON e dotato di tecniche di indicizzazione avanzate e relative funzionalità di Information Retrieval;
+      - (T) Servizi Web per l’integrazione con altri sistemi informatici dell’amministrazione
+      - (T) Architettura applicativa FULL WEB, Java Web Application realizzata adottando gli Open Standard di riferimento (XML, JSON, JEE, SOA) per un utilizzo garantito sui più recenti internet browser;
+      - (T) Architettura infrastruttura virtualizzata e scalabile;
+      - (F) Gestione dell’archivio documentale corrente multi AOO registrazione di protocollo e fascicolazione dei documenti (protocollo informatico e archivio), pubblicità legale e trasparenza (albo ufficiale on-line), gestione delle caselle di posta elettronica certificata e non (PEC), sottoscrizione dei documenti con firma digitale, gestione dell’iter di approvazione degli atti amministrativi;
       - (F) Gestione titolario di classificazione;
       - (F) Gestione sistema di profilazione e anagrafiche;
-      - (F) Gestione Workflow - BPM: Integrazione con BONITA BMP 2023;
+      - (F) Gestione Workflow - BPM Integrazione con BONITA BMP 2023;
       - (F) Gestione tipologie documentali e fascicoli definibili dall’utente;
-      - (F) Gestione Firma Digitale: Integrazione con i principali servizi di firma di mercato;
-      - (F) Gestione PEC/PEC: gestione del processo di archiviazione automatica di PEC/PEO;
-      - (F) Ricerche Full Text: ricerche full text sui metadati e sui contenuti dei documenti informatici che vengono indicizzati anche con OCR su immagini acquisite;
-      - (F) Gestione della fattura PA: gestione del processo di ricezione/comunicazione con lo SdI e il sistema amministrativo-contabile;
-      - (F) Gestione della conservazione a norma: Modulo per l’invio in conservazione a norma dei documenti informatici e altre tipologie di conservazione, così come previste dalla normativa;
-      - (F) Gestione dell’Albo Pretorio: voce altresì importante nelle esigenze di una Amministrazione è la gestione di un “Albo Pretorio” pubblicabile sul sito web istituzionale;
+      - (F) Gestione Firma Digitale Integrazione con i principali servizi di firma di mercato;
+      - (F) Gestione PEC/PEC gestione del processo di archiviazione automatica di PEC/PEO;
+      - (F) Ricerche Full Text ricerche full text sui metadati e sui contenuti dei documenti informatici che vengono indicizzati anche con OCR su immagini acquisite;
+      - (F) Gestione della fattura PA gestione del processo di ricezione/comunicazione con lo SdI e il sistema amministrativo-contabile;
+      - (F) Gestione della conservazione a norma Modulo per l’invio in conservazione a norma dei documenti informatici e altre tipologie di conservazione, così come previste dalla normativa;
+      - (F) Gestione dell’Albo Pretorio voce altresì importante nelle esigenze di una Amministrazione è la gestione di un “Albo Pretorio” pubblicabile sul sito web istituzionale;
       - (F) Gestione di Template Workflow;
-      - (F) Gestione di un sistema di Audit: registrazione di tutte le azioni svolte sul sistema documentale e protocollo da parte degli operatori garantendone l’integrità e l’indipendenza dei dati registrati;
+      - (F) Gestione di un sistema di Audit registrazione di tutte le azioni svolte sul sistema documentale e protocollo da parte degli operatori garantendone l’integrità e l’indipendenza dei dati registrati;
 legal:
   license: AGPL-3.0-or-later
   mainCopyrightOwner: Agenzia delle Entrate-Riscossione (ADER)
@@ -82,5 +82,6 @@ IT:
     anpr: false
     pagopa: false
     io: false
+
 
 
